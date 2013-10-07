@@ -37,11 +37,6 @@
           android:icon="@drawable/social_reply"
             />
 
-    <item android:id="@+id/post_reply_all_quote_menu"
-          android:title="@string/post_reply_all_quote_menu"
-          android:icon="@drawable/social_chat"
-          android:visible="false"
-            />
     <!--
     <item android:id="@+id/download_all_images_menu"
           android:title="@string/download_all_images_menu"
@@ -64,6 +59,14 @@
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
+            />
+    <item android:id="@+id/send_feedback_menu"
+          android:title="@string/send_feedback_menu"
+          android:icon="@drawable/action_help"
+            />
+    <item android:id="@+id/purchase_menu"
+          android:title="@string/purchase_menu"
+          android:icon="@drawable/device_access_new_account"
             />
     <item android:id="@+id/about_menu"
           android:title="@string/about_menu"

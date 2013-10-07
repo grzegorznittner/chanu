@@ -45,7 +45,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     public static String topBoardCode = null;
 
@@ -78,6 +78,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected int gridViewOptions;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected int checkedPos = -1;
+
+    public static void startDefaultActivity(Context from) {
+        startActivity(from, ChanBoard.defaultBoardCode(from), "");
+    }
 
     public static void startActivity(Context from, String boardCode, String query) {
         from.startActivity(createIntent(from, boardCode, query));
@@ -738,10 +742,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
-        searchMenuItem = menu.findItem(R.id.search_menu);
-        if (searchMenuItem != null && searchMenuItem.getActionView() != null)
-            SearchActivity.createSearchView(this, searchMenuItem);
+        createSearchView(menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public void createSearchView(Menu menu) {
+        searchMenuItem = menu.findItem(R.id.search_menu);
+        if (searchMenuItem != null)
+            SearchActivity.createSearchView(this, searchMenuItem);
     }
 
     @Override
@@ -1213,8 +1221,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     public void onBackPressed() {
-        if (DEBUG) Log.i(TAG, "onBackPressed() /" + boardCode + "/");
-        navigateUp();
+        if (DEBUG) Log.i(TAG, "onBackPressed() /" + boardCode + "/ q=" + query);
+        if (query != null && !query.isEmpty()) {
+            finish();
+        }
+        else {
+            navigateUp();
+        }
     }
 
     public void navigateUp() { // either pop off stack, or go up to all boards
@@ -1222,8 +1235,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
         List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
         ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
-        boolean hasFavorites = ChanBoard.hasFavorites(this);
-        String upBoardCode = hasFavorites ? ChanBoard.FAVORITES_BOARD_CODE : ChanBoard.ALL_BOARDS_BOARD_CODE;
+        String upBoardCode = ChanBoard.defaultBoardCode(this);
         if (task != null) {
             if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null

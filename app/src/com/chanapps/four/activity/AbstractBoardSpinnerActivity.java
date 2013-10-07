@@ -13,6 +13,7 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 import com.chanapps.four.component.AdComponent;
 import com.chanapps.four.component.AnalyticsComponent;
+import com.chanapps.four.component.SendFeedback;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
@@ -157,16 +158,13 @@ abstract public class
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings_menu:
-                if (DEBUG) Log.i(TAG, "Starting settings activity");
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                //finish();
-                return true;
+                return SettingsActivity.startActivity(this);
+            case R.id.send_feedback_menu:
+                return SendFeedback.email(this);
+            case R.id.purchase_menu:
+                return PurchaseActivity.startActivity(this);
             case R.id.about_menu:
-                Intent intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                //finish();
-                return true;
+                return AboutActivity.startActivity(this);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -208,6 +206,15 @@ abstract public class
         }
         if (getString(R.string.board_select).equals(boardAsMenu))
             return false;
+        if (getString(R.string.send_feedback_menu).equals(boardAsMenu)) {
+            return SendFeedback.email(this);
+        }
+        if (getString(R.string.purchase_menu).equals(boardAsMenu)) {
+            Intent intent = PurchaseActivity.createIntent(this);
+            startActivity(intent);
+            finish();
+            return true;
+        }
         if (getString(R.string.about_menu).equals(boardAsMenu)) {
             Intent intent = AboutActivity.createIntent(this);
             startActivity(intent);

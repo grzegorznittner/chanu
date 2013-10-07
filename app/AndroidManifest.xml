@@ -132,6 +132,15 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".PurchaseActivity" android:label="@string/purchase_activity"
+                  android:launchMode="standard"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".AboutActivity" android:label="@string/about_activity"
                   android:launchMode="standard"
                 >

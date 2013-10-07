@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.AnalyticsComponent;
+import com.chanapps.four.component.SendFeedback;
 import com.chanapps.four.data.*;
 
 import android.content.Context;
@@ -486,14 +487,13 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                     url = ChanThread.threadUrl(boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
-                if (DEBUG) Log.i(TAG, "Starting settings activity");
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
+                return SettingsActivity.startActivity(this);
+            case R.id.send_feedback_menu:
+                return SendFeedback.email(this);
+            case R.id.purchase_menu:
+                return PurchaseActivity.startActivity(this);
             case R.id.about_menu:
-                Intent intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                return true;
+                return AboutActivity.startActivity(this);
             default:
             	return getStateManager().itemSelected(item);
         }        
@@ -535,7 +535,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     		break;
     	case OFFLINE_ALBUMSET_VIEW:
             if (boardCode == null || boardCode.isEmpty())
-                boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
+                boardCode = ChanBoard.defaultBoardCode(this);
     		intent = BoardActivity.createIntent(this, boardCode, "");
     		intent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
             break;

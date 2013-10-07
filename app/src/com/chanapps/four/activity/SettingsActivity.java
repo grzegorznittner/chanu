@@ -11,10 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.AnalyticsComponent;
-import com.chanapps.four.component.StringResourceDialog;
-import com.chanapps.four.component.ThemeSelector;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
@@ -63,6 +60,12 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
 
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
+
+    public static boolean startActivity(final Activity from) {
+        Intent intent = new Intent(from, SettingsActivity.class);
+        from.startActivity(intent);
+        return true;
+    }
 
     public static Intent createIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -151,7 +154,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                BoardActivity.startActivity(this, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
+                BoardActivity.startDefaultActivity(this);
                 return true;
             case R.id.global_rules_menu:
                 (new StringResourceDialog(this,
@@ -163,14 +166,12 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(null);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
-            case R.id.settings_menu:
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
+            case R.id.send_feedback_menu:
+                return SendFeedback.email(this);
+            case R.id.purchase_menu:
+                return PurchaseActivity.startActivity(this);
             case R.id.about_menu:
-                Intent intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                return true;
+                return AboutActivity.startActivity(this);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -202,8 +203,8 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                 return;
             }
         }
-        // otherwise go back to the all boards page
-        Intent intent = BoardActivity.createIntent(this, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
+        // otherwise go back to the default board page
+        Intent intent = BoardActivity.createIntent(this, ChanBoard.defaultBoardCode(this), "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();

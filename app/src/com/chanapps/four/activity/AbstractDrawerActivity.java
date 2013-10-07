@@ -253,13 +253,6 @@ abstract public class
             if (DEBUG) Log.i(TAG, "self board, returning");
             return false;
         }
-        /*
-        if (getString(R.string.about_menu).equals(boardAsMenu)) {
-            Intent intent = AboutActivity.createIntent(this);
-            startActivity(intent);
-            return true;
-        }
-        */
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
         if (boardType != null) {
             /*

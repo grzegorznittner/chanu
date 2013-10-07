@@ -6,12 +6,6 @@
           android:icon="@drawable/social_reply"
             />
 
-    <item android:id="@+id/post_reply_all_quote_menu"
-          android:title="@string/post_reply_all_quote_menu"
-          android:icon="@drawable/social_chat"
-          android:visible="false"
-            />
-
     <item android:id="@+id/thread_context_share_action_menu"
           android:icon="@drawable/ic_menu_share_holo_light"
           android:title="@string/share_image"

@@ -722,8 +722,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                                 item.setVisible(undead);
                             if ((item = menu.findItem(R.id.post_reply_all_menu)) != null)
                                 item.setVisible(undead);
-                            if ((item = menu.findItem(R.id.post_reply_all_quote_menu)) != null)
-                                item.setVisible(undead);
                             if ((item = menu.findItem(R.id.web_menu)) != null)
                                 item.setVisible(undead);
                         }

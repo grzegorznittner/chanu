@@ -16,7 +16,8 @@
   <string name="post_reply_activity">Antwort erstellen</string>
   <string name="post_reply_share_activity">Chanu</string>
   <string name="settings_activity">Einstellungen</string>
-  <string name="about_activity">Über/Kaufen</string>
+  <string name="purchase_activity">Kaufen</string>
+  <string name="about_activity">Über</string>
   <string name="board_image">Bild des Boards</string>
   <string name="thread_post_image">Bild des Threads</string>
   <string name="thread_post_image_expanded">Erweitertes Thread-Bild</string>
@@ -443,7 +444,7 @@ Diese Zahl wurde für dich generiert, du kannst sie aber ändern, wenn du das m�
   <string name="popular_title_latest">Neueste Beiträge</string>
   <string name="popular_title_recent">Neueste Bilder</string>
   <string name="popular_title_recommended">EMPFOHLEN</string>
-  <string name="pref_about_category">Über/Kaufen</string>
+  <string name="pref_about_category">Über</string>
   <string name="pref_advanced_category">Fortgeschritten</string>
   <string name="pref_watchlist_category">Thread Watchlist</string>
   <string name="pref_custom_category">Anpassen</string>
@@ -506,7 +507,7 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="pref_clear_cache_error">Der Cache konnte nicht gelöscht werden</string>
   <string name="pref_clear_cache_success">Der Cache wurde erfolgreich gelöscht</string>
   <string name="pref_clear_cache_notification_title">Chanu Cache-Status</string>
-  <string name="pref_about">Über/Kaufen</string>
+  <string name="pref_about">Über</string>
   <string name="pref_about_summ">Autorenschaft und Werbunglosinformationen</string>
   <string name="pref_reset_to_defaults">Reset</string>
   <string name="pref_reset_to_defaults_summ">Alle Einstellungen auf die Werkseinstellungen zurücksetzen</string>
@@ -568,6 +569,7 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="pref_about_developer_chanapps_sum">Schaue dir unsere anderen Angebote an</string>
   <string name="pref_about_store_chanapps">Chanapps Store</string>
   <string name="pref_about_store_chanapps_sum">Kaufe ein Chanu T-Shirt</string>
+  <string name="pref_about_contact_us">Kontakt</string>
   <string name="pref_about_send_email">Sende eine E-Mail</string>
   <string name="pref_about_translations_category">Übersetzungen</string>
   <string name="pref_about_translations_de">Deutsch</string>
@@ -583,7 +585,9 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="widget_configure_refresh">Button zur Aktualisierung anzeigen</string>
   <string name="widget_configure_config">Button für die Konfiguration anzeigen</string>
   <string name="widget_loading">Lade...</string>
-  <string name="about_menu">Über/Kaufen</string>
+  <string name="send_feedback_menu">Feedback geben</string>
+  <string name="purchase_menu">Kaufen</string>
+  <string name="about_menu">Über</string>
   <string name="test_menu">Test</string>
   <string name="camera_capture">Bild aufnehmen</string>
   <string name="camera_open_error">Konnte nicht auf die Kamera zugreifen</string>

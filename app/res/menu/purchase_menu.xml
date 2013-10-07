@@ -18,8 +18,8 @@
           android:title="@string/send_feedback_menu"
           android:icon="@drawable/action_help"
             />
-    <item android:id="@+id/purchase_menu"
-          android:title="@string/purchase_menu"
-          android:icon="@drawable/device_access_new_account"
+    <item android:id="@+id/about_menu"
+          android:title="@string/about_menu"
+          android:icon="@drawable/action_about"
             />
 </menu>

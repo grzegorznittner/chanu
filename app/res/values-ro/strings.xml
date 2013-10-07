@@ -16,6 +16,7 @@
     <string name="post_reply_activity">Postează răspuns</string>
     <string name="post_reply_share_activity">Chanu</string>
     <string name="settings_activity">Setări</string>
+    <string name="purchase_activity">Tranzacția</string>
     <string name="about_activity">Despre</string>
     <string name="board_image">Imagine planșă</string>
     <string name="thread_post_image">Fir de imagini</string>
@@ -557,7 +558,7 @@
     <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
     <string name="pref_clear_cache_success">Cleared cache successfully</string>
     <string name="pref_clear_cache_notification_title">Chanu Cache Status</string>
-    <string name="pref_about">About/Purchase Page</string>
+    <string name="pref_about">About Page</string>
     <string name="pref_about_summ">Authorship and ad-free prokey information</string>
     <string name="pref_reset_to_defaults">Reset</string>
     <string name="pref_reset_to_defaults_summ">Restore all settings to their factory default</string>
@@ -629,14 +630,7 @@
     <string name="pref_about_developer_chanapps_sum">See our other offerings</string>
     <string name="pref_about_store_chanapps">Chanapps Store</string>
     <string name="pref_about_store_chanapps_sum">Buy a Chanu T-shirt</string>
-    <string name="pref_about_developer_burns">John Burns</string>
-    <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>
-    <string name="pref_about_developer_nittner">Grzegorz Nittner</string>
-    <string name="pref_about_developer_nittner_sum">grzegorz.nittner@gmail.com</string>
-    <string name="pref_about_developer_pop">Mircea Pop</string>
-    <string name="pref_about_developer_pop_sum">mircea.pop.ro@gmail.com</string>
-    <string name="pref_about_developer_milas">Dimitris Milas</string>
-    <string name="pref_about_developer_milas_sum">dimitris.leonida.milas@gmail.com</string>
+    <string name="pref_about_contact_us">Contact Us</string>
     <string name="pref_about_send_email">Send email</string>
     <string name="pref_about_translations_category">Translations</string>
     <string name="pref_about_translations_de">German</string>
@@ -656,7 +650,9 @@
     <string name="widget_loading">Loading...</string>
 
     <!-- Help and about_dialog -->
-    <string name="about_menu">About/Purchase</string>
+    <string name="send_feedback_menu">Send Feedback</string>
+    <string name="purchase_menu">Purchase</string>
+    <string name="about_menu">About</string>
     <string name="test_menu">Test</string>
 
     <!-- camera -->

@@ -14,7 +14,7 @@ import com.android.gallery3d.ui.Log;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
-import com.chanapps.four.fragment.AboutFragment;
+import com.chanapps.four.fragment.PurchaseFragment;
 
 import java.util.List;
 
@@ -25,10 +25,10 @@ import java.util.List;
  * Time: 9:59 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AboutActivity extends Activity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
+public class PurchaseActivity extends Activity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
     protected static final boolean DEBUG = false;
-    public static final String TAG = AboutActivity.class.getSimpleName();
+    public static final String TAG = PurchaseActivity.class.getSimpleName();
     public static final String PREF_PURCHASE_CATEGORY = "pref_about_developer_category";
     public static final String PREF_PURCHASE_PROKEY = "pref_purchase_prokey";
     public static final String PREF_INSTALLED_PROKEY = "pref_installed_prokey";
@@ -40,13 +40,13 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     protected Handler handler;
 
     public static boolean startActivity(final Activity from) {
-        Intent intent = new Intent(from, AboutActivity.class);
+        Intent intent = new Intent(from, PurchaseActivity.class);
         from.startActivity(intent);
         return true;
     }
 
     public static Intent createIntent(Context from) {
-        return new Intent(from, AboutActivity.class);
+        return new Intent(from, PurchaseActivity.class);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
         super.onCreate(savedInstanceState);
         broadcastThemeReceiver = new ThemeSelector.ThemeReceiver(this);
         broadcastThemeReceiver.register();
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new AboutFragment()).commit();
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new PurchaseFragment()).commit();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
 
     @Override
     public ChanActivityId getChanActivityId() {
-        return new ChanActivityId(LastActivity.ABOUT_ACTIVITY);
+        return new ChanActivityId(LastActivity.PURCHASE_ACTIVITY);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.about_menu, menu);
+        inflater.inflate(R.menu.purchase_menu, menu);
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         return super.onCreateOptionsMenu(menu);
@@ -145,8 +145,8 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
                 return SettingsActivity.startActivity(this);
             case R.id.send_feedback_menu:
                 return SendFeedback.email(this);
-            case R.id.purchase_menu:
-                return PurchaseActivity.startActivity(this);
+            case R.id.about_menu:
+                return AboutActivity.startActivity(this);
             default:
                 return super.onOptionsItemSelected(item);
         }

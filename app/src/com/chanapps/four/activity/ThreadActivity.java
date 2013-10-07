@@ -554,12 +554,14 @@ public class ThreadActivity
         //MenuInflater inflater = getMenuInflater();
         //inflater.inflate(R.menu.thread_menu, menu);
         //createSearchView(menu);
+        // instead we create search view at fragment level
         return super.onCreateOptionsMenu(menu);
     }
 
     public void createSearchView(Menu menu) {
         searchMenuItem = menu.findItem(R.id.search_menu);
-        SearchActivity.createSearchView(this, searchMenuItem);
+        if (searchMenuItem != null)
+            SearchActivity.createSearchView(this, searchMenuItem);
     }
 
     public ChanActivityId getChanActivityId() {

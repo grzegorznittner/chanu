@@ -1117,4 +1117,8 @@ public class ChanBoard {
         return (board != null && board.threads != null && !board.defData && board.threads.length > 0
                 && board.threads[0] != null && !board.threads[0].defData);
     }
+
+    public static String defaultBoardCode(final Context context) {
+        return hasFavorites(context) ? ChanBoard.FAVORITES_BOARD_CODE : ChanBoard.ALL_BOARDS_BOARD_CODE;
+    }
 }
