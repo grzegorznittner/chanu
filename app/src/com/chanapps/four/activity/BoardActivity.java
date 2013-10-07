@@ -682,7 +682,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     new PickNewThreadBoardDialogFragment(handler)
                             .show(getFragmentManager(), PickNewThreadBoardDialogFragment.TAG);
                 else
-                    PostReplyActivity.startActivity(this, boardCode, 0, 0, "");
+                    PostReplyActivity.startActivity(this, boardCode, 0, 0, "", "");
                 return true;
             case R.id.offline_board_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
@@ -877,7 +877,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     public void refresh(final String refreshMessage) {
         if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage);
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        invalidateOptionsMenu(); // in case spinner needs to be reset
         if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         }
@@ -885,6 +884,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    invalidateOptionsMenu(); // in case spinner needs to be reset
                     if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage + " restarting loader");
                     getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
                     if (refreshMessage != null)
@@ -1195,7 +1195,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return;
             }
             else if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
-                PostReplyActivity.startActivity(BoardActivity.this, boardCode, 0, 0, "");
+                PostReplyActivity.startActivity(BoardActivity.this, boardCode, 0, 0, "", "");
                 return;
             }
             else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {

@@ -5,6 +5,12 @@
           android:icon="@drawable/action_search"
           android:showAsAction="collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
+    <item android:id="@+id/thread_share_menu"
+          android:icon="@drawable/ic_menu_share_holo_light"
+          android:title="@string/share_thread"
+          android:enabled="true"
+          android:actionProviderClass="android.widget.ShareActionProvider"
+            />
     <item android:id="@+id/refresh_menu"
           android:title="@string/refresh_thread_menu"
           android:icon="@drawable/navigation_refresh"
@@ -34,6 +40,7 @@
     <item android:id="@+id/post_reply_all_quote_menu"
           android:title="@string/post_reply_all_quote_menu"
           android:icon="@drawable/social_chat"
+          android:visible="false"
             />
     <!--
     <item android:id="@+id/download_all_images_menu"

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.chanapps.four.activity"
-          android:versionCode="28"
-          android:versionName="1.28rc1">
+          android:versionCode="31"
+          android:versionName="@string/versionName">
 
     <uses-sdk
             android:minSdkVersion="15"
@@ -266,6 +266,7 @@
                 android:grantUriPermissions="true"
                 android:authorities="com.android.gallery3d.provider"
                 android:exported="false"/>
+        -->
         <activity android:name="com.android.gallery3d.gadget.WidgetClickHandler"
             	android:exported="false"/>
         <activity android:name="com.android.gallery3d.app.DialogPicker"
@@ -280,7 +281,6 @@
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:theme="@style/DialogPickerTheme"
                 android:exported="false"/>
-                -->
 
         <!-- advertising -->
         <activity android:name="com.google.ads.AdActivity"

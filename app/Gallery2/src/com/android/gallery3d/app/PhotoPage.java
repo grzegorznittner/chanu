@@ -557,7 +557,7 @@ public class PhotoPage extends ActivityState
             ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), mMediaSet.getPath(), ids);
             mSelectionManager.toggle(path);
             Toast.makeText(mActivity.getAndroidContext(),
-                    com.chanapps.four.activity.R.string.download_all_images_notice,
+                    R.string.download_all_images_notice,
                     Toast.LENGTH_SHORT)
                     .show();
             return true;

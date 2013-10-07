@@ -535,17 +535,19 @@ public class ThreadActivity
         AnalyticsComponent.onStop(this);
     }
 
+    /*
     private void postReply(long postNos[]) {
         String replyText = "";
         for (long postNo : postNos) {
             replyText += ">>" + postNo + "\n";
         }
-        postReply(replyText);
+        postReply(replyText, String quoteText);
     }
 
-    private void postReply(String replyText) {
-        PostReplyActivity.startActivity(this, boardCode, threadNo, 0, ChanPost.planifyText(replyText));
+    private void postReply(String replyText, String quoteText) {
+        PostReplyActivity.startActivity(this, boardCode, threadNo, 0, ChanPost.planifyText(replyText), ChanPost.planifyText(quoteText));
     }
+    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) { // menu creation handled at fragment level instead
@@ -964,7 +966,14 @@ public class ThreadActivity
             }
             if (found) {
                 if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " pos=" + pos);
-                boardGrid.setSelection(pos);
+                final int selectedPos = pos;
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            boardGrid.setSelection(selectedPos);
+                        }
+                    });
             }
             else {
                 if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " thread not found");
@@ -1043,7 +1052,7 @@ public class ThreadActivity
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+                final ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
                 if (board.defData) {
                     if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ couldn't load board, exiting");
                     return;
@@ -1052,8 +1061,14 @@ public class ThreadActivity
                     if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ pager already filled, restarting loader");
                     if (onTablet())
                         getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
-                    mAdapter.setQuery(query);
-                    mAdapter.setBoard(board);
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAdapter.setQuery(query);
+                                mAdapter.setBoard(board);
+                            }
+                        });
                 }
                 else {
                     if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ creating pager");

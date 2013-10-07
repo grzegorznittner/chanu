@@ -168,8 +168,9 @@
     <string name="block_posts_menu">Blochează postare</string>
     <string name="translate_posts_menu">Tradu postare</string>
     <string name="translate_no_text">Nici un text găsit pentru traducere</string>
-    <string name="share_image">Share post</string>
-    <string name="share_text">Share post</string>
+    <string name="share_image">Share</string>
+    <string name="share_thread">Share</string>
+    <string name="share_text">Share</string>
     <string name="share_text_default">Fir de discuții /</string>
     <string name="share_text_empty">Nici un text găsit pentru pentru share</string>
     <string name="toggle_image_only_menu">Comută doar imagini</string>
@@ -610,8 +611,8 @@
     <string name="pref_about_title">Chanu</string>
     <string name="pref_about_title_sum">4chan Reloaded</string>
     <string name="pref_about_application_category">Application</string>
-    <string name="pref_about_application_version">Version 1.25 RC1</string>
-    <string name="pref_about_application_version_sum">Released 13 Sep 2013</string>
+    <string name="pref_about_application_version">Version %1$s</string>
+    <string name="pref_about_application_version_sum">Released %1$s</string>
     <string name="pref_about_application_rate">Rate Us</string>
     <string name="pref_about_application_rate_sum">Visit Chanu on Google Play</string>
     <string name="pref_about_data_category">Uses</string>

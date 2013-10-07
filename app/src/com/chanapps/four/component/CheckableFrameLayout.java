@@ -20,7 +20,7 @@ import com.chanapps.four.activity.R;
 public class CheckableFrameLayout extends FrameLayout implements Checkable {
 
     private static final String TAG = CheckableFrameLayout.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     boolean isChecked = false;
 
@@ -31,7 +31,7 @@ public class CheckableFrameLayout extends FrameLayout implements Checkable {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        setBackground();
+        setBackground(isSelected());
     }
 
     @Override
@@ -42,18 +42,18 @@ public class CheckableFrameLayout extends FrameLayout implements Checkable {
     @Override
     public void setChecked(boolean checked) {
         isChecked = checked;
-        setBackground();
+        setBackground(isSelected());
     }
 
     @Override
     public void toggle() {
         isChecked = !isChecked;
-        setBackground();
+        setBackground(isSelected());
     }
 
-    protected void setBackground() {
-        if (DEBUG) Log.i(TAG, "setBackground() checked=" + isChecked);
-        if (isChecked) {
+    protected void setBackground(boolean highlight) {
+        if (DEBUG) Log.i(TAG, "setBackground() highlight=" + highlight);
+        if (highlight) {
             for (int i = 0; i < getChildCount(); i++) {
                 if (i > 0)
                     return;
@@ -86,4 +86,12 @@ public class CheckableFrameLayout extends FrameLayout implements Checkable {
             }
         }
     }
+
+    @Override
+    public void setSelected(boolean selected) {
+        super.setSelected(selected);
+        setBackground(selected);
+        if (DEBUG) Log.i(TAG, "setSelected selected=" + selected);
+    }
+
 }
