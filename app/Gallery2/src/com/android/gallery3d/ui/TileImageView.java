@@ -501,7 +501,7 @@ public class TileImageView extends GLView {
                 }
                 if (tile == null || quota <= 0) break;
                 if (!tile.isContentValid(canvas)) {
-                    Utils.assertTrue(tile.mTileState == STATE_DECODED);
+                    //Utils.assertTrue(tile.mTileState == STATE_DECODED, "Tile %s content is not valid, state = %s", tile.toString(), tile.mTileState);
                     tile.updateContent(canvas);
                     --quota;
                 }
