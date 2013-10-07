@@ -42,17 +42,19 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         this.query = query == null ? "" : query.toLowerCase().trim();
         //this.showRelatedBoards = showRelatedBoards;
         this.showRelatedBoards = false; // not so nice design
-        initRandomGenerator();
+        //initRandomGenerator();
         if (threadNo <= 0)
             throw new ExceptionInInitializerError("Can't have zero threadNo in a thread cursor loader");
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    /*
     @Override
     protected void initRandomGenerator() { // to allow repeatable positions for ads
         generatorSeed = threadNo;
         generator = new Random(generatorSeed);
     }
+    */
 
     /* Runs on a worker thread */
     @Override

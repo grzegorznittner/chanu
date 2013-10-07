@@ -59,6 +59,7 @@ public class ChanBoard {
             META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
     public static final String[] POPULAR_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE };
+    public static final String[] TOP_BOARDS = { ALL_BOARDS_BOARD_CODE, FAVORITES_BOARD_CODE };
 
     private static final Set<String> removedBoards = new HashSet<String>();
     private static final String[] REMOVED_BOARDS = { "q" };
@@ -807,6 +808,13 @@ public class ChanBoard {
     public static boolean isVirtualBoard(String boardCode) {
         for (String virtualBoardCode : VIRTUAL_BOARDS)
             if (virtualBoardCode.equals(boardCode))
+                return true;
+        return false;
+    }
+
+    public static boolean isTopBoard(String boardCode) {
+        for (String code : TOP_BOARDS)
+            if (code.equals(boardCode))
                 return true;
         return false;
     }

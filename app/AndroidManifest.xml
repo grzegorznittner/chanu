@@ -79,12 +79,20 @@
                     />
         </activity>
 
-        <activity android:name=".BoardActivity" android:label="@string/application_name"
+        <activity android:name=".BoardSelectorActivity" android:label="@string/application_name" android:launchMode="singleTask"
                 >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".BoardActivity" android:label="@string/board_activity"
+                >
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
@@ -93,6 +101,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
             <meta-data
                     android:name="android.app.default_searchable"

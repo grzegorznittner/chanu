@@ -18,7 +18,7 @@
                 style="@style/BoardGridViewTablet"
                 />
 
-        <android.support.v4.view.ViewPager
+        <com.chanapps.four.component.ControllableViewPager
                 android:id="@+id/pager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -168,6 +168,10 @@ public class NetworkProfileManager {
                 break;
             case SETTINGS_ACTIVITY:
                 break;
+            case PURCHASE_ACTIVITY:
+                break;
+            case ABOUT_ACTIVITY:
+                break;
             default:
                 Log.e(TAG, "Not handled activity type: " + currentActivityId.activity, new Exception("Check stack trace!"));
                 activeProfile.onApplicationStart(newActivity.getBaseContext());

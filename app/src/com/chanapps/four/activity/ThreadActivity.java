@@ -63,7 +63,7 @@ public class ThreadActivity
     protected static final String FIRST_VISIBLE_BOARD_POSITION_OFFSET = "firstVisibleBoardPositionOffset";
 
     protected ThreadPagerAdapter mAdapter;
-    protected ViewPager mPager;
+    protected ControllableViewPager mPager;
     protected Handler handler;
     protected String query = "";
     protected MenuItem searchMenuItem;
@@ -179,10 +179,12 @@ public class ThreadActivity
         mAdapter = new ThreadPagerAdapter(getSupportFragmentManager());
         mAdapter.setBoard(board);
         mAdapter.setQuery(query);
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = (ControllableViewPager) findViewById(R.id.pager);
         try {
             //mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
             mPager.setAdapter(mAdapter);
+            boolean pagingEnabled = query == null || query.isEmpty();
+            mPager.setPagingEnabled(pagingEnabled);
         }
         catch (IllegalStateException e) {
             Log.e(TAG, "Error: pager state exception", e);

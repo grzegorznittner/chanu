@@ -47,14 +47,18 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         this.boardName = boardName;
         this.query = query == null ? "" : query.toLowerCase().trim();
         this.abbrev = abbrev;
-        initRandomGenerator();
+        //initRandomGenerator();
         ChanBoard.initBoards(context);
     }
 
+    /*
     protected void initRandomGenerator() { // to allow repeatable positions for ads
+        if (boardName == null)
+            return;
         generatorSeed = boardName.hashCode();
         generator = new Random(generatorSeed);
     }
+    */
 
     /* Runs on a worker thread */
     @Override

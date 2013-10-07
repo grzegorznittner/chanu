@@ -30,7 +30,7 @@ abstract public class
         implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected int mDrawerArrayId;
     protected String[] mDrawerArray;
@@ -267,9 +267,13 @@ abstract public class
                 return false;
             }
             if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
-            Intent intent = BoardActivity.createIntent(this, boardTypeCode, "");
-            startActivity(intent);
-            finish();
+            //if (ChanBoard.isTopBoard(boardTypeCode))
+            //    mDrawerAdapter.notifyDataSetChanged();
+            BoardActivity.startActivity(this, boardTypeCode, "");
+            if (this instanceof BoardSelectorActivity) // don't finish single task activity
+                ; //mDrawerAdapter.notifyDataSetChanged();
+            else
+                finish();
             return true;
         }
         Pattern p = Pattern.compile(BOARD_CODE_PATTERN);
@@ -290,7 +294,10 @@ abstract public class
         Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
         if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/, starting");
         startActivity(intent);
-        finish();
+        if (this instanceof BoardSelectorActivity) // don't finish single task activity
+            ; //mDrawerAdapter.notifyDataSetChanged();
+        else
+            finish();
         return true;
     }
 

@@ -84,12 +84,21 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     public static void startActivity(Context from, String boardCode, String query) {
-        from.startActivity(createIntent(from, boardCode, query));
+        if (from.getClass() == BoardSelectorActivity.class && ChanBoard.isTopBoard(boardCode)) {
+            ((BoardSelectorActivity)from).switchBoard(boardCode, query);
+        }
+        else {
+            Intent intent = createIntent(from, boardCode, query);
+            from.startActivity(intent);
+        }
     }
 
     public static Intent createIntent(Context context, String boardCode, String query) {
-        String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.POPULAR_BOARD_CODE : boardCode;
-        Intent intent = new Intent(context, BoardActivity.class);
+        String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.ALL_BOARDS_BOARD_CODE : boardCode;
+        Class activityClass = ChanBoard.isTopBoard(boardCode)
+                ? BoardSelectorActivity.class
+                : BoardActivity.class;
+        Intent intent = new Intent(context, activityClass);
         intent.putExtra(ChanBoard.BOARD_CODE, intentBoardCode);
         intent.putExtra(ChanBoard.PAGE, 0);
         intent.putExtra(SearchManager.QUERY, query);
@@ -154,7 +163,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setFromIntent(getIntent());
         if (boardCode == null || boardCode.isEmpty())
             setBoardCodeToDefault();
-        if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query);
+        if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         setupStaticBoards();
         createAbsListView();
         setupBoardTitle();
@@ -300,22 +309,26 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
-        query = savedInstanceState.getString(SearchManager.QUERY);
-        //firstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION);
-        //firstVisiblePositionOffset = savedInstanceState.getInt(FIRST_VISIBLE_POSITION_OFFSET);
+    protected void onRestoreInstanceState(Bundle bundle) {
+        super.onRestoreInstanceState(bundle);
+        if (bundle == null) {
+            if (DEBUG) Log.i(TAG, "onRestoreInstanceState null bundle, ignoring");
+            return;
+        }
+        if (!bundle.containsKey(ChanBoard.BOARD_CODE)) {
+            if (DEBUG) Log.i(TAG, "onRestoreInstanceState bundle doesn't have board code, ignoring");
+            return;
+        }
+        if (bundle.getString(ChanBoard.BOARD_CODE) == null
+                || bundle.getString(ChanBoard.BOARD_CODE).isEmpty()) {
+            if (DEBUG) Log.i(TAG, "onRestoreInstanceState null or missing board code, ignoring");
+            return;
+        }
+        boardCode = bundle.getString(ChanBoard.BOARD_CODE);
+        query = bundle.getString(SearchManager.QUERY);
+        //firstVisiblePosition = bundle.getInt(FIRST_VISIBLE_POSITION);
+        //firstVisiblePositionOffset = bundle.getInt(FIRST_VISIBLE_POSITION_OFFSET);
         if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE) + "/ q=" + query);
-        setIntent(intent);
-        setFromIntent(intent);
-        createAbsListView();
-        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/ q=" + query);
     }
 
     public void setFromIntent(Intent intent) {
@@ -425,7 +438,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         super.onStart();
         if (handler == null)
             handler = new Handler();
-        if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query);
+        if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         topBoardCode = boardCode;
         startLoaderAsync();
         AnalyticsComponent.onStart(this);
@@ -463,13 +476,17 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
         if (board.isVirtualBoard() && !board.isPopularBoard()) { // always ready, start loading
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ non-popular virtual board, loading immediately");
-            if (adapter == null || adapter.getCount() == 0)
-                getSupportLoaderManager().initLoader(0, null, loaderCallbacks);
+            if (adapter == null || adapter.getCount() == 0) {
+                if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ adapter empty, initializing loader");
+                getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+            }
         }
         else if (board.hasData() && board.isCurrent()) {
-            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has current data, loading");
-            if (adapter == null || adapter.getCount() == 0)
-                getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has current data, loading immediately");
+            if (adapter == null || adapter.getCount() == 0) {
+                if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ adapter empty, initializing loader");
+                getSupportLoaderManager().restartLoader(0, null, loaderCallbacks); // data is ready, load it
+            }
         }
         else if (board.hasData() &&
                 (health == NetworkProfile.Health.NO_CONNECTION
@@ -479,8 +496,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 ))
         {
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection " + health + ", loading immediately");
-            if (adapter == null || adapter.getCount() == 0)
-                getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+            if (adapter == null || adapter.getCount() == 0) {
+                if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ adapter empty, initializing loader");
+                getSupportLoaderManager().restartLoader(0, null, loaderCallbacks); // data is ready, load it
+            }
         }
         else if (health == NetworkProfile.Health.NO_CONNECTION) {
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ no board data and connection is down");
@@ -500,7 +519,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
 	protected void onResume() {
 		super.onResume();
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query);
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         if (handler == null)
             handler = new Handler();
         //invalidateOptionsMenu();
@@ -553,14 +572,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
 	protected void onPause() {
         super.onPause();
-        if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/ q=" + query);
+        if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         handler = null;
     }
 
     @Override
     protected void onStop () {
     	super.onStop();
-        if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query);
+        if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         getLoaderManager().destroyLoader(0);
         closeSearch();
     	handler = null;
@@ -570,7 +589,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
 	protected void onDestroy () {
 		super.onDestroy();
-        if (DEBUG) Log.i(TAG, "onDestroy /" + boardCode + "/ q=" + query);
+        if (DEBUG) Log.i(TAG, "onDestroy /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         if (cursorLoader != null)
             getLoaderManager().destroyLoader(0);
 		handler = null;
@@ -1236,9 +1255,24 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
         ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
         String upBoardCode = ChanBoard.defaultBoardCode(this);
-        if (task != null) {
-            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
-            if (task.baseActivity != null
+        if (task != null
+                && task.baseActivity != null
+                && task.baseActivity.getClassName().equals(BoardSelectorActivity.class.getName()))
+        {
+            if (DEBUG) Log.i(TAG, "navigateUp() tasks.size=" + tasks.size() + " top=" + task.topActivity + " base=" + task.baseActivity);
+            if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
+                    + getClass().getName() + " base=" + task.baseActivity.getClassName());
+            finish();
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "navigateUp() null task or not at top level, creating up intent");
+            Intent intent = BoardActivity.createIntent(BoardActivity.this, upBoardCode, "");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
+        /*
+        if (task.baseActivity != null
                     && !getClass().getName().equals(task.baseActivity.getClassName())
                     && boardCode.equals(BoardActivity.topBoardCode)
                     ) {
@@ -1254,21 +1288,33 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             }
             else if (task.baseActivity != null && tasks.size() == 1 && upBoardCode.equals(boardCode))
             {
-                if (DEBUG) Log.i(TAG, "navigateUp() with all boards or favorites at top of stack exits app, exiting");
+                if (DEBUG) Log.i(TAG, "navigateUp() with all boards or favorites at top of stack exits app, finishing");
                 finish();
                 return;
             }
-
+            else if (task.baseActivity != null && task.baseActivity.getClass().getName().equals(BoardActivity.class.getName())) {
+                if (DEBUG) Log.i(TAG, "navigateUp() board activity on top, finishing");
+                finish();
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "navigateUp() unknown activity state, finishing");
+                finish();
+            }
         }
-        if (upBoardCode.equals(boardCode))
-        {
-            if (DEBUG) Log.i(TAG, "navigateUp() already at top level, ignoring back press");
-            return;
+        else {
+            if (upBoardCode.equals(boardCode)) {
+                if (DEBUG) Log.i(TAG, "navigateUp() already at top level, ignoring back press");
+                return;
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "navigateUp() null task but not at top level, creating up intent");
+                Intent intent = BoardActivity.createIntent(BoardActivity.this, upBoardCode, "");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
         }
-        Intent intent = BoardActivity.createIntent(BoardActivity.this, upBoardCode, "");
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
+        */
     }
 
     @Override

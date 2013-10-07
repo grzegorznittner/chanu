@@ -32,7 +32,7 @@ abstract public class
         ThemeSelector.ThemeActivity
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
     protected static final boolean DEVELOPER_MODE = true;
 
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
@@ -200,27 +200,22 @@ abstract public class
     };
 
     protected boolean handleSelectItem(String boardAsMenu) {
+
+        // early exits
         if (isSelfBoard(boardAsMenu)) {
             if (DEBUG) Log.i(TAG, "self board, returning");
             return false;
         }
         if (getString(R.string.board_select).equals(boardAsMenu))
             return false;
-        if (getString(R.string.send_feedback_menu).equals(boardAsMenu)) {
+        if (getString(R.string.send_feedback_menu).equals(boardAsMenu))
             return SendFeedback.email(this);
-        }
-        if (getString(R.string.purchase_menu).equals(boardAsMenu)) {
-            Intent intent = PurchaseActivity.createIntent(this);
-            startActivity(intent);
-            finish();
-            return true;
-        }
-        if (getString(R.string.about_menu).equals(boardAsMenu)) {
-            Intent intent = AboutActivity.createIntent(this);
-            startActivity(intent);
-            finish();
-            return true;
-        }
+        if (getString(R.string.purchase_menu).equals(boardAsMenu))
+            return PurchaseActivity.startActivity(this);
+        if (getString(R.string.about_menu).equals(boardAsMenu))
+            return AboutActivity.startActivity(this);
+
+        // match drawer string
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
         if (boardType != null) {
             String boardTypeCode = boardType.boardCode();

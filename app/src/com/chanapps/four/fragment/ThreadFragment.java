@@ -703,6 +703,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         setDeadStatusAsync();
         setWatchMenuAsync();
         setupShareActionProviderOPMenu(menu);
+        if (getActivity() != null)
+            ((ThreadActivity)getActivity()).createSearchView(menu);
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -1746,10 +1748,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     };
 
     protected void displaySearchTitle() {
+        if (getActivity() == null)
+            return;
         displayTitleBar(getString(R.string.search_results_title), R.drawable.search, R.drawable.search_light);
         int resultsId = adapter != null && adapter.getCount() > 0
-                ? R.string.board_search_results
-                : R.string.board_search_no_results;
+                ? R.string.thread_search_results
+                : R.string.thread_search_no_results;
         String results = String.format(getString(resultsId), query);
         TextView searchResultsTextView = (TextView)boardSearchResultsBar.findViewById(R.id.board_search_results_text);
         searchResultsTextView.setText(results);
@@ -1778,8 +1782,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.thread_menu, menu);
         ThreadActivity activity = (ThreadActivity)getActivity();
-        if (activity != null)
-            activity.createSearchView(menu);
         super.onCreateOptionsMenu(menu, menuInflater);
     }
 
