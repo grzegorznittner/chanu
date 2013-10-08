@@ -1104,28 +1104,18 @@ public class ThreadActivity
 
     public void navigateUp() {
         ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
-        if (task != null) {
-            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
-            if (task.baseActivity != null
-                    && !getClass().getName().equals(task.baseActivity.getClassName())
-                    && boardCode.equals(BoardActivity.topBoardCode)
-                    ) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
-                        + getClass().getName() + " base=" + task.baseActivity.getClassName());
-                finish();
-                return;
-            }
-            else if (task.baseActivity != null && tasks.size() >= 2) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + tasks.size());
-                finish();
-                return;
-            }
+        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(2);
+        if (tasks == null
+                || tasks.size() == 0
+                || (tasks.size() == 1
+                && tasks.get(0) != null
+                && tasks.get(0).topActivity != null
+                && tasks.get(0).topActivity.getClassName().equals(getClass().getName()))) {
+            if (DEBUG) Log.i(TAG, "no valid up task found, creating new one");
+            Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
-        Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
         finish();
     }
 

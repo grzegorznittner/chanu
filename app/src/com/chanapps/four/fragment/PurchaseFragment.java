@@ -27,7 +27,7 @@ import java.util.Date;
  */
 public class PurchaseFragment extends PreferenceFragment
 {
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
     protected static String TAG = PurchaseFragment.class.getSimpleName();
 
     @Override

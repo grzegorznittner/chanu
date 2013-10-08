@@ -26,7 +26,7 @@ import java.util.Date;
  */
 public class AboutFragment extends PreferenceFragment
 {
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
     protected static String TAG = AboutFragment.class.getSimpleName();
     protected static final String VERSION_DATE_FORMAT = "yyyy.MM.dd";
 

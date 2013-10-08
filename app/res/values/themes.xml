@@ -24,6 +24,7 @@
         <item name="themedThreadHeaderImageBg">@color/PaletteThreadHeaderImageBg</item>
         <item name="themedSpinnerTriangle">@drawable/spinner_default_holo_light</item>
         <item name="themedBoardGridBoardCodeBg">@color/PaletteBoardGridBoardCodeBg</item>
+        <item name="themedWidgetConfigureButtonBg">@color/PaletteDarkGray</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.Dark">
@@ -50,6 +51,7 @@
         <item name="themedThreadHeaderImageBg">@color/DarkPaletteThreadHeaderImageBg</item>
         <item name="themedSpinnerTriangle">@drawable/spinner_default_holo_dark</item>
         <item name="themedBoardGridBoardCodeBg">@color/DarkPaletteBoardGridBoardCodeBg</item>
+        <item name="themedWidgetConfigureButtonBg">@color/DarkPaletteBoardGridBoardCodeBg</item>
     </style>
 
 </resources>

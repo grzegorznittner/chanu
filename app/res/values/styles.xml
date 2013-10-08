@@ -1197,7 +1197,7 @@
         <item name="android:paddingTop">@dimen/WidgetConfigureOkButton_paddingTop</item>
         <item name="android:paddingBottom">@dimen/WidgetConfigureOkButton_paddingBottom</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@color/DarkPaletteBoardGridBoardCodeBg</item>
+        <item name="android:background">?themedWidgetConfigureButtonBg</item>
         <item name="android:textSize">@dimen/WidgetConfigureOkButton</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteBoardCodeText</item>

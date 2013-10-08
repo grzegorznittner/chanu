@@ -16,7 +16,7 @@ import com.chanapps.four.data.ChanBoard;
 public class BoardSelectorActivity extends BoardActivity implements ChanIdentifiedActivity {
 
     public static final String TAG = BoardSelectorActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     @Override
     protected void onNewIntent(Intent intent) { // for when we coming from a different class
