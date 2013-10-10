@@ -142,7 +142,7 @@
                     android:summary="@string/pref_download_images_summary"
                     android:entries="@array/pref_download_images_entries"
                     android:entryValues="@array/pref_download_images_entry_values"
-                    android:defaultValue="ALL_IN_ONE" />
+                    android:defaultValue="@string/pref_download_images_default_value" />
             
             <CheckBoxPreference
                     android:key="pref_notifications"

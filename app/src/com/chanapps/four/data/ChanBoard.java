@@ -59,7 +59,7 @@ public class ChanBoard {
             META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
     public static final String[] POPULAR_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE };
-    public static final String[] TOP_BOARDS = { ALL_BOARDS_BOARD_CODE, FAVORITES_BOARD_CODE };
+    public static final String[] TOP_BOARDS = { ALL_BOARDS_BOARD_CODE, FAVORITES_BOARD_CODE, WATCHLIST_BOARD_CODE };
 
     private static final Set<String> removedBoards = new HashSet<String>();
     private static final String[] REMOVED_BOARDS = { "q" };
@@ -902,11 +902,15 @@ public class ChanBoard {
 
     public static boolean boardHasData(Context context, String boardCode) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        return board != null && !board.defData && board.threads != null && board.threads.length > 0;
+        return board != null && board.hasData();
     }
 
     public boolean hasData() {
-        return !defData && threads != null && threads.length > 0;
+        return !defData
+                && threads != null
+                && threads.length > 0
+                && threads[0] != null
+                && !threads[0].defData;
     }
 
     public boolean hasNewBoardData() {
@@ -1121,12 +1125,19 @@ public class ChanBoard {
     }
 
     public static boolean hasFavorites(Context context) {
-        ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
-        return (board != null && board.threads != null && !board.defData && board.threads.length > 0
-                && board.threads[0] != null && !board.threads[0].defData);
+        return boardHasData(context, ChanBoard.FAVORITES_BOARD_CODE);
+    }
+
+    public static boolean hasWatchlist(Context context) {
+        return boardHasData(context, ChanBoard.WATCHLIST_BOARD_CODE);
     }
 
     public static String defaultBoardCode(final Context context) {
-        return hasFavorites(context) ? ChanBoard.FAVORITES_BOARD_CODE : ChanBoard.ALL_BOARDS_BOARD_CODE;
+        if (hasWatchlist(context))
+            return ChanBoard.WATCHLIST_BOARD_CODE;
+        else if (hasFavorites(context))
+            return ChanBoard.FAVORITES_BOARD_CODE;
+        else
+            return ChanBoard.ALL_BOARDS_BOARD_CODE;
     }
 }

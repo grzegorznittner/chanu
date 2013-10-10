@@ -263,7 +263,7 @@ public class ThreadViewer {
         if (numImagesLabel != null)
             numImagesLabel.setText(numImagesLabel.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
         if (wrapper != null) {
-            if (i > 0 && imagesOnClickListener != null) {
+            if (i >= 0 && imagesOnClickListener != null) {
                 wrapper.setOnClickListener(imagesOnClickListener);
                 wrapper.setClickable(true);
                 if (spinner != null)
@@ -563,7 +563,7 @@ public class ThreadViewer {
         if (iv == null)
             return false;
         if (DEBUG) Log.i(TAG, "setHeaderImage()");
-        if (hideNoImage(iv, flags))
+        if (hideNoImage(iv, null, flags))
             return true;
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
@@ -577,12 +577,14 @@ public class ThreadViewer {
                                     View.OnClickListener thumbOnClickListener,
                                     View.OnClickListener expandedImageListener) {
         ImageView iv = viewHolder.list_item_image;
+        ImageView spinner = viewHolder.list_item_image_spinner;
         if (iv == null)
             return false;
-        if (hideNoImage(iv, flags))
+        if (hideNoImage(iv, spinner, flags))
             return true;
-        if (isListLink(flags))
-            return displayNonHeaderImage(iv, null, cursor, null);
+        //if (isListLink(flags))
+        //    return displayNonHeaderImage(iv, null, cursor, null);
+        setSpinnerTarget(spinner, expandedImageListener);
 
         // display thumb and also expand if available
         displayNonHeaderImage(iv, viewHolder.list_item_image_expansion_target, cursor, thumbOnClickListener);
@@ -592,6 +594,13 @@ public class ThreadViewer {
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         return true;
+    }
+
+    static private void setSpinnerTarget(ImageView spinner, View.OnClickListener expandedImageListener) {
+        if (spinner == null || expandedImageListener == null)
+            return;
+        spinner.setOnClickListener(expandedImageListener);
+        spinner.setVisibility(View.VISIBLE);
     }
 
     static private boolean isListLink(int flags) {
@@ -644,14 +653,19 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean hideNoImage(ImageView iv, int flags) {
+    static private boolean hideNoImage(ImageView iv, ImageView spinner, int flags) {
         if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
             if (DEBUG) Log.i(TAG, "hideNoImage()");
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
+            if (spinner != null)
+                spinner.setVisibility(View.GONE);
             return true;
         }
         else {
+            iv.setVisibility(View.VISIBLE);
+            if (spinner != null)
+                spinner.setVisibility(View.VISIBLE);
             return false;
         }
     }

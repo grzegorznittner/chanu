@@ -170,33 +170,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void setBoardCodeToDefault() {
-            if (DEBUG) Log.i(TAG, "empty board code, checking for favorites");
-            ChanBoard board = ChanFileStorage.loadBoardData(this, ChanBoard.FAVORITES_BOARD_CODE);
-            if (board != null && board.hasData()) {
-                if (DEBUG) Log.i(TAG, "favorites found, defaulting board code to favorites");
-                boardCode = ChanBoard.FAVORITES_BOARD_CODE;
-            }
-            else {
-                if (DEBUG) Log.i(TAG, "favorites not found, defaulting board code to all boards");
-                boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
-            }
-            /*
-            if (ActivityDispatcher.isDispatchable(this)) {
-                if (DEBUG) Log.i(TAG, "empty board code, dispatching");
-                if (ActivityDispatcher.dispatch(this)) {
-                    if (DEBUG) Log.i(TAG, "dispatch successful, finishing");
-                    return true;
-                }
-                else {
-                    if (DEBUG) Log.i(TAG, "couldn't dispatch, defaulting to all boards");
-                    boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
-                }
-            }
-            else {
-                if (DEBUG) Log.i(TAG, "empty board code, not dispatchable, setting to all boards");
-                boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
-            }
-            */
+        boardCode = ChanBoard.defaultBoardCode(this);
+        if (DEBUG) Log.i(TAG, "defaulted board code to /" + boardCode + "/");
     }
 
     protected void setupStaticBoards() {

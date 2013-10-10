@@ -95,4 +95,18 @@
         </LinearLayout>
 
     </LinearLayout>
+    <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
+            android:layout_marginBottom="@dimen/ThreadListHeader_medplus_padding"
+            >
+        <ImageView android:id="@+id/list_item_image_spinner"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:src="?themedSpinnerTriangle"
+                   android:background="@drawable/thread_list_selector_bg"
+                />
+    </FrameLayout>
 </com.chanapps.four.component.CheckableFrameLayout>

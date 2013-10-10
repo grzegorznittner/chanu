@@ -120,7 +120,9 @@
     <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
     <dimen name="ThreadListHeader_paddingPlusLeft">64dp</dimen>
     <dimen name="ThreadListHeader_padding">16dp</dimen>
+    <dimen name="ThreadListHeader_medplus_padding">14dp</dimen>
     <dimen name="ThreadListHeader_med_padding">12dp</dimen>
+    <dimen name="ThreadListHeader_smallplus_padding">9dp</dimen>
     <dimen name="ThreadListHeader_small_padding">8dp</dimen>
     <dimen name="ThreadListHeader_mini_padding">6dp</dimen>
     <dimen name="ThreadListHeader_micro_padding">4dp</dimen>

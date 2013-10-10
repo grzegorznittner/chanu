@@ -121,7 +121,9 @@
     <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
     <dimen name="ThreadListHeader_paddingPlusLeft">56dp</dimen>
     <dimen name="ThreadListHeader_padding">16dp</dimen>
+    <dimen name="ThreadListHeader_medplus_padding">14dp</dimen>
     <dimen name="ThreadListHeader_med_padding">12dp</dimen>
+    <dimen name="ThreadListHeader_smallplus_padding">9dp</dimen>
     <dimen name="ThreadListHeader_small_padding">8dp</dimen>
     <dimen name="ThreadListHeader_mini_padding">6dp</dimen>
     <dimen name="ThreadListHeader_micro_padding">4dp</dimen>
@@ -382,6 +384,7 @@
     <string name="pref_download_images_all_in_chanu_folder_value">ALL_IN_ONE</string>
     <string name="pref_download_images_per_board_value">PER_BOARD</string>
     <string name="pref_download_images_per_thread_value">PER_THREAD</string>
+    <string name="pref_download_images_default_value">@string/pref_download_images_all_in_chanu_folder_value</string>
     <string name="pref_theme_light_value">0</string>
     <string name="pref_theme_dark_value">1</string>
     <string name="pref_theme_auto_value">2</string>
@@ -389,7 +392,7 @@
     <string name="pref_autoload_images_never_value">0</string>
     <string name="pref_autoload_images_always_value">1</string>
     <string name="pref_autoload_images_auto_value">2</string>
-    <string name="pref_autoload_images_default_value">@string/pref_autoload_images_auto_value</string>
+    <string name="pref_autoload_images_default_value">@string/pref_autoload_images_never_value</string>
     <string name="post_reply_recaptcha_url_root">http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc</string>
     <string name="pref_about_developer_burns">John Burns</string>
     <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>

@@ -128,7 +128,7 @@
 
             <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
 
-            <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_images"
+            <FrameLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_images"
                             android:background="@drawable/thread_list_selector_bg">
                 <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
                     <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
@@ -137,10 +137,11 @@
                 <ImageView android:id="@+id/list_item_num_images_spinner"
                            android:layout_width="wrap_content"
                            android:layout_height="wrap_content"
-                           android:layout_alignParentRight="true"
-                           android:layout_alignParentBottom="true"
-                           android:src="?themedSpinnerTriangle"/>
-            </RelativeLayout>
+                           android:layout_gravity="right|center_vertical"
+                           android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
+                           android:src="?themedSpinnerTriangle"
+                        />
+            </FrameLayout>
 
         </LinearLayout>
 
