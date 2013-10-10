@@ -133,6 +133,10 @@ abstract public class
     protected void onStart() {
         super.onStart();
         (new AdComponent(getApplicationContext(), findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
+        checkNSFW();
+    }
+
+    protected void checkNSFW() {
         boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
         if (newShowNSFW != mShowNSFW) {
             mShowNSFW = newShowNSFW;

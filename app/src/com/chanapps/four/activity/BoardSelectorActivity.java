@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import com.chanapps.four.component.AdComponent;
 import com.chanapps.four.data.ChanBoard;
 
 /**
@@ -46,6 +47,8 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         createAbsListView();
         setupBoardTitle();
         startLoaderAsync();
+        (new AdComponent(getApplicationContext(), findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
+        checkNSFW();
         mDrawerAdapter.notifyDataSetInvalidated();
         if (DEBUG) Log.i(TAG, "switchBoard end /" + boardCode + "/ q=" + query);
     }
