@@ -119,12 +119,20 @@
 
         <LinearLayout style="@style/ThreadListHeaderNumSection">
 
-            <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_replies">
+            <FrameLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_replies"
+                         android:background="@drawable/thread_list_selector_bg">
                 <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
                     <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_replies_text"/>
                     <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_replies_label"/>
                 </LinearLayout>
-            </RelativeLayout>
+                <ImageView android:id="@+id/list_item_num_comments_spinner"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_gravity="right|center_vertical"
+                           android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
+                           android:src="?themedSpinnerArrow"
+                        />
+            </FrameLayout>
 
             <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
 

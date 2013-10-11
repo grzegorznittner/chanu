@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -23,7 +22,6 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.ActivityDispatcher;
 //import com.chanapps.four.component.AdComponent;
-import com.chanapps.four.component.ScrollerRunnable;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.*;
@@ -94,6 +92,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected ThreadListener threadListener;
     protected boolean progressVisible = false;
     protected Menu menu = null;
+    protected View.OnClickListener commentsOnClickListener = null;
+    protected View.OnClickListener imagesOnClickListener = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle bundle) {
@@ -168,6 +168,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (handler == null)
             handler = new Handler();
         threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
+        commentsOnClickListener = ThreadViewer.createCommentsOnClickListener(absListView, handler);
+        imagesOnClickListener = ThreadViewer.createImagesOnClickListener(getActivityContext(), boardCode, threadNo);
+
         if (threadNo > 0 && (adapter == null || adapter.getCount() <= 1)) { // <= 0
             ThreadActivity activity = (ThreadActivity)getActivity();
             if (activity == null) {
@@ -653,12 +656,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 ChanPost.planifyText(quotesText));
     }
 
-    protected View.OnClickListener imagesOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            GalleryViewActivity.startAlbumViewActivity(getActivityContext(), boardCode, threadNo);
-        }
-    };
 
     /*
     protected View.OnClickListener postReplyListener = new View.OnClickListener() {
@@ -817,15 +814,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 removeFromWatchlist();
                 return true;
             case R.id.scroll_to_bottom_menu:
-                final int n = adapter == null ? -1 : (adapter.getCount() - 1);
-                if (DEBUG) Log.i(TAG, "jumping to item n=" + n);
-                if (handler != null && n >= 0)
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            absListView.setSelection(n);
-                        }
-                    });
+                jumpToBottom();
                 return true;
             case R.id.post_reply_all_menu:
                 long[] postNos = { threadNo };
@@ -1353,11 +1342,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
         // create intent
         Intent intent;
-        if (paths.size() == 0) {
+        //if (paths.size() == 0) {
             intent = new Intent(Intent.ACTION_SEND);
             intent.putExtra(Intent.EXTRA_TEXT, extraText);
             intent.setType("text/html");
             setShareIntent(provider, intent);
+        /*
         } else {
             ArrayList<Uri> uris = new ArrayList<Uri>();
             ArrayList<String> missingPaths = new ArrayList<String>();
@@ -1376,14 +1366,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             intent.putExtra(Intent.EXTRA_TEXT, extraText);
             intent.setType("image/jpeg");
             setShareIntent(provider, intent);
-            /*
             // causes images to show up in the gallery, so ignoring for now
-            if (missingPaths.size() > 0) {
-                if (DEBUG) Log.i(TAG, "launching scanner for missing paths count=" + missingPaths.size());
-                asyncUpdateSharedIntent(missingPaths);
-            }
-            */
+            //if (missingPaths.size() > 0) {
+            //    if (DEBUG) Log.i(TAG, "launching scanner for missing paths count=" + missingPaths.size());
+            //    asyncUpdateSharedIntent(missingPaths);
+            //}
         }
+        */
     }
 
     protected void asyncUpdateSharedIntent(ArrayList<String> pathList) {
@@ -1734,6 +1723,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     0,
                     threadListener.thumbOnClickListener,
                     threadListener.backlinkOnClickListener,
+                    commentsOnClickListener,
                     imagesOnClickListener,
                     threadListener.repliesOnClickListener,
                     threadListener.sameIdOnClickListener,
@@ -1781,8 +1771,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.thread_menu, menu);
-        ThreadActivity activity = (ThreadActivity)getActivity();
         super.onCreateOptionsMenu(menu, menuInflater);
+    }
+
+    protected void jumpToBottom() {
+        ThreadViewer.jumpToBottom(absListView, handler);
     }
 
 }

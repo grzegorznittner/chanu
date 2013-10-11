@@ -70,6 +70,7 @@
     <attr name="themedNumImagesIcon" format="reference" />
     <attr name="themedThreadHeaderImageBg" format="reference|color" />
     <attr name="themedSpinnerTriangle" format="reference" />
+    <attr name="themedSpinnerArrow" format="reference" />
     <attr name="themedBoardGridBoardCodeBg" format="reference|color" />
     <attr name="themedWidgetConfigureButtonBg" format="reference|color" />
 

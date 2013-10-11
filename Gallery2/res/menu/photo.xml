@@ -21,16 +21,17 @@
             android:showAsAction="always|withText"
             android:visible="false" />
             -->
-    <item android:id="@+id/action_download"
-            android:title="@string/download"
-            android:showAsAction="never" />
     <item android:id="@+id/action_share"
             android:icon="@drawable/ic_menu_share_holo_light"
             android:title="@string/share"
             android:enabled="true"
             android:actionProviderClass="android.widget.ShareActionProvider"
             android:visible="false"
-            android:showAsAction="never" />
+            android:showAsAction="never"
+            />
+    <item android:id="@+id/action_download"
+          android:title="@string/download"
+          android:showAsAction="never" />
     <!--
     <item android:id="@+id/action_delete"
             android:icon="@drawable/ic_menu_trash_holo_light"

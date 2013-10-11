@@ -284,6 +284,7 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
                     null, //threadListener.thumbOnClickListener,
                     null, //threadListener.backlinkOnClickListener,
                     null,
+                    null,
                     null, //threadListener.repliesOnClickListener,
                     null, //threadListener.sameIdOnClickListener,
                     null, //threadListener.exifOnClickListener,

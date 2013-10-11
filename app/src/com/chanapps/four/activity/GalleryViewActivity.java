@@ -375,6 +375,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         boolean loaded;
         if (thread == null || thread.defData)
             loaded = false;
+        else if (thread.isDead)
+            loaded = true;
         else if (thread.posts == null || thread.posts.length == 0)
             loaded = false;
         else if (thread.posts[0] == null || thread.posts[0].defData)

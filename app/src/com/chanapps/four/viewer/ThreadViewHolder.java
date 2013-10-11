@@ -25,6 +25,7 @@ public class ThreadViewHolder {
     public ImageView list_item_image;
     public FrameLayout list_item_image_expansion_target;
     public ImageView list_item_image_expanded;
+    public ImageView list_item_num_comments_spinner;
     public ImageView list_item_num_images_spinner;
     public ImageView list_item_image_spinner;
     public ViewGroup list_item_ago_wrapper;
@@ -66,6 +67,7 @@ public class ThreadViewHolder {
         list_item_image = (ImageView)item.findViewById(R.id.list_item_image);
         list_item_image_expansion_target = (FrameLayout)item.findViewById(R.id.list_item_image_expansion_target);
         list_item_image_expanded = (ImageView)item.findViewById(R.id.list_item_image_expanded);
+        list_item_num_comments_spinner = (ImageView)item.findViewById(R.id.list_item_num_comments_spinner);
         list_item_num_images_spinner = (ImageView)item.findViewById(R.id.list_item_num_images_spinner);
         list_item_image_spinner = (ImageView)item.findViewById(R.id.list_item_image_spinner);
         list_item_ago_wrapper = (ViewGroup)item.findViewById(R.id.list_item_ago_wrapper);

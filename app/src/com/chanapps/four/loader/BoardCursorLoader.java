@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.AlphanumComparator;
 import com.chanapps.four.data.*;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
@@ -69,6 +70,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             loadMetaBoard(matrixCursor);
         else if (ChanBoard.isMetaBoard(boardName))
             loadMetaTypeBoard(matrixCursor);
+        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardName))
+            loadFavoritesBoard(matrixCursor);
         else
             loadBoard(matrixCursor);
         registerContentObserver(matrixCursor, mObserver);
@@ -80,6 +83,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean showNSFWBoards = PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        List<BoardType> sorted = new ArrayList<BoardType>();
         for (BoardType boardType : BoardType.values()) {
             //if (!boardType.isCategory())
             //    continue;
@@ -87,7 +91,18 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 continue;
             if (boardName.equals(boardType.boardCode()))
                 continue;
-            Object[] row = ChanThread.makeBoardTypeRow(context, boardType);
+            sorted.add(boardType);
+        }
+
+        final AlphanumComparator comparator = new AlphanumComparator();
+        Collections.sort(sorted, new Comparator<BoardType>() {
+            @Override
+            public int compare(BoardType lhs, BoardType rhs) {
+                return comparator.compare(lhs.boardCode(), rhs.boardCode());
+            }
+        });
+        for (BoardType type : sorted) {
+            Object[] row = ChanThread.makeBoardTypeRow(context, type);
             matrixCursor.addRow(row);
             if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
         }
@@ -97,6 +112,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     protected void loadMetaTypeBoard(MatrixCursor matrixCursor) {
         boolean showNSFWBoards = ChanBoard.showNSFW(context);
         if (DEBUG) Log.i(TAG, "loadMetaTypeBoard showNSFWBoards=" + showNSFWBoards);
+        List<ChanBoard> sorted = new ArrayList<ChanBoard>();
         for (BoardType boardType : BoardType.values()) {
             if (BoardType.ALL_BOARDS == boardType)
                 continue;
@@ -119,12 +135,77 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     if (DEBUG) Log.i(TAG, "Board /" + board.link + "/ has been removed from 4chan");
                     continue;
                 }
-                Object[] row = board.makeRow(context);
-                matrixCursor.addRow(row);
-                if (DEBUG) Log.i(TAG, "Added board row: " + Arrays.toString(row));
+                sorted.add(board);
             }
         }
+
+        final AlphanumComparator comparator = new AlphanumComparator();
+        Collections.sort(sorted, new Comparator<ChanBoard>() {
+            @Override
+            public int compare(ChanBoard lhs, ChanBoard rhs) {
+                return comparator.compare(lhs.link, rhs.link);
+            }
+        });
+
+        for (ChanBoard board : sorted) {
+            Object[] row = board.makeRow(context);
+            matrixCursor.addRow(row);
+            if (DEBUG) Log.i(TAG, "Added board row: " + Arrays.toString(row));
+        }
         if (DEBUG) Log.i(TAG, "Loading boards complete");
+    }
+
+    protected void loadFavoritesBoard(MatrixCursor matrixCursor) {
+        ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
+        if (DEBUG)  {
+            Log.i(TAG, "loadFavoritesBoard /" + boardName + "/");
+            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
+                    + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
+        }
+
+        if (!board.hasData()) {
+            Log.i(TAG, "Favorites board doesn't have data, exiting");
+            return;
+        }
+
+        if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " favorite boards");
+        List<ChanPost> sorted = new ArrayList<ChanPost>();
+        for (ChanPost thread : board.threads) {
+            if (DEBUG) Log.i(TAG, "Loading favorite board " + thread);
+            if (!ChanBoard.FAVORITES_BOARD_CODE.equals(board.link) && thread.no <= 0) {
+                if (DEBUG) Log.i(TAG, "Skipped zero thread " + thread);
+                continue;
+            }
+            if (ChanBoard.isRemoved(thread.board)) {
+                if (DEBUG) Log.i(TAG, "Board /" + thread.board + "/ has been removed from 4chan");
+                continue;
+            }
+            if (thread.no <= 0)
+                sorted.add(thread);
+        }
+
+        final AlphanumComparator comparator = new AlphanumComparator();
+        Collections.sort(sorted, new Comparator<ChanPost>() {
+            @Override
+            public int compare(ChanPost lhs, ChanPost rhs) {
+                return comparator.compare(lhs.board, rhs.board);
+            }
+        });
+
+        int i = 0;
+        for (ChanPost thread : sorted) {
+            String boardCode = thread.board;
+            String name = ChanBoard.getName(context, boardCode);
+            int imageId = ChanBoard.getImageResourceId(boardCode, 0, 0);
+            if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + boardCode
+                    + "/ name=" + name
+                    + " resourceId=" + imageId);
+            Object[] row = ChanThread.makeBoardRow(context, boardCode, name, imageId);
+            matrixCursor.addRow(row);
+            if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
+        }
+        i++;
+        if (DEBUG) Log.i(TAG, "Loaded " + i + " favorite boards");
     }
 
     protected void loadBoard(MatrixCursor matrixCursor) {

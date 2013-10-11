@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.*;
 import android.text.method.LinkMovementMethod;
@@ -17,15 +18,15 @@ import android.text.style.*;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 import com.android.gallery3d.ui.Log;
+import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.fragment.ThreadFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -102,6 +103,7 @@ public class ThreadViewer {
                                        int columnHeight,
                                        View.OnClickListener thumbOnClickListener,
                                        SpannableOnClickListener backlinkOnClickListener,
+                                       View.OnClickListener commentsOnClickListener,
                                        View.OnClickListener imagesOnClickListener,
                                        View.OnClickListener repliesOnClickListener,
                                        View.OnClickListener sameIdOnClickListener,
@@ -133,6 +135,7 @@ public class ThreadViewer {
                     showContextMenu,
                     thumbOnClickListener,
                     backlinkOnClickListener,
+                    commentsOnClickListener,
                     imagesOnClickListener,
                     repliesOnClickListener,
                     sameIdOnClickListener,
@@ -145,7 +148,7 @@ public class ThreadViewer {
 
     protected static boolean setListLinkView(final View view, final Cursor cursor, int flags, View.OnClickListener itemBoardLinkListener) {
         ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
-        setItem(viewHolder, cursor, flags, false, null, null, null, itemBoardLinkListener);
+        setItem(viewHolder, cursor, flags, false, null, null, null, null, itemBoardLinkListener);
         setImageWrapper(viewHolder, flags);
         setImage(viewHolder, cursor, flags, null, null);
         setCountryFlag(viewHolder, cursor, flags);
@@ -158,6 +161,7 @@ public class ThreadViewer {
                                           boolean showContextMenu,
                                           View.OnClickListener thumbOnClickListener,
                                           SpannableOnClickListener backlinkOnClickListener,
+                                          View.OnClickListener commentsOnClickListener,
                                           View.OnClickListener imagesOnClickListener,
                                           View.OnClickListener repliesOnClickListener,
                                           View.OnClickListener sameIdOnClickListener,
@@ -171,6 +175,7 @@ public class ThreadViewer {
         ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
         setItem(viewHolder, cursor, flags, showContextMenu,
                 //backlinkOnClickListener,
+                commentsOnClickListener,
                 imagesOnClickListener,
                 repliesOnClickListener,
                 //postReplyListener,
@@ -193,6 +198,7 @@ public class ThreadViewer {
     static protected boolean setItem(ThreadViewHolder viewHolder, Cursor cursor, int flags,
                                      boolean showContextMenu,
                                      //View.OnClickListener backlinkOnClickListener,
+                                     View.OnClickListener commentsOnClickListener,
                                      View.OnClickListener imagesOnClickListener,
                                      View.OnClickListener repliesOnClickListener,
                                      //View.OnClickListener postReplyListener,
@@ -206,7 +212,8 @@ public class ThreadViewer {
         item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
 
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            displayHeaderCountFields(viewHolder, cursor, showContextMenu, imagesOnClickListener, repliesOnClickListener);
+            displayHeaderCountFields(viewHolder, cursor, showContextMenu,
+                    commentsOnClickListener, imagesOnClickListener, repliesOnClickListener);
         else
             displayItemCountFields(viewHolder, cursor, showContextMenu, repliesOnClickListener);
 
@@ -245,14 +252,18 @@ public class ThreadViewer {
         return true;
     }
 
-    static public void setHeaderNumRepliesImages(ThreadViewHolder viewHolder, Cursor cursor, View.OnClickListener imagesOnClickListener) {
+    static public void setHeaderNumRepliesImages(ThreadViewHolder viewHolder, Cursor cursor,
+                                                 View.OnClickListener commentsOnClickListener,
+                                                 View.OnClickListener imagesOnClickListener) {
         int r = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES));
         int i = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES));
         TextView numReplies = viewHolder.list_item_num_replies_text;
         TextView numImages = viewHolder.list_item_num_images_text;
         TextView numRepliesLabel = viewHolder.list_item_num_replies_label;
         TextView numImagesLabel = viewHolder.list_item_num_images_label;
-        View wrapper = viewHolder.list_item_num_images;
+        View cmtWrapper = viewHolder.list_item_num_replies;
+        View arrow = viewHolder.list_item_num_comments_spinner;
+        View imgWrapper = viewHolder.list_item_num_images;
         View spinner = viewHolder.list_item_num_images_spinner;
         if (numReplies != null)
             numReplies.setText(String.valueOf(r));
@@ -262,16 +273,30 @@ public class ThreadViewer {
             numRepliesLabel.setText(numRepliesLabel.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
         if (numImagesLabel != null)
             numImagesLabel.setText(numImagesLabel.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
-        if (wrapper != null) {
+        if (cmtWrapper != null) {
+            if (r >= 0 && commentsOnClickListener != null && cursor.getCount() > 1) {
+                cmtWrapper.setOnClickListener(commentsOnClickListener);
+                cmtWrapper.setClickable(true);
+                if (arrow != null)
+                    arrow.setVisibility(View.VISIBLE);
+            }
+            else {
+                cmtWrapper.setOnClickListener(null);
+                cmtWrapper.setClickable(false);
+                if (arrow != null)
+                    arrow.setVisibility(View.GONE);
+            }
+        }
+        if (imgWrapper != null) {
             if (i >= 0 && imagesOnClickListener != null) {
-                wrapper.setOnClickListener(imagesOnClickListener);
-                wrapper.setClickable(true);
+                imgWrapper.setOnClickListener(imagesOnClickListener);
+                imgWrapper.setClickable(true);
                 if (spinner != null)
                     spinner.setVisibility(View.VISIBLE);
             }
             else {
-                wrapper.setOnClickListener(null);
-                wrapper.setClickable(false);
+                imgWrapper.setOnClickListener(null);
+                imgWrapper.setClickable(false);
                 if (spinner != null)
                     spinner.setVisibility(View.GONE);
             }
@@ -279,10 +304,11 @@ public class ThreadViewer {
     }
 
     static protected void displayHeaderCountFields(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
+                                                   View.OnClickListener commentsOnClickListener,
                                                    View.OnClickListener imagesOnClickListener,
                                                    View.OnClickListener repliesOnClickListener) {
         displayHeaderBarAgoNo(viewHolder, cursor);
-        setHeaderNumRepliesImages(viewHolder, cursor, imagesOnClickListener);
+        setHeaderNumRepliesImages(viewHolder, cursor, commentsOnClickListener, imagesOnClickListener);
         displayNumDirectReplies(viewHolder, cursor, showContextMenu, repliesOnClickListener);
     }
 
@@ -771,11 +797,11 @@ public class ThreadViewer {
 
     public static Point sizeHeaderImage(final int tn_w, final int tn_h) {
         Point baseBox = new Point(tn_w, tn_h);
-        //Point maxBox = new Point((int)(tn_w * MAX_HEADER_SCALE), (int)(tn_h * MAX_HEADER_SCALE));
+        Point scaledBox = new Point((int)(tn_w * MAX_HEADER_SCALE), (int)(tn_h * MAX_HEADER_SCALE));
         Point cardBox = new Point(cardMaxImageWidth(), cardMaxImageHeight());
         //baseBox <= scaleBox <= cardBox;
 
-        Point scaledBox = new Point(baseBox.x, baseBox.y);
+        //Point scaledBox = new Point(baseBox.x, baseBox.y);
         if (baseBox.x > cardBox.x) { // downscale to fix x in card
             double scale = (double)cardBox.x / (double)baseBox.x;
             scaledBox.x = (int)(scale * scaledBox.x);
@@ -994,4 +1020,39 @@ public class ThreadViewer {
             return null;
     }
 
+    public static View.OnClickListener createCommentsOnClickListener(final AbsListView absListView, final Handler handler) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                jumpToBottom(absListView, handler);
+            }
+        };
+    }
+
+    public static View.OnClickListener createImagesOnClickListener(final Context context,
+                                                                   final String boardCode,
+                                                                   final long threadNo)
+    {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GalleryViewActivity.startAlbumViewActivity(context, boardCode, threadNo);
+            }
+        };
+    }
+
+    public static void jumpToBottom(final AbsListView absListView, final Handler handler) {
+        if (absListView == null)
+            return;
+        Adapter adapter = absListView.getAdapter();
+        final int n = adapter == null ? -1 : (adapter.getCount() - 1);
+        if (DEBUG) android.util.Log.i(TAG, "jumping to item n=" + n);
+        if (handler != null && n >= 0)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    absListView.setSelection(n);
+                }
+            });
+    }
 }

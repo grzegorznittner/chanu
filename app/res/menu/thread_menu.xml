@@ -18,6 +18,7 @@
     <item android:id="@+id/view_image_gallery_menu"
           android:title="@string/view_image_gallery_menu"
           android:icon="@drawable/content_picture_light"
+          android:visible="false"
             />
     <item android:id="@+id/watch_thread_menu"
           android:title="@string/watch_thread_menu"
@@ -31,6 +32,7 @@
     <item android:id="@+id/scroll_to_bottom_menu"
           android:title="@string/scroll_to_bottom_menu"
           android:icon="@drawable/av_next"
+          android:visible="false"
             />
     <item android:id="@+id/post_reply_all_menu"
           android:title="@string/post_reply_all_menu"
@@ -47,6 +49,7 @@
     <item android:id="@+id/download_all_images_to_gallery_menu"
           android:title="@string/download_all_images_to_gallery_menu"
           android:icon="@drawable/av_download"
+          android:visible="false"
             />
     <item android:id="@+id/play_thread_menu"
           android:title="@string/play_thread_menu"

@@ -62,7 +62,6 @@
 
     <string-array name="long_board_array">
         <item>@string/board_select</item>
-        <item>@string/board_3_with_abbrev</item>
         <item>@string/board_a_with_abbrev</item>
         <item>@string/board_adv_with_abbrev</item>
         <item>@string/board_an_with_abbrev</item>
@@ -124,11 +123,11 @@
         <item>@string/board_wsg_with_abbrev</item>
         <item>@string/board_x_with_abbrev</item>
         <item>@string/board_y_with_abbrev</item>
+        <item>@string/board_3_with_abbrev</item>
     </string-array>
 
     <string-array name="long_board_array_worksafe">
         <item>@string/board_select</item>
-        <item>@string/board_3_with_abbrev</item>
         <item>@string/board_a_with_abbrev</item>
         <item>@string/board_adv_with_abbrev</item>
         <item>@string/board_an_with_abbrev</item>
@@ -173,10 +172,10 @@
         <item>@string/board_wg_with_abbrev</item>
         <item>@string/board_wsg_with_abbrev</item>
         <item>@string/board_x_with_abbrev</item>
+        <item>@string/board_3_with_abbrev</item>
     </string-array>
 
     <string-array name="widget_board_array">
-        <item>@string/board_3_with_abbrev</item>
         <item>@string/board_a_with_abbrev</item>
         <item>@string/board_adv_with_abbrev</item>
         <item>@string/board_an_with_abbrev</item>
@@ -238,6 +237,7 @@
         <item>@string/board_wsg_with_abbrev</item>
         <item>@string/board_x_with_abbrev</item>
         <item>@string/board_y_with_abbrev</item>
+        <item>@string/board_3_with_abbrev</item>
         <!--
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
@@ -247,7 +247,6 @@
     </string-array>
 
     <string-array name="widget_board_array_worksafe">
-        <item>@string/board_3_with_abbrev</item>
         <item>@string/board_a_with_abbrev</item>
         <item>@string/board_adv_with_abbrev</item>
         <item>@string/board_an_with_abbrev</item>
@@ -292,6 +291,7 @@
         <item>@string/board_wg_with_abbrev</item>
         <item>@string/board_wsg_with_abbrev</item>
         <item>@string/board_x_with_abbrev</item>
+        <item>@string/board_3_with_abbrev</item>
         <!--
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>

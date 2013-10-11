@@ -2,13 +2,16 @@ package com.chanapps.four.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.fragment.ThreadFragment;
 import com.chanapps.four.fragment.ThreadPopupDialogFragment;
 import com.chanapps.four.viewer.ThreadViewHolder;
 import com.chanapps.four.viewer.ThreadViewer;
@@ -140,12 +143,15 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
             int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
             ThreadViewer.setSubjectIcons(viewHolder, flags);
-            ThreadViewer.setHeaderNumRepliesImages(viewHolder, cursor, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    GalleryViewActivity.startAlbumViewActivity(context, boardCode, threadNo);
-                }
-            });
+            ThreadFragment fragment = context != null && context instanceof ThreadActivity
+                    ? ((ThreadActivity)context).getCurrentFragment()
+                    : null;
+            View.OnClickListener listener = fragment != null
+                    ? ThreadViewer.createCommentsOnClickListener(fragment.getAbsListView(), fragment.getHandler())
+                    : null;
+            ThreadViewer.setHeaderNumRepliesImages(viewHolder, cursor,
+                    listener,
+                    ThreadViewer.createImagesOnClickListener(context, boardCode, threadNo));
             ThreadViewer.displayNumDirectReplies(viewHolder, cursor, showContextMenu, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

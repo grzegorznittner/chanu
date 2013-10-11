@@ -24,6 +24,7 @@
         <item name="themedThreadHeaderImageBg">@color/PaletteThreadHeaderImageBg</item>
         <!-- <item name="themedSpinnerTriangle">@drawable/spinner_default_holo_light</item> -->
         <item name="themedSpinnerTriangle">@drawable/expand</item>
+        <item name="themedSpinnerArrow">@drawable/arrow_down_alt</item>
         <item name="themedBoardGridBoardCodeBg">@color/PaletteBoardGridBoardCodeBg</item>
         <item name="themedWidgetConfigureButtonBg">@color/PaletteDarkGray</item>
     </style>
@@ -52,6 +53,7 @@
         <item name="themedThreadHeaderImageBg">@color/DarkPaletteThreadHeaderImageBg</item>
         <!-- <item name="themedSpinnerTriangle">@drawable/spinner_default_holo_dark</item> -->
         <item name="themedSpinnerTriangle">@drawable/expand_light</item>
+        <item name="themedSpinnerArrow">@drawable/arrow_down_alt_light</item>
         <item name="themedBoardGridBoardCodeBg">@color/DarkPaletteBoardGridBoardCodeBg</item>
         <item name="themedWidgetConfigureButtonBg">@color/DarkPaletteBoardGridBoardCodeBg</item>
     </style>
