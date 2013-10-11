@@ -45,6 +45,13 @@ public class ThreadListener {
             private long threadNo;
             private long postNo;
             private void locatePost(View v) {
+                pos = -1;
+                if (threadViewable == null)
+                    return;
+                if (threadViewable.getAbsListView() == null)
+                    return;
+                if (threadViewable.getAdapter() == null)
+                    return;
                 Cursor cursor = threadViewable.getAdapter().getCursor();
                 pos = threadViewable.getAbsListView().getPositionForView(v);
                 if (DEBUG) Log.i(TAG, "locatePost() no cursorId, current pos=" + pos);
@@ -60,6 +67,10 @@ public class ThreadListener {
                 }
             }
             private void locatePost(View v, long cursorId) {
+                if (threadViewable == null)
+                    return;
+                if (threadViewable.getAdapter() == null)
+                    return;
                 Cursor cursor = threadViewable.getAdapter().getCursor();
                 postNo = cursorId;
                 if (DEBUG) Log.i(TAG, "locatePost() looking for postNo=" + postNo
@@ -85,6 +96,10 @@ public class ThreadListener {
                 if (DEBUG) Log.i(TAG, "locatePost() cursorId=" + cursorId + " found pos=" + pos);
             }
             private void launchThread(Activity activity, long threadNo) {
+                if (threadViewable == null)
+                    return;
+                if (threadViewable.getAdapter() == null)
+                    return;
                 Cursor cursor = threadViewable.getAdapter().getCursor();
                 if (cursor.moveToFirst()) {
                     boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
@@ -94,6 +109,8 @@ public class ThreadListener {
             }
             @Override
             public void onClick(View v) {
+                if (threadViewable == null)
+                    return;
                 locatePost(v);
                 if (DEBUG) Log.i(TAG, "popupListener clicked pos=" + pos + " type=" + popupType);
                 if (pos >= 0)
@@ -101,6 +118,8 @@ public class ThreadListener {
             }
             @Override
             public void onClick(View v, long cursorId) {
+                if (threadViewable == null)
+                    return;
                 locatePost(v, cursorId);
                 if (DEBUG) Log.i(TAG, "popupListener clicked pos=" + pos + " type=" + popupType + " popup postNo=" + postNo);
                 if (pos >= 0)
@@ -119,6 +138,10 @@ public class ThreadListener {
     public final View.OnClickListener thumbOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (threadViewable == null)
+                return;
+            if (threadViewable.getAbsListView() == null)
+                return;
             int pos = threadViewable.getAbsListView().getPositionForView(v);
             if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
 
@@ -162,6 +185,10 @@ public class ThreadListener {
     public View.OnClickListener expandedImageListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (threadViewable == null)
+                return;
+            if (threadViewable.getAbsListView() == null)
+                return;
             int pos = threadViewable.getAbsListView().getPositionForView(v);
             if (pos < 0)
                 return;
@@ -186,6 +213,10 @@ public class ThreadListener {
     public final View.OnClickListener exifOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (threadViewable == null)
+                return;
+            if (threadViewable.getAbsListView() == null)
+                return;
             int pos = threadViewable.getAbsListView().getPositionForView(v);
             if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
 
@@ -222,9 +253,13 @@ public class ThreadListener {
     public View.OnClickListener itemBoardLinkListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            AbsListView absListView = threadViewable.getAbsListView();
-            if (absListView == null)
+            if (threadViewable == null)
                 return;
+            if (threadViewable.getAbsListView() == null)
+                return;
+            if (threadViewable.getAdapter() == null)
+                return;
+            AbsListView absListView = threadViewable.getAbsListView();
             int pos = absListView.getPositionForView(v);
             Cursor cursor = threadViewable.getAdapter() == null ? null : threadViewable.getAdapter().getCursor();
             if (cursor == null)

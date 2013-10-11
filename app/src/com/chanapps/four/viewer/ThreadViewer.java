@@ -542,11 +542,18 @@ public class ThreadViewer {
         Matcher m = pattern.matcher(spannable);
         while (m.find()) {
             String post = m.group(2);
-            final long postNo = Long.parseLong(post);
+            long postNo = -1;
+            try {
+                postNo = Long.parseLong(post);
+            }
+            catch (NumberFormatException e) {
+                Log.e(TAG, "Exception parsing long: " + post);
+            }
+            final long finalPostNo = postNo;
             ClickableSpan popup = new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
-                    listener.onClick(widget, postNo);
+                    listener.onClick(widget, finalPostNo);
                 }
             };
             spannable.setSpan(popup, m.start(1), m.end(1), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

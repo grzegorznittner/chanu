@@ -45,7 +45,13 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
         }
     }
 
+    public PickShareBoardDialogFragment() {
+        super();
+        activityHandler = null;
+    }
+
     public PickShareBoardDialogFragment(Handler handler) {
+        super();
         activityHandler = handler;
     }
 
