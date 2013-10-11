@@ -26,7 +26,7 @@ public class ChanBoard {
 
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
     //private static final int NUM_RELATED_THREADS = 3;
@@ -902,7 +902,9 @@ public class ChanBoard {
 
     public static boolean boardHasData(Context context, String boardCode) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        return board != null && board.hasData();
+        boolean hasData = board != null && board.hasData();
+        if (DEBUG) Log.i(TAG, "boardHasData() /" + boardCode + "/ hasData=" + hasData + " board=" + board);
+        return hasData;
     }
 
     public boolean hasData() {
