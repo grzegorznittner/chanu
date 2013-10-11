@@ -2,6 +2,6 @@
 
     <integer name="versionCode">33</integer>
     <string name="versionName">1.33 GA</string>
-    <string name="versionDate">2013.10.09</string>
+    <string name="versionDate">2013.10.11</string>
 
 </resources>
