@@ -1043,7 +1043,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public void onClick(View v) {
             if (absListView == null || v == null)
                 return;
-            checkedPos = absListView.getPositionForView(v);
+            try {
+                checkedPos = absListView.getPositionForView(v);
+            }
+            catch (NullPointerException e) {
+                Log.e(TAG, "Exception getting view position v=" + v, e);
+                return;
+            }
             final PopupMenu popup = new PopupMenu(BoardActivity.this, v);
             int menuId;
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))

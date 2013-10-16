@@ -6,6 +6,7 @@
     <dimen name="WidgetConfigureOkButton">18sp</dimen>
     <dimen name="BoardSelectorOverlay">14sp</dimen>
     <dimen name="BoardGridBoardCode">@dimen/BoardTypeText</dimen>
+    <dimen name="BoardGridLargeSubject">14sp</dimen>
     <dimen name="BoardGridSubject">14sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridAction">12sp</dimen>
@@ -46,6 +47,7 @@
     <dimen name="BoardGridViewTablet_image_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">0dp</dimen>
+    <dimen name="BoardGridViewTablet_narrow_image_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
     <dimen name="BoardTypeText_padding">8dp</dimen>
 
@@ -327,10 +329,15 @@
     <integer name="BoardGridViewSmall.numColumns">3</integer>
     <integer name="BoardTabletGridView.numColumns">1</integer>
     <integer name="BoardGridView.maxLines">4</integer>
+    <integer name="BoardGridViewNarrowTablet.maxLines">4</integer>
+    <dimen name="BoardGridView.topSpacing">4dp</dimen>
     <dimen name="BoardGridView.halfSpacing">4dp</dimen>
+    <dimen name="BoardGridView.infoBottomPadding">4dp</dimen>
     <dimen name="BoardGridView.spacing">8dp</dimen>
+    <dimen name="BoardGridView.rightSpacing">24dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">8dp</dimen>
-    <dimen name="BoardGridTextHeight">96dp</dimen>
+    <dimen name="BoardGridImageSize">96dp</dimen>
+    <dimen name="BoardGridImageSizeHalf">48dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">80dp</dimen>-->
 
     <dimen name="tab_host_default_height">48dp</dimen>

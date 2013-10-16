@@ -16,7 +16,7 @@
         <ListView
                 android:id="@+id/board_grid_view_tablet"
                 style="@style/BoardGridViewTablet"
-                    />
+                />
 
         <com.chanapps.four.component.ControllableViewPager
                 android:id="@+id/pager"

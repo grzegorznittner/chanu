@@ -594,7 +594,16 @@ public class ChanPost {
         if (fsize > 0) {
             int kbSize = (fsize / 1024) + 1;
             String size = (kbSize > 1000) ? (kbSize / 1000) + "MB" : kbSize + "KB";
-            return w + "x" + h + " ~ " + size;
+            String fileinfo;
+            if (filename != null && !filename.isEmpty()) {
+                fileinfo = " ~ " + filename;
+                if (ext != null && !ext.isEmpty())
+                    fileinfo += ext;
+            }
+            else {
+                fileinfo = "";
+            }
+            return w + "x" + h + " ~ " + size + fileinfo;
         }
         return "";
     }

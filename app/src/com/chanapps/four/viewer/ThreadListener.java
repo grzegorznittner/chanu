@@ -162,6 +162,10 @@ public class ThreadListener {
             if (viewHolder == null)
                 return;
 
+            if (threadViewable == null)
+                return;
+            if (threadViewable.getAdapter() == null)
+                return;
             Cursor cursor = threadViewable.getAdapter().getCursor();
             cursor.moveToPosition(pos);
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));

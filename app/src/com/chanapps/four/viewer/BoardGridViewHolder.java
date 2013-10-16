@@ -22,6 +22,8 @@ public class BoardGridViewHolder {
     public TextView grid_item_thread_info;
     public TextView grid_item_num_replies_text;
     public TextView grid_item_num_images_text;
+    public TextView grid_item_num_replies_label;
+    public TextView grid_item_num_images_label;
     public ImageView grid_item_num_replies_img;
     public ImageView grid_item_num_images_img;
     public ImageView grid_item_overflow_icon;
@@ -38,6 +40,8 @@ public class BoardGridViewHolder {
         grid_item_thread_info = (TextView)item.findViewById(R.id.grid_item_thread_info);
         grid_item_num_replies_text = (TextView)item.findViewById(R.id.grid_item_num_replies_text);
         grid_item_num_images_text = (TextView)item.findViewById(R.id.grid_item_num_images_text);
+        grid_item_num_replies_label = (TextView)item.findViewById(R.id.grid_item_num_replies_label);
+        grid_item_num_images_label = (TextView)item.findViewById(R.id.grid_item_num_images_label);
         grid_item_num_replies_img = (ImageView)item.findViewById(R.id.grid_item_num_replies_img);
         grid_item_num_images_img = (ImageView)item.findViewById(R.id.grid_item_num_images_img);
         grid_item_overflow_icon = (ImageView)item.findViewById(R.id.grid_item_overflow_icon);

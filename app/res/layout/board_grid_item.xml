@@ -13,8 +13,8 @@
 
         <ImageView
                 android:id="@+id/grid_item_thread_thumb"
-                android:layout_width="@dimen/BoardGridTextHeight"
-                android:layout_height="@dimen/BoardGridTextHeight"
+                android:layout_width="@dimen/BoardGridImageSize"
+                android:layout_height="@dimen/BoardGridImageSize"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
                 android:visibility="gone"
@@ -27,12 +27,12 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/grid_item_thread_thumb"
                 android:paddingLeft="@dimen/BoardGridView.spacing"
-                android:paddingRight="24dp"
-                android:paddingTop="@dimen/BoardGridView.halfSpacing"
+                android:paddingRight="@dimen/BoardGridView.rightSpacing"
+                android:paddingTop="@dimen/BoardGridView.topSpacing"
                 android:textColor="?themedCardSubjectTextColor"
-                android:textSize="@dimen/BoardGridSubject"
+                android:textSize="@dimen/BoardGridLargeSubject"
                 android:visibility="gone"
-                android:ellipsize="end"
+                android:ellipsize="none"
                 android:maxLines="@integer/BoardGridView.maxLines"
                 />
 
@@ -57,7 +57,7 @@
                 android:layout_marginLeft="@dimen/BoardGridView.spacing"
                 android:layout_toRightOf="@+id/grid_item_country_flag"
                 android:layout_alignParentBottom="true"
-                android:paddingBottom="@dimen/BoardGridView.halfSpacing"
+                android:paddingBottom="@dimen/BoardGridView.infoBottomPadding"
                 android:textColor="@color/PaletteLightGray"
                 android:textSize="@dimen/BoardGridInfo"
                 />
@@ -81,7 +81,7 @@
                 android:layout_marginLeft="@dimen/BoardGridView.halfSpacing"
                 android:layout_toRightOf="@+id/grid_item_num_replies_img"
                 android:layout_alignParentBottom="true"
-                android:paddingBottom="@dimen/BoardGridView.halfSpacing"
+                android:paddingBottom="@dimen/BoardGridView.infoBottomPadding"
                 android:textColor="@color/PaletteLightGray"
                 android:textSize="@dimen/BoardGridInfo"
                 />
@@ -145,7 +145,7 @@
                 android:layout_alignParentBottom="true"
                 android:paddingLeft="@dimen/BoardGridView.spacing"
                 android:paddingRight="24dp"
-                android:paddingBottom="@dimen/BoardGridView.halfSpacing"
+                android:paddingBottom="@dimen/BoardGridView.infoBottomPadding"
                 android:textColor="@color/PaletteLightGray"
                 android:textSize="@dimen/BoardGridInfo"
                 android:maxLines="1"

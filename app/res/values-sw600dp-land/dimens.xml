@@ -1,16 +1,16 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
 
     <dimen name="BoardGridViewTablet_image_width">112dp</dimen>
-    <dimen name="BoardGridViewTablet_layout_width">336dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width">304dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">304dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
 
-    <integer name="BoardGridView.numColumns">3</integer>
+    <integer name="BoardGridView.numColumns">2</integer>
     <integer name="BoardGridViewSmall.numColumns">6</integer>
 
     <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">true</bool>
-    <bool name="narrow_tablet">false</bool>
+    <bool name="narrow_tablet">true</bool>
 
     <dimen name="ad_layout_height">90dp</dimen>
 

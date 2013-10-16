@@ -73,7 +73,6 @@ public class BoardGridViewer {
         setGridSubject(viewHolder, cursor);
         setInfo(viewHolder, cursor, groupBoardCode, flags, options);
         setNumReplies(viewHolder, cursor);
-        setNumImages(viewHolder, cursor);
         setCountryFlag(viewHolder, cursor);
         setIcons(viewHolder, flags, isDark);
         setImage(viewHolder, cursor, flags, columnWidth, columnHeight, options, titleTypeface);
@@ -331,38 +330,47 @@ public class BoardGridViewer {
     }
 
     protected static boolean setNumReplies(BoardGridViewHolder viewHolder, Cursor cursor) {
-        TextView tv = viewHolder.grid_item_num_replies_text;
-        if (tv == null)
-            return false;
-        int num = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES));
-        if (num >= 0) {
-            tv.setText(String.valueOf(num));
-            viewHolder.grid_item_num_replies_text.setVisibility(View.VISIBLE);
-            viewHolder.grid_item_num_replies_img.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setText("");
-            viewHolder.grid_item_num_replies_text.setVisibility(View.GONE);
-            viewHolder.grid_item_num_replies_img.setVisibility(View.GONE);
-        }
-        return true;
-    }
 
-    protected static boolean setNumImages(BoardGridViewHolder viewHolder, Cursor cursor) {
-        TextView tv = viewHolder.grid_item_num_images_text;
-        if (tv == null)
-            return false;
-        int num = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
-        if (num >= 0) {
-            tv.setText(String.valueOf(num));
-            viewHolder.grid_item_num_images_text.setVisibility(View.VISIBLE);
-            viewHolder.grid_item_num_images_img.setVisibility(View.VISIBLE);
+        int r = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES));
+        int i = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
+
+        TextView numReplies = viewHolder.grid_item_num_replies_text;
+        TextView numImages = viewHolder.grid_item_num_images_text;
+        TextView numRepliesLabel = viewHolder.grid_item_num_replies_label;
+        TextView numImagesLabel = viewHolder.grid_item_num_images_label;
+        if (numRepliesLabel != null)
+            numRepliesLabel.setText(numRepliesLabel.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
+        if (numImagesLabel != null)
+            numImagesLabel.setText(numImagesLabel.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
+
+        if (numReplies != null)
+            numReplies.setText(r >= 0 ? String.valueOf(r) : "");
+        if (numImages != null)
+            numImages.setText(i >= 0 ? String.valueOf(i) : "");
+        /*
+        if (r >= 0) {
+            numReplies.setText(String.valueOf(r));
+            viewHolder.grid_item_num_replies_text.setVisibility(View.VISIBLE);
+            //viewHolder.grid_item_num_replies_img.setVisibility(View.VISIBLE);
         }
         else {
-            tv.setText("");
-            viewHolder.grid_item_num_images_text.setVisibility(View.GONE);
-            viewHolder.grid_item_num_images_img.setVisibility(View.GONE);
-        }        return true;
+            numReplies.setText("");
+            //viewHolder.grid_item_num_replies_text.setVisibility(View.GONE);
+            //viewHolder.grid_item_num_replies_img.setVisibility(View.GONE);
+        }
+
+        if (i >= 0) {
+            numImages.setText(String.valueOf(i));
+            //viewHolder.grid_item_num_images_text.setVisibility(View.VISIBLE);
+            //viewHolder.grid_item_num_images_img.setVisibility(View.VISIBLE);
+        }
+        else {
+            numImages.setText("");
+            //viewHolder.grid_item_num_images_text.setVisibility(View.GONE);
+            //viewHolder.grid_item_num_images_img.setVisibility(View.GONE);
+        }
+        */
+        return true;
     }
 
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xaa;

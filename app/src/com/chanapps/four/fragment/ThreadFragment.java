@@ -1337,15 +1337,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         String linkUrl = (firstPost > 0 && firstPost != threadNo)
                 ? ChanPost.postUrl(boardCode, threadNo, firstPost)
                 : ChanThread.threadUrl(boardCode, threadNo);
-        String text = selectText(postPos);
-        String extraText = linkUrl + (text.isEmpty() ? "" : "\n\n" + text);
+        //String text = selectText(postPos);
+        //String extraText = linkUrl + (text.isEmpty() ? "" : "\n\n" + text);
 
         // create intent
         Intent intent;
         //if (paths.size() == 0) {
             intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_TEXT, extraText);
-            intent.setType("text/html");
+        //    intent.putExtra(Intent.EXTRA_TEXT, extraText);
+        //    intent.setType("text/html");
+            intent.putExtra(Intent.EXTRA_TEXT, linkUrl);
+            intent.setType("text/plain");
             setShareIntent(provider, intent);
         /*
         } else {

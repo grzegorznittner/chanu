@@ -1063,12 +1063,12 @@ public class ThreadActivity
                 }
                 if (mPager != null && mPager.getAdapter() != null && mAdapter != null && mAdapter.getCount() > 0) {
                     if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ pager already filled, restarting loader");
-                    if (onTablet())
-                        getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
                     if (handler != null)
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
+                                if (onTablet())
+                                    getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
                                 mAdapter.setQuery(query);
                                 mAdapter.setBoard(board);
                             }
