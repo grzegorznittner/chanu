@@ -30,6 +30,7 @@ public class FourChannerApp extends GalleryAppImpl {
     public void onCreate() {
         super.onCreate();
         setupEnhancedExceptions();
+        ChanFileStorage.migrateIfNecessary(getApplicationContext());
         BillingComponent.getInstance(getApplicationContext()).checkForNewPurchases();
     }
 

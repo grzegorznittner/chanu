@@ -1142,4 +1142,13 @@ public class ChanBoard {
         else
             return ChanBoard.ALL_BOARDS_BOARD_CODE;
     }
+
+    public static boolean isPersistentBoard(final String boardCode) {
+        if (WATCHLIST_BOARD_CODE.equals(boardCode))
+            return true;
+        else if (FAVORITES_BOARD_CODE.equals(boardCode))
+            return true;
+        else
+            return false;
+    }
 }

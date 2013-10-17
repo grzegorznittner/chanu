@@ -1,16 +1,14 @@
 package com.chanapps.four.data;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.*;
 
+import android.os.Environment;
 import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.widget.WidgetProviderUtils;
 import com.nostra13.universalimageloader.utils.L;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -46,8 +44,8 @@ public class ChanFileStorage {
         }
     };
 
-    private static final String CACHE_ROOT = "Android";
-    private static final String CACHE_DATA_DIR = "data";
+    private static final String ANDROID_ROOT = "Android";
+    private static final String ANDROID_DATA_DIR = "data";
     private static final String CACHE_PKG_DIR = "cache";
     private static final String WALLPAPER_DIR = "wallpapers";
     private static final String FILE_SEP = "/";
@@ -61,10 +59,16 @@ public class ChanFileStorage {
     }
 
     private static String getRootCacheDirectory(Context context) {
-        return CACHE_ROOT + FILE_SEP
-                + CACHE_DATA_DIR + FILE_SEP
+        return ANDROID_ROOT + FILE_SEP
+                + ANDROID_DATA_DIR + FILE_SEP
                 + context.getPackageName() + FILE_SEP
                 + CACHE_PKG_DIR;
+    }
+
+    private static String getRootPersistentDirectory(Context context) {
+        return ANDROID_ROOT + FILE_SEP
+                + ANDROID_DATA_DIR + FILE_SEP
+                + context.getPackageName();
     }
 
     public static File getCacheDirectory(Context context) {
@@ -72,29 +76,65 @@ public class ChanFileStorage {
         return StorageUtils.getOwnCacheDirectory(context, cacheDir);
     }
 
+    private static File getPersistentDirectory(Context context) {
+        String persistentDir = getRootPersistentDirectory(context);
+        return getOwnPersistentDirectory(context, persistentDir);
+    }
+
+    private static File getOwnPersistentDirectory(Context context, String persistentDir) {
+        File appPersistentDir = null;
+        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+            appPersistentDir = new File(Environment.getExternalStorageDirectory(), persistentDir);
+        }
+        if (appPersistentDir == null || (!appPersistentDir.exists() && !appPersistentDir.mkdirs())) {
+            appPersistentDir = context.getFilesDir();
+        }
+        return appPersistentDir;
+    }
+
     private static File getWallpaperCacheDirectory(Context context) {
         String cacheDir = getRootCacheDirectory(context) + FILE_SEP + WALLPAPER_DIR;
         return StorageUtils.getOwnCacheDirectory(context, cacheDir);
     }
 
+    private static String getLegacyBoardCachePath(Context context, String boardCode) {
+        return getRootCacheDirectory(context) + FILE_SEP + boardCode;
+    }
+
+    private static File getLegacyBoardCacheFile(Context context, String boardCode) {
+        String cacheDir = getLegacyBoardCachePath(context, boardCode);
+        File boardDir = null;
+        if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+            boardDir = new File(Environment.getExternalStorageDirectory(), cacheDir);
+        }
+        if (boardDir == null || !boardDir.exists()) {
+            boardDir = context.getCacheDir();
+        }
+        File boardFile = boardDir != null && boardDir.exists() ? new File(boardDir, boardCode + CACHE_EXT) : null;
+        return boardFile;
+    }
+
     public static File getBoardCacheDirectory(Context context, String boardCode) {
-        String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode;
-        File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        File boardDir;
+        if (ChanBoard.isPersistentBoard(boardCode)) {
+            String persistentDir = getRootPersistentDirectory(context) + FILE_SEP + boardCode;
+            boardDir = getOwnPersistentDirectory(context, persistentDir);
+        }
+        else {
+            String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode;
+            boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        }
         return boardDir;
     }
 
     public static File getHiddenBoardCacheDirectory(Context context, String boardCode) {
-        String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode; // unix hack
-        final File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        final File boardDir = getBoardCacheDirectory(context, boardCode);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if (!boardDir.exists()) {
-                    if (!boardDir.mkdirs()) {
-                        Log.e(TAG, "couldn't create board cache directory " + boardDir);
-                        return;
-                    }
                     if (DEBUG) Log.i(TAG, "created board cache directory " + boardDir);
+                    return;
                 }
                 try {
                     File f = new File(boardDir, ".nomedia");
@@ -116,9 +156,20 @@ public class ChanFileStorage {
         return boardDir;
     }
 
-    private static File getUserStatsFile(Context context) {
+    private static File getLegacyUserStatsFile(Context context) {
         String cacheDir = getRootCacheDirectory(context);
         File cacheFolder = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        if (cacheFolder != null) {
+            File userPrefsFile = new File(cacheFolder, USER_STATS_FILENAME);
+            return userPrefsFile;
+        } else {
+            Log.e(TAG, "Cache folder returned empty");
+            return null;
+        }
+    }
+
+    private static File getUserStatsFile(Context context) {
+        File cacheFolder = getPersistentDirectory(context);
         if (cacheFolder != null) {
             File userPrefsFile = new File(cacheFolder, USER_STATS_FILENAME);
             return userPrefsFile;
@@ -849,4 +900,83 @@ public class ChanFileStorage {
         ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
         return isThreadWatched(board, thread);
     }
+
+    public static void migrateIfNecessary(Context context) {
+        migrateUserStats(context);
+        migrateBoard(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        migrateBoard(context, ChanBoard.FAVORITES_BOARD_CODE);
+    }
+    
+    private static void migrateUserStats(Context context) {
+        File legacyUserStatsFile = getLegacyUserStatsFile(context);
+        if (legacyUserStatsFile != null && legacyUserStatsFile.exists()) {
+            File userStatsDir = getPersistentDirectory(context);
+            moveFileToDir(legacyUserStatsFile, userStatsDir);
+        }
+    }
+    
+    private static void migrateBoard(Context context, String boardCode) {
+        File legacyBoardFile = getLegacyBoardCacheFile(context, boardCode);
+        if (legacyBoardFile == null || !legacyBoardFile.exists())
+            return;
+        File boardDir = getBoardCacheDirectory(context, boardCode);
+        if (!moveFileToDir(legacyBoardFile, boardDir))
+            return;
+        String cacheDir = getLegacyBoardCachePath(context, boardCode);
+        if (!Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
+            return;
+        File legacyBoardDir = new File(Environment.getExternalStorageDirectory(), cacheDir);
+        if (legacyBoardDir == null || !legacyBoardDir.exists())
+            return;
+        legacyBoardDir.delete();
+    }
+    
+    private static boolean moveFileToDir(File sourceFile, File destDir) {
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        FileChannel in = null;
+        FileChannel out = null;
+
+        File destFile = null;
+        try
+        {
+            destFile = new File(destDir.getAbsolutePath() + FILE_SEP + sourceFile.getName());
+            if (!destFile.createNewFile())
+                return false;
+
+            fis = new FileInputStream(sourceFile);
+            fos = new FileOutputStream(destFile);
+            in = fis.getChannel();
+            out = fos.getChannel();
+
+            long size = in.size();
+            long bytes = in.transferTo(0, size, out);
+            if (bytes < size) { // transfer failed
+                Log.e(TAG, "didn't transfer full size of file " + sourceFile + " to " + destDir + ", deleting");
+                destFile.delete();    
+                return false;
+            }
+            if (!destFile.exists()) // transfer failed
+                return false;
+            sourceFile.delete();
+            if (sourceFile.exists()) // delete failed
+                return false;
+            return true;
+        }
+        catch (Throwable e)
+        {
+            Log.e(TAG, "Exception moving file " + sourceFile + " to " + destDir);
+            if (destFile != null)
+                destFile.delete();
+            return false;
+        }
+        finally
+        {
+            IOUtils.closeQuietly(out);
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(fos);
+            IOUtils.closeQuietly(fis);
+        }
+    }
+
 }
