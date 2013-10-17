@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
 public class ThreadViewer {
 
     //public static final double MAX_HEADER_SCALE = 1.5;
-    public static final double MAX_HEADER_SCALE = 1.5;
+    public static final double MAX_HEADER_SCALE = 1.2;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
@@ -720,19 +720,24 @@ public class ThreadViewer {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String autoloadType = prefs.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
                 context.getString(R.string.pref_autoload_images_default_value));
-        if (context.getString(R.string.pref_autoload_images_never_value).equals(autoloadType))
+        if (cursor.isFirst())
+            return shouldAutoloadBySizeAndNetwork(cursor);
+        else if (context.getString(R.string.pref_autoload_images_never_value).equals(autoloadType))
             return false;
         else if (context.getString(R.string.pref_autoload_images_always_value).equals(autoloadType))
             return true;
         //else if (context.getString(R.string.pref_autoload_images_auto_value).equals(autoloadType))
-        else {
-            int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
-            int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
-            //if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
-            return (fsize <= maxAutoloadFSize);
-        }
+        else
+            return shouldAutoloadBySizeAndNetwork(cursor);
     }
-    
+
+    static private boolean shouldAutoloadBySizeAndNetwork(final Cursor cursor) {
+        int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
+        int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
+        //if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
+        return (fsize <= maxAutoloadFSize);
+    }
+
     static private boolean displayCachedExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
                                                       final View.OnClickListener expandedImageListener) {
         File file = fullSizeImageFile(viewHolder.list_item.getContext(), cursor); // try for full size first

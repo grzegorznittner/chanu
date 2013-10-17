@@ -16,20 +16,20 @@
     <dimen name="BoardListTitle">18sp</dimen>
     <dimen name="BoardListSubject">22sp</dimen>
     <dimen name="BoardListHeadline">18sp</dimen>
-    <dimen name="ThreadListLayout">18sp</dimen>
+    <dimen name="ThreadListLayout">16sp</dimen>
     <dimen name="ThreadListHeaderSubject">24sp</dimen>
-    <dimen name="ThreadListHeaderHead">18sp</dimen>
+    <dimen name="ThreadListHeaderHead">16sp</dimen>
     <dimen name="ThreadListHeaderLabel">16sp</dimen>
-    <dimen name="ThreadListHeaderExifText">18sp</dimen>
-    <dimen name="ThreadListHeaderFullText">18sp</dimen>
-    <dimen name="ThreadListHeaderTitle">18sp</dimen>
-    <dimen name="ThreadListItemSubject">18sp</dimen>
-    <dimen name="ThreadListItemHead">18sp</dimen>
-    <dimen name="ThreadListItemTitle">18sp</dimen>
-    <dimen name="ThreadListItemExifText">18sp</dimen>
-    <dimen name="ThreadListItemFullText">18sp</dimen>
-    <dimen name="PostReplyEditText">18sp</dimen>
-    <dimen name="PostReplyCheckbox">18sp</dimen>
+    <dimen name="ThreadListHeaderExifText">16sp</dimen>
+    <dimen name="ThreadListHeaderFullText">16sp</dimen>
+    <dimen name="ThreadListHeaderTitle">16sp</dimen>
+    <dimen name="ThreadListItemSubject">16sp</dimen>
+    <dimen name="ThreadListItemHead">16sp</dimen>
+    <dimen name="ThreadListItemTitle">16sp</dimen>
+    <dimen name="ThreadListItemExifText">16sp</dimen>
+    <dimen name="ThreadListItemFullText">16sp</dimen>
+    <dimen name="PostReplyEditText">16sp</dimen>
+    <dimen name="PostReplyCheckbox">16sp</dimen>
     <dimen name="PopupFullTextHeader">22sp</dimen>
     <dimen name="PopupFullTextButton">22sp</dimen>
     <dimen name="PopupFullTextView">22sp</dimen>
@@ -39,7 +39,7 @@
 
     <dimen name="BoardGridItemSmallHeight">96dp</dimen>
     <dimen name="BoardGridViewTablet_image_width">112dp</dimen>
-    <dimen name="BoardGridViewTablet_layout_width">336dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width">304dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">304dp</dimen>
     <dimen name="BoardGridViewTablet_narrow_image_width">96dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
@@ -269,7 +269,7 @@
     <dimen name="widget_textSize">12sp</dimen>
 
     <integer name="BoardGridView.maxLines">4</integer>
-    <integer name="BoardGridViewNarrowTablet.maxLines">4</integer>
+    <integer name="BoardGridViewNarrowTablet.maxLines">6</integer>
     <dimen name="BoardGridView.topSpacing">8dp</dimen>
     <dimen name="BoardGridView.halfSpacing">8dp</dimen>
     <dimen name="BoardGridView.infoBottomPadding">8dp</dimen>
@@ -281,8 +281,9 @@
     <integer name="BoardGridView.numColumns">2</integer>
     <integer name="BoardGridViewSmall.numColumns">5</integer>
     <!-- <dimen name="BoardGridTextHeight">160dp</dimen> -->
-    <dimen name="BoardGridImageSize">120dp</dimen>
-    <dimen name="BoardGridImageSizeHalf">60dp</dimen>
+    <dimen name="BoardGridImageSize">144dp</dimen>
+    <dimen name="BoardGridImageSizeDouble">288dp</dimen>
+    <dimen name="BoardGridImageSizeHalf">72dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">128dp</dimen>-->
 
     <dimen name="drawer_spacer_width">80dp</dimen>
@@ -292,7 +293,7 @@
 
     <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">false</bool>
-    <bool name="narrow_tablet">false</bool>
+    <bool name="narrow_tablet">true</bool>
 
     <dimen name="PostReplyRecaptcha.marginLeft">32dp</dimen>
     <dimen name="PostReplyRecaptcha.marginRight">32dp</dimen>

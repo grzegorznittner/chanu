@@ -785,9 +785,29 @@
         <item name="android:paddingBottom">@dimen/ThreadListHeader_med_padding</item>
     </style>
 
+    <style name="ThreadListHeaderNumWrapInnerHorizontal" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <!--
+        <item name="android:paddingTop">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_med_padding</item>
+        -->
+    </style>
+
     <style name="ThreadListHeaderNumNum" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|center_horizontal</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
+    <style name="ThreadListHeaderNumNumHorizontal" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_padding</item>
         <item name="android:gravity">top|center_horizontal</item>
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
         <item name="android:textColor">?themedCardSubjectTextColor</item>
@@ -807,6 +827,15 @@
     <style name="ThreadListHeaderNumLabel" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|center_horizontal</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderLabel</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
+    <style name="ThreadListHeaderNumLabelHorizontal" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:gravity">top|center_horizontal</item>
         <item name="android:textSize">@dimen/ThreadListHeaderLabel</item>
         <item name="android:textColor">?themedCardSubjectTextColor</item>

@@ -337,6 +337,7 @@
     <dimen name="BoardGridView.rightSpacing">24dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">8dp</dimen>
     <dimen name="BoardGridImageSize">96dp</dimen>
+    <dimen name="BoardGridImageSizeDouble">192dp</dimen>
     <dimen name="BoardGridImageSizeHalf">48dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">80dp</dimen>-->
 

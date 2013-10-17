@@ -7,7 +7,7 @@
         >
     <!-- width is @dimen/BoardGridViewTablet_layout_width -->
 
-<RelativeLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/BoardGridImageSizeDouble"
         >
@@ -25,14 +25,15 @@
 
     <FrameLayout
             android:id="@+id/grid_item_num_replies"
-            android:layout_width="@dimen/BoardGridImageSize"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/BoardGridImageSizeHalf"
             android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/grid_item_thread_thumb"
             android:background="@drawable/thread_list_selector_bg"
             >
-        <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
-            <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/grid_item_num_replies_text"/>
-            <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/grid_item_num_replies_label"/>
+        <LinearLayout style="@style/ThreadListHeaderNumWrapInnerHorizontal">
+            <TextView style="@style/ThreadListHeaderNumNumHorizontal" android:id="@+id/grid_item_num_replies_text"/>
+            <TextView style="@style/ThreadListHeaderNumLabelHorizontal" android:id="@+id/grid_item_num_replies_label"/>
         </LinearLayout>
         <View
                 android:layout_width="match_parent"
@@ -44,15 +45,16 @@
 
     <FrameLayout
             android:id="@+id/grid_item_num_images"
-            android:layout_width="@dimen/BoardGridImageSize"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/BoardGridImageSizeHalf"
             android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/grid_item_thread_thumb"
             android:layout_below="@+id/grid_item_num_replies"
             android:background="@drawable/thread_list_selector_bg"
             >
-        <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
-            <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/grid_item_num_images_text"/>
-            <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/grid_item_num_images_label"/>
+        <LinearLayout style="@style/ThreadListHeaderNumWrapInnerHorizontal">
+            <TextView style="@style/ThreadListHeaderNumNumHorizontal" android:id="@+id/grid_item_num_images_text"/>
+            <TextView style="@style/ThreadListHeaderNumLabelHorizontal" android:id="@+id/grid_item_num_images_label"/>
         </LinearLayout>
         <View
                 android:layout_width="match_parent"

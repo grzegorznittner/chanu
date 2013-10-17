@@ -302,6 +302,7 @@
     <!-- <dimen name="BoardGridTextHeight">96dp</dimen> -->
     <!-- <dimen name="BoardGridImageSize">108dp</dimen> -->
     <dimen name="BoardGridImageSize">144dp</dimen>
+    <dimen name="BoardGridImageSizeDouble">288dp</dimen>
     <dimen name="BoardGridImageSizeHalf">72dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">96dp</dimen>-->
 
