@@ -1,7 +1,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
 
-    <integer name="versionCode">33</integer>
-    <string name="versionName">1.33 GA</string>
-    <string name="versionDate">2013.10.11</string>
+    <integer name="versionCode">34</integer>
+    <string name="versionName">1.34</string>
+    <string name="versionDate">2013.10.18</string>
 
 </resources>
