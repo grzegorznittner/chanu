@@ -361,18 +361,25 @@ public class PostReplyActivity
                 + " replyText=" + intent.getStringExtra(REPLY_TEXT)
                 + " quoteText=" + intent.getStringExtra(QUOTE_TEXT)
         );
-        /*
         Bundle bundle = loadBundleFromPrefs();
         if (bundle != null
                 && boardCode != null
                 && boardCode.equals(bundle.getString(ChanBoard.BOARD_CODE))
                 && threadNo == bundle.getLong(ChanThread.THREAD_NO)
-                && postNo == bundle.getLong(ChanPost.POST_NO)
                 ) {
             if (DEBUG) Log.i(TAG, "setIntent() found saved bundle for same thread, restoring");
+            long savedPostNo = postNo;
+            String savedReplyText = replyText;
+            String savedQuoteText = quoteText;
             onRestoreInstanceState(bundle);
+            Editable msg = messageText.getText();
+            String s = msg.toString();
+            if (!s.contains(savedReplyText))
+                msg.append((s.trim().isEmpty() ? "" : "\n\n") + savedReplyText);
+            replyText = savedReplyText;
+            quoteText = savedQuoteText;
+            postNo = savedPostNo;
         }
-        */
     }
 
     @Override
@@ -1596,7 +1603,7 @@ public class PostReplyActivity
             // ignore, quote is already there
         }
         else if (replyText != null && !replyText.isEmpty() && (st = s.indexOf(replyText)) >= 0) {
-            t.replace(st, replyText.length(), quoteText);
+            t.replace(st, st + replyText.length(), quoteText);
         }
         else {
             t.insert(0, quoteText);
