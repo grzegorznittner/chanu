@@ -610,7 +610,9 @@
     <string name="pref_about_application_version">Version %1$s</string>
     <string name="pref_about_application_version_sum">Released %1$s</string>
     <string name="pref_about_application_rate">Rate Us</string>
-    <string name="pref_about_application_rate_sum">Visit Chanu on Google Play</string>
+    <string name="pref_about_application_rate_sum">Rate Chanu on Google Play</string>
+    <string name="pref_about_application_gplus">Visit Us</string>
+    <string name="pref_about_application_gplus_sum">Join the Chanu community on Google Plus</string>
     <string name="pref_about_data_category">Uses</string>
     <string name="pref_about_data_4chan">4chan API</string>
     <string name="pref_about_data_4chan_sum">Data sourced live via the 4chan API</string>

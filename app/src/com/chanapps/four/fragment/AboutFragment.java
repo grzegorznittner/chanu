@@ -2,6 +2,7 @@ package com.chanapps.four.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
@@ -44,6 +45,8 @@ public class AboutFragment extends PreferenceFragment
         linkPreference("pref_about_icon", "market://search?q=pub:Chanapps Software");
         linkPreference("pref_about_application_version", "market://details?id=com.chanapps.four.activity");
         linkPreference("pref_about_application_rate", "market://details?id=com.chanapps.four.activity");
+        //intentOrLinkPreference("pref_about_application_gplus", "107363899339170685863", "https://plus.google.com/communities/107363899339170685863");
+        linkPreference("pref_about_application_gplus", "https://plus.google.com/communities/107363899339170685863");
         linkPreference("pref_about_data_4chan", "https://github.com/4chan/4chan-API");
         linkPreference("pref_about_data_uil", "https://github.com/nostra13/Android-Universal-Image-Loader");
         linkPreference("pref_about_data_pulltorefresh", "https://github.com/chrisbanes/ActionBar-PullToRefresh");
@@ -174,6 +177,26 @@ public class AboutFragment extends PreferenceFragment
                 return true;
             }
         });
+    }
+
+    protected void intentOrLinkPreference(final String pref, final String googlePlusId, final String url) {
+        findPreference(pref).setOnPreferenceClickListener(
+                new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        if (getActivity() == null)
+                            return true;
+
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setClassName("com.google.android.apps.plus", "com.google.android.apps.plus.phone.UrlGatewayActivity");
+                        i.putExtra("customAppUri", googlePlusId);
+                        if (i.resolveActivity(getActivity().getPackageManager()) != null)
+                            startActivity(i);
+                        else
+                            ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
+                        return true;
+                    }
+                });
     }
 
 }

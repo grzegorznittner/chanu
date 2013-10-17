@@ -37,6 +37,12 @@
             android:summary="@string/pref_about_application_rate_sum"
             />
 
+        <Preference
+                android:key="pref_about_application_gplus"
+                android:title="@string/pref_about_application_gplus"
+                android:summary="@string/pref_about_application_gplus_sum"
+                />
+
     </PreferenceCategory>
 
     <PreferenceCategory
