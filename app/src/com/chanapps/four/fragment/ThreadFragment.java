@@ -63,8 +63,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public static final boolean DEBUG = false;
 
-    public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/#auto";
-    public static final int MAX_HTTP_GET_URL_LEN = 2000;
+    public static final String GOOGLE_TRANSLATE_PATTERN = "http://translate.google.com/m?hl=%s&sl=auto&tl=%s&ie=UTF8&prev=_m&q=%s"; // %1 = locale, %2 = locale, %3 = query
+    // e.g. http://translate.google.com/m?hl=en&sl=auto&tl=en&ie=ISO-8859-1&prev=_m&q=reich
+
+    public static final int MAX_HTTP_GET_URL_LEN = 1000;
     protected static final int LOADER_ID = 0;
     protected static final String FIRST_VISIBLE_POSITION = "firstVisiblePosition";
     protected static final String FIRST_VISIBLE_POSITION_OFFSET = "firstVisiblePositionOffset";
@@ -817,8 +819,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 jumpToBottom();
                 return true;
             case R.id.post_reply_all_menu:
-                long[] postNos = { threadNo };
-                postReply(replyText(postNos), selectQuoteText(0));
+                postReply("", selectQuoteText(0));
                 return true;
             /*
             case R.id.post_reply_all_quote_menu:
@@ -1177,7 +1178,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             Toast.makeText(getActivityContext(), R.string.translate_no_text, Toast.LENGTH_SHORT);
             return true;
         }
-        String translateUrl = GOOGLE_TRANSLATE_ROOT + "/" + localeCode + "/" + escaped;
+        String translateUrl = String.format(GOOGLE_TRANSLATE_PATTERN, localeCode, localeCode, escaped);
+        // String translateUrl = GOOGLE_TRANSLATE_PATTERN + "/" + localeCode + "/" + escaped;
         if (translateUrl.length() > MAX_HTTP_GET_URL_LEN)
             translateUrl = translateUrl.substring(0, MAX_HTTP_GET_URL_LEN);
         if (DEBUG) Log.i(TAG, "translatePosts() launching url=" + translateUrl);

@@ -720,7 +720,8 @@ public class ThreadViewer {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String autoloadType = prefs.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
                 context.getString(R.string.pref_autoload_images_default_value));
-        if (cursor.isFirst())
+        long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
+        if (resto == 0)
             return shouldAutoloadBySizeAndNetwork(cursor);
         else if (context.getString(R.string.pref_autoload_images_never_value).equals(autoloadType))
             return false;
