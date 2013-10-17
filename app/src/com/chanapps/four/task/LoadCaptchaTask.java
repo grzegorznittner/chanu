@@ -41,11 +41,13 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
     private ImageView recaptchaLoading = null;
     private String recaptchaChallenge = null;
     private Bitmap recaptchaBitmap = null;
+    private boolean changeBgColor;
 
-    public LoadCaptchaTask(Context context, ImageView recaptchaButton, ImageView recaptchaLoading) {
+    public LoadCaptchaTask(Context context, ImageView recaptchaButton, ImageView recaptchaLoading, boolean changeBgColor) {
         this.context = context;
         this.recaptchaButton = recaptchaButton;
         this.recaptchaLoading = recaptchaLoading;
+        this.changeBgColor = changeBgColor;
     }
 
     public String getRecaptchaChallenge() {
@@ -118,7 +120,8 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
                     return R.string.post_reply_captcha_error;
                 }
                 boolean invert = ThemeSelector.instance(context).isDark();
-                recaptchaBitmap = colorMap(recaptchaBitmap, invert);
+                if (changeBgColor)
+                    recaptchaBitmap = colorMap(recaptchaBitmap, invert);
                 return 0;
             }
         } catch (Exception e) {

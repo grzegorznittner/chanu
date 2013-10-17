@@ -156,7 +156,7 @@ public class ReportPostDialogFragment extends DialogFragment {
     public void reloadCaptcha() {
         reportRecaptchaResponse.setText("");
         reportRecaptchaResponse.setHint(R.string.post_reply_recaptcha_hint);
-        loadCaptchaTask = new LoadCaptchaTask(getActivity(), recaptchaButton, recaptchaLoading);
+        loadCaptchaTask = new LoadCaptchaTask(getActivity(), recaptchaButton, recaptchaLoading, false);
         loadCaptchaTask.execute(getString(R.string.post_reply_recaptcha_url_root));
     }
 

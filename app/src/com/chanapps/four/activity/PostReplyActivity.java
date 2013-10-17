@@ -756,7 +756,7 @@ public class PostReplyActivity
     public void reloadCaptcha() {
         recaptchaText.setText("");
         recaptchaText.setHint(R.string.post_reply_recaptcha_hint);
-        loadCaptchaTask = new LoadCaptchaTask(getApplicationContext(), recaptchaButton, recaptchaLoading);
+        loadCaptchaTask = new LoadCaptchaTask(getApplicationContext(), recaptchaButton, recaptchaLoading, true);
         loadCaptchaTask.execute(getString(R.string.post_reply_recaptcha_url_root));
     }
 
