@@ -709,6 +709,7 @@
     <string name="tutorial_post_desc_detail">Anyone can post comments and images until the thread expires.</string>
     <string name="tutorial_finished_desc">Finished</string>
     <string name="tutorial_finished_desc_detail">Click a board to start browsing content.</string>
+    <string name="tutorial_all">Chanu is a browser for 4chan, a forum of people from all over the world who post and discuss images.\n\nClick a board to start!</string>
 
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>

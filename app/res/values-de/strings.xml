@@ -1528,4 +1528,7 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
 <string name="plurals_thread_num_direct_replies_label_one">ANTWORT</string>
 <string name="plurals_thread_num_direct_replies_label_other">ANTWORTEN</string>
 
+
+    <string name="tutorial_all">Chanu is a browser for 4chan, a forum of people from all over the world who post and discuss images.\n\nClick a board to start!</string>
+
 </resources>

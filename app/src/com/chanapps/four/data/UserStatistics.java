@@ -28,12 +28,13 @@ public class UserStatistics {
 
 	public static enum ChanFeature {
 		NONE,
-	    INTRO_DESC,
+	    INTRO_DESC
+        //,
 	    //SECTION_DESC,
-        BOARD_DESC,
-        THREAD_DESC,
-        POST_DESC,
-        FINISHED_DESC
+        //BOARD_DESC,
+        //THREAD_DESC,
+        //POST_DESC,
+        //FINISHED_DESC
         //POPULAR_DESC,
         //WATCHLIST_DESC,
         //,WATCHLIST_CLEAN, WATCHLIST_DELETE,
@@ -43,12 +44,13 @@ public class UserStatistics {
 		//SETTINGS_NAMES, SETTINGS_4CHAN_PASS, SETTINGS_CACHE_SIZE, SETTINGS_WATCHLIST
 	}
     public static ChanFeature[] MAIN_TUTORIAL_FEATURES = new ChanFeature[]{
-            ChanFeature.INTRO_DESC,
+            ChanFeature.INTRO_DESC
+            //,
             //ChanFeature.SECTION_DESC,
-            ChanFeature.BOARD_DESC,
-            ChanFeature.THREAD_DESC,
-            ChanFeature.POST_DESC,
-            ChanFeature.FINISHED_DESC
+            //ChanFeature.BOARD_DESC,
+            //ChanFeature.THREAD_DESC,
+            //ChanFeature.POST_DESC,
+            //ChanFeature.FINISHED_DESC
     };
 	/*
 	public static ChanFeature[] BOARDSELECTOR_FEATURES = new ChanFeature[]{

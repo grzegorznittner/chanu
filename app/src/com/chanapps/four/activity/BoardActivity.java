@@ -527,13 +527,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 if (NetworkProfileManager.instance().getActivity() != activity) {
                     if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
                     NetworkProfileManager.instance().activityChange(activity);
-                    if (handler != null)
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                new TutorialOverlay(layout, Page.BOARD);
-                            }
-                        });
                 }
             }
         }).start();

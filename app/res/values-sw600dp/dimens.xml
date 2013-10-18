@@ -256,13 +256,15 @@
     <string name="BoardRefreshBarWidth">wrap_content</string>
 
     <!-- tutorial_overlay -->
-    <dimen name="tutorial_overlay_subject_layout_margin">32dp</dimen>
-    <dimen name="tutorial_overlay_subject_layout_marginBottom">16dp</dimen>
-    <dimen name="tutorial_overlay_subject_textSize">28sp</dimen>
-    <dimen name="tutorial_overlay_detail_textSize">22sp</dimen>
-    <dimen name="tutorial_overlay_button_paddingLeft">48dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingTop">8dp</dimen>
-    <dimen name="tutorial_overlay_button_textSize">18sp</dimen>
+    <dimen name="tutorial_overlay_paddingTop">259dp</dimen>
+    <dimen name="tutorial_overlay_inner_paddingLeft">11dp</dimen>
+    <dimen name="tutorial_overlay_subject_paddingTop">340dp</dimen>
+    <dimen name="tutorial_overlay_subject_textSize">72sp</dimen>
+    <dimen name="tutorial_overlay_detail_textSize">@dimen/BoardTypeText</dimen>
+    <integer name="tutorial_overlay_cols">@integer/BoardGridViewSmall.numColumns</integer>
+    <integer name="tutorial_overlay_border_cols">1</integer>
+    <integer name="tutorial_overlay_center_cols">2</integer>
+    <integer name="tutorial_overlay_fill_cols">3</integer>
 
     <!-- widgets dimension -->
     <dimen name="widget_onecol">40dp</dimen>

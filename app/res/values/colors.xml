@@ -45,6 +45,7 @@
 
     <color name="PaletteTransparent">#00000000</color>
     <color name="PaletteGreen">#43c279</color>
+    <color name="PaletteWelcomeText">@color/blue_base</color>
     <color name="PaletteYellowWhite">#ecebe7</color>
     <color name="PaletteDarkYellowWhite">#2c2b27</color>
     <color name="PaletteCardBg">#ffffff</color>
@@ -61,6 +62,7 @@
     <color name="PalettePureBlack">#ff252525</color>
     <color name="PaletteBlackHalfOpacity">#802d2d2d</color>
     <color name="PaletteBlack34Opacity">#d02d2d2d</color>
+    <color name="PaletteTutorialOpacity">#f02d2d2d</color>
     <color name="PaletteKambalaGrayBg">#dcdbe0</color>
     <color name="PaletteDarkBlue">#ff2a2b31</color>
     <color name="blue_base">#449def</color>

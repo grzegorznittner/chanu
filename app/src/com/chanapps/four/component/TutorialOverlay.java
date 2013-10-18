@@ -1,6 +1,7 @@
 package com.chanapps.four.component;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,6 +22,10 @@ public class TutorialOverlay {
 
     protected static final String TAG = TutorialOverlay.class.getSimpleName();
     protected static final boolean DEBUG = false;
+    protected static final boolean TEST_MODE = true;
+
+    protected static final String SUBJECT_FONT = "fonts/Edmondsans-Regular.otf";
+    private static Typeface subjectTypeface = null;
 
     public enum Page {
         //BOARDLIST,
@@ -35,19 +40,18 @@ public class TutorialOverlay {
     protected Page page;
     protected View layout;
     protected ViewGroup tutorialOverlay;
-    protected TextView tutorialOverlaySubject;
-    protected TextView tutorialOverlayDetail;
-    protected Button tutorialOverlayButton;
-    protected TextView tutorialOverlayDismiss;
 
     public TutorialOverlay(View layout, Page page) {
         this.layout =  layout;
         this.page = page;
+        if (layout == null)
+            return;
         tutorialOverlay = (ViewGroup)layout.findViewById(R.id.tutorial_overlay);
-        if (!displayNextTipForPage(page)) {
+        if (!TEST_MODE && !displayNextTipForPage(page)) {
             tutorialOverlay.setVisibility(View.GONE);
             return;
         }
+        setSubjectTypeface();
         addButtonHandlers();
         tutorialOverlay.setVisibility(View.VISIBLE);
     }
@@ -73,58 +77,31 @@ public class TutorialOverlay {
             return false;
         }
         if (DEBUG) Log.i(TAG, "found feature=" + feature);
-        String featureSubjectStringName = "tutorial_" + feature.toString().toLowerCase();
-        String featureDetailStringName = "tutorial_" + feature.toString().toLowerCase() + "_detail";
-        String subject = getStringResourceByName(layout.getContext(), featureSubjectStringName);
-        String detail = getStringResourceByName(layout.getContext(), featureDetailStringName);
-        if (subject == null || detail == null) {
-            Log.e(TAG, "string data missing for feature=" + feature);
-            return false;
-        }
-        setTipText(subject, detail);
         NetworkProfileManager.instance().getUserStatistics().tipDisplayed(feature);
         return true;
     }
 
-    protected void setTipText(String subject, String detail) {
-        tutorialOverlaySubject = (TextView)layout.findViewById(R.id.tutorial_overlay_subject);
-        tutorialOverlaySubject.setText(subject);
-        tutorialOverlayDetail = (TextView)layout.findViewById(R.id.tutorial_overlay_detail);
-        tutorialOverlayDetail.setText(detail);
+    protected void setSubjectTypeface() {
+        subjectTypeface = Typeface.createFromAsset(layout.getResources().getAssets(), SUBJECT_FONT);
+        TextView subject = (TextView)tutorialOverlay.findViewById(R.id.tutorial_overlay_subject);
+        if (subject != null && subjectTypeface != null)
+            subject.setTypeface(subjectTypeface);
     }
 
     protected void addButtonHandlers() {
-        tutorialOverlayButton = (Button)layout.findViewById(R.id.tutorial_overlay_button);
-        tutorialOverlayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!displayNextTipForPage(page))
-                    tutorialOverlay.setVisibility(View.GONE);
-                if (feature == UserStatistics.ChanFeature.FINISHED_DESC)
-                    updateButtonsToFinished();
-            }
-        });
-        tutorialOverlayDismiss = (TextView)layout.findViewById(R.id.tutorial_overlay_dismiss);
+        if (tutorialOverlay == null)
+            return;
+        View tutorialOverlayDismiss = tutorialOverlay.findViewById(R.id.tutorial_overlay_dismiss);
+        if (tutorialOverlayDismiss == null)
+            return;
         tutorialOverlayDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tutorialOverlay.setVisibility(View.GONE);
+                NetworkProfileManager.instance().getUserStatistics().tipDisplayed(feature);
                 NetworkProfileManager.instance().getUserStatistics().disableTips();
             }
         });
-    }
-
-    protected void updateButtonsToFinished() {
-        tutorialOverlayDismiss.setVisibility(View.GONE);
-        tutorialOverlayButton.setText(R.string.tutorial_overlay_finished);
-    }
-
-    private String getStringResourceByName(Context context, String aString) {
-        String packageName = context.getPackageName();
-        int resId = context.getResources().getIdentifier(aString, "string", packageName);
-        if (resId == 0)
-            return null;
-        return context.getString(resId);
     }
 
 }

@@ -258,13 +258,15 @@
 
 
     <!-- tutorial_overlay -->
-    <dimen name="tutorial_overlay_subject_layout_margin">16dp</dimen>
-    <dimen name="tutorial_overlay_subject_layout_marginBottom">8dp</dimen>
-    <dimen name="tutorial_overlay_subject_textSize">22sp</dimen>
-    <dimen name="tutorial_overlay_detail_textSize">18sp</dimen>
-    <dimen name="tutorial_overlay_button_paddingLeft">36dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingTop">8dp</dimen>
-    <dimen name="tutorial_overlay_button_textSize">18sp</dimen>
+    <dimen name="tutorial_overlay_paddingTop">247dp</dimen>
+    <dimen name="tutorial_overlay_inner_paddingLeft">0dp</dimen>
+    <dimen name="tutorial_overlay_subject_paddingTop">298dp</dimen>
+    <dimen name="tutorial_overlay_subject_textSize">48sp</dimen>
+    <dimen name="tutorial_overlay_detail_textSize">@dimen/BoardTypeText</dimen>
+    <integer name="tutorial_overlay_cols">5</integer>
+    <integer name="tutorial_overlay_border_cols">1</integer>
+    <integer name="tutorial_overlay_center_cols">3</integer>
+    <integer name="tutorial_overlay_fill_cols">4</integer>
 
     <!-- popular / home -->
     <dimen name="PopularTitle_paddingTop">24dp</dimen>

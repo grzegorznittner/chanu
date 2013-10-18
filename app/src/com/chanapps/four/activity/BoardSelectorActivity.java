@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import com.chanapps.four.component.AdComponent;
+import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.service.NetworkProfileManager;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,6 +53,27 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         checkNSFW();
         mDrawerAdapter.notifyDataSetInvalidated();
         if (DEBUG) Log.i(TAG, "switchBoard end /" + boardCode + "/ q=" + query);
+    }
+
+    @Override
+    protected void activityChangeAsync() {
+        final ChanIdentifiedActivity activity = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (NetworkProfileManager.instance().getActivity() != activity) {
+                    if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
+                    NetworkProfileManager.instance().activityChange(activity);
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                new TutorialOverlay(layout, TutorialOverlay.Page.BOARD);
+                            }
+                        });
+                }
+            }
+        }).start();
     }
 
 }

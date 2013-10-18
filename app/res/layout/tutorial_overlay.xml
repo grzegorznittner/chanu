@@ -1,78 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tutorial_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/PaletteBlack34Opacity"
+        android:background="@color/PaletteTutorialOpacity"
         android:clickable="true"
         android:visibility="gone"
         >
+<!--
+-->
 
-    <TextView
-            android:id="@+id/tutorial_overlay_subject"
-            android:layout_width="wrap_content"
+    <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_marginTop="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_marginRight="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_marginBottom="@dimen/tutorial_overlay_subject_layout_marginBottom"
-            android:textSize="@dimen/tutorial_overlay_subject_textSize"
-            android:textStyle="bold"
-            android:textColor="@color/PaletteGreen"
-            />
+            android:paddingTop="@dimen/tutorial_overlay_paddingTop"
+            android:orientation="horizontal"
+            android:weightSum="@integer/tutorial_overlay_cols"
+            >
 
-    <TextView
-            android:id="@+id/tutorial_overlay_detail"
-            android:layout_width="wrap_content"
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="@integer/tutorial_overlay_border_cols"
+                />
+
+        <TextView
+                android:id="@+id/tutorial_overlay_subject"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/tutorial_overlay_fill_cols"
+                android:paddingLeft="@dimen/tutorial_overlay_inner_paddingLeft"
+                android:textSize="@dimen/tutorial_overlay_subject_textSize"
+                android:textColor="@color/PaletteWelcomeText"
+                android:text="@string/tutorial_intro_desc"
+                />
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_marginTop="0dp"
-            android:layout_marginRight="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_marginBottom="0dp"
-            android:layout_below="@+id/tutorial_overlay_subject"
-            android:textColor="@color/PaletteWhite"
-            android:textSize="@dimen/tutorial_overlay_detail_textSize"
-            />
+            android:paddingTop="@dimen/tutorial_overlay_subject_paddingTop"
+            android:orientation="horizontal"
+            android:weightSum="@integer/tutorial_overlay_cols"
+            >
 
-    <Button
-            android:id="@+id/tutorial_overlay_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_marginRight="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_below="@+id/tutorial_overlay_detail"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/tutorial_overlay_button_bg"
-            android:paddingLeft="@dimen/tutorial_overlay_button_paddingLeft"
-            android:paddingTop="@dimen/tutorial_overlay_button_paddingTop"
-            android:paddingRight="@dimen/tutorial_overlay_button_paddingLeft"
-            android:paddingBottom="@dimen/tutorial_overlay_button_paddingTop"
-            android:gravity="center"
-            android:textColor="@color/PaletteWhite"
-            android:textStyle="bold"
-            android:textSize="@dimen/tutorial_overlay_button_textSize"
-            android:text="@string/tutorial_overlay_button"
-            />
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="@integer/tutorial_overlay_border_cols"
+                />
 
-    <Button
-            android:id="@+id/tutorial_overlay_dismiss"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_marginLeft="@dimen/tutorial_overlay_subject_layout_margin"
-            android:layout_below="@+id/tutorial_overlay_detail"
-            android:background="@drawable/tutorial_overlay_button_bg"
-            android:paddingLeft="@dimen/tutorial_overlay_button_paddingLeft"
-            android:paddingTop="@dimen/tutorial_overlay_button_paddingTop"
-            android:paddingRight="@dimen/tutorial_overlay_button_paddingLeft"
-            android:paddingBottom="@dimen/tutorial_overlay_button_paddingTop"
-            android:gravity="center"
-            android:textColor="@color/PaletteWhite"
-            android:textStyle="bold"
-            android:textSize="@dimen/tutorial_overlay_button_textSize"
-            android:text="@string/tutorial_overlay_dismiss"
-            />
+        <TextView
+                android:id="@+id/tutorial_overlay_detail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/tutorial_overlay_center_cols"
+                android:paddingLeft="@dimen/tutorial_overlay_inner_paddingLeft"
+                android:paddingRight="@dimen/tutorial_overlay_inner_paddingLeft"
+                android:textColor="@color/PaletteWhite"
+                android:textSize="@dimen/tutorial_overlay_detail_textSize"
+                android:textAllCaps="true"
+                android:text="@string/tutorial_all"
+                />
+    </LinearLayout>
 
-</RelativeLayout>
+    <View
+        android:id="@+id/tutorial_overlay_dismiss"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/board_grid_selector_bg"
+        />
+
+</FrameLayout>
