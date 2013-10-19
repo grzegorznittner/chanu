@@ -108,10 +108,6 @@ public abstract class BaseChanService extends Service {
 
     @Override
     public void onCreate() {
-        // TODO: It would be nice to have an option to hold a partial wakelock
-        // during processing, and to have a static startService(Context, Intent)
-        // method that would launch the service & hand off a wakelock.
-
         super.onCreate();
         HandlerThread thread = new HandlerThread("ChanService[" + mName + "]");
         thread.start();

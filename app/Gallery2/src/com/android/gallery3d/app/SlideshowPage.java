@@ -35,8 +35,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
@@ -80,7 +78,6 @@ public class SlideshowPage extends ActivityState {
 
     private Slide mPendingSlide = null;
     private boolean mIsActive = false;
-    private WakeLock mWakeLock;
     private Intent mResultIntent = new Intent();
 
     private GLView mRootPane = new GLView() {
@@ -107,11 +104,6 @@ public class SlideshowPage extends ActivityState {
     @Override
     public void onCreate(Bundle data, Bundle restoreState) {
         mFlags |= (FLAG_HIDE_ACTION_BAR | FLAG_HIDE_STATUS_BAR);
-
-        PowerManager pm = (PowerManager) mActivity.getAndroidContext()
-                .getSystemService(Context.POWER_SERVICE);
-        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK
-                | PowerManager.ON_AFTER_RELEASE, TAG);
 
         mHandler = new SynchronizedHandler(mActivity.getGLRoot()) {
             @Override
@@ -164,7 +156,6 @@ public class SlideshowPage extends ActivityState {
     @Override
     public void onPause() {
         super.onPause();
-        mWakeLock.release();
         mIsActive = false;
         mModel.pause();
         mSlideshowView.release();
@@ -176,7 +167,6 @@ public class SlideshowPage extends ActivityState {
     @Override
     public void onResume() {
         super.onResume();
-        mWakeLock.acquire();
         mIsActive = true;
         mModel.resume();
 

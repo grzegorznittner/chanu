@@ -12,20 +12,11 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="com.android.vending.BILLING"/>
 
     <!-- check if app is in the foreground -->
     <uses-permission android:name="android.permission.GET_TASKS"/>
-
-    <!-- used by gallery for slideshow -->
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-
-
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
 
     <supports-screens android:smallScreens="false"
                       android:normalScreens="true" android:largeScreens="true"
@@ -37,7 +28,7 @@
             android:logo="@drawable/app_icon_actionbar"
             android:label="@string/application_name"
             android:theme="@style/AppTheme"
-            android:debuggable="true">
+            >
 
         <activity
                 android:name=".PostReplyActivity"
@@ -304,17 +295,6 @@
         <activity android:name="com.google.ads.AdActivity"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
 
-        <!-- camera -->
-        <activity android:name=".CameraActivity"
-                  android:screenOrientation="portrait"
-                  android:label="@string/application_name"
-                  android:launchMode="standard"
-                >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
         <activity android:name=".VideoViewActivity"
                   android:launchMode="standard"
                   android:configChanges="orientation|keyboardHidden|screenSize"
@@ -332,6 +312,7 @@
                   android:theme="@style/android:Theme.Translucent.NoTitleBar"
                   android:launchMode="standard"
                   android:exported="false">
+            <!--
             <intent-filter android:label="@string/camera_setas_wallpaper">
                 <action android:name="android.intent.action.ATTACH_DATA"/>
                 <data android:mimeType="image/*"/>
@@ -341,6 +322,7 @@
                 <action android:name="android.intent.action.SET_WALLPAPER"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
+            -->
             <meta-data android:name="android.wallpaper.preview"
                        android:resource="@xml/wallpaper_picker_preview"/>
         </activity>
@@ -380,7 +362,7 @@
         </activity>
         <uses-library android:name="com.google.android.media.effects"
                       android:required="false"/>
-
+        <!--
         <activity android:name="com.android.gallery3d.app.SlideshowDream"
                   android:label="@string/slideshow_dream_name"
                   android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
@@ -394,6 +376,7 @@
                 <category android:name="android.intent.category.DREAM"/>
             </intent-filter>
         </activity>
+        -->
     </application>
 
 </manifest>

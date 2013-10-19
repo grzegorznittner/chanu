@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import android.util.Log;
 import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
 
@@ -153,6 +154,8 @@ public class PersistentCookieStore implements CookieStore {
         return s;
     }
 
+    protected static final String TAG = PersistentCookieStore.class.getSimpleName();
+
     protected Cookie decodeCookie(String cookieStr) {
         byte[] bytes = hexStringToByteArray(cookieStr);
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
@@ -161,7 +164,7 @@ public class PersistentCookieStore implements CookieStore {
             ObjectInputStream ois = new ObjectInputStream(is);
             cookie = ((SerializableCookie)ois.readObject()).getCookie();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Exception decoding cookie=" + cookieStr, e);
         }
 
         return cookie;

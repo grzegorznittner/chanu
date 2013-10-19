@@ -190,7 +190,7 @@ public class BoardGridViewer {
         else {
             url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
             if (DEBUG) Log.i(TAG, "setImage() /" + boardCode + "/ url=" + url);
-            int i = (new Long(threadNo % 3)).intValue();
+            int i = (Long.valueOf(threadNo % 3)).intValue();
             String defaultUrl = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
             iv.setTag(R.id.BOARD_GRID_VIEW_DEFAULT_DRAWABLE, defaultUrl);
             if (url == null || url.isEmpty())

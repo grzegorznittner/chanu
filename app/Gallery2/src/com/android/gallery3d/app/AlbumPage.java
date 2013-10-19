@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -31,8 +30,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.chanapps.four.gallery.ChanOffLineAlbum;
-import com.chanapps.four.gallery.ChanOffLineSource;
 import com.chanapps.four.gallery3d.R;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.android.gallery3d.common.Utils;
@@ -91,7 +88,6 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
     private AlbumDataAdapter mAlbumDataAdapter;
 
     protected SelectionManager mSelectionManager;
-    private Vibrator mVibrator;
     private GridDrawer mGridDrawer;
     private HighlightDrawer mHighlightDrawer;
 
@@ -282,8 +278,6 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
         mShowClusterMenu = data.getBoolean(KEY_SHOW_CLUSTER_MENU, false);
         mDetailsSource = new MyDetailsSource();
         Context context = mActivity.getAndroidContext();
-        mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-
         startTransition(data);
 
         // Enable auto-select-all for mtp album
@@ -549,7 +543,6 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
         switch (mode) {
             case SelectionManager.ENTER_SELECTION_MODE: {
                 mActionMode = mActionModeHandler.startActionMode();
-                mVibrator.vibrate(100);
                 break;
             }
             case SelectionManager.LEAVE_SELECTION_MODE: {

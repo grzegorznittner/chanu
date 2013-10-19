@@ -40,8 +40,7 @@ public class ExtendedImageDownloader extends URLConnectionImageDownloader {
 		try {
 			imageUrl = new URI(imageUri);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            Log.e(TAG, "Exception with uri syntax", e);
 		}
         String protocol = imageUrl.getScheme();
         if (PROTOCOL_ASSETS.equals(protocol)) {

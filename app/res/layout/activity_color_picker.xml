@@ -75,7 +75,15 @@
 	android:orientation="horizontal"
 	android:layout_alignParentBottom="true"
 	style="@android:style/ButtonBar">
-	
+
+        <Button
+                android:id="@+id/cancel_button"
+                android:text="Cancel"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.50"
+                />
+
 		<Button
 			android:id="@+id/ok_button"
 			android:text="Ok"
@@ -83,14 +91,7 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="0.50"
 		/>
-		<Button
-			android:id="@+id/cancel_button"
-			android:text="Cancel"
-			android:layout_width="0px"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.50"
-		/>
-	
+
 	</LinearLayout>
 
 </RelativeLayout>

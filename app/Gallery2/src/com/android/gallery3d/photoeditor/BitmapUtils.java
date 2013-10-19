@@ -98,7 +98,7 @@ public class BitmapUtils {
             try {
                 stream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Exception closing stream=" + stream, e);
             }
         }
     }
@@ -116,7 +116,7 @@ public class BitmapUtils {
             bounds.right = options.outWidth;
             bounds.bottom = options.outHeight;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Exception getting bitmap bounds", e);
         } finally {
             closeStream(is);
         }
@@ -240,7 +240,7 @@ public class BitmapUtils {
             os = new FileOutputStream(file);
             bitmap.compress(format, DEFAULT_COMPRESS_QUALITY, os);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Exception file not found saving bitmap", e);
         } finally {
             closeStream(os);
         }

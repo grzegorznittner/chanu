@@ -762,7 +762,7 @@ public class ChanPost {
             while (m.find()) {
                 if (backlinks == null)
                     backlinks = new HashSet<Long>();
-                backlinks.add(new Long(m.group(1)));
+                backlinks.add(Long.valueOf(m.group(1)));
             }
         }
         return backlinks;

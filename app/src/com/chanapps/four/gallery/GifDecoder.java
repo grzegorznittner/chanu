@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.util.Log;
 
 public class GifDecoder {
 	/**
@@ -374,6 +375,8 @@ public class GifDecoder {
 		return curByte;
 	}
 
+    protected static final String TAG = GifDecoder.class.getSimpleName();
+
 	/**
 	 * Reads next variable length block from input.
 	 * 
@@ -393,7 +396,7 @@ public class GifDecoder {
 					n += count;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+                Log.e(TAG, "Exception reading block", e);
 			}
 			if (n < blockSize) {
 				status = STATUS_FORMAT_ERROR;
@@ -417,7 +420,7 @@ public class GifDecoder {
 		try {
 			n = in.read(c);
 		} catch (Exception e) {
-			e.printStackTrace();
+            Log.e(TAG, "Exception reading color table", e);
 		}
 		if (n < nbytes) {
 			status = STATUS_FORMAT_ERROR;

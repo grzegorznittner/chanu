@@ -94,7 +94,6 @@ public class PostReplyActivity
 
     protected boolean exitingOnSuccess = false;
 
-    private static final int IMAGE_CAPTURE = CameraComponent.CAMERA_RESULT;
     private static final int IMAGE_GALLERY = 0x11;
     //private static final String ANDROID_IMAGE_CAPTURE = "android.media.action.IMAGE_CAPTURE";
 
@@ -132,7 +131,6 @@ public class PostReplyActivity
     private ImageView imagePreview;
     private ProgressBar previewProgress;
     private TextView.OnEditorActionListener fastSend;
-    private CameraComponent camera;
 
     protected Uri imageUri;
     protected String boardCode = null;
@@ -184,18 +182,6 @@ public class PostReplyActivity
             setFromIntent(getIntent());
         if (boardCode == null || boardCode.isEmpty())
             boardCode = ChanBoard.DEFAULT_BOARD_CODE;
-        setupCamera();
-    }
-
-    protected void setupCamera() {
-        boolean hasCameraFeature = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
-        int numCameras = Camera.getNumberOfCameras();
-        boolean hasCamera = hasCameraFeature && numCameras > 0;
-        if (DEBUG) Log.i(TAG, "has cameraFeature=" + hasCameraFeature + " numCameras=" + numCameras + " hasCamera=" + hasCamera);
-        if (hasCamera)
-            camera = new CameraComponent(getApplicationContext(), imageUri);
-        else
-            camera = null;
     }
 
     @Override
@@ -780,24 +766,11 @@ public class PostReplyActivity
         );
         if (resultCode != RESULT_OK) {
             Log.e(TAG, "onActivityResult error resultCode=" + resultCode + " intent=" + intent);
-            int errId = requestCode == IMAGE_CAPTURE
-                    ? R.string.post_reply_no_load_camera_image
-                    : R.string.post_reply_no_load_gallery_image;
+            int errId = R.string.post_reply_no_load_gallery_image;
             Toast.makeText(this, errId, Toast.LENGTH_SHORT).show();
             return;
         }
         switch (requestCode) {
-            case IMAGE_CAPTURE:
-                //imageUri = intent.hasExtra()
-                //imageUri = Uri.parse(intent.getStringExtra(CameraActivity.CAMERA_IMAGE_URL));
-                if (DEBUG) Log.i(TAG, "Got camera result for activity url=" + imageUri);
-                if (imageUri == null) {
-                    Log.e(TAG, "null image uri for camera image");
-                    Toast.makeText(this, R.string.post_reply_no_load_camera_image, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                camera.handleResult();
-                break;
             case IMAGE_GALLERY:
                 if (DEBUG) Log.i(TAG, "Got gallery result for activity imageUri=" + imageUri);
                 if (intent == null || intent.getData() == null) {
@@ -1548,9 +1521,6 @@ public class PostReplyActivity
     };
 
     protected void adjustMenuVisibility(Menu menu) {
-        MenuItem item = menu.findItem(R.id.post_reply_camera_menu);
-        if (item != null)
-            item.setVisible(camera != null);
         MenuItem item2 = menu.findItem(R.id.post_reply_pass_enable_menu);
         if (item2 != null)
             item2.setVisible(showPassEnable);
@@ -1572,9 +1542,6 @@ public class PostReplyActivity
                     return true;
                 case R.id.post_reply_picture_menu:
                     startGallery();
-                    return true;
-                case R.id.post_reply_camera_menu:
-                    imageUri = camera.startCamera(PostReplyActivity.this);
                     return true;
                 case R.id.post_reply_pass_enable_menu:
                     if (!isPassEnabled() && isPassAvailable())

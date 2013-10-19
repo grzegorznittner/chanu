@@ -22,7 +22,7 @@
                 android:orientation="horizontal"
                 android:weightSum="2"
                 android:descendantFocusability="beforeDescendants"
-                android:focusableInTouchMode="true">
+                android:focusableInTouchMode="true" android:baselineAligned="false">
 
             <LinearLayout
                     android:layout_width="0dp"

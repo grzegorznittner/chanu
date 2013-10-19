@@ -16,11 +16,6 @@
           android:icon="@drawable/content_picture_light"
             />
 
-    <item android:id="@+id/post_reply_camera_menu"
-          android:title="@string/post_reply_camera_menu"
-          android:icon="@drawable/device_access_camera"
-            />
-
     <item android:id="@+id/post_reply_pass_enable_menu"
           android:title="@string/post_reply_pass_enable_menu"
           android:icon="@drawable/device_access_accounts"

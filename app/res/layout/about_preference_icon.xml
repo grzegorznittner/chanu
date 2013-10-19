@@ -9,8 +9,8 @@
               android:paddingBottom="6dp"
               android:paddingRight="?android:attr/scrollbarSize">
     <com.chanapps.four.component.StretchyImageView android:id="@+id/icon"
-               android:layout_width="512px"
-               android:layout_height="512px"
+               android:layout_width="256dp"
+               android:layout_height="256dp"
                android:layout_marginLeft="6dp"
                android:layout_marginRight="6dp"
                android:layout_gravity="center"
