@@ -126,6 +126,12 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:

@@ -112,7 +112,8 @@ public class ThreadViewer {
                                        View.OnClickListener overflowListener,
                                        View.OnClickListener expandedImageListener,
                                        View.OnClickListener itemBoardLinkListener,
-                                       View.OnLongClickListener startActionModeListener
+                                       View.OnLongClickListener startActionModeListener,
+                                       View.OnClickListener goToThreadUrlListener
                                        ) {
         if (imageLoader == null)
             throw new IllegalStateException("Must call initStatics() before calling setViewValue()");
@@ -143,7 +144,9 @@ public class ThreadViewer {
                     //postReplyListener,
                     overflowListener,
                     expandedImageListener,
-                    startActionModeListener);
+                    startActionModeListener,
+                    goToThreadUrlListener
+            );
     }
 
     protected static boolean setListLinkView(final View view, final Cursor cursor, int flags, View.OnClickListener itemBoardLinkListener) {
@@ -169,7 +172,9 @@ public class ThreadViewer {
                                           //View.OnClickListener postReplyListener,
                                           View.OnClickListener overflowListener,
                                           View.OnClickListener expandedImageListener,
-                                          final View.OnLongClickListener startActionModeListener) {
+                                          final View.OnLongClickListener startActionModeListener,
+                                          View.OnClickListener goToThreadUrlListener
+                                          ) {
         //if (startActionModeListener != null)
         //    view.setOnLongClickListener(startActionModeListener);
         ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
@@ -182,10 +187,13 @@ public class ThreadViewer {
                 overflowListener,
                 null);
         setImageWrapper(viewHolder, flags);
-        if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
             setHeaderImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
-        else
+            setWebLink(viewHolder, goToThreadUrlListener);
+        }
+        else {
             setImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
+        }
         setCountryFlag(viewHolder, cursor, flags);
         setHeaderValue(viewHolder, cursor, sameIdOnClickListener);
         setSubject(viewHolder, cursor, flags, backlinkOnClickListener);
@@ -1068,4 +1076,10 @@ public class ThreadViewer {
                 }
             });
     }
+
+    private static void setWebLink(ThreadViewHolder viewHolder, View.OnClickListener goToThreadUrlListener) {
+        if (viewHolder.list_item_web_link != null)
+            viewHolder.list_item_web_link.setOnClickListener(goToThreadUrlListener);
+    }
+
 }

@@ -755,6 +755,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
+            menu.findItem(R.id.web_menu).setVisible(false);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -766,6 +767,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
+            menu.findItem(R.id.web_menu).setVisible(false);
         }
         else if (board.isPopularBoard()) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -777,6 +779,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
+            menu.findItem(R.id.web_menu).setVisible(true);
         }
         else if (board.isVirtualBoard()) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -788,6 +791,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
+            menu.findItem(R.id.web_menu).setVisible(false);
         }
         else {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -799,7 +803,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.board_rules_menu).setVisible(true);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
+            menu.findItem(R.id.web_menu).setVisible(true);
         }
+        menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
+
         return super.onPrepareOptionsMenu(menu);
     }
 

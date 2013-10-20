@@ -22,7 +22,7 @@ public class TutorialOverlay {
 
     protected static final String TAG = TutorialOverlay.class.getSimpleName();
     protected static final boolean DEBUG = false;
-    protected static final boolean TEST_MODE = true;
+    protected static final boolean TEST_MODE = false;
 
     protected static final String SUBJECT_FONT = "fonts/Edmondsans-Regular.otf";
     private static Typeface subjectTypeface = null;
@@ -47,10 +47,13 @@ public class TutorialOverlay {
         if (layout == null)
             return;
         tutorialOverlay = (ViewGroup)layout.findViewById(R.id.tutorial_overlay);
+        if (tutorialOverlay == null)
+            return;
         if (!TEST_MODE && !displayNextTipForPage(page)) {
             tutorialOverlay.setVisibility(View.GONE);
             return;
         }
+
         setSubjectTypeface();
         addButtonHandlers();
         tutorialOverlay.setVisibility(View.VISIBLE);

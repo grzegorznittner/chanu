@@ -54,6 +54,7 @@ public class ThreadViewHolder {
     public View list_item_left_spacer;
     public View list_item_num_horizontal_border;
     public View list_item_num_vertical_border;
+    public View list_item_web_link;
 
     public ThreadViewHolder(View item) {
         list_item = (ViewGroup)item;
@@ -96,6 +97,7 @@ public class ThreadViewHolder {
         list_item_left_spacer = item.findViewById(R.id.list_item_left_spacer);
         list_item_num_horizontal_border = item.findViewById(R.id.list_item_num_horizontal_border);
         list_item_num_vertical_border = item.findViewById(R.id.list_item_num_vertical_border);
+        list_item_web_link = item.findViewById(R.id.list_item_web_link);
     }
 
 }

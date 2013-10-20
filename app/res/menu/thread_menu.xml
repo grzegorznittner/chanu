@@ -58,6 +58,7 @@
     <item android:id="@+id/web_menu"
           android:title="@string/direct_web_menu"
           android:icon="@drawable/location_web_site"
+          android:visible="false"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
@@ -74,5 +75,6 @@
     <item android:id="@+id/about_menu"
           android:title="@string/about_menu"
           android:icon="@drawable/action_about"
+          android:visible="false"
             />
 </menu>

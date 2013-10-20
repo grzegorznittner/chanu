@@ -29,16 +29,34 @@
                 <TextView style="@style/ThreadListItemBarAgo" android:id="@+id/list_item_header_bar_ago"/>
             </LinearLayout>
 
-            <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:orientation="horizontal"
+                    android:layout_marginRight="@dimen/ThreadListItemReplyWrap_marginRight"
+                    >
+
                 <FrameLayout
-                        android:id="@+id/list_item_header_bar_chat_wrapper"
+                        android:id="@+id/list_item_web_link"
                         style="@style/ThreadListItemBarChat"
-                        android:foreground="@drawable/thread_list_direct_replies_overlay"
+                        android:foreground="@drawable/thread_list_selector_bg"
                         >
-                    <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                    <ImageView style="@style/ThreadListItemBarWebIcon"/>
                 </FrameLayout>
-                <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
-            </FrameLayout>
+
+                <FrameLayout style="@style/ThreadListItemReplyWrap" android:layout_marginRight="0dp" android:id="@+id/list_item_num_direct_replies">
+                    <FrameLayout
+                            android:id="@+id/list_item_header_bar_chat_wrapper"
+                            style="@style/ThreadListItemBarChat"
+                            android:foreground="@drawable/thread_list_direct_replies_overlay"
+                            >
+                        <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                    </FrameLayout>
+                    <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
+                </FrameLayout>
+
+            </LinearLayout>
 
             <FrameLayout style="@style/ThreadListItemBarOverflow" android:id="@+id/list_item_header_bar_overflow_wrapper">
                 <ImageView style="@style/ThreadListItemBarOverflowIcon" android:id="@+id/list_item_header_bar_overflow"/>

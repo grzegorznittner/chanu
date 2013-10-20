@@ -691,6 +691,13 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="ThreadListItemBarWebIcon" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:src">?themedCardWebIcon</item>
+    </style>
+
     <style name="ThreadListItemBarChatIcon" parent="AppTheme">
         <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>

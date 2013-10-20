@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.AnalyticsComponent;
+import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.component.SendFeedback;
 import com.chanapps.four.data.*;
 
@@ -50,7 +51,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -451,6 +452,12 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     public void setContentView(int resId) {
         super.setContentView(resId);
         super.mGLRootView = (GLRootView) findViewById(R.id.gl_root_view);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

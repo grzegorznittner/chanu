@@ -2,6 +2,7 @@
 
     <style name="AppTheme" parent="Theme.Pastel">
         <item name="themedCardChatIcon">@drawable/social_chat_light</item>
+        <item name="themedCardWebIcon">@drawable/location_web_site_light</item>
         <item name="themedCardLineBackground">@color/PaletteThreadLine</item>
         <item name="themedCardListBackground">@color/PaletteCardListBg</item>
         <item name="themedCardListBarBg">@color/PaletteCardListBarBg</item>
@@ -31,6 +32,7 @@
 
     <style name="AppTheme.Dark" parent="Theme.Dark">
         <item name="themedCardChatIcon">@drawable/social_chat</item>
+        <item name="themedCardWebIcon">@drawable/location_web_site</item>
         <item name="themedCardLineBackground">@color/DarkPaletteThreadLine</item>
         <item name="themedCardListBackground">@color/DarkPaletteCardListBg</item>
         <item name="themedCardListBarBg">@color/DarkPaletteCardListBarBg</item>

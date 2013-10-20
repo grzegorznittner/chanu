@@ -49,6 +49,7 @@
     -->
 
     <attr name="themedCardChatIcon" format="reference"/>
+    <attr name="themedCardWebIcon" format="reference"/>
     <attr name="themedCardLineBackground" format="reference|color"/>
     <attr name="themedCardListBackground" format="reference|color"/>
     <attr name="themedCardListBarBg" format="reference|color"/>

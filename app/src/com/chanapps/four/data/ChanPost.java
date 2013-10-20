@@ -628,6 +628,13 @@ public class ChanPost {
                 items.add(country_name);
             if (fsize > 0)
                 items.add(imageDimensions());
+            /*
+            if (resto == 0) {
+                String threadUrl = ChanThread.threadUrl(board, no);
+                String threadRef = "<a href=\"" + threadUrl + "\">" + threadUrl + "</a>";
+                items.add(threadRef);
+            }
+            */
         }
         //if (boardLevel && resto <= 0) {
             String s = threadInfoLine(context, boardLevel, showNumReplies, abbrev);

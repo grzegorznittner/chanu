@@ -275,7 +275,6 @@
                 </FrameLayout>
 
                 <View
-                        android:id="@+id/spacer"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/PostReplyEditText_layout_marginBottom"
                         />

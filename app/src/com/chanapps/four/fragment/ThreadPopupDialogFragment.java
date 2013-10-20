@@ -373,7 +373,9 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                     null,
                     null,
                     null,
-                    null);
+                    null,
+                    null
+            );
         }
     };
 

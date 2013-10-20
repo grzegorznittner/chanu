@@ -28,6 +28,7 @@
     <item android:id="@+id/scroll_to_bottom_menu"
           android:title="@string/scroll_to_bottom_menu"
           android:icon="@drawable/av_next"
+          android:visible="false"
             />
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
@@ -69,5 +70,6 @@
     <item android:id="@+id/about_menu"
           android:title="@string/about_menu"
           android:icon="@drawable/action_about"
+          android:visible="false"
             />
 </menu>

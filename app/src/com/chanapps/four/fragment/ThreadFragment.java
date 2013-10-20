@@ -22,6 +22,7 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.ActivityDispatcher;
 //import com.chanapps.four.component.AdComponent;
+import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.*;
@@ -702,8 +703,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         setDeadStatusAsync();
         setWatchMenuAsync();
         setupShareActionProviderOPMenu(menu);
-        if (getActivity() != null)
+        if (getActivity() != null) {
             ((ThreadActivity)getActivity()).createSearchView(menu);
+            menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(getActivity()).hasProkey());
+        }
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -723,8 +726,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                                 item.setVisible(undead);
                             if ((item = menu.findItem(R.id.post_reply_all_menu)) != null)
                                 item.setVisible(undead);
-                            if ((item = menu.findItem(R.id.web_menu)) != null)
-                                item.setVisible(undead);
+                            //if ((item = menu.findItem(R.id.web_menu)) != null)
+                            //    item.setVisible(undead);
                         }
                     });
             }
@@ -1718,6 +1721,16 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         return "ThreadFragment[] " + getChanActivityId().toString();
     }
 
+    protected View.OnClickListener goToThreadUrlListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (getActivityContext() != null) {
+                String url = ChanThread.threadUrl(boardCode, threadNo);
+                ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
+            }
+        }
+    };
+
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -1736,7 +1749,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     overflowListener,
                     threadListener.expandedImageListener,
                     threadListener.itemBoardLinkListener,
-                    startActionModeListener
+                    startActionModeListener,
+                    goToThreadUrlListener
             );
         }
     };
