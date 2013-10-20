@@ -241,7 +241,7 @@ public class BitmapUtils {
 
             // The method name changes between API Level 9 and 10.
             if (Build.VERSION.SDK_INT <= 9) {
-                return (Bitmap) clazz.getMethod("captureFrame").invoke(instance);
+                return null; // return (Bitmap) clazz.getMethod("captureFrame").invoke(instance);
             } else {
                 byte[] data = (byte[]) clazz.getMethod("getEmbeddedPicture").invoke(instance);
                 if (data != null) {
@@ -265,12 +265,14 @@ public class BitmapUtils {
         } catch (IllegalAccessException e) {
             Log.e(TAG, "createVideoThumbnail", e);
         } finally {
+            /* // we don't use videos
             try {
                 if (instance != null) {
                     clazz.getMethod("release").invoke(instance);
                 }
             } catch (Exception ignored) {
             }
+            */
         }
         return null;
     }
