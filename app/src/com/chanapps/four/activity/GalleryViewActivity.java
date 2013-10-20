@@ -165,6 +165,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     protected void onCreate(Bundle bundle){
         super.onCreate(bundle);
+        if (DEBUG) Log.i(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -355,7 +356,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             @Override
             public void run() {
                 if (NetworkProfileManager.instance().getActivity() != activity) {
-                    if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
+                    if (DEBUG) Log.i(TAG, "onResume() activityChange to " + activity.getChanActivityId() );
                     NetworkProfileManager.instance().activityChange(activity);
                 }
             }

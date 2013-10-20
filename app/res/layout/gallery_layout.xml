@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.chanapps.four.gallery.GalleryFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.chanapps.four.gallery.GalleryFrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/gallery_frame_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -8,23 +10,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
-    <FrameLayout android:id="@+id/gifview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone">
-            <WebView android:id="@+id/video_view"
-			    android:layout_gravity="center"
-			    android:layout_width="1dp"
-            	android:layout_height="1dp"
-			    android:layout_marginLeft="0dp"
-			   	android:layout_marginRight="0dp"
-			   	android:layout_marginTop="20dp"
-			   	android:layout_marginBottom="20dp"
-			   	android:scaleType="center"
-			    android:background="#000000"
-			/>
-    </FrameLayout>
+    <include layout="@layout/gifview" android:id="@+id/gifview"/>
     <FrameLayout android:id="@+id/footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

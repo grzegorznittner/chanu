@@ -29,12 +29,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.MeasureSpec;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ShareActionProvider;
@@ -76,7 +72,7 @@ public class PhotoPage extends ActivityState
         implements PhotoView.PhotoTapListener, FilmStripView.Listener,
         UserInteractionListener {
     private static final String TAG = "PhotoPage";
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     private static final int MSG_HIDE_BARS = 1;
 
@@ -305,8 +301,13 @@ public class PhotoPage extends ActivityState
 
 	    		MediaItem photo = mModel.getCurrentMediaItem();
 	    		if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
-	        		playAnimatedGif(photo);
+                    if (DEBUG) Log.w(TAG, "Playing anim gif version: " + version + ", fullImage: " + fullImage);
+                    playAnimatedGif(photo);
 	        	}
+                else {
+                    if (DEBUG) Log.w(TAG, "Hiding anim gif view version: " + version + ", fullImage: " + fullImage);
+                    hideAnimatedGif();
+                }
 		        if (mFilmStripView == null) initFilmStripView();
 		    }
 		});
@@ -364,6 +365,9 @@ public class PhotoPage extends ActivityState
     	if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
     		playAnimatedGif(photo);
     	}
+        else {
+            hideAnimatedGif();
+        }
         if (mCurrentPhoto == photo) return;
         mCurrentPhoto = photo;
         if (mCurrentPhoto == null) return;
@@ -641,16 +645,58 @@ public class PhotoPage extends ActivityState
             Toast.makeText(activity, activity.getString(R.string.video_err), Toast.LENGTH_SHORT).show();
         }
     }
-    
+
+    private void hideAnimatedGif() {
+        Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
+        View view = activity.findViewById(com.chanapps.four.activity.R.id.gifview);
+        //if (view == null || view.getVisibility() != View.GONE) {
+        if (view != null) {
+            view.setVisibility(View.GONE);
+        }
+    }
+
 	public void playAnimatedGif(MediaItem item) {
 		Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
-		View rootView = activity.findViewById(android.R.id.content).getRootView();
-		View view = activity.findViewById(com.chanapps.four.activity.R.id.gifview);
-		if (view == null || view.getVisibility() != View.GONE) {
-			return;
+        if (activity == null) {
+            if (DEBUG) Log.i(TAG, "Play anim gif null activity, exiting");
+            return;
+        }
+        ViewGroup contentView = (ViewGroup)activity.findViewById(android.R.id.content);
+		View rootView = contentView.getRootView();
+        //ViewGroup galleryFrameLayout = (ViewGroup)activity.findViewById(com.chanapps.four.activity.R.id.gallery_frame_layout);
+		View view = contentView.findViewById(com.chanapps.four.activity.R.id.gifview);
+		//if (view == null || view.getVisibility() != View.GONE) {
+		if (view == null) {
+            if (DEBUG) Log.i(TAG, "Play anim gif null gifview, recreating activity=" + activity);
+            activity.recreate();
+            return;
+            /*
+            LayoutInflater inflater = activity.getLayoutInflater();
+            view = inflater.inflate(com.chanapps.four.activity.R.layout.gifview, galleryFrameLayout, false);
+            if (view == null) {
+                if (DEBUG) Log.i(TAG, "Couldn't recreate gifview, exiting");
+                return;
+            }
+            galleryFrameLayout.addView(view, 2);
+            if (DEBUG) Log.i(TAG, "Recreated gifview=" + view);
+		    */
 		}
-		
-		if (DEBUG) Log.w(TAG, "Screen size w: " + rootView.getMeasuredWidth() + " h: " + rootView.getMeasuredHeight());
+        WebView myWebView = (WebView) view.findViewById(com.chanapps.four.activity.R.id.video_view);
+        if (myWebView == null) {
+            if (DEBUG) Log.i(TAG, "Exiting play anim gif since null webview");
+            return;
+        }
+        Uri localPlayUri = item.getPlayUri();
+        if (localPlayUri == null) {
+            if (DEBUG) Log.i(TAG, "Exiting play anim gif since null webview url");
+            return;
+        }
+        if (localPlayUri.equals(myWebView.getTag())) {
+            if (DEBUG) Log.i(TAG, "Exiting play anim gif since already playing tagged webview url = " + localPlayUri);
+            return;
+        }
+
+        if (DEBUG) Log.w(TAG, "Screen size w: " + rootView.getMeasuredWidth() + " h: " + rootView.getMeasuredHeight());
 		if (DEBUG) Log.w(TAG, "Image  size w: " + item.getWidth() + " h: " + item.getHeight());
 
 		int maxWidth = rootView.getMeasuredWidth() == 0 ? 200 : rootView.getMeasuredWidth();
@@ -661,15 +707,16 @@ public class PhotoPage extends ActivityState
 		int scale = Math.min(maxWidth * 100 / itemWidth, maxHeight * 100 / itemHeight);
 		if (DEBUG) Log.w(TAG, "scale: " + scale);
     	
-    	WebView myWebView = (WebView) activity.findViewById(com.chanapps.four.activity.R.id.video_view);
     	myWebView.setLayoutParams(new FrameLayout.LayoutParams(itemWidth * scale / 100, itemHeight * scale / 100));
     	myWebView.setInitialScale(scale);
-    	myWebView.getRootView().setBackgroundColor(0xffffff);
-    	myWebView.setBackgroundColor(0xffffff);
+    	myWebView.getRootView().setBackgroundColor(0x000000);
+    	myWebView.setBackgroundColor(0x000000);
     	myWebView.getSettings().setJavaScriptEnabled(false);
     	myWebView.getSettings().setBuiltInZoomControls(false);
 
-    	myWebView.loadUrl(item.getPlayUri().toString());
+        if (DEBUG) Log.i(TAG, "Loading anim gif webview url = " + localPlayUri);
+    	myWebView.loadUrl(localPlayUri.toString());
+        myWebView.setTag(localPlayUri);
 
 		view.setVisibility(View.VISIBLE);
 	}
