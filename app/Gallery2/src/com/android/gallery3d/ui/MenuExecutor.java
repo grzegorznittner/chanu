@@ -149,8 +149,8 @@ public class MenuExecutor {
         boolean supportDelete = (supported & MediaObject.SUPPORT_DELETE) != 0;
         boolean supportRotate = (supported & MediaObject.SUPPORT_ROTATE) != 0;
         boolean supportCrop = (supported & MediaObject.SUPPORT_CROP) != 0;
-        //boolean supportShare = (supported & MediaObject.SUPPORT_SHARE) != 0;
-        boolean supportShare = false; // doesn't work
+        boolean supportShare = (supported & MediaObject.SUPPORT_SHARE) != 0;
+        //boolean supportShare = false; // doesn't work
         boolean supportSetAs = (supported & MediaObject.SUPPORT_SETAS) != 0;
         boolean supportShowOnMap = (supported & MediaObject.SUPPORT_SHOW_ON_MAP) != 0;
         boolean supportCache = (supported & MediaObject.SUPPORT_CACHE) != 0;

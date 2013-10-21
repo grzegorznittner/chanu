@@ -16,6 +16,9 @@
 
 package com.android.gallery3d.app;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import android.app.ActionBar;
@@ -24,11 +27,13 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.*;
 import android.view.View.MeasureSpec;
 import android.webkit.WebView;
@@ -62,6 +67,8 @@ import com.android.gallery3d.util.GalleryUtils;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.VideoViewActivity;
+import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.gallery3d.R;
 import com.chanapps.four.service.ImageDownloadService;
@@ -72,7 +79,7 @@ public class PhotoPage extends ActivityState
         implements PhotoView.PhotoTapListener, FilmStripView.Listener,
         UserInteractionListener {
     private static final String TAG = "PhotoPage";
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     private static final int MSG_HIDE_BARS = 1;
 
@@ -113,13 +120,13 @@ public class PhotoPage extends ActivityState
     private MenuExecutor mMenuExecutor;
     private boolean mIsActive;
     private ShareActionProvider mShareActionProvider;
-    
+
     public static final String HTML_START = "<!DOCTYPE html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><meta http-equiv=\"cache-control\" content=\"no-cache\"/>" +
-    		"<meta name=\"viewport\" content=\"width=device-width, target-densitydpi=device-dpi, user-scalable=no\"/>" +
-    		"<style type=\"text/css\">" +
-    		"html, body {height: 100%;width: 100%;color: black;background: black;}" +
-    		"#image {position:fixed;top:0;left:0;text-align:center;}" +
-    		"</style></head><body><div id=\"image\"><img src=\"";
+            "<meta name=\"viewport\" content=\"width=device-width, target-densitydpi=device-dpi, user-scalable=no\"/>" +
+            "<style type=\"text/css\">" +
+            "html, body {height: 100%;width: 100%;color: black;background: black;}" +
+            "#image {position:fixed;top:0;left:0;text-align:center;}" +
+            "</style></head><body><div id=\"image\"><img src=\"";
     public static final String HTML_END = "\" unselectable=\"on\" alt=\"\" title=\"\"/></div></body></html>";
 
     public static interface Model extends PhotoView.Model {
@@ -204,7 +211,7 @@ public class PhotoPage extends ActivityState
                 if (DEBUG) Log.w(TAG, "failed to restore " + setPathString);
                 getDefaultMediaSet(itemPath);
             } else {
-            	createData(itemPath);
+                createData(itemPath);
             }
         } else {
             getDefaultMediaSet(itemPath);
@@ -222,127 +229,104 @@ public class PhotoPage extends ActivityState
                 }
             }
         };
-        
+
         // start the opening animation
         mPhotoView.setOpenedItem(itemPath);
     }
 
-	private void createData(final Path itemPath) {
-		mCurrentIndex = mMediaSet.getIndexOfItem(itemPath, 0);
-		if (DEBUG) Log.i(TAG, "Current index from getIndexOfItem: " + mCurrentIndex + " total count: " + mMediaSet.getTotalMediaItemCount());
-		if (mCurrentIndex < 0 || mCurrentIndex > mMediaSet.getTotalMediaItemCount()) {
-			mCurrentIndex = 0;
-		}
-		PhotoDataAdapter pda = new PhotoDataAdapter(mActivity, mPhotoView, mMediaSet, itemPath, mCurrentIndex);
-		mModel = pda;
-		mPhotoView.setModel(mModel);
+    private void createData(final Path itemPath) {
+        mCurrentIndex = mMediaSet.getIndexOfItem(itemPath, 0);
+        if (DEBUG) Log.i(TAG, "Current index from getIndexOfItem: " + mCurrentIndex + " total count: " + mMediaSet.getTotalMediaItemCount());
+        if (mCurrentIndex < 0 || mCurrentIndex > mMediaSet.getTotalMediaItemCount()) {
+            mCurrentIndex = 0;
+        }
+        PhotoDataAdapter pda = new PhotoDataAdapter(mActivity, mPhotoView, mMediaSet, itemPath, mCurrentIndex);
+        mModel = pda;
+        mPhotoView.setModel(mModel);
 
-		mResultIntent.putExtra(KEY_INDEX_HINT, mCurrentIndex);
-		setStateResult(Activity.RESULT_OK, mResultIntent);
+        mResultIntent.putExtra(KEY_INDEX_HINT, mCurrentIndex);
+        setStateResult(Activity.RESULT_OK, mResultIntent);
 
-		pda.setDataListener(new PhotoDataAdapter.DataListener() {
+        pda.setDataListener(new PhotoDataAdapter.DataListener() {
 
-		    @Override
-		    public void onPhotoChanged(int index, Path item) {
-		    	if (DEBUG) Log.w(TAG, "Photo changed to " + index + ", path " + item);
-		        if (mFilmStripView != null) mFilmStripView.setFocusIndex(index);
-		        mCurrentIndex = index;
-		        mResultIntent.putExtra(KEY_INDEX_HINT, index);
-		        if (item != null) {
-		            mResultIntent.putExtra(KEY_MEDIA_ITEM_PATH, item.toString());
-		            MediaItem photo = mModel.getCurrentMediaItem();
-		            if (photo != null) updateCurrentPhoto(photo);
-		        } else {
-		            mResultIntent.removeExtra(KEY_MEDIA_ITEM_PATH);
-		        }
-		        setStateResult(Activity.RESULT_OK, mResultIntent);
-		        
-		        notifyPhotoChanged(item);
-		    }
+            @Override
+            public void onPhotoChanged(int index, Path item) {
+                if (DEBUG) Log.w(TAG, "Photo changed to " + index + ", path " + item);
+                if (mFilmStripView != null) mFilmStripView.setFocusIndex(index);
+                mCurrentIndex = index;
+                mResultIntent.putExtra(KEY_INDEX_HINT, index);
+                if (item != null) {
+                    mResultIntent.putExtra(KEY_MEDIA_ITEM_PATH, item.toString());
+                    MediaItem photo = mModel.getCurrentMediaItem();
+                    if (photo != null) updateCurrentPhoto(photo);
+                } else {
+                    mResultIntent.removeExtra(KEY_MEDIA_ITEM_PATH);
+                }
+                setStateResult(Activity.RESULT_OK, mResultIntent);
 
-			private void notifyPhotoChanged(Path item) {
-				ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		        if (DEBUG) Log.i(TAG, "Current activity: " + activity.getChanActivityId());
-				if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
-					Handler handler = activity.getChanHandler();
-					if (handler != null && item != null) {
-						String[] pathParts = item.split();
-						if (pathParts.length == 4) {
-							Message msg = handler.obtainMessage(GalleryViewActivity.UPDATE_POSTNO_MSG, 0, 0);
-							msg.obj = pathParts[3];
-							handler.sendMessage(msg);
-						}
-					}
-				}
-			}
+                notifyPhotoChanged(item);
+            }
 
-		    @Override
-		    public void onLoadingFinished() {
-		    	if (DEBUG) Log.i(TAG, "Loading finished ...");
-		        GalleryUtils.setSpinnerVisibility((Activity) mActivity, false);
-		        if (!mModel.isEmpty()) {
-		            MediaItem photo = mModel.getCurrentMediaItem();
-		            if (photo != null) updateCurrentPhoto(photo);
-		            if (DEBUG) Log.i(TAG, "    photo updated " + photo.getPath());
-		        } else if (mIsActive) {
-		            mActivity.getStateManager().finishState(PhotoPage.this);
-		        }
-		    }
+            private void notifyPhotoChanged(Path item) {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                if (DEBUG) Log.i(TAG, "Current activity: " + activity.getChanActivityId());
+                if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
+                    Handler handler = activity.getChanHandler();
+                    if (handler != null && item != null) {
+                        String[] pathParts = item.split();
+                        if (pathParts.length == 4) {
+                            Message msg = handler.obtainMessage(GalleryViewActivity.UPDATE_POSTNO_MSG, 0, 0);
+                            msg.obj = pathParts[3];
+                            handler.sendMessage(msg);
+                        }
+                    }
+                }
+            }
 
-		    @Override
-		    public void onLoadingStarted() {
-		    	if (DEBUG) Log.i(TAG, "Loading started ...");
-		        GalleryUtils.setSpinnerVisibility((Activity) mActivity, true);
-		    }
+            @Override
+            public void onLoadingFinished() {
+                if (DEBUG) Log.i(TAG, "Loading finished ...");
+                GalleryUtils.setSpinnerVisibility((Activity) mActivity, false);
+                if (!mModel.isEmpty()) {
+                    MediaItem photo = mModel.getCurrentMediaItem();
+                    if (photo != null) updateCurrentPhoto(photo);
+                    if (DEBUG) Log.i(TAG, "    photo updated " + photo.getPath());
+                } else if (mIsActive) {
+                    mActivity.getStateManager().finishState(PhotoPage.this);
+                }
+            }
 
-		    @Override
-		    public void onPhotoAvailable(long version, boolean fullImage) {
-		    	if (DEBUG) Log.w(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
+            @Override
+            public void onLoadingStarted() {
+                if (DEBUG) Log.i(TAG, "Loading started ...");
+                GalleryUtils.setSpinnerVisibility((Activity) mActivity, true);
+            }
 
-	    		MediaItem photo = mModel.getCurrentMediaItem();
-	    		if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
+            @Override
+            public void onPhotoAvailable(long version, boolean fullImage) {
+                if (DEBUG) Log.w(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
+
+                MediaItem photo = mModel.getCurrentMediaItem();
+                if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
                     if (DEBUG) Log.w(TAG, "Playing anim gif version: " + version + ", fullImage: " + fullImage);
                     playAnimatedGif(photo);
-	        	}
+                }
                 else {
                     if (DEBUG) Log.w(TAG, "Hiding anim gif view version: " + version + ", fullImage: " + fullImage);
                     hideAnimatedGif();
                 }
-		        if (mFilmStripView == null) initFilmStripView();
-		    }
-		});
-	}
+                if (mFilmStripView == null) initFilmStripView();
+            }
+        });
+    }
 
-	private void getDefaultMediaSet(final Path itemPath) {
-		// Get default media set by the URI
-		MediaItem mediaItem = (MediaItem)
-		        mActivity.getDataManager().getMediaObject(itemPath);
-		mModel = new SinglePhotoDataAdapter(mActivity, mPhotoView, mediaItem);
-		mPhotoView.setModel(mModel);
-		updateCurrentPhoto(mediaItem);
-	}
-
-    private void updateShareURI(Path path, Handler handler) {
-        if (mShareActionProvider != null) {
-            DataManager manager = mActivity.getDataManager();
-            int type = manager.getMediaType(path);
-            final Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType(MenuExecutor.getMimeType(type));
-            intent.putExtra(Intent.EXTRA_STREAM, manager.getContentUri(path));
-            if (handler != null)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mShareActionProvider.setShareIntent(intent);
-                        mPendingSharePath = null;
-                    }
-                });
-            else
-                mPendingSharePath = path;
-        } else {
-            // This happens when ActionBar is not created yet.
-            mPendingSharePath = path;
-        }
+    private void getDefaultMediaSet(final Path itemPath) {
+        // Get default media set by the URI
+        MediaItem mediaItem = (MediaItem)
+                mActivity.getDataManager().getMediaObject(itemPath);
+        mModel = new SinglePhotoDataAdapter(mActivity, mPhotoView, mediaItem);
+        mPhotoView.setModel(mModel);
+        updateCurrentPhoto(mediaItem);
     }
 
     private void setTitle(String title) {
@@ -361,10 +345,10 @@ public class PhotoPage extends ActivityState
     }
 
     private void updateCurrentPhoto(final MediaItem photo) {
-    	if (DEBUG) Log.w(TAG, "updateCurrentPhoto photo: " + photo.getPath() + ", uri: " + photo.getPlayUri());
-    	if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
-    		playAnimatedGif(photo);
-    	}
+        if (DEBUG) Log.w(TAG, "updateCurrentPhoto photo: " + photo.getPath() + ", uri: " + photo.getPlayUri());
+        if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
+            playAnimatedGif(photo);
+        }
         else {
             hideAnimatedGif();
         }
@@ -378,22 +362,7 @@ public class PhotoPage extends ActivityState
         setTitle(photo.getName());
         mPhotoView.showVideoPlayIcon(
                 photo.getMediaType() == MediaObject.MEDIA_TYPE_VIDEO);
-        Handler handler = null;
-        try {
-            handler = new Handler();
-        }
-        catch (Exception e) {
-            Log.e(TAG, "updateCurrentPhoto exception creating handler", e);
-        }
-        if (handler != null) {
-            final Handler finalHandler = handler;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    updateShareURI(photo.getPath(), finalHandler); // run off UI thread since disk access is involved
-                }
-            }).start();
-        }
+        updateSharedIntent();
     }
 
     private void updateMenuOperations() {
@@ -402,8 +371,52 @@ public class PhotoPage extends ActivityState
         if (!GalleryUtils.isEditorAvailable((Context) mActivity, "image/*")) {
             supportedOperations &= ~MediaObject.SUPPORT_EDIT;
         }
+        updateSlideshowMenu();
+        updateShareMenu();
         MenuExecutor.updateMenuOperation(mMenu, supportedOperations);
     }
+
+    private void updateSlideshowMenu() {
+        if (mMenu == null)
+            return;
+        MenuItem item = mMenu.findItem(R.id.action_slideshow);
+        if (item != null) item.setVisible(mMediaSet != null && !(mMediaSet instanceof MtpDevice));
+    }
+
+    /*
+    private void updateShareMenu() {
+        /*
+
+        updateSharedIntent(mShareActionProvider, postPos);
+        if (mMenu == null)
+            return;
+
+        MenuItem item = mMenu.findItem(R.id.action_share);
+        mShareActionProvider = item == null ? null : (ShareActionProvider) item.getActionProvider();
+
+        if (menu == null)
+            return;
+        MenuItem shareItem = menu.findItem(com.chanapps.four.activity.R.id.thread_share_menu);
+        mShareActionProvider = shareItem == null ? null : (ShareActionProvider) shareItem.getActionProvider();
+        if (DEBUG) Log.i(TAG, "setupshareActionProvider() mShareActionProvider=" + mShareActionProvider);
+    Handler handler = null;
+        try {
+            handler = new Handler();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "onCreateActionBar exception creating handler", e);
+        }
+        if (mPendingSharePath != null && handler != null) {
+            final Handler finalHandler = handler;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    updateShareURI(mPendingSharePath, finalHandler);
+                }
+            }).start();
+        }
+    }
+     */
 
     private void showBars() {
         if (mShowBars) return;
@@ -490,30 +503,13 @@ public class PhotoPage extends ActivityState
         actionBar.setDisplayHomeAsUpEnabled(true);
         MenuInflater inflater = ((Activity) mActivity).getMenuInflater();
         inflater.inflate(R.menu.photo, menu);
-        if (menu != null) {
-            MenuItem item = menu.findItem(R.id.action_slideshow);
-            if (item != null) item.setVisible(mMediaSet != null && !(mMediaSet instanceof MtpDevice));
-            mShareActionProvider = GalleryActionBar.initializeShareActionProvider(menu);
-            Handler handler = null;
-            try {
-                handler = new Handler();
-            }
-            catch (Exception e) {
-                Log.e(TAG, "onCreateActionBar exception creating handler", e);
-            }
-            if (mPendingSharePath != null && handler != null) {
-                final Handler finalHandler = handler;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateShareURI(mPendingSharePath, finalHandler);
-                    }
-                }).start();
-            }
-            mMenu = menu;
-            mShowBars = true;
-            updateMenuOperations();
-        }
+        if (menu == null)
+            return true;
+
+        mMenu = menu;
+        mShowBars = true;
+        updateMenuOperations();
+
         return true;
     }
 
@@ -566,8 +562,8 @@ public class PhotoPage extends ActivityState
                     .show();
             return true;
         } else if (action == R.id.action_setas || action == R.id.action_confirm_delete || action == R.id.action_rotate_ccw
-        		 || action == R.id.action_rotate_cw || action == R.id.action_show_on_map || action == R.id.action_edit) {
-            mSelectionManager.deSelectAll();
+                || action == R.id.action_rotate_cw || action == R.id.action_show_on_map || action == R.id.action_edit) {
+            //mSelectionManager.deSelectAll();
             mSelectionManager.toggle(path);
             mMenuExecutor.onMenuClicked(item, null);
             return true;
@@ -577,7 +573,14 @@ public class PhotoPage extends ActivityState
             mMenuExecutor.onMenuClicked(item,
                     new ImportCompleteListener(mActivity));
             return true;
-		} else {
+        } else if (action == R.id.image_search_menu) {
+            imageSearch(IMAGE_SEARCH_ROOT);
+            return true;
+        }
+        else if (action == R.id.anime_image_search_menu) {
+            imageSearch(IMAGE_SEARCH_ROOT_ANIME);
+            return true;
+        } else {
             return false;
         }
     }
@@ -617,11 +620,11 @@ public class PhotoPage extends ActivityState
             int w = mPhotoView.getWidth();
             int h = mPhotoView.getHeight();
             playVideo = (Math.abs(x - w / 2) * 12 <= w)
-                && (Math.abs(y - h / 2) * 12 <= h);
+                    && (Math.abs(y - h / 2) * 12 <= h);
         }
 
         if (playVideo) {
-    		playVideo((Activity) mActivity, item.getPlayUri(), item.getPath());
+            playVideo((Activity) mActivity, item.getPlayUri(), item.getPath());
         } else {
             onUserInteractionTap();
         }
@@ -629,15 +632,15 @@ public class PhotoPage extends ActivityState
 
     public static void playVideo(Activity activity, Uri uri, Path path) {
         try {
-        	String title = null;
-        	String[] parts = path.split();
-        	if (parts.length == 3) {
-        		title = "/" + parts[1] + "/" + parts[2]; 
-        	} else if (parts.length == 4) {
-        		title = "/" + parts[1] + "/" + parts[2] + ":" + parts[3];
-        	}
-        	
-	    	Intent intent = new Intent(activity.getBaseContext(), VideoViewActivity.class);
+            String title = null;
+            String[] parts = path.split();
+            if (parts.length == 3) {
+                title = "/" + parts[1] + "/" + parts[2];
+            } else if (parts.length == 4) {
+                title = "/" + parts[1] + "/" + parts[2] + ":" + parts[3];
+            }
+
+            Intent intent = new Intent(activity.getBaseContext(), VideoViewActivity.class);
             intent.putExtra(ImageDownloadService.IMAGE_URL, uri.toString());
             intent.putExtra(Intent.EXTRA_TITLE, title);
             activity.startActivity(intent);
@@ -655,18 +658,18 @@ public class PhotoPage extends ActivityState
         }
     }
 
-	public void playAnimatedGif(MediaItem item) {
-		Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
+    public void playAnimatedGif(MediaItem item) {
+        Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
         if (activity == null) {
             if (DEBUG) Log.i(TAG, "Play anim gif null activity, exiting");
             return;
         }
         ViewGroup contentView = (ViewGroup)activity.findViewById(android.R.id.content);
-		View rootView = contentView.getRootView();
+        View rootView = contentView.getRootView();
         //ViewGroup galleryFrameLayout = (ViewGroup)activity.findViewById(com.chanapps.four.activity.R.id.gallery_frame_layout);
-		View view = contentView.findViewById(com.chanapps.four.activity.R.id.gifview);
-		//if (view == null || view.getVisibility() != View.GONE) {
-		if (view == null) {
+        View view = contentView.findViewById(com.chanapps.four.activity.R.id.gifview);
+        //if (view == null || view.getVisibility() != View.GONE) {
+        if (view == null) {
             if (DEBUG) Log.i(TAG, "Play anim gif null gifview, recreating activity=" + activity);
             activity.recreate();
             return;
@@ -680,7 +683,7 @@ public class PhotoPage extends ActivityState
             galleryFrameLayout.addView(view, 2);
             if (DEBUG) Log.i(TAG, "Recreated gifview=" + view);
 		    */
-		}
+        }
         WebView myWebView = (WebView) view.findViewById(com.chanapps.four.activity.R.id.video_view);
         if (myWebView == null) {
             if (DEBUG) Log.i(TAG, "Exiting play anim gif since null webview");
@@ -697,29 +700,29 @@ public class PhotoPage extends ActivityState
         }
 
         if (DEBUG) Log.w(TAG, "Screen size w: " + rootView.getMeasuredWidth() + " h: " + rootView.getMeasuredHeight());
-		if (DEBUG) Log.w(TAG, "Image  size w: " + item.getWidth() + " h: " + item.getHeight());
+        if (DEBUG) Log.w(TAG, "Image  size w: " + item.getWidth() + " h: " + item.getHeight());
 
-		int maxWidth = rootView.getMeasuredWidth() == 0 ? 200 : rootView.getMeasuredWidth();
-		int maxHeight = (rootView.getMeasuredHeight() == 0 ? 200 : rootView.getMeasuredHeight());
+        int maxWidth = rootView.getMeasuredWidth() == 0 ? 200 : rootView.getMeasuredWidth();
+        int maxHeight = (rootView.getMeasuredHeight() == 0 ? 200 : rootView.getMeasuredHeight());
 
-		int itemWidth = item.getWidth() == 0 ? maxWidth : item.getWidth();
-		int itemHeight = item.getHeight() == 0 ? maxHeight : item.getHeight();
-		int scale = Math.min(maxWidth * 100 / itemWidth, maxHeight * 100 / itemHeight);
-		if (DEBUG) Log.w(TAG, "scale: " + scale);
-    	
-    	myWebView.setLayoutParams(new FrameLayout.LayoutParams(itemWidth * scale / 100, itemHeight * scale / 100));
-    	myWebView.setInitialScale(scale);
-    	myWebView.getRootView().setBackgroundColor(0x000000);
-    	myWebView.setBackgroundColor(0x000000);
-    	myWebView.getSettings().setJavaScriptEnabled(false);
-    	myWebView.getSettings().setBuiltInZoomControls(false);
+        int itemWidth = item.getWidth() == 0 ? maxWidth : item.getWidth();
+        int itemHeight = item.getHeight() == 0 ? maxHeight : item.getHeight();
+        int scale = Math.min(maxWidth * 100 / itemWidth, maxHeight * 100 / itemHeight);
+        if (DEBUG) Log.w(TAG, "scale: " + scale);
+
+        myWebView.setLayoutParams(new FrameLayout.LayoutParams(itemWidth * scale / 100, itemHeight * scale / 100));
+        myWebView.setInitialScale(scale);
+        myWebView.getRootView().setBackgroundColor(0x000000);
+        myWebView.setBackgroundColor(0x000000);
+        myWebView.getSettings().setJavaScriptEnabled(false);
+        myWebView.getSettings().setBuiltInZoomControls(false);
 
         if (DEBUG) Log.i(TAG, "Loading anim gif webview url = " + localPlayUri);
-    	myWebView.loadUrl(localPlayUri.toString());
+        myWebView.loadUrl(localPlayUri.toString());
         myWebView.setTag(localPlayUri);
 
-		view.setVisibility(View.VISIBLE);
-	}
+        view.setVisibility(View.VISIBLE);
+    }
 
 
     // Called by FileStripView.
@@ -816,4 +819,148 @@ public class PhotoPage extends ActivityState
             return mIndex;
         }
     }
+
+    protected void updateShareMenu() {
+        updateSharedIntent();
+        if (mMenu == null)
+            return;
+        MenuItem shareItem = mMenu.findItem(R.id.action_share);
+        if (shareItem == null)
+            mShareActionProvider = null;
+        mShareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
+        shareItem.setOnMenuItemClickListener(shareActionItemListener);
+        if (DEBUG) Log.i(TAG, "setupshareActionProvider() mShareActionProvider=" + mShareActionProvider);
+    }
+
+    protected MenuItem.OnMenuItemClickListener shareActionItemListener = new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            onUserInteractionBegin(); // don't let menu disappear
+            return false;
+        }
+    };
+
+    private void setShareIntent(final Intent intent) {
+        Handler handler = null;
+        try {
+            handler = new Handler();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't create handler", e);
+        }
+        if (ActivityDispatcher.onUIThread())
+            synchronized (this) {
+                if (mShareActionProvider != null && intent != null)
+                    mShareActionProvider.setShareIntent(intent);
+            }
+        else if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (this) {
+                        if (mShareActionProvider != null && intent != null)
+                            mShareActionProvider.setShareIntent(intent);
+                    }
+                }
+            });
+    }
+
+    protected void updateSharedIntent() {
+        //File localImage = new File(URI.create(filePath));
+        //if (localImage == null || !localImage.exists() || !localImage.canRead() || localImage.length() <= 0) {
+        //    Log.e(TAG, "updateSharedIntent no image file found for path=" + filePath);
+        //    return;
+        //}
+
+        // set share text
+        //if (DEBUG) Log.i(TAG, "updateSharedIntent() found postNo=" + firstPost + " for threadNo=" + threadNo);
+        //String linkUrl = (firstPost > 0 && firstPost != threadNo)
+        //        ? ChanPost.postUrl(boardCode, threadNo, firstPost)
+        //       : ChanThread.threadUrl(boardCode, threadNo);
+        //String text = selectText(postPos);
+        //String extraText = linkUrl + (text.isEmpty() ? "" : "\n\n" + text);
+
+        // create intent
+        //if (paths.size() == 0) {
+        //intent = new Intent(Intent.ACTION_SEND);
+        //    intent.putExtra(Intent.EXTRA_TEXT, extraText);
+        //    intent.setType("text/html");
+        //intent.putExtra(Intent.EXTRA_TEXT, linkUrl);
+        //intent.setType("text/plain");
+        //setShareIntent(mShareActionProvider, intent);
+        /*
+        } else {
+            ArrayList<Uri> uris = new ArrayList<Uri>();
+            ArrayList<String> missingPaths = new ArrayList<String>();
+            for (String path : paths) {
+                if (checkedImageUris.containsKey(path)) {
+                    Uri uri = checkedImageUris.get(path);
+                    uris.add(uri);
+                    if (DEBUG) Log.i(TAG, "Added uri=" + uri);
+                } else {
+                    uris.add(Uri.fromFile(new File(path)));
+                    missingPaths.add(path);
+                }
+            }
+            */
+        //intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        //Uri uri = Uri.fromFile(localImage);
+        if (mCurrentPhoto == null) {
+            if (DEBUG) Log.i(TAG, "updateSharedIntent no current photo, exiting");
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "updateSharedIntent mCurrentPhoto=" + mCurrentPhoto);
+        DataManager manager = mActivity.getDataManager();
+        int type = mCurrentPhoto.getMediaType();
+        String mimeType = MenuExecutor.getMimeType(type);
+        Uri uri = mCurrentPhoto.getContentUri();
+        if (uri == null) {
+            if (DEBUG) Log.i(TAG, "updateSharedIntent mimeType=" + mimeType + " null uri, exiting");
+            return;
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "updateSharedIntent mimeType=" + mimeType + " uri=" + uri.toString());
+        }
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setType(mimeType);
+        setShareIntent(intent);
+    }
+
+    private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
+    private static final String IMAGE_SEARCH_ROOT_ANIME = "http://iqdb.org/?url=";
+
+    private void imageSearch(String rootUrl) {
+        MediaDetails details = mCurrentPhoto.getDetails();
+        if (details == null) {
+            Toast.makeText((Context)mActivity, com.chanapps.four.activity.R.string.full_screen_image_search_not_found, Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        Object o = details.getDetail(MediaDetails.INDEX_PATH);
+        if (o == null || !(o instanceof String) || ((String)o).isEmpty()) {
+            Toast.makeText((Context)mActivity, com.chanapps.four.activity.R.string.full_screen_image_search_not_found, Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        String imageUrl = (String)o;
+        if (imageUrl.isEmpty()) {
+            Toast.makeText((Context)mActivity, com.chanapps.four.activity.R.string.full_screen_image_search_not_found, Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        try {
+            ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+            String encodedImageUrl = URLEncoder.encode(imageUrl, "UTF-8");
+            String url =  rootUrl + encodedImageUrl;
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            ((Activity)activity).startActivity(intent);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't do image search imageUrl=" + imageUrl, e);
+            Toast.makeText((Context)mActivity, com.chanapps.four.activity.R.string.full_screen_image_search_error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

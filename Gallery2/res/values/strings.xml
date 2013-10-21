@@ -155,4 +155,7 @@
         <item quantity="other">%1$d groups selected</item>
     </plurals>
 
+    <string name="image_search_menu">Tineye image search</string>
+    <string name="anime_image_search_menu">IQDB image search</string>
+
 </resources>

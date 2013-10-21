@@ -17,10 +17,12 @@
     <item android:id="@+id/image_search_menu"
           android:title="@string/image_search_menu"
           android:icon="@drawable/action_search"
+          android:visible="false"
             />
     <item android:id="@+id/anime_image_search_menu"
           android:title="@string/anime_image_search_menu"
           android:icon="@drawable/action_search"
+          android:visible="false"
             />
 
     <item android:id="@+id/translate_posts_menu"

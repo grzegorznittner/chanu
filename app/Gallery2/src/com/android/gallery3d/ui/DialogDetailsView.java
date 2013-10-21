@@ -86,21 +86,28 @@ public class DialogDetailsView implements DetailsViewContainer {
 
     private void setDetails(MediaDetails details) {
         mAdapter = new DetailsAdapter(details);
-        String title = String.format(
+        String defaultTitle = String.format(
                 mContext.getAndroidContext().getString(R.string.details_title),
                 mIndex + 1, mSource.size());
+        Object o = details.getDetail(MediaDetails.INDEX_TITLE);
+        //Log.e("PhotoPage", "index_title: " + o);
+        String s = o != null ? o.toString() : null;
+        String title = s != null && !s.isEmpty() ? s : defaultTitle;
         ListView detailsList = (ListView) LayoutInflater.from(mContext.getAndroidContext()).inflate(
                 R.layout.details_list, null, false);
         detailsList.setAdapter(mAdapter);
         mDialog = new AlertDialog.Builder((Activity) mContext)
             .setView(detailsList)
             .setTitle(title)
+                /*
             .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     mDialog.dismiss();
                 }
             })
+            */
             .create();
+        mDialog.setCanceledOnTouchOutside(true);
 
         mDialog.setOnDismissListener(new OnDismissListener() {
             public void onDismiss(DialogInterface dialog) {
@@ -182,11 +189,20 @@ public class DialogDetailsView implements DetailsViewContainer {
                 if (details.hasUnit(key)) {
                     value = String.format("%s : %s %s", DetailsHelper.getDetailsName(
                             context, key), value, context.getString(details.getUnit(key)));
+                } else if (MediaDetails.INDEX_TITLE == key) {
+                    value = null;
+                } else if (MediaDetails.INDEX_DESCRIPTION == key) {
+                    value = String.format("%s", value);
+                } else if (MediaDetails.INDEX_MIMETYPE == key) {
+                    value = null;
+                } else if (MediaDetails.INDEX_PATH == key) {
+                    value = null;
                 } else {
                     value = String.format("%s : %s", DetailsHelper.getDetailsName(
                             context, key), value);
                 }
-                mItems.add(value);
+                if (value != null)
+                    mItems.add(value);
             }
         }
 

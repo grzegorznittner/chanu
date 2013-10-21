@@ -415,7 +415,6 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             notifBuilder.setContentTitle(context.getString(R.string.download_all_images_complete));
             notifBuilder.setContentText
                     (String.format(context.getString(R.string.download_all_images_complete_detail), board, threadNo));
-            notifBuilder.setSmallIcon(R.drawable.app_icon);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                     threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
             notifBuilder.setContentIntent(pendingIntent);
@@ -449,7 +448,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		notifBuilder.setAutoCancel(true);
 		notifBuilder.setContentTitle(getString(R.string.thread_image_download_error));
 		notifBuilder.setContentText(board + "/" + threadNo);
-		notifBuilder.setSmallIcon(R.drawable.app_icon);
+		notifBuilder.setSmallIcon(R.drawable.app_icon_notification);
 		
 		Intent threadActivityIntent = ThreadActivity.createIntent(getApplicationContext(), board, threadNo, "");
 		PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,

@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 
+import android.text.Html;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -62,6 +63,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     private final int fsize;
     private final String ext;
     private final boolean isDead;
+    private final String sub;
+    private final String com;
 
     private int width;
     private int height;
@@ -81,6 +84,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         fsize = post.fsize;
         ext = post.ext;
         isDead = post.isDead;
+        sub = post.sub;
+        com = post.com;
         name = "/" + post.board + "/" + (post.resto != 0 ? post.resto : post.no);
         localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.imageName();
         mApplication = Utils.checkNotNull(application);
@@ -389,12 +394,25 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
 	@Override
     public Uri getContentUri() {
-        return getPlayUri();
+        File localFile = new File (localImagePath);
+        if (localFile.exists()) {
+            return Uri.fromFile(localFile);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public MediaDetails getDetails() {
         MediaDetails details = super.getDetails();
+        if (sub != null && !sub.isEmpty())
+            details.addDetail(MediaDetails.INDEX_TITLE, Html.fromHtml(sub));
+        else
+            details.addDetail(MediaDetails.INDEX_TITLE, name);
+        if (com != null && !com.isEmpty())
+            details.addDetail(MediaDetails.INDEX_DESCRIPTION, Html.fromHtml(com));
+        else
+            details.addDetail(MediaDetails.INDEX_DESCRIPTION, "(no text)");
         if (width != 0 && height != 0) {
             details.addDetail(MediaDetails.INDEX_WIDTH, w);
             details.addDetail(MediaDetails.INDEX_HEIGHT, h);

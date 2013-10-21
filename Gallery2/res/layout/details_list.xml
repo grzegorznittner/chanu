@@ -18,5 +18,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp"
-    android:dividerHeight="8dp"
+    android:dividerHeight="0dp"
 />

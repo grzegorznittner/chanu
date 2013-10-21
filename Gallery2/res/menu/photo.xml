@@ -26,7 +26,6 @@
             android:title="@string/share"
             android:enabled="true"
             android:actionProviderClass="android.widget.ShareActionProvider"
-            android:visible="false"
             android:showAsAction="never"
             />
     <item android:id="@+id/action_download"
@@ -71,6 +70,12 @@
     <item android:id="@+id/action_setas"
             android:title="@string/set_image"
             android:showAsAction="never" />
+    <item android:id="@+id/image_search_menu"
+          android:title="@string/image_search_menu"
+            />
+    <item android:id="@+id/anime_image_search_menu"
+          android:title="@string/anime_image_search_menu"
+            />
     <item android:id="@+id/action_show_on_map"
             android:title="@string/show_on_map"
             android:showAsAction="never" />
