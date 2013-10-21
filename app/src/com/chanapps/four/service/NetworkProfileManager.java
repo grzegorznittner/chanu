@@ -184,10 +184,6 @@ public class NetworkProfileManager {
 		if (newActivity == null) {
 			return;
 		}
-        if (newActivity != currentActivity) {
-            if (DEBUG) Log.i(TAG, "manualRefresh ignoring refresh called on background activity " + newActivity.getChanActivityId());
-            return;
-        }
 		currentActivityId = newActivity.getChanActivityId();
 		currentActivity = newActivity;
 		
