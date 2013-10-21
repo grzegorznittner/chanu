@@ -79,7 +79,7 @@ public class PhotoPage extends ActivityState
         implements PhotoView.PhotoTapListener, FilmStripView.Listener,
         UserInteractionListener {
     private static final String TAG = "PhotoPage";
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     private static final int MSG_HIDE_BARS = 1;
 
