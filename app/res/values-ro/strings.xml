@@ -201,28 +201,28 @@
     <string name="misc">Diverse.</string>
 
     <!-- Board selector activity -->
-    <string name="board_selector_all_boards_title">All Boards</string>
-    <string name="board_selector_all_boards_desc">All boards on Chanu</string>
-    <string name="board_selector_watchlist_title">Thread Watchlist</string>
-    <string name="board_selector_recent_title">Popular Threads</string>
-    <string name="board_selector_popular_title">Popular Threads</string>
-    <string name="board_selector_popular_desc">The current top ten threads</string>
-    <string name="board_selector_latest_title">Latest Posts</string>
-    <string name="board_selector_latest_desc">The ten latest posts</string>
-    <string name="board_selector_latest_images_title">Recent Images</string>
-    <string name="board_selector_latest_images_desc">The three latest uploaded images</string>
-    <string name="board_selector_boardlist_title">Categories</string>
+    <string name="board_selector_all_boards_title">Toate planșele</string>
+    <string name="board_selector_all_boards_desc">Toate planșele din Chanu</string>
+    <string name="board_selector_watchlist_title">Listă urmărire fire de discuție</string>
+    <string name="board_selector_recent_title">Fire de discuție populare</string>
+    <string name="board_selector_popular_title">Fire de discuție populare</string>
+    <string name="board_selector_popular_desc">Primele 10 fire de discuție</string>
+    <string name="board_selector_latest_title">Ultimele postări</string>
+    <string name="board_selector_latest_desc">Ultimele 10 postări</string>
+    <string name="board_selector_latest_images_title">Imagini recente</string>
+    <string name="board_selector_latest_images_desc">Ultimele 3 imagini postate</string>
+    <string name="board_selector_boardlist_title">Categorii</string>
 
     <!-- board activity -->
-    <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
-    <string name="board_end_of_board">End of Board</string>
-    <string name="board_click_for_more">(click for more)</string>
-    <string name="board_just_now">just now</string>
-    <string name="board_last_updated">Last updated %s</string>
-    <string name="board_wait_to_refresh">Min 10 sec between refresh</string>
-    <string name="board_offline_refresh">Cannot refresh, network offline</string>
-    <string name="board_refresh_button_text">Refresh</string>
-    <string name="board_ignore_button_text">Ignore</string>
+    <string name="board_activity_couldnt_open_db">Nu s-a putut încărca din memoria locală</string>
+    <string name="board_end_of_board">Sfârșit planșă</string>
+    <string name="board_click_for_more">(apasă pentru mai mult)</string>
+    <string name="board_just_now">acum</string>
+    <string name="board_last_updated">Ultimele actualzate %s</string>
+    <string name="board_wait_to_refresh">Minim 10s între actualizări</string>
+    <string name="board_offline_refresh">Reactualizare indisponibilă, lipsă conexiune</string>
+    <string name="board_refresh_button_text">Actualizare</string>
+    <string name="board_ignore_button_text">Ignoră</string>
 
     <!-- thread activity -->
     <string name="thread_activity_refresh">Refreshing thread...</string>
@@ -1709,36 +1709,36 @@
 <string name="board_x_with_abbrev">/x/ Paranormal</string>
 <string name="board_y_with_abbrev">/y/ Yaoi</string>
 
-<string name="report_post_type_rule">Rule violation</string>
-<string name="report_post_type_illegal">Illegal content</string>
-<string name="report_post_type_spam">Commercial spam/advertising</string>
+<string name="report_post_type_rule">Violare regulă</string>
+<string name="report_post_type_illegal">Conținut ilegal</string>
+<string name="report_post_type_spam">Comercial spam/reclamă</string>
 
 <!-- MOVED FROM PLURALS.XML -->
 
-<string name="plurals_thread_activity_udpdated_one">%1$d new comment</string>
-<string name="plurals_thread_actviity_updated_other">%1$d new comments</string>
-<string name="plurals_board_grid_item_num_replies_one">View 1 post</string>
-<string name="plurals_board_grid_item_num_replies_other">View %1$d posts</string>
-<string name="plurals_board_grid_item_num_imgs_one">View 1 img</string>
-<string name="plurals_board_grid_item_num_imgs_other">View %1$d imgs</string>
-<string name="plurals_board_grid_item_num_threads_one">View 1 thread</string>
-<string name="plurals_board_grid_item_num_threads_other">View %1$d threads</string>
-<string name="plurals_thread_num_replies_one">1 post</string>
-<string name="plurals_thread_num_replies_other">%1$d posts</string>
-<string name="plurals_thread_num_images_one">1 image</string>
-<string name="plurals_thread_num_images_other">%1$d images</string>
+<string name="plurals_thread_activity_udpdated_one">%1$d comentariu nou</string>
+<string name="plurals_thread_actviity_updated_other">%1$d comentarii noi</string>
+<string name="plurals_board_grid_item_num_replies_one">Vizualizare 1 postare</string>
+<string name="plurals_board_grid_item_num_replies_other">Vizualizare %1$d postări</string>
+<string name="plurals_board_grid_item_num_imgs_one">Vizualizare 1 img</string>
+<string name="plurals_board_grid_item_num_imgs_other">Vizualizare %1$d imgs</string>
+<string name="plurals_board_grid_item_num_threads_one">Vizualizare 1 un fir de discuții</string>
+<string name="plurals_board_grid_item_num_threads_other">Vizualizare %1$d fire de discuții</string>
+<string name="plurals_thread_num_replies_one">1 postare</string>
+<string name="plurals_thread_num_replies_other">%1$d postări</string>
+<string name="plurals_thread_num_images_one">1 imagine</string>
+<string name="plurals_thread_num_images_other">%1$d imagini</string>
 <string name="plurals_thread_num_imgs_one">1 img</string>
 <string name="plurals_thread_num_imgs_other">%1$d imgs</string>
-<string name="plurals_thread_num_backlinks_one">1 backlink</string>
-<string name="plurals_thread_num_backlinks_other">%1$d backlinks</string>
-<string name="plurals_thread_num_links_one">1 link</string>
-<string name="plurals_thread_num_links_other">%1$d links</string>
-<string name="plurals_thread_num_replies_label_one">COMMENT</string>
-<string name="plurals_thread_num_replies_label_other">COMMENTS</string>
-<string name="plurals_thread_num_images_label_one">IMAGE</string>
-<string name="plurals_thread_num_images_label_other">IMAGES</string>
-<string name="plurals_thread_num_direct_replies_label_one">REPLY</string>
-<string name="plurals_thread_num_direct_replies_label_other">REPLIES</string>
+<string name="plurals_thread_num_backlinks_one">1 legătură anterioară</string>
+<string name="plurals_thread_num_backlinks_other">%1$d legături anterioare</string>
+<string name="plurals_thread_num_links_one">1 legătură</string>
+<string name="plurals_thread_num_links_other">%1$d legături</string>
+<string name="plurals_thread_num_replies_label_one">COMENTARIU</string>
+<string name="plurals_thread_num_replies_label_other">COMENTARII</string>
+<string name="plurals_thread_num_images_label_one">IMAGINE</string>
+<string name="plurals_thread_num_images_label_other">IMAGINI</string>
+<string name="plurals_thread_num_direct_replies_label_one">RĂSPUNS</string>
+<string name="plurals_thread_num_direct_replies_label_other">RĂSPUNSURI</string>
 
     <!-- CHANGES AFTER TRANSLATION -->
     <!--
