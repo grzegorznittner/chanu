@@ -24,7 +24,7 @@
 
     <application
             android:name="com.chanapps.four.FourChannerApp"
-            android:icon="@drawable/app_icon"
+            android:icon="@drawable/launcher_icon"
             android:logo="@drawable/app_icon_actionbar"
             android:label="@string/application_name"
             android:theme="@style/AppTheme"
