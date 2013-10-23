@@ -444,7 +444,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		    .setContentTitle("Chanu - Image(s) download")
 		    .setContentText(text + " - downloading " + downloadedImages + "/" + totalNumImages)
 			.setProgress(totalNumImages, downloadedImages, false)
-			.setSmallIcon(R.drawable.app_icon);
+			.setSmallIcon(R.drawable.app_icon_notification);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, CancelDownloadActivity.createIntent(context, notificationId, board, threadNo),
         		Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);

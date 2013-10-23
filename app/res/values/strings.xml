@@ -1737,4 +1737,7 @@
 <string name="plurals_thread_num_direct_replies_label_one">REPLY</string>
 <string name="plurals_thread_num_direct_replies_label_other">REPLIES</string>
 
+
+<string name="cancel_download_title">Image Download</string>
+<string name="cancel_download_message">Cancel image download?</string>
 </resources>

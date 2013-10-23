@@ -152,7 +152,7 @@
 
         <activity android:name=".CancelDownloadActivity" android:label=""
 	          android:launchMode="standard"
-	          android:theme="@android:style/Theme.Dialog"
+	          android:theme="@android:style/Theme.Holo.Dialog"
 	          android:excludeFromRecents="true"
 	        >
             <intent-filter>

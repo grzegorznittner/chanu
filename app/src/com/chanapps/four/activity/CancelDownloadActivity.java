@@ -3,9 +3,19 @@
  */
 package com.chanapps.four.activity;
 
+import android.app.*;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
+import android.view.LayoutInflater;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.chanapps.four.component.ChanNotificationManager;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.fragment.SettingsFragment;
 import com.chanapps.four.service.ThreadImageDownloadService;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -44,23 +54,53 @@ public class CancelDownloadActivity extends Activity {
 		}
 		
 		setContentView(R.layout.cancel_download_dialog);
-		Button closeBtn = (Button)findViewById(R.id.cancel_download_close_btn);
-		closeBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.w(TAG, "Close action called");
-				CancelDownloadActivity.this.finish();
-			}
-		});
-
-		Button stopBtn = (Button)findViewById(R.id.cancel_download_stop_btn);
-		stopBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.w(TAG, "Stop download action called");
-				ThreadImageDownloadService.cancelDownload(getBaseContext(), notificationId);
-				CancelDownloadActivity.this.finish();
-			}
-		});
+        (new CancelDownloadDialogFragment(notificationId)).show(getFragmentManager(), TAG);
 	}
+
+    protected class CancelDownloadDialogFragment extends DialogFragment {
+
+        private int notificationId;
+
+        public CancelDownloadDialogFragment() {
+            super();
+        }
+
+        public CancelDownloadDialogFragment(int notificationId) {
+            super();
+            this.notificationId = notificationId;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
+            TextView title = (TextView)layout.findViewById(R.id.title);
+            TextView message = (TextView)layout.findViewById(R.id.message);
+            title.setText(R.string.cancel_download_title);
+            message.setText(R.string.cancel_download_message);
+            setStyle(STYLE_NO_TITLE, 0);
+            return (new AlertDialog.Builder(getActivity()))
+                    .setView(layout)
+                    .setPositiveButton(android.R.string.yes,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (notificationId != 0) {
+                                        ThreadImageDownloadService.cancelDownload(getBaseContext(), notificationId);
+                                    }
+                                    CancelDownloadActivity.this.finish();
+                                }
+                            })
+                    .setNegativeButton(R.string.dismiss,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    CancelDownloadActivity.this.finish();
+                                }
+                            })
+                    .create();
+        }
+
+    }
+
 }
