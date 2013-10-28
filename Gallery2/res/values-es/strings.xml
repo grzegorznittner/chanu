@@ -162,4 +162,9 @@
     <string name="group_by" msgid="4308299657902209357">"Agrupar por"</string>
     <string name="settings" msgid="1534847740615665736">"Ajustes"</string>
     <string name="add_account" msgid="4271217504968243974">"Añadir cuenta"</string>
+  <string name="download">Descargar</string>
+  <string name="download_all_images_notice">Se le notificará la finalización de la descarga</string>
+  <string name="image_search_menu">Búsqueda de imágenes TinEye</string>
+  <string name="anime_image_search_menu">Búsqueda de imágenes IQDB</string>
+
 </resources>
