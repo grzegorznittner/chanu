@@ -355,18 +355,6 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 if (DEBUG) Log.i(TAG, "After handleBoard dead thread calling storeThreadData for /" + thread.board + "/" + thread.no);
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
 
-                // store dead status into board thread record
-                ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
-                if (board != null && board.threads != null) {
-                    for (int i = 0; i < board.threads.length; i++) {
-                        if (board.threads[i] != null && board.threads[i].no == threadNo) {
-                            board.threads[i].isDead = true;
-                            ChanFileStorage.storeBoardData(getBaseContext(), board);
-                            break;
-                        }
-                    }
-                }
-                
                 NetworkProfileManager.instance().failedFetchingData(this, Failure.DEAD_THREAD);
                 return;
             } else if (contentType == null || !contentType.contains("json")) {

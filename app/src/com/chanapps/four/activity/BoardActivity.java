@@ -8,6 +8,8 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -17,6 +19,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.*;
@@ -45,7 +48,8 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
+    public static final String UPDATE_BOARD_ACTION = "updateBoardAction";
 
     public static String topBoardCode = null;
 
@@ -167,6 +171,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         setupStaticBoards();
         createAbsListView();
         setupBoardTitle();
+        IntentFilter intentFilter = new IntentFilter(UPDATE_BOARD_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onNotice, intentFilter);
     }
 
     protected void setBoardCodeToDefault() {
@@ -561,6 +567,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (cursorLoader != null)
             getLoaderManager().destroyLoader(0);
 		handler = null;
+        IntentFilter intentFilter = new IntentFilter(UPDATE_BOARD_ACTION);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onNotice);
 	}
 
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
@@ -640,12 +648,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void onRefresh() {
-        if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) {
+        if (!ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
+                && ChanBoard.isVirtualBoard(boardCode)
+                && !ChanBoard.isPopularBoard(boardCode)) {
             if (DEBUG) Log.i(TAG, "manual refresh skipped for non-popular virtual board /" + boardCode + "/");
             return;
         }
         setProgress(true);
         final ChanIdentifiedActivity activity = this;
+        if (DEBUG) Log.i(TAG, "starting manual refresh for /" + boardCode + "/");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -749,7 +760,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_watchlist_menu).setVisible(true);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
-            menu.findItem(R.id.refresh_menu).setVisible(false);
+            menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -1307,5 +1318,20 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else
             return super.dispatchKeyEvent(event);
     }
+
+    protected BroadcastReceiver onNotice = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null || !UPDATE_BOARD_ACTION.equals(intent.getAction()) || !intent.hasExtra(ChanBoard.BOARD_CODE))
+                return;
+            String receivedBoardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+            if (receivedBoardCode == null || !receivedBoardCode.equals(boardCode))
+                return;
+            if (handler != null)
+                refresh();
+            else
+                backgroundRefresh();
+        }
+    };
 
 }

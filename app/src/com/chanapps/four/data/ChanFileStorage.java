@@ -4,7 +4,9 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
+import android.content.Intent;
 import android.os.Environment;
+import android.support.v4.content.LocalBroadcastManager;
 import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.widget.WidgetProviderUtils;
 import com.nostra13.universalimageloader.utils.L;
@@ -23,7 +25,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
     private static final String TAG = ChanFileStorage.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int MAX_BOARDS_IN_CACHE = 100;
     private static final int MAX_THREADS_IN_CACHE = 200;
@@ -193,6 +195,9 @@ public class ChanFileStorage {
             if (!board.isVirtualBoard()) {
                 updateWatchedThread(context, board);
             }
+            Intent intent = new Intent(BoardActivity.UPDATE_BOARD_ACTION);
+            intent.putExtra(ChanBoard.BOARD_CODE, board.link);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         } else {
             Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
         }
@@ -291,6 +296,7 @@ public class ChanFileStorage {
                 mapper.writeValue(threadFile, thread);
             } finally {
             }
+            updateBoardThread(context, thread);
             updateWatchedThread(context, thread);
             if (DEBUG)
                 Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
@@ -815,6 +821,22 @@ public class ChanFileStorage {
         ChanBoard board = loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
         board.threads = new ChanThread[]{};
         storeBoardData(context, board);
+    }
+
+    private static void updateBoardThread(Context context, ChanThread loadedThread) throws IOException {
+        // store updated status into board thread record
+        ChanBoard board = loadBoardData(context, loadedThread.board);
+        if (board != null && board.threads != null) {
+            for (int i = 0; i < board.threads.length; i++) {
+                if (board.threads[i] != null && board.threads[i].no == loadedThread.no) {
+                    if (DEBUG) Log.i(TAG, "updateBoardThread found thread=" + board.threads[i] + " merging=" + loadedThread);
+                    board.threads[i].copyUpdatedInfoFields(loadedThread);
+                    storeBoardData(context, board);
+                    break;
+                }
+            }
+        }
+
     }
 
     private static void updateWatchedThread(Context context, ChanThread loadedThread) throws IOException {

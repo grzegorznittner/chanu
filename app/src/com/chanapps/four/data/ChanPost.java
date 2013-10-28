@@ -55,8 +55,8 @@ public class ChanPost {
     public static final String POST_IMAGE_URL = "imageUrl"; // we construct this from board and tim
     public static final String POST_FULL_IMAGE_URL = "fullImageUrlrl"; // we construct this from board and tim
     public static final String POST_COUNTRY_URL = "countryUrl"; // we construct this from the country code
-    public static final String POST_SPOILER_SUBJECT = "spoilerSubject";
-    public static final String POST_SPOILER_TEXT = "spoilerText";
+    private static final String POST_SPOILER_SUBJECT = "spoilerSubject";
+    private static final String POST_SPOILER_TEXT = "spoilerText";
     public static final String POST_EXIF_TEXT = "exifText";
     public static final String POST_USER_ID = "id";
     public static final String POST_TRIPCODE = "trip";
@@ -305,20 +305,12 @@ public class ChanPost {
     }
 
     public String combinedSubCom() {
-        String[] textComponents = textComponents("", false);
+        String[] textComponents = textComponents("");
         String s = textComponents[0];
         String t = textComponents[1];
         String u = (s != null && !s.isEmpty() ? "<b>" + s + "</b><br/>" : "")
                 + t;
         return u;
-    }
-
-    protected String[] textComponents(String query) {
-        return textComponents(query, false);
-    }
-
-    private String[] spoilerComponents(String query) {
-        return textComponents(query, true);
     }
 
     private String cleanSubject(String subject) {
@@ -338,9 +330,9 @@ public class ChanPost {
                 .trim();
     }
 
-    private String[] textComponents(String query, boolean showSpoiler) {
-        String subText = sanitizeText(sub, false, showSpoiler);
-        String comText = sanitizeText(com, false, showSpoiler);
+    public String[] textComponents(String query) {
+        String subText = sanitizeText(sub, false);
+        String comText = sanitizeText(com, false);
         String subject = subText != null ? subText : "";
         String message = comText != null ? comText : "";
 
@@ -406,10 +398,10 @@ public class ChanPost {
     }
 
     public String threadSubject(Context context) {
-        String subText = sanitizeText(sub);
+        String subText = sanitizeText(sub, false);
         if (subText != null && !subText.isEmpty())
             return subText;
-        String comText = sanitizeText(com);
+        String comText = sanitizeText(com, false);
         if (comText != null && !comText.isEmpty())
             return comText.substring(0, Math.min(comText.length(), MAX_THREAD_SUBJECT_LEN)); // always shorter than this since only one line
         if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
@@ -419,15 +411,7 @@ public class ChanPost {
         return context.getResources().getString(R.string.thread_no_text_subject);
     }
 
-    private String sanitizeText(String text) {
-        return sanitizeText(text, false);
-    }
-
-    private String sanitizeText(String text, boolean collapseNewLines) {
-        return sanitizeText(text, collapseNewLines, false);
-    }
-
-    private String sanitizeText(String text, boolean collapseNewlines, boolean showSpoiler) {
+    private String sanitizeText(String text, boolean collapseNewlines) {
         if (text == null || text.isEmpty())
             return "";
 
@@ -441,11 +425,7 @@ public class ChanPost {
         text = text
                 .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
                 .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "");  // exif info
-        //if (!showSpoiler)
-        //    text = text.replaceAll("<s>[^<]*</s>", "XXXSPOILERXXX");                       // spoiler text
         text = textViewFilter(text, collapseNewlines);
-        //if (!showSpoiler)
-        //    text = text.replaceAll("XXXSPOILERXXX", "<b>spoiler</b>");
         long end = System.currentTimeMillis();
         if (DEBUG) Log.v(TAG, "Regexp: " + (end - start) + "ms");
 
@@ -714,6 +694,11 @@ public class ChanPost {
         if (!exists) {
             threads.add(this);
         }
+    }
+
+    public void copyUpdatedInfoFields(ChanThread from) {
+        if (from != null && from.posts != null && from.posts.length > 0 && from.posts[0] != null)
+            copyUpdatedInfoFields(from.posts[0]);
     }
 
     public void copyUpdatedInfoFields(ChanPost from) {
@@ -1053,7 +1038,6 @@ public class ChanPost {
 
     public Object[] makeRow(Context context, String query, int i, byte[] backlinksBlob, byte[] repliesBlob, byte[] sameIdsBlob) {
         String[] textComponents = textComponents(query);
-        String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
         String headline = headline(context, query, false, repliesBlob, false, false);
         int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText, headline);
@@ -1077,8 +1061,8 @@ public class ChanPost {
                 w,
                 h,
                 tim,
-                spoilerComponents[0],
-                spoilerComponents[1],
+                null,
+                null,
                 exifText(),
                 id,
                 trip,

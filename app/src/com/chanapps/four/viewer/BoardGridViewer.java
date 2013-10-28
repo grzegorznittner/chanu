@@ -4,18 +4,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.text.Html;
+import android.text.*;
+import android.text.style.CharacterStyle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.LetterSpacingTextView;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -23,6 +22,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import org.xml.sax.XMLReader;
 
 /**
  * Created with IntelliJ IDEA.
@@ -70,7 +70,7 @@ public class BoardGridViewer {
         boolean isDark = ThemeSelector.instance(view.getContext()).isDark();
         BoardGridViewHolder viewHolder = (BoardGridViewHolder)view.getTag(R.id.VIEW_HOLDER);
         setItem(viewHolder, overlayListener, overflowListener);
-        setGridSubject(viewHolder, cursor);
+        setSubject(viewHolder, cursor);
         setInfo(viewHolder, cursor, groupBoardCode, flags, options);
         setNumReplies(viewHolder, cursor);
         setCountryFlag(viewHolder, cursor);
@@ -121,7 +121,7 @@ public class BoardGridViewer {
         return threadAbbrev;
     }
 
-    protected static boolean setGridSubject(BoardGridViewHolder viewHolder, Cursor cursor) {
+    protected static boolean setSubject(BoardGridViewHolder viewHolder, Cursor cursor) {
         TextView tv = viewHolder.grid_item_thread_subject;
         if (tv == null)
             return false;
@@ -130,9 +130,10 @@ public class BoardGridViewer {
         String u = (s != null && !s.isEmpty() ? "<b>" + s + "</b>" : "")
                 + (s != null && t != null && !s.isEmpty() && !t.isEmpty() ? "<br/>" : "")
                 + (t != null && !t.isEmpty() ? t : "");
-        if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " u=" + u);
+        if (DEBUG) Log.i(TAG, "setSubject tv=" + tv + " u=" + u);
         if (u != null && !u.isEmpty()) {
-            tv.setText(Html.fromHtml(u));
+            Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(u, null, spoilerTagHandler));
+            tv.setText(spannable);
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -398,5 +399,84 @@ public class BoardGridViewer {
             );
         return true;
     }
-    
+
+    /* similar to ThreadViewer version, but not clickable */
+    static private final Html.TagHandler spoilerTagHandler = new Html.TagHandler() {
+        static private final String SPOILER_TAG = "s";
+        class SpoilerSpan extends CharacterStyle {
+            private int start = 0;
+            private int end = 0;
+            private boolean blackout = true;
+            public SpoilerSpan() {
+                super();
+            }
+            public SpoilerSpan(int start, int end) {
+                this();
+                this.start = start;
+                this.end = end;
+            }
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                if (blackout) {
+                    int textColor = ds.getColor();
+                    ds.bgColor = textColor;
+                }
+            }
+        }
+        class SpanFactory {
+            public Class getSpanClass() { return SpoilerSpan.class; }
+            public Object getSpan(final int start, final int end) { return new SpoilerSpan(start, end); }
+        }
+        SpanFactory spanFactory = new SpanFactory();
+        public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
+            if (SPOILER_TAG.equals(tag))
+                handleSpoiler(opening, output);
+        }
+        private void handleSpoiler(boolean opening, Editable output) {
+            if (opening)
+                handleSpoilerOpen(output);
+            else
+                handleSpoilerClose(output);
+        }
+        private void handleSpoilerOpen(Editable output) {
+            if (DEBUG) com.android.gallery3d.ui.Log.i(TAG, "handleSpoilerOpen(" + output + ")");
+            int len = output.length();
+            output.setSpan(spanFactory.getSpan(len, len), len, len, Spannable.SPAN_MARK_MARK);
+        }
+        private void handleSpoilerClose(Editable output) {
+            if (DEBUG) com.android.gallery3d.ui.Log.i(TAG, "handleSpoilerClose(" + output + ")");
+            int len = output.length();
+            Object obj = getFirst(output, spanFactory.getSpanClass());
+            int start = output.getSpanStart(obj);
+            output.removeSpan(obj);
+            if (start >= 0 && len >= 0 && start != len)  {
+                output.setSpan(spanFactory.getSpan(start, len), start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                if (DEBUG) com.android.gallery3d.ui.Log.i(TAG, "setSpan(" + start + ", " + len + ")");
+            }
+        }
+        private Object getFirst(Editable text, Class kind) {
+            Object[] objs = text.getSpans(0, text.length(), kind);
+            if (objs.length == 0)
+                return null;
+            if (DEBUG) com.android.gallery3d.ui.Log.i(TAG, "Found " + objs.length + " matching spans");
+            for (int i = 0; i < objs.length; i++) {
+                Object span = objs[i];
+                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
+                    return span;
+            }
+            return null;
+        }
+        private Object getLast(Editable text, Class kind) {
+            Object[] objs = text.getSpans(0, text.length(), kind);
+            if (objs.length == 0)
+                return null;
+            for (int i = objs.length - 1; i >= 0; i--) {
+                Object span = objs[i];
+                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
+                    return span;
+            }
+            return null;
+        }
+    };
+
 }

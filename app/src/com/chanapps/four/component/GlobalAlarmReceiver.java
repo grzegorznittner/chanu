@@ -68,7 +68,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.VERY_SLOW
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW) {
             if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
-            //fetchWatchlistThreads(context);
+            fetchWatchlistThreads(context);
             //fetchFavoriteBoards(context);
             WidgetProviderUtils.fetchAllWidgets(context);
             //ChanBoard.preloadUncachedBoards(context);

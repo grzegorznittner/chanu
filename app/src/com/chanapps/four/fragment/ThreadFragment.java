@@ -397,11 +397,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() not current fragment, exiting /" + boardCode + "/" + threadNo);
             return;
         }
-        if (handler != null) {
+        if (handler != null)
             handler.removeCallbacks(autoUpdateRunnable); // deschedule any current updates
+        if (handler != null)
             handler.postDelayed(autoUpdateRunnable, AUTOUPDATE_THREAD_DELAY_MS);
-        }
-        else {
+        if (handler == null) {
             if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() null handler exiting /" + boardCode + "/" + threadNo);
         }
     }
@@ -952,25 +952,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             Cursor cursor = (Cursor) adapter.getItem(i);
             if (cursor == null)
                 continue;
-            String subject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_SUBJECT));
-            String message = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
-            if (!subject.isEmpty() || !message.isEmpty()) {
-                text = subject
-                        + (!subject.isEmpty() && !message.isEmpty() ? "<br/>" : "")
-                        + message;
-                if (DEBUG) Log.i(TAG, "selectText() de-spoilered text=" + text);
-            }
-            else {
-                subject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-                message = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-                text = subject
-                        + (!subject.isEmpty() && !message.isEmpty() ? "<br/>" : "")
-                        + message;
-                if (DEBUG) Log.i(TAG, "selectText() raw text=" + text);
-            }
+            String subject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+            String message = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+            text = subject
+                    + (!subject.isEmpty() && !message.isEmpty() ? "<br/>" : "")
+                    + message;
+            if (DEBUG) Log.i(TAG, "selectText() raw text=" + text);
             break;
-//            if (!text.isEmpty())
-//                text += "<br/><br/>";
         }
         text = text.replaceAll("(</?br/?>)+", "\n").replaceAll("<[^>]*>", "");
         if (DEBUG) Log.i(TAG, "selectText() returning filtered text=" + text);

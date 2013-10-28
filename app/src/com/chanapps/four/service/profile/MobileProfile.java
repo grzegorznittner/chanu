@@ -11,6 +11,7 @@ import android.util.Log;
 
 import android.widget.Toast;
 import com.chanapps.four.activity.*;
+import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.CleanUpService;
@@ -21,7 +22,7 @@ import com.chanapps.four.widget.WidgetProviderUtils;
 
 public class MobileProfile extends AbstractNetworkProfile {
     private static final String TAG = MobileProfile.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private String networkType = "3G";
 
@@ -219,6 +220,10 @@ public class MobileProfile extends AbstractNetworkProfile {
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
+        } else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+            if (DEBUG) Log.i(TAG, "Manual refresh watchlist");
+            GlobalAlarmReceiver.fetchWatchlistThreads(context);
+            postStopMessage(handler, 0);
         } else if (ChanBoard.isPopularBoard(boardCode)) {
             if (DEBUG) Log.i(TAG, "Manual refresh popular board=" + boardCode);
             boolean canFetch = FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
@@ -567,6 +572,32 @@ public class MobileProfile extends AbstractNetworkProfile {
             NetworkProfileManager.instance().getCurrentProfile().onDataParseFailure(service, Failure.CORRUPT_DATA);
             return;
         }
+
+        /* this happens somewhere???
+        // store updated status into board thread record
+        ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), thread.board);
+        if (board != null && board.threads != null) {
+            for (int i = 0; i < board.threads.length; i++) {
+                if (board.threads[i] != null && board.threads[i].no == thread.no) {
+                    ChanThread.mergeboard.threads[i].isDead = true;
+                    ChanFileStorage.storeBoardData(service.getApplicationContext(), board);
+                    break;
+                }
+            }
+        }
+
+        // store updated status into watchlist thread record
+        ChanBoard watchlist = ChanFileStorage.loadBoardData(service.getApplicationContext(), ChanBoard.WATCHLIST_BOARD_CODE);
+        if (board != null && board.threads != null) {
+            for (int i = 0; i < board.threads.length; i++) {
+                if (board.threads[i] != null && board.threads[i].no == thread.no) {
+                    board.threads[i].isDead = thread.isDead;
+                    ChanFileStorage.storeBoardData(service.getApplicationContext(), board);
+                    break;
+                }
+            }
+        }
+       */
 
         // user is on the thread page, we need to reloaded it
         final Handler handler = activity == null ? null : activity.getChanHandler();
