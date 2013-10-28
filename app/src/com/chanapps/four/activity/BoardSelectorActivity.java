@@ -62,7 +62,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
             @Override
             public void run() {
                 if (NetworkProfileManager.instance().getActivity() != activity) {
-                    if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
+                    if (DEBUG) Log.i(TAG, "boardSelector onResume() activityChange to /" + boardCode + "/");
                     NetworkProfileManager.instance().activityChange(activity);
                     if (handler != null)
                         handler.post(new Runnable() {

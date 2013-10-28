@@ -266,6 +266,10 @@ abstract public class
                 if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
                 return false;
             }
+            if (boardType == BoardType.META || boardType == BoardType.LATEST_IMAGES) {
+                if (DEBUG) Log.i(TAG, "matched unsupported board type /" + boardTypeCode + "/, exiting");
+                return false;
+            }
             if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
             //if (ChanBoard.isTopBoard(boardTypeCode))
             //    mDrawerAdapter.notifyDataSetChanged();

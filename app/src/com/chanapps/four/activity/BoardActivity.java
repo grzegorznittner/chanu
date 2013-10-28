@@ -161,6 +161,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     protected void createViews(Bundle bundle) {
+        if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         if (bundle != null)
             onRestoreInstanceState(bundle);
         else
@@ -326,12 +327,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     public void setFromIntent(Intent intent) {
+        if (DEBUG) Log.i(TAG, "setFromIntent intent=" + intent);
         Uri data = intent.getData();
         if (data == null) {
             boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
             query = intent.getStringExtra(SearchManager.QUERY);
             firstVisiblePosition = -1;
             firstVisiblePositionOffset = -1;
+            if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from intent");
         }
         else {
             List<String> params = data.getPathSegments();
