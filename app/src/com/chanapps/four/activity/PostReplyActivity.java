@@ -1452,7 +1452,7 @@ public class PostReplyActivity
                     thread.com = getMessage().trim();
                     try {
                         ChanFileStorage.addWatchedThread(context, thread);
-                        BoardActivity.refreshWatchlist();
+                        BoardActivity.refreshWatchlist(context);
                     }
                     catch (IOException e) {
                         Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);

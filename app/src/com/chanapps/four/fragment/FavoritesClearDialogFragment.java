@@ -3,6 +3,7 @@ package com.chanapps.four.fragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -49,8 +50,9 @@ public class FavoritesClearDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     if (DEBUG) Log.i(TAG, "Clearing favorites...");
-                                    ChanFileStorage.clearFavorites(getActivity().getApplicationContext());
-                                    BoardActivity.refreshFavorites();
+                                    Context context = getActivity().getApplicationContext();
+                                    ChanFileStorage.clearFavorites(context);
+                                    BoardActivity.refreshFavorites(context);
                                     Toast.makeText(getActivity().getApplicationContext(),
                                             R.string.favorites_cleared, Toast.LENGTH_SHORT).show();
                                 }

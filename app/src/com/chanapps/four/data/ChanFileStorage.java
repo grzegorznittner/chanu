@@ -4,10 +4,17 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.service.BoardParserService;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.widget.WidgetProviderUtils;
 import com.nostra13.universalimageloader.utils.L;
 import org.apache.commons.io.FileUtils;
@@ -25,7 +32,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
     private static final String TAG = ChanFileStorage.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final int MAX_BOARDS_IN_CACHE = 100;
     private static final int MAX_THREADS_IN_CACHE = 200;
@@ -195,9 +202,7 @@ public class ChanFileStorage {
             if (!board.isVirtualBoard()) {
                 updateWatchedThread(context, board);
             }
-            Intent intent = new Intent(BoardActivity.UPDATE_BOARD_ACTION);
-            intent.putExtra(ChanBoard.BOARD_CODE, board.link);
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            BoardActivity.updateBoard(context, board.link);
         } else {
             Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
         }
@@ -842,13 +847,14 @@ public class ChanFileStorage {
     private static void updateWatchedThread(Context context, ChanThread loadedThread) throws IOException {
         ChanBoard watchlistBoard = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
         for (int i = 0; i < watchlistBoard.threads.length; i++) {
-            ChanPost watchedThread = watchlistBoard.threads[i];
+            ChanThread watchedThread = watchlistBoard.threads[i];
             if (watchedThread.no == loadedThread.no && watchedThread.board.equals(loadedThread.board)) {
+                notifyNewReplies(context, watchedThread, loadedThread);
                 watchlistBoard.threads[i].updateThreadData(loadedThread);
                 if (DEBUG) Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no
-                        + " replies: " + watchlistBoard.threads[i].replies + " images: " + watchlistBoard.threads[i].images);
+                        + " replies: " + watchedThread.replies + " images: " + watchedThread.images);
                 storeBoardData(context, watchlistBoard);
-                BoardActivity.refreshWatchlist();
+                BoardActivity.refreshWatchlist(context);
             }
         }
     }
@@ -858,25 +864,28 @@ public class ChanFileStorage {
                 || loadedBoard.loadedThreads[0].defData) {
             return;
         }
-        ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-        boolean needsToBeStored = false;
-        for (int i = 0; i < board.threads.length; i++) {
-            ChanPost thread = board.threads[i];
-            if (thread.board.equals(loadedBoard.link)) {
+        ChanBoard watchlist = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        if (watchlist == null || watchlist.threads == null || watchlist.threads.length == 0)
+            return;
+        boolean updateWatchlist = false;
+        for (int i = 0; i < watchlist.threads.length; i++) {
+            ChanThread watchedThread = watchlist.threads[i];
+            if (watchedThread.board.equals(loadedBoard.link)) {
                 for (int t = 0; t < loadedBoard.loadedThreads.length; t++) {
-                    ChanPost loadedThread = loadedBoard.loadedThreads[t];
-                    if (thread.no == loadedThread.no) {
-                        board.threads[i].updateThreadDataWithPost(loadedThread);
-                        if (DEBUG) Log.i(TAG, "Updating watched thread " + thread.board + "/" + thread.no
-                                + " replies: " + board.threads[i].replies + " images: " + board.threads[i].images);
-                        needsToBeStored = true;
+                    ChanThread loadedThread = loadedBoard.loadedThreads[t];
+                    if (watchedThread.no == loadedThread.no) {
+                        notifyNewReplies(context, watchedThread, loadedThread);
+                        watchedThread.updateThreadDataWithPost(loadedThread);
+                        if (DEBUG) Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no
+                                + " replies: " + watchedThread.replies + " images: " + watchedThread.images);
+                        updateWatchlist = true;
                     }
                 }
             }
         }
-        if (needsToBeStored) {
-            storeBoardData(context, board);
-            BoardActivity.refreshWatchlist();
+        if (updateWatchlist) {
+            storeBoardData(context, watchlist);
+            BoardActivity.refreshWatchlist(context);
         }
     }
 
@@ -983,6 +992,47 @@ public class ChanFileStorage {
             IOUtils.closeQuietly(fos);
             IOUtils.closeQuietly(fis);
         }
+    }
+
+    private static void notifyNewReplies(Context context, ChanPost watchedThread, ChanThread loadedThread) {
+        if (DEBUG) Log.i(TAG, "notifyNewReplies watched=" + watchedThread + " loaded=" + loadedThread);
+        if (watchedThread == null || loadedThread == null)
+            return;
+        if (loadedThread.posts == null || loadedThread.posts.length == 0 || loadedThread.posts[0] == null)
+            return;
+
+        String board = loadedThread.board;
+        long threadNo = loadedThread.no;
+        ChanActivityId aid = NetworkProfileManager.instance().getActivityId();
+        if (aid != null && board.equals(aid.boardCode) && threadNo == aid.threadNo) {
+            if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on thread, skipping notification");
+            return;
+        }
+
+        int numNewReplies = loadedThread.posts[0].replies - (watchedThread.replies >= 0 ? watchedThread.replies : 0);
+        if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " newReplies=" + numNewReplies);
+        if (numNewReplies <= 0)
+            return;
+        int notificationId = board.hashCode() + (int)threadNo;
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String title = "Chanu - New Posts";
+        String postPlurals = context.getResources().getQuantityString(R.plurals.thread_activity_updated, numNewReplies);
+        //String imagePlurals = context.getResources().getQuantityString(R.plurals.thread_num_images, numNewImages);
+        String postText = String.format(postPlurals, numNewReplies);
+        //String imageText = String.format(imagePlurals, numNewImages);
+        //String text = String.format("%s and %s for %s/%d", postText, imageText, board, threadNo);
+        String text = String.format("%s /%s/%d", postText, board, threadNo);
+        Intent threadActivityIntent = ThreadActivity.createIntent(context, board, threadNo, "");
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.app_icon_notification)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setContentIntent(pendingIntent);
+
+        if (DEBUG) Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);
+        notificationManager.notify(notificationId, notifBuilder.build());
     }
 
 }

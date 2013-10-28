@@ -2,6 +2,7 @@ package com.chanapps.four.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.DialogFragment;
@@ -53,8 +54,9 @@ public class WatchlistClearDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     if (DEBUG) Log.i(TAG, "Clearing watchlist...");
-                                    ChanFileStorage.clearWatchedThreads(getActivity().getApplicationContext());
-                                    BoardActivity.refreshWatchlist();
+                                    Context context = getActivity().getApplicationContext();
+                                    ChanFileStorage.clearWatchedThreads(context);
+                                    BoardActivity.refreshWatchlist(context);
                                     Toast.makeText(getActivity().getApplicationContext(),
                                             R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT).show();
                                 }

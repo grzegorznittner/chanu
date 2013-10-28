@@ -34,7 +34,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         }
         setIntent(intent);
         setFromIntent(intent);
-        setupStaticBoards();
+        //setupStaticBoards();
         createAbsListView();
         setupBoardTitle();
         mDrawerAdapter.notifyDataSetInvalidated();
@@ -45,7 +45,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         if (DEBUG) Log.i(TAG, "switchBoard begin /" + boardCode + "/ q=" + query);
         this.boardCode = boardCode;
         this.query = query;
-        setupStaticBoards();
+        //setupStaticBoards();
         createAbsListView();
         setupBoardTitle();
         startLoaderAsync();

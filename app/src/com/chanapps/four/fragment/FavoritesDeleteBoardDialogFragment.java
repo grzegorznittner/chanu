@@ -2,6 +2,7 @@ package com.chanapps.four.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,8 +55,9 @@ public class FavoritesDeleteBoardDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
-                                    ChanFileStorage.deleteFavoritesBoard(getActivity().getApplicationContext(), thread);
-                                    BoardActivity.refreshFavorites();
+                                    Context context = getActivity().getApplicationContext();
+                                    ChanFileStorage.deleteFavoritesBoard(context, thread);
+                                    BoardActivity.refreshFavorites(context);
                                 }
                                 catch (IOException e) {
                                     Log.e(TAG, "Exception deleting favorites board=" + thread, e);

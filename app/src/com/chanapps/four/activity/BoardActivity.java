@@ -48,7 +48,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
     public static final String UPDATE_BOARD_ACTION = "updateBoardAction";
 
     public static String topBoardCode = null;
@@ -56,9 +56,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
-    private static WeakReference<BoardActivity> allBoardsActivityRef = null;
-    private static WeakReference<BoardActivity> watchlistActivityRef = null;
-    private static WeakReference<BoardActivity> favoritesActivityRef = null;
+    //private static WeakReference<BoardActivity> allBoardsActivityRef = null;
+    //private static WeakReference<BoardActivity> watchlistActivityRef = null;
+    //private static WeakReference<BoardActivity> favoritesActivityRef = null;
 
     protected static Typeface titleTypeface;
     protected static final String TITLE_FONT = "fonts/Edmondsans-Bold.otf";
@@ -125,7 +125,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     }
                     else {
                         ChanFileStorage.addFavoriteBoard(context, thread);
-                        refreshFavorites();
+                        refreshFavorites(context);
                         msgId = R.string.board_added_to_favorites;
                         if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/ to favorites");
                     }
@@ -168,7 +168,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (boardCode == null || boardCode.isEmpty())
             setBoardCodeToDefault();
         if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
-        setupStaticBoards();
+        //setupStaticBoards();
         createAbsListView();
         setupBoardTitle();
         IntentFilter intentFilter = new IntentFilter(UPDATE_BOARD_ACTION);
@@ -180,6 +180,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "defaulted board code to /" + boardCode + "/");
     }
 
+    /*
     protected void setupStaticBoards() {
         if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode))
             setAllBoards(this);
@@ -188,6 +189,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
             setFavorites(this);
     }
+    */
 
     protected void setupBoardTitle() {
         boardTitleBar = findViewById(R.id.board_title_bar);
@@ -208,6 +210,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
+    /*
     protected static void setAllBoards(BoardActivity activity) {
         synchronized (BoardActivity.class) {
             allBoardsActivityRef = new WeakReference<BoardActivity>(activity);
@@ -225,8 +228,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             favoritesActivityRef = new WeakReference<BoardActivity>(activity);
         }
     }
+    */
 
-    public static void refreshAllBoards() {
+    public static void refreshAllBoards(Context context) {
+        updateBoard(context, ChanBoard.ALL_BOARDS_BOARD_CODE);
+        /*
         synchronized (BoardActivity.class) {
             if (DEBUG) Log.i(TAG, "refreshAllBoards()");
             BoardActivity allBoards;
@@ -242,9 +248,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     allBoards.backgroundRefresh();
             }
         }
+        */
     }
 
-    public static void refreshWatchlist() {
+    public static void refreshWatchlist(Context context) {
+        updateBoard(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        /*
         synchronized (BoardActivity.class) {
             BoardActivity watchlist;
             if (watchlistActivityRef != null && (watchlist = watchlistActivityRef.get()) != null) {
@@ -257,9 +266,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     watchlist.backgroundRefresh();
             }
         }
+        */
     }
 
-    public static void refreshFavorites() {
+    public static void refreshFavorites(Context context) {
+        updateBoard(context, ChanBoard.FAVORITES_BOARD_CODE);
+        /*
         synchronized (BoardActivity.class) {
             BoardActivity favorites;
             if (favoritesActivityRef != null && (favorites = favoritesActivityRef.get()) != null) {
@@ -272,6 +284,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     favorites.backgroundRefresh();
             }
         }
+        */
     }
 
     @Override
@@ -1333,5 +1346,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 backgroundRefresh();
         }
     };
+
+    public static void updateBoard(Context context, String boardCode) {
+        Intent intent = new Intent(BoardActivity.UPDATE_BOARD_ACTION);
+        intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
 
 }

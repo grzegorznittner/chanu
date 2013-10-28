@@ -884,7 +884,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     }
                     else {
                         ChanFileStorage.addWatchedThread(context, thread);
-                        BoardActivity.refreshWatchlist();
+                        BoardActivity.refreshWatchlist(context);
                         msgId = R.string.thread_added_to_watchlist;
                         if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
                     }
@@ -919,7 +919,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     }
                     else {
                         ChanFileStorage.deleteWatchedThread(context, thread);
-                        BoardActivity.refreshWatchlist();
+                        BoardActivity.refreshWatchlist(context);
                         msgId = R.string.thread_deleted_from_watchlist;
                         if (DEBUG) Log.i(TAG, "Deleted /" + boardCode + "/" + threadNo + " from watchlist");
                     }

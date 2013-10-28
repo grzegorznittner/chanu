@@ -2,6 +2,7 @@ package com.chanapps.four.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,8 +54,9 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
-                                    ChanFileStorage.deleteWatchedThread(getActivity().getApplicationContext(), thread);
-                                    BoardActivity.refreshWatchlist();
+                                    Context context = getActivity().getApplicationContext();
+                                    ChanFileStorage.deleteWatchedThread(context, thread);
+                                    BoardActivity.refreshWatchlist(context);
                                 }
                                 catch (IOException e) {
                                     Log.e(TAG, "Exception deleting watchlist thread=" + thread, e);
