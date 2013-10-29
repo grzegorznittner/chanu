@@ -75,7 +75,8 @@
     <!-- dark theme -->
 
     <color name="DarkPaletteBoardTitleTextColor">#eeeeee</color>
-    <color name="DarkPaletteCardListBg">#484848</color>
+    <!-- <color name="DarkPaletteCardListBg">#484848</color> -->
+    <color name="DarkPaletteCardListBg">#1d1d1d</color>
     <color name="DarkPaletteCardListBarBg">#2f2f2f</color>
     <color name="DarkPaletteImagePlaceholder">#2f2f2f</color>
     <color name="DarkPaletteDrawerBg">#202220</color>
