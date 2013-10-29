@@ -56,16 +56,19 @@ abstract public class
             if (DEBUG) Log.i(TAG, "onCreate enabling developer mode");
             // only enable in development for UI-thread / mem leak testing
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectDiskReads()
-                    .detectDiskWrites()
-                    .detectNetwork()   // or .detectAll() for all detectable problems
+                    //.detectDiskReads()
+                    //.detectDiskWrites()
+                    //.detectNetwork()   // or .detectAll() for all detectable problems
+                    .detectAll()
                     .penaltyLog()
+                    //.penaltyDeath()
                     .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                    .detectLeakedSqlLiteObjects()
-                    .detectLeakedClosableObjects()
+                    //.detectLeakedSqlLiteObjects()
+                    //.detectLeakedClosableObjects()
+                    .detectAll()
                     .penaltyLog()
-                            //.penaltyDeath()
+                    //.penaltyDeath()
                     .build());
             if (DEBUG) Log.i(TAG, "onCreate developer mode enabled");
         }

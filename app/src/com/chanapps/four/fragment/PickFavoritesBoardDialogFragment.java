@@ -60,7 +60,7 @@ public class PickFavoritesBoardDialogFragment extends ListDialogFragment {
                         if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
                         ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
                         dismiss();
-                        BoardActivity.addToFavorites(activity.getBaseContext(), activity.getChanHandler(), boardCode);
+                        BoardActivity.addToFavoritesNoMenuUpdate(activity.getBaseContext(), activity.getChanHandler(), boardCode);
                     }
                 }, new Dialog.OnCancelListener() {
                     public void onCancel(DialogInterface dialog) {

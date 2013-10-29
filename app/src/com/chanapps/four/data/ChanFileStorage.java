@@ -900,7 +900,7 @@ public class ChanFileStorage {
         return false;
     }
 
-    private static boolean isFavoriteBoard(ChanBoard board, ChanThread thread) {
+    public static boolean isFavoriteBoard(ChanBoard board, ChanThread thread) {
         if (board == null || board.threads == null)
             return false;
         for (ChanPost post : board.threads) {

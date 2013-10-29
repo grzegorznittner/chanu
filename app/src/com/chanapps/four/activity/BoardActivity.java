@@ -110,8 +110,43 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         return intent;
     }
 
-    public static void addToFavorites(final Context context, final Handler handler,
-                                      final String boardCode) {
+    public void addToFavorites(final Context context, final Handler handler, final String boardCode) {
+        if (DEBUG) Log.i(TAG, "addToFavorites /" + boardCode + "/");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int msgId;
+                try {
+                    final ChanThread thread = ChanBoard.makeFavoritesThread(context, boardCode);
+                    if (thread == null) {
+                        Log.e(TAG, "Couldn't add board /" + boardCode + "/ to favorites");
+                        msgId = R.string.board_not_added_to_favorites;
+                    }
+                    else {
+                        ChanFileStorage.addFavoriteBoard(context, thread);
+                        refreshFavorites(context);
+                        setFavoritesMenuAsync();
+                        msgId = R.string.board_added_to_favorites;
+                        if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/ to favorites");
+                    }
+                }
+                catch (IOException e) {
+                    msgId = R.string.board_not_added_to_favorites;
+                    Log.e(TAG, "Exception adding /" + boardCode + "/ to favorites", e);
+                }
+                final int stringId = msgId;
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            }
+        }).start();
+    }
+
+    public static void addToFavoritesNoMenuUpdate(final Context context, final Handler handler, final String boardCode) {
         if (DEBUG) Log.i(TAG, "addToFavorites /" + boardCode + "/");
         new Thread(new Runnable() {
             @Override
@@ -133,6 +168,42 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 catch (IOException e) {
                     msgId = R.string.board_not_added_to_favorites;
                     Log.e(TAG, "Exception adding /" + boardCode + "/ to favorites", e);
+                }
+                final int stringId = msgId;
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            }
+        }).start();
+    }
+
+    public void removeFromFavorites(final Context context, final Handler handler, final String boardCode) {
+        if (DEBUG) Log.i(TAG, "removeFromFavorites /" + boardCode + "/");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int msgId;
+                try {
+                    final ChanThread thread = ChanBoard.makeFavoritesThread(context, boardCode);
+                    if (thread == null) {
+                        Log.e(TAG, "Couldn't remove board /" + boardCode + "/ from favorites");
+                        msgId = R.string.favorites_not_deleted_board;
+                    }
+                    else {
+                        ChanFileStorage.deleteFavoritesBoard(context, thread);
+                        refreshFavorites(context);
+                        setFavoritesMenuAsync();
+                        msgId = R.string.dialog_deleted_from_watchlist;
+                        if (DEBUG) Log.i(TAG, "Removed /" + boardCode + "/ from favorites");
+                    }
+                }
+                catch (IOException e) {
+                    msgId = R.string.favorites_not_deleted_board;
+                    Log.e(TAG, "Exception deleting /" + boardCode + "/ from favorites", e);
                 }
                 final int stringId = msgId;
                 if (handler != null)
@@ -736,6 +807,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 else
                     addToFavorites(BoardActivity.this, handler, boardCode);
                 return true;
+            case R.id.favorites_remove_board_menu:
+                removeFromFavorites(BoardActivity.this, handler, boardCode);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -757,6 +831,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
         createSearchView(menu);
+        this.menu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -776,6 +851,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_watchlist_menu).setVisible(true);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
@@ -788,6 +864,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(true);
             menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
+            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
@@ -800,6 +877,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
@@ -812,6 +890,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
@@ -823,7 +902,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
-            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
+            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
+            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(true);
             menu.findItem(R.id.offline_board_view_menu).setVisible(true);
@@ -831,6 +911,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(true);
+            setFavoritesMenuAsync();
         }
         menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
 
@@ -1179,14 +1260,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     }
                     return true;
                 case R.id.favorites_remove_board_menu:
-                    thread = ChanBoard.makeFavoritesThread(BoardActivity.this, boardCode);
-                    if (thread != null) {
-                        FavoritesDeleteBoardDialogFragment d = new FavoritesDeleteBoardDialogFragment(handler, thread);
-                        d.show(getSupportFragmentManager(), FavoritesDeleteBoardDialogFragment.TAG);
-                    }
-                    else {
-                        Toast.makeText(BoardActivity.this, R.string.favorites_not_deleted_board, Toast.LENGTH_SHORT).show();
-                    }
+                    removeFromFavorites(BoardActivity.this, handler, boardCode);
                     return true;
                 default:
                     return false;
@@ -1354,6 +1428,32 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         Intent intent = new Intent(BoardActivity.UPDATE_BOARD_ACTION);
         intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    protected void setFavoritesMenuAsync() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final ChanBoard favoritesBoard = ChanFileStorage.loadBoardData(BoardActivity.this, ChanBoard.FAVORITES_BOARD_CODE);
+                final ChanThread thread = ChanBoard.makeFavoritesThread(BoardActivity.this, boardCode);
+                final boolean favorited = ChanFileStorage.isFavoriteBoard(favoritesBoard, thread);
+                if (DEBUG) Log.i(TAG, "setFavoritesMenuAsync() /" + boardCode + "/ favorited=" + favorited
+                        + " handler=" + handler + " menu=" + menu);
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (menu == null)
+                                return;
+                            MenuItem item;
+                            if ((item = menu.findItem(R.id.board_add_to_favorites_menu)) != null)
+                                item.setVisible(!favorited);
+                            if ((item = menu.findItem(R.id.favorites_remove_board_menu)) != null)
+                                item.setVisible(favorited);
+                        }
+                    });
+            }
+        }).start();
     }
 
 }

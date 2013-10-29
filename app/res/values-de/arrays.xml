@@ -312,4 +312,6 @@
         <item>@string/pref_download_images_per_thread_value</item>
     </string-array>
 
+    <string name="board_desc_all_boards">@string/board_all_boards_desc</string>
+
 </resources>

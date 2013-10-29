@@ -20,6 +20,13 @@
           android:icon="@drawable/content_new"
           android:visible="false"
             />
+
+    <item android:id="@+id/favorites_remove_board_menu"
+          android:title="@string/favorites_remove_board_menu"
+          android:icon="@drawable/rating_important"
+          android:visible="false"
+            />
+
     <item android:id="@+id/clear_favorites_menu"
           android:title="@string/pref_clear_favorites"
           android:icon="@drawable/content_discard"
