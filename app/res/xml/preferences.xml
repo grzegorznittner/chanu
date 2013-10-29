@@ -87,7 +87,7 @@
                 android:key="pref_clear_cache"
                 android:title="@string/pref_clear_cache"
                 android:summary="@string/pref_clear_cache_summ" />
-
+        <!--
         <Preference
                 android:key="pref_clear_favorites"
                 android:title="@string/pref_clear_favorites"
@@ -97,7 +97,7 @@
                 android:key="pref_clear_watchlist"
                 android:title="@string/pref_clear_watchlist"
                 android:summary="@string/pref_clear_watchlist_summ" />
-
+        -->
     </PreferenceCategory>
 
     <!-- customize -->
@@ -151,12 +151,14 @@
                     android:summaryOff="@string/pref_notifications_summ_off"
                     android:defaultValue="true" />
 
+            <!--
             <CheckBoxPreference
                     android:key="pref_use_friendly_ids"
                     android:title="@string/pref_use_friendly_ids"
                     android:summaryOn="@string/pref_use_friendly_ids_summ_on"
                     android:summaryOff="@string/pref_use_friendly_ids_summ_off"
                     android:defaultValue="true" />
+            -->
 
             <CheckBoxPreference
                     android:key="pref_use_analytics"
