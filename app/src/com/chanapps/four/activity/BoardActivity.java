@@ -1186,6 +1186,23 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     }
                 }).start();
             }
+            if (menuId == R.menu.meta_board_context_menu) {
+                if (adapter == null)
+                    return;
+                Cursor cursor = adapter.getCursor();
+                if (cursor == null)
+                    return;
+                if (!cursor.moveToPosition(checkedPos))
+                    return;
+                final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showMetaOverflowMenuAsync(popup, boardCode, threadNo);
+                    }
+                }).start();
+            }
             else {
                 popup.setOnMenuItemClickListener(popupListener);
                 popup.setOnDismissListener(popupDismissListener);
@@ -1193,6 +1210,33 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             }
         }
     };
+
+    protected void showMetaOverflowMenuAsync(final PopupMenu popup, String boardCode, long threadNo) {
+        final ChanBoard favoritesBoard = ChanFileStorage.loadBoardData(BoardActivity.this, ChanBoard.FAVORITES_BOARD_CODE);
+        final ChanThread thread = ChanBoard.makeFavoritesThread(BoardActivity.this, boardCode);
+        final boolean favorited = ChanFileStorage.isFavoriteBoard(favoritesBoard, thread);
+        if (DEBUG) Log.i(TAG, "setMetaOverflowMenuAsync() /" + boardCode + "/ favorited=" + favorited
+                + " handler=" + handler + " menu=" + popup.getMenu());
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Menu menu = popup.getMenu();
+                    if (menu == null)
+                        return;
+                    if (menu == null)
+                        return;
+                    MenuItem item;
+                    if ((item = menu.findItem(R.id.board_add_to_favorites_menu)) != null)
+                        item.setVisible(!favorited);
+                    if ((item = menu.findItem(R.id.favorites_remove_board_menu)) != null)
+                        item.setVisible(favorited);
+                    popup.setOnMenuItemClickListener(popupListener);
+                    popup.setOnDismissListener(popupDismissListener);
+                    popup.show();
+                }
+            });
+    }
 
     protected void showOverflowMenuAsync(final PopupMenu popup, String boardCode, long threadNo) {
         final ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
