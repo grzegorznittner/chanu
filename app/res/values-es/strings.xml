@@ -1486,10 +1486,10 @@
   <string name="board_vg_with_abbrev">/vg/ Videojuegos generales</string>
   <string name="board_vp_with_abbrev">/vp/ Pokemon</string>
   <string name="board_vr_with_abbrev">/vr/ Juegos Retro</string>
-  <string name="board_w_with_abbrev">/ w/ Anime/Wallpapers</string>
-  <string name="board_wg_with_abbrev">/WG/ Fondos de escritorio</string>
-  <string name="board_wsg_with_abbrev">/wg/ GIF de trabajo seguro</string>
-  <string name="board_x_with_abbrev">/ x / Paranormal</string>
+  <string name="board_w_with_abbrev">/w/ Anime/Wallpapers</string>
+  <string name="board_wg_with_abbrev">/wg/ Fondos de escritorio</string>
+  <string name="board_wsg_with_abbrev">/wsg/ GIF de trabajo seguro</string>
+  <string name="board_x_with_abbrev">/x/ Paranormal</string>
   <string name="board_y_with_abbrev">/y/ Yaoi</string>
   <string name="report_post_type_rule">Infracción de las normas</string>
   <string name="report_post_type_illegal">Contenido ilegal</string>
