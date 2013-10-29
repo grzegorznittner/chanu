@@ -10,7 +10,6 @@ import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.chanapps.four.component.ChanNotificationManager;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.fragment.SettingsFragment;

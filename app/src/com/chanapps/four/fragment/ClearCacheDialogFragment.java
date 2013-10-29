@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.component.ChanNotificationManager;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 
@@ -30,6 +31,8 @@ public class ClearCacheDialogFragment extends DialogFragment {
     public static final String TAG = ClearCacheDialogFragment.class.getSimpleName();
 
     private static final boolean DEBUG = false;
+
+    private static final int CLEAR_CACHE_NOTIFY_ID = 0x870932; // a unique notify idea is needed for each notify to "clump" together
 
     private SettingsFragment fragment;
 
@@ -81,13 +84,15 @@ public class ClearCacheDialogFragment extends DialogFragment {
 
         @Override
         public void onPreExecute() {
-            if (runningDelete)
+            if (runningDelete) {
                 Toast.makeText(context, R.string.pref_clear_cache_already_running, Toast.LENGTH_SHORT).show();
-            else
-                if (ChanNotificationManager.getInstance(context).isEnabled())
-                    Toast.makeText(context, R.string.pref_clear_cache_pre_execute, Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(context, R.string.pref_clear_cache_pre_execute_no_notify, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true)) {
+                Toast.makeText(context, R.string.pref_clear_cache_pre_execute_no_notify, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Toast.makeText(context, R.string.pref_clear_cache_pre_execute, Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -110,28 +115,22 @@ public class ClearCacheDialogFragment extends DialogFragment {
         public void onCancelled() {
             runningDelete = false;
             if (DEBUG) Log.i(TAG, "Cancelled clear cache");
-            ChanNotificationManager manager = ChanNotificationManager.getInstance(context);
-            if (manager.isEnabled())
-                manager.sendNotification(
-                        ChanNotificationManager.CLEAR_CACHE_NOTIFY_ID,
-                        makeNotification(context.getString(R.string.pref_clear_cache_error)));
-            else
-                Toast.makeText(context, R.string.pref_clear_cache_error, Toast.LENGTH_LONG).show();
+            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+                return;
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(CLEAR_CACHE_NOTIFY_ID, makeNotification(context.getString(R.string.pref_clear_cache_error)));
         }
 
         @Override
         public void onPostExecute(String result) {
             runningDelete = false;
-            if (result != null) {
-                if (DEBUG) Log.i(TAG, "Post execute with clear cache result=" + result);
-                ChanNotificationManager manager = ChanNotificationManager.getInstance(context);
-                if (manager.isEnabled())
-                    manager.sendNotification(
-                            ChanNotificationManager.CLEAR_CACHE_NOTIFY_ID,
-                            makeNotification(result));
-                else
-                    Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-            }
+            if (result == null)
+                return;
+            if (DEBUG) Log.i(TAG, "Post execute with clear cache result=" + result);
+            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+                return;
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(CLEAR_CACHE_NOTIFY_ID, makeNotification(result));
         }
 
         private Notification makeNotification(String contentText) {

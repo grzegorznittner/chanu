@@ -7,12 +7,11 @@ import java.util.*;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.audiofx.BassBoost;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.ThreadActivity;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.widget.WidgetProviderUtils;
@@ -25,7 +24,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.service.FileSaverService;
 import com.chanapps.four.service.FileSaverService.FileType;
 import com.nostra13.universalimageloader.utils.StorageUtils;
@@ -202,7 +200,9 @@ public class ChanFileStorage {
             if (!board.isVirtualBoard()) {
                 updateWatchedThread(context, board);
             }
-            BoardActivity.updateBoard(context, board.link);
+            else {
+                BoardActivity.updateBoard(context, board.link);
+            }
         } else {
             Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
         }
@@ -996,6 +996,8 @@ public class ChanFileStorage {
 
     private static void notifyNewReplies(Context context, ChanPost watchedThread, ChanThread loadedThread) {
         if (DEBUG) Log.i(TAG, "notifyNewReplies watched=" + watchedThread + " loaded=" + loadedThread);
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+            return;
         if (watchedThread == null || loadedThread == null)
             return;
         if (loadedThread.posts == null || loadedThread.posts.length == 0 || loadedThread.posts[0] == null)
@@ -1008,6 +1010,10 @@ public class ChanFileStorage {
             if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on thread, skipping notification");
             return;
         }
+        else if (aid != null && ChanBoard.WATCHLIST_BOARD_CODE.equals(aid.boardCode)) {
+            if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on watchlist, skipping notification");
+            return;
+        }
 
         int numNewReplies = loadedThread.posts[0].replies - (watchedThread.replies >= 0 ? watchedThread.replies : 0);
         if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " newReplies=" + numNewReplies);
@@ -1015,20 +1021,23 @@ public class ChanFileStorage {
             return;
         int notificationId = board.hashCode() + (int)threadNo;
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String title = "Chanu - New Posts";
+        String title = context.getString(R.string.app_name_title);
         String postPlurals = context.getResources().getQuantityString(R.plurals.thread_activity_updated, numNewReplies);
         //String imagePlurals = context.getResources().getQuantityString(R.plurals.thread_num_images, numNewImages);
-        String postText = String.format(postPlurals, numNewReplies);
+        String postText = String.format(postPlurals, 0).replace("0", "");
+        String threadId = "/" + board + "/" + threadNo;
         //String imageText = String.format(imagePlurals, numNewImages);
         //String text = String.format("%s and %s for %s/%d", postText, imageText, board, threadNo);
-        String text = String.format("%s /%s/%d", postText, board, threadNo);
+        String text = (postText + " " + threadId).trim();
         Intent threadActivityIntent = ThreadActivity.createIntent(context, board, threadNo, "");
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)System.currentTimeMillis(),
                 threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
         NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.app_icon_notification)
                 .setContentTitle(title)
                 .setContentText(text)
+                .setNumber(numNewReplies)
+                .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
 
         if (DEBUG) Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);

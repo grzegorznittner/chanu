@@ -419,10 +419,17 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	}
 	
 	private static void notifyDownloadScheduled(Context context, int notificationId, String board, long threadNo) {
-		NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+            return;
+
+        String titleText = context.getString(R.string.download_all_images_to_gallery_menu);
+        String threadText = "/" + board + "/" + threadNo;
+        String text = titleText + " " + threadText;
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 		NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
-		    .setContentTitle("Chanu - Image(s) download")
-		    .setContentText("Image download for board /" + board + " - waiting...")
+		    .setContentTitle(context.getString(R.string.app_name_title))
+		    .setContentText(text)
 		    .setSmallIcon(R.drawable.app_icon_notification);
 		
 		notificationManager.notify(notificationId, notifBuilder.build());
@@ -430,7 +437,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 
 	private void notifyDownloadUpdated(Context context, int notificationId, String board, long threadNo,
 			int totalNumImages, int downloadedImages) {
-		if (checkIfStopped(notificationId)) {
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+            return;
+        if (checkIfStopped(notificationId)) {
 			return;
 		}
 		long now = new Date().getTime();
@@ -438,15 +447,23 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			return;
 		}
 		lastUpdateTime = now;
-		NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-		String text = threadNo == 0 ? "Board /" + board : "Thread /" + board + "/" + threadNo;
-		NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
-		    .setContentTitle("Chanu - Image(s) download")
-		    .setContentText(text + " - downloading " + downloadedImages + "/" + totalNumImages)
-			.setProgress(totalNumImages, downloadedImages, false)
-			.setSmallIcon(R.drawable.app_icon_notification);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, CancelDownloadActivity.createIntent(context, notificationId, board, threadNo),
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        String titleText = totalNumImages > 1
+                ? getString(R.string.download_all_images_to_gallery_menu)
+                : getString(R.string.download_images_to_gallery_menu);
+        String threadText = "/" + board + "/" + threadNo;
+        String downloadText = downloadedImages + "/" + totalNumImages;
+        String text = titleText + " " + threadText + " " + downloadText;
+
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
+                .setContentTitle(context.getString(R.string.app_name_title))
+                .setContentText(text)
+                .setProgress(totalNumImages, downloadedImages, false)
+                .setSmallIcon(R.drawable.app_icon_notification);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                CancelDownloadActivity.createIntent(context, notificationId, board, threadNo),
         		Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
         notifBuilder.setContentIntent(pendingIntent);
 
@@ -462,6 +479,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				+ " " + thread.posts.length + " posts, file " + targetFile);
 		
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+            return;
+
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         if (thread != null)
             thread.useFriendlyIds = useFriendlyIds;
@@ -495,6 +515,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	
 	private void notifyDownloadError(ChanThread thread) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+            return;
+
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         if (thread != null)
             thread.useFriendlyIds = useFriendlyIds;

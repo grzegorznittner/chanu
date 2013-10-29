@@ -73,7 +73,7 @@ public class SettingsFragment
                 return true;
             }
         });
-
+        /*
         Preference clearWatchlistButton = findPreference(SettingsActivity.PREF_CLEAR_WATCHLIST);
         clearWatchlistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -93,7 +93,7 @@ public class SettingsFragment
                 return true;
             }
         });
-
+        */
         Preference aboutButton = findPreference(SettingsActivity.PREF_ABOUT);
         aboutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
