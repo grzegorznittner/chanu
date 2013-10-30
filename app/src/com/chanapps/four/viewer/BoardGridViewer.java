@@ -36,7 +36,7 @@ public class BoardGridViewer {
     public static final int SMALL_GRID = 0x01;
 
     private static String TAG = BoardGridViewer.class.getSimpleName();
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;
@@ -392,7 +392,7 @@ public class BoardGridViewer {
             viewHolder.grid_item_sticky_icon.setAlpha(alpha);
         }
         if (DEBUG)
-            com.android.gallery3d.ui.Log.i(TAG, "setSubjectIcons()"
+            Log.i(TAG, "setSubjectIcons()"
                     + " dead=" + ((flags & ChanThread.THREAD_FLAG_DEAD) > 0)
                     + " closed=" + ((flags & ChanThread.THREAD_FLAG_CLOSED) > 0)
                     + " sticky=" + ((flags & ChanThread.THREAD_FLAG_STICKY) > 0)
@@ -439,26 +439,26 @@ public class BoardGridViewer {
                 handleSpoilerClose(output);
         }
         private void handleSpoilerOpen(Editable output) {
-            if (DEBUG) com.android.gallery3d.ui.Log.i(TAG, "handleSpoilerOpen(" + output + ")");
+            if (DEBUG) Log.i(TAG, "handleSpoilerOpen(" + output + ")");
             int len = output.length();
             output.setSpan(spanFactory.getSpan(len, len), len, len, Spannable.SPAN_MARK_MARK);
         }
         private void handleSpoilerClose(Editable output) {
-            if (DEBUG) com.android.gallery3d.ui.Log.i(TAG, "handleSpoilerClose(" + output + ")");
+            if (DEBUG) Log.i(TAG, "handleSpoilerClose(" + output + ")");
             int len = output.length();
             Object obj = getFirst(output, spanFactory.getSpanClass());
             int start = output.getSpanStart(obj);
             output.removeSpan(obj);
             if (start >= 0 && len >= 0 && start != len)  {
                 output.setSpan(spanFactory.getSpan(start, len), start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                if (DEBUG) com.android.gallery3d.ui.Log.i(TAG, "setSpan(" + start + ", " + len + ")");
+                if (DEBUG) Log.i(TAG, "setSpan(" + start + ", " + len + ")");
             }
         }
         private Object getFirst(Editable text, Class kind) {
             Object[] objs = text.getSpans(0, text.length(), kind);
             if (objs.length == 0)
                 return null;
-            if (DEBUG) com.android.gallery3d.ui.Log.i(TAG, "Found " + objs.length + " matching spans");
+            if (DEBUG) Log.i(TAG, "Found " + objs.length + " matching spans");
             for (int i = 0; i < objs.length; i++) {
                 Object span = objs[i];
                 if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)

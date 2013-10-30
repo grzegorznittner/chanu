@@ -702,6 +702,7 @@ public class ChanPost {
     }
 
     public void copyUpdatedInfoFields(ChanPost from) {
+        isDead = from.isDead;
         bumplimit = from.bumplimit;
         imagelimit = from.imagelimit;
         images = from.images;
@@ -1254,11 +1255,14 @@ public class ChanPost {
     }
     
     public void updateThreadData(ChanThread t) {
+        isDead = t.isDead;
     	closed = t.closed;
     	omitted_images = t.omitted_images;
     	omitted_posts = t.omitted_posts;
     	
     	if (t.posts.length > 0 && t.posts[0] != null) {
+            if (t.posts[0].isDead)
+                isDead = t.isDead;
         	replies = t.posts[0].replies;
         	images = t.posts[0].images;
 	    	bumplimit = t.posts[0].bumplimit;
@@ -1289,6 +1293,7 @@ public class ChanPost {
     }
 
     public void updateThreadDataWithPost(ChanPost t) {
+        isDead = t.isDead;
     	closed = t.closed;
     	omitted_images = t.omitted_images;
     	omitted_posts = t.omitted_posts;

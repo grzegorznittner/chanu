@@ -30,7 +30,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
     private static final String TAG = ChanFileStorage.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int MAX_BOARDS_IN_CACHE = 100;
     private static final int MAX_THREADS_IN_CACHE = 200;
@@ -200,9 +200,7 @@ public class ChanFileStorage {
             if (!board.isVirtualBoard()) {
                 updateWatchedThread(context, board);
             }
-            else {
-                BoardActivity.updateBoard(context, board.link);
-            }
+            BoardActivity.updateBoard(context, board.link);
         } else {
             Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
         }
@@ -489,7 +487,7 @@ public class ChanFileStorage {
             thread.loadedFromBoard = false;
             threadCache.put(thread.board + "/" + thread.no, thread);
             if (DEBUG)
-                Log.i(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts");
+                Log.i(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts detail=" + thread);
             return thread;
         } catch (Exception e) {
             if (DEBUG) Log.w(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
@@ -1005,26 +1003,35 @@ public class ChanFileStorage {
 
         String board = loadedThread.board;
         long threadNo = loadedThread.no;
+        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         ChanActivityId aid = NetworkProfileManager.instance().getActivityId();
-        if (aid != null && board.equals(aid.boardCode) && threadNo == aid.threadNo) {
-            if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on thread, skipping notification");
-            return;
-        }
-        else if (aid != null && ChanBoard.WATCHLIST_BOARD_CODE.equals(aid.boardCode)) {
-            if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on watchlist, skipping notification");
-            return;
+        if (activity != null && activity.getChanHandler() != null && aid != null) {
+            if (board.equals(aid.boardCode) && threadNo == aid.threadNo) {
+                if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on thread, skipping notification");
+                return;
+            }
+            else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(aid.boardCode)) {
+                if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on watchlist, skipping notification");
+                return;
+            }
         }
 
         int numNewReplies = loadedThread.posts[0].replies - (watchedThread.replies >= 0 ? watchedThread.replies : 0);
         if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " newReplies=" + numNewReplies);
-        if (numNewReplies <= 0)
+        if (numNewReplies <= 0 && !loadedThread.isDead)
             return;
         int notificationId = board.hashCode() + (int)threadNo;
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String title = context.getString(R.string.app_name_title);
-        String postPlurals = context.getResources().getQuantityString(R.plurals.thread_activity_updated, numNewReplies);
-        //String imagePlurals = context.getResources().getQuantityString(R.plurals.thread_num_images, numNewImages);
-        String postText = String.format(postPlurals, 0).replace("0", "");
+        String postText;
+        if (loadedThread.isDead) {
+            postText = context.getString(R.string.mobile_profile_fetch_dead_thread);
+        }
+        else {
+            String postPlurals = context.getResources().getQuantityString(R.plurals.thread_activity_updated, numNewReplies);
+            //String imagePlurals = context.getResources().getQuantityString(R.plurals.thread_num_images, numNewImages);
+            postText = String.format(postPlurals, 0).replace("0", "");
+        }
         String threadId = "/" + board + "/" + threadNo;
         //String imageText = String.format(imagePlurals, numNewImages);
         //String text = String.format("%s and %s for %s/%d", postText, imageText, board, threadNo);
@@ -1036,9 +1043,10 @@ public class ChanFileStorage {
                 .setSmallIcon(R.drawable.app_icon_notification)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setNumber(numNewReplies)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
+        if (numNewReplies > 0)
+            notifBuilder.setNumber(numNewReplies);
 
         if (DEBUG) Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);
         notificationManager.notify(notificationId, notifBuilder.build());

@@ -48,7 +48,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
     public static final String UPDATE_BOARD_ACTION = "updateBoardAction";
 
     public static String topBoardCode = null;
@@ -1186,7 +1186,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     }
                 }).start();
             }
-            if (menuId == R.menu.meta_board_context_menu) {
+            else if (menuId == R.menu.meta_board_context_menu) {
                 if (adapter == null)
                     return;
                 Cursor cursor = adapter.getCursor();
