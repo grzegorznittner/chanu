@@ -141,7 +141,7 @@
                 android:id="@+id/grid_item_thread_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/grid_item_num_images_img"
+                android:layout_toRightOf="@+id/grid_item_closed_icon"
                 android:layout_alignParentBottom="true"
                 android:paddingLeft="@dimen/BoardGridView.spacing"
                 android:paddingRight="24dp"

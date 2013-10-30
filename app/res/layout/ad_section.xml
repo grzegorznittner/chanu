@@ -17,10 +17,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            ads:adUnitId="a150e4b6d4be55e"
+            ads:adUnitId="ca-app-pub-7236482115239313/1314812382"
             ads:adSize="SMART_BANNER"
             ads:testDevices="42f758079ab89f7f"
             ads:loadAdOnCreate="false"
             />
+    <!-- old id ads:adUnitId="a150e4b6d4be55e" -->
 
 </FrameLayout>
