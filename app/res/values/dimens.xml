@@ -378,7 +378,7 @@
     <dimen name="BoardGridItemCountryFlagWidth">16dp</dimen>
     <dimen name="BoardGridItemCountryFlagHeight">18dp</dimen>
     <dimen name="BoardGridItemCountryFlagPaddingBottom">8dp</dimen>
-    <dimen name="BoardGridItemNumRepliesSpacing">0dp</dimen>
+    <dimen name="BoardGridItemNumRepliesSpacing">2dp</dimen>
     <dimen name="BoardGridItemNumRepliesImgWidth">24dp</dimen>
     <dimen name="BoardGridItemNumRepliesImgHeight">24dp</dimen>
     <dimen name="BoardGridItemNumRepliesImgPaddingBottom">1dp</dimen>

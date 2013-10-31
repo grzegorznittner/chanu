@@ -1294,6 +1294,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     addToFavorites(BoardActivity.this, handler, boardCode);
                     return true;
                 case R.id.board_thread_remove_menu:
+                    ThreadFragment.removeFromWatchlist(BoardActivity.this, handler, boardCode, threadNo);
+                    /*
                     ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
                     if (thread != null) {
                         WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread);
@@ -1302,6 +1304,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     else {
                         Toast.makeText(BoardActivity.this, R.string.watch_thread_not_found, Toast.LENGTH_SHORT).show();
                     }
+                    */
                     return true;
                 case R.id.favorites_remove_board_menu:
                     removeFromFavorites(BoardActivity.this, handler, boardCode);

@@ -51,7 +51,7 @@ public class BoardGridViewer {
         displayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.NONE)
                 .cacheOnDisc()
-                //.cacheInMemory()
+                .cacheInMemory()
                 .resetViewBeforeLoading()
                 .showStubImage(stub)
                 .build();
