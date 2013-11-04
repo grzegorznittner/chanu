@@ -8,7 +8,7 @@
             android:title=""
             android:summary=""
             android:key="pref_about_icon"
-            chanapps:icon="@drawable/app_icon_large_with_text"/>
+            chanapps:icon="@drawable/app_icon_with_text"/>
 
     <!--
     <Preference
