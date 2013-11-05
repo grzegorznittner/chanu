@@ -6,11 +6,13 @@
           android:title="@string/share_image"
           android:enabled="true"
           android:actionProviderClass="android.widget.ShareActionProvider"
-          android:showAsAction="always" />
+          android:visible="false"
+            />
 
     <item android:id="@+id/download_images_to_gallery_menu"
           android:title="@string/download_images_to_gallery_menu"
           android:icon="@drawable/av_download"
+          android:visible="false"
             />
 
     <item android:id="@+id/image_search_menu"
