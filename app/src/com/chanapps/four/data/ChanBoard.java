@@ -199,6 +199,12 @@ public class ChanBoard {
         return boardByCode.get(boardCode);
 	}
 
+    public static boolean isWorksafe(Context context, String boardCode) {
+        initBoards(context);
+        ChanBoard board = getBoardByCode(context, boardCode);
+        return safeBoards.contains(board);
+    }
+
     public static synchronized void initBoards(Context ctx) {
         if (boards != null && boards.size() > 0) {
             return;
@@ -398,72 +404,6 @@ public class ChanBoard {
     
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {
-                {
-                    BoardType.ALL_BOARDS.toString(),
-                        ALL_BOARDS_BOARD_CODE, ctx.getString(R.string.board_all_boards),
-                        "a", ctx.getString(R.string.board_a),
-                        "c", ctx.getString(R.string.board_c),
-                        "w", ctx.getString(R.string.board_w),
-                        "m", ctx.getString(R.string.board_m),
-                        "cgl", ctx.getString(R.string.board_cgl),
-                        "cm", ctx.getString(R.string.board_cm),
-                        "n", ctx.getString(R.string.board_n),
-                        "jp", ctx.getString(R.string.board_jp),
-                        "vp", ctx.getString(R.string.board_vp),
-                        "v", ctx.getString(R.string.board_v),
-                        "vg", ctx.getString(R.string.board_vg),
-                        "vr", ctx.getString(R.string.board_vr),
-                        "co", ctx.getString(R.string.board_co),
-                        "g", ctx.getString(R.string.board_g),
-                        "tv", ctx.getString(R.string.board_tv),
-                        "k", ctx.getString(R.string.board_k),
-                        "o", ctx.getString(R.string.board_o),
-                        "an", ctx.getString(R.string.board_an),
-                        "tg", ctx.getString(R.string.board_tg),
-                        "sp", ctx.getString(R.string.board_sp),
-                        "asp", ctx.getString(R.string.board_asp),
-                        "sci", ctx.getString(R.string.board_sci),
-                        "int", ctx.getString(R.string.board_int),
-                        "out", ctx.getString(R.string.board_out),
-                        "i", ctx.getString(R.string.board_i),
-                        "po", ctx.getString(R.string.board_po),
-                        "p", ctx.getString(R.string.board_p),
-                        "ck", ctx.getString(R.string.board_ck),
-                        "ic", ctx.getString(R.string.board_ic),
-                        "wg", ctx.getString(R.string.board_wg),
-                        "mu", ctx.getString(R.string.board_mu),
-                        "fa", ctx.getString(R.string.board_fa),
-                        "toy", ctx.getString(R.string.board_toy),
-                        "3", ctx.getString(R.string.board_3),
-                        "gd", ctx.getString(R.string.board_gd),
-                        "diy", ctx.getString(R.string.board_diy),
-                        "wsg", ctx.getString(R.string.board_wsg),
-                        "q", ctx.getString(R.string.board_q),
-                        "trv", ctx.getString(R.string.board_trv),
-                        "fit", ctx.getString(R.string.board_fit),
-                        "x", ctx.getString(R.string.board_x),
-                        "lit", ctx.getString(R.string.board_lit),
-                        "adv", ctx.getString(R.string.board_adv),
-                        "lgbt", ctx.getString(R.string.board_lgbt),
-                        "mlp", ctx.getString(R.string.board_mlp),
-                        "s", ctx.getString(R.string.board_s),
-                        "hc", ctx.getString(R.string.board_hc),
-                        "hm", ctx.getString(R.string.board_hm),
-                        "h", ctx.getString(R.string.board_h),
-                        "e", ctx.getString(R.string.board_e),
-                        "u", ctx.getString(R.string.board_u),
-                        "d", ctx.getString(R.string.board_d),
-                        "y", ctx.getString(R.string.board_y),
-                        "t", ctx.getString(R.string.board_t),
-                        "hr", ctx.getString(R.string.board_hr),
-                        "gif", ctx.getString(R.string.board_gif),
-                        "b", ctx.getString(R.string.board_b),
-                        "r", ctx.getString(R.string.board_r),
-                        "r9k", ctx.getString(R.string.board_r9k),
-                        "pol", ctx.getString(R.string.board_pol),
-                        "soc", ctx.getString(R.string.board_soc),
-                        "s4s", ctx.getString(R.string.board_s4s)
-                },
                 {   BoardType.WATCHLIST.toString(),
                         WATCHLIST_BOARD_CODE, ctx.getString(R.string.board_watch),
                 },
@@ -562,8 +502,73 @@ public class ChanBoard {
                         "pol", ctx.getString(R.string.board_pol),
                         "soc", ctx.getString(R.string.board_soc),
                         "s4s", ctx.getString(R.string.board_s4s)
+                },
+                {
+                    BoardType.ALL_BOARDS.toString(),
+                        ALL_BOARDS_BOARD_CODE, ctx.getString(R.string.board_all_boards),
+                        "a", ctx.getString(R.string.board_a),
+                        "c", ctx.getString(R.string.board_c),
+                        "w", ctx.getString(R.string.board_w),
+                        "m", ctx.getString(R.string.board_m),
+                        "cgl", ctx.getString(R.string.board_cgl),
+                        "cm", ctx.getString(R.string.board_cm),
+                        "n", ctx.getString(R.string.board_n),
+                        "jp", ctx.getString(R.string.board_jp),
+                        "vp", ctx.getString(R.string.board_vp),
+                        "v", ctx.getString(R.string.board_v),
+                        "vg", ctx.getString(R.string.board_vg),
+                        "vr", ctx.getString(R.string.board_vr),
+                        "co", ctx.getString(R.string.board_co),
+                        "g", ctx.getString(R.string.board_g),
+                        "tv", ctx.getString(R.string.board_tv),
+                        "k", ctx.getString(R.string.board_k),
+                        "o", ctx.getString(R.string.board_o),
+                        "an", ctx.getString(R.string.board_an),
+                        "tg", ctx.getString(R.string.board_tg),
+                        "sp", ctx.getString(R.string.board_sp),
+                        "asp", ctx.getString(R.string.board_asp),
+                        "sci", ctx.getString(R.string.board_sci),
+                        "int", ctx.getString(R.string.board_int),
+                        "out", ctx.getString(R.string.board_out),
+                        "i", ctx.getString(R.string.board_i),
+                        "po", ctx.getString(R.string.board_po),
+                        "p", ctx.getString(R.string.board_p),
+                        "ck", ctx.getString(R.string.board_ck),
+                        "ic", ctx.getString(R.string.board_ic),
+                        "wg", ctx.getString(R.string.board_wg),
+                        "mu", ctx.getString(R.string.board_mu),
+                        "fa", ctx.getString(R.string.board_fa),
+                        "toy", ctx.getString(R.string.board_toy),
+                        "3", ctx.getString(R.string.board_3),
+                        "gd", ctx.getString(R.string.board_gd),
+                        "diy", ctx.getString(R.string.board_diy),
+                        "wsg", ctx.getString(R.string.board_wsg),
+                        "q", ctx.getString(R.string.board_q),
+                        "trv", ctx.getString(R.string.board_trv),
+                        "fit", ctx.getString(R.string.board_fit),
+                        "x", ctx.getString(R.string.board_x),
+                        "lit", ctx.getString(R.string.board_lit),
+                        "adv", ctx.getString(R.string.board_adv),
+                        "lgbt", ctx.getString(R.string.board_lgbt),
+                        "mlp", ctx.getString(R.string.board_mlp),
+                        "s", ctx.getString(R.string.board_s),
+                        "hc", ctx.getString(R.string.board_hc),
+                        "hm", ctx.getString(R.string.board_hm),
+                        "h", ctx.getString(R.string.board_h),
+                        "e", ctx.getString(R.string.board_e),
+                        "u", ctx.getString(R.string.board_u),
+                        "d", ctx.getString(R.string.board_d),
+                        "y", ctx.getString(R.string.board_y),
+                        "t", ctx.getString(R.string.board_t),
+                        "hr", ctx.getString(R.string.board_hr),
+                        "gif", ctx.getString(R.string.board_gif),
+                        "b", ctx.getString(R.string.board_b),
+                        "r", ctx.getString(R.string.board_r),
+                        "r9k", ctx.getString(R.string.board_r9k),
+                        "pol", ctx.getString(R.string.board_pol),
+                        "soc", ctx.getString(R.string.board_soc),
+                        "s4s", ctx.getString(R.string.board_s4s)
                 }
-
         };
         return boardCodesByType;
     }
@@ -663,8 +668,13 @@ public class ChanBoard {
     }
 
     public Object[] makeRow(Context context, long threadNo) { // for board selector
-        return ChanThread.makeBoardRow(context, link, getName(context), getRandomImageResourceId(link, threadNo));
+        return ChanThread.makeBoardRow(context, link, getName(context), getRandomImageResourceId(link, threadNo), 0);
     }
+
+    public Object[] makeHeaderRow(Context context) { // for board selector
+        return ChanThread.makeHeaderRow(context, this);
+    }
+
     /*
     public Object[] makeThreadAdRow(Context context, int pos) {
         ChanAd ad = ChanAd.randomAd(workSafe);

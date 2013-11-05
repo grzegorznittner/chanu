@@ -8,7 +8,7 @@
 
     <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/BoardGridImageSize"
             >
 
         <ImageView
@@ -32,8 +32,19 @@
                 android:textColor="?themedCardSubjectTextColor"
                 android:textSize="@dimen/BoardGridLargeSubject"
                 android:visibility="gone"
-                android:ellipsize="none"
                 android:maxLines="@integer/BoardGridView.maxLines"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_thread_subject_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/BoardGridView.spacing"
+                android:paddingRight="@dimen/BoardGridView.rightSpacing"
+                android:paddingTop="@dimen/BoardGridView.topSpacing"
+                android:textColor="?themedCardSubjectTextColor"
+                android:textSize="@dimen/ThreadListHeaderSubject"
+                android:visibility="gone"
                 />
 
         <ImageView
@@ -149,6 +160,17 @@
                 android:textColor="@color/PaletteLightGray"
                 android:textSize="@dimen/BoardGridInfo"
                 android:maxLines="1"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_thread_info_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/grid_item_thread_subject_header"
+                android:paddingLeft="@dimen/BoardGridView.spacing"
+                android:paddingBottom="@dimen/BoardGridView.infoBottomPadding"
+                android:textColor="@color/PaletteLightGray"
+                android:textSize="@dimen/BoardGridInfo"
                 />
 
     </RelativeLayout>

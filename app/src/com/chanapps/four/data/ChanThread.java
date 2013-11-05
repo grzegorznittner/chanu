@@ -1,9 +1,11 @@
 package com.chanapps.four.data;
 
+import java.text.DateFormat;
 import java.util.*;
 
 import android.util.Log;
 import com.chanapps.four.service.NetworkProfileManager;
+import org.apache.http.impl.cookie.DateUtils;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import android.content.Context;
@@ -50,6 +52,7 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_POPULAR_THREAD = 0x080;
     public static final int THREAD_FLAG_LATEST_POST = 0x100;
     public static final int THREAD_FLAG_RECENT_IMAGE = 0x200;
+    public static final int THREAD_FLAG_HEADER = 0x400;
 
     public static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
@@ -107,7 +110,7 @@ public class ChanThread extends ChanPost {
         };
     }
 
-    public static Object[] makeBoardRow(Context context, String boardCode, String boardName, int boardImageResourceId) {
+    public static Object[] makeBoardRow(Context context, String boardCode, String boardName, int boardImageResourceId, int extraFlags) {
         return new Object[] {
                 boardCode.hashCode(),
                 boardCode,
@@ -115,7 +118,7 @@ public class ChanThread extends ChanPost {
                 boardName,
                 ChanBoard.getDescription(context, boardCode),
                 "",
-                "drawable://" + boardImageResourceId,
+                boardImageResourceId > 0 ? "drawable://" + boardImageResourceId : "",
                 "",
                 "",
                 0,
@@ -123,10 +126,37 @@ public class ChanThread extends ChanPost {
                 MAX_THUMBNAIL_PX,
                 MAX_THUMBNAIL_PX,
                 0,
-                THREAD_FLAG_BOARD
+                THREAD_FLAG_BOARD | extraFlags
         };
     }
 
+    public static Object[] makeHeaderRow(Context context, ChanBoard board) {
+        String boardCode = board.link;
+        String boardName = board.getName(context);
+        String safeText = context.getString(board.isWorksafe(context, boardCode) ? R.string.board_type_worksafe : R.string.board_type_adult);
+        String dateText = String.format(context.getString(R.string.board_last_updated),
+                DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date(board.lastFetched)));
+        String description = board.getDescription(context) + "<br/>"
+                + safeText + "<br/>"
+                + dateText;
+        return new Object[] {
+                boardCode.hashCode(),
+                boardCode,
+                0,
+                boardName,
+                description,
+                "",
+                "",
+                "",
+                "",
+                0,
+                0,
+                MAX_THUMBNAIL_PX,
+                MAX_THUMBNAIL_PX,
+                0,
+                THREAD_FLAG_BOARD | THREAD_FLAG_HEADER
+        };
+    }
 
     public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
         List<ChanBoard> sourceBoards = ChanBoard.getBoardsByType(context, boardType);

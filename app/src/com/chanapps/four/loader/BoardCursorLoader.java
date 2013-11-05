@@ -200,7 +200,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + boardCode
                     + "/ name=" + name
                     + " resourceId=" + imageId);
-            Object[] row = ChanThread.makeBoardRow(context, boardCode, name, imageId);
+            Object[] row = ChanThread.makeBoardRow(context, boardCode, name, imageId, 0);
             matrixCursor.addRow(row);
             if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
         }
@@ -222,52 +222,72 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             board.swapLoadedThreads();
         }
 
-        if (board.threads != null && !board.defData
-                && board.threads.length > 0 && board.threads[0] != null && !board.threads[0].defData) { // show loading
-            //if (!board.isVirtualBoard()) {
-            //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
-            //}
+        if (!board.hasData()) {
+            if (DEBUG) Log.i(TAG, "board /" + boardName + "/ has no data, exiting cursor load");
+            return;
+        }
 
-            if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
-            //int adSpace = MINIMUM_AD_SPACING;
-            int numQueryMatches = 0;
-            int i = 0;
-            for (ChanPost thread : board.threads) {
-                if (DEBUG) Log.i(TAG, "Loading thread " + thread);
-                if (ChanBlocklist.isBlocked(context, thread)) {
-                    if (DEBUG) Log.i(TAG, "Skipped blocked thread " + thread);
-                    continue;
-                }
-                if (!ChanBoard.FAVORITES_BOARD_CODE.equals(board.link) && thread.no <= 0) {
-                    if (DEBUG) Log.i(TAG, "Skipped zero thread " + thread);
-                    continue;
-                }
-                if (!thread.matchesQuery(query)) {
-                    if (DEBUG) Log.i(TAG, "Skipped non-matching to query thread " + thread);
-                    continue;
-                }
-                if (ChanBoard.isRemoved(thread.board)) {
-                    if (DEBUG) Log.i(TAG, "Board /" + thread.board + "/ has been removed from 4chan");
-                    continue;
-                }
-                if (!query.isEmpty())
-                    numQueryMatches++;
-                Object row[];
-                if (thread.no <= 0) {
-                    String name = ChanBoard.getName(context, thread.board);
-                    int imageId = ChanBoard.getImageResourceId(thread.board, 0, 0);
-                    if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + thread.board
-                            + "/ name=" + name
-                            + " resourceId=" + imageId);
-                    row = ChanThread.makeBoardRow(context, thread.board, name, imageId);
-                }
-                else {
-                    if (DEBUG) Log.i(TAG, "loadBoard adding thread row " + thread);
-                    row = ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard(), abbrev);
-                }
-                matrixCursor.addRow(row);
-                i++;
-                if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
+        if (!board.isVirtualBoard()) {
+            Object[] headerRow = board.makeHeaderRow(context);
+            matrixCursor.addRow(headerRow);
+        }
+
+        //if (!board.isVirtualBoard()) {
+        //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
+        //}
+
+        if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
+        //int adSpace = MINIMUM_AD_SPACING;
+        int numQueryMatches = 0;
+        int i = 0;
+        for (ChanThread thread : board.threads) {
+            boolean match = loadThread(matrixCursor, board, thread, i);
+            if (match)
+                numQueryMatches++;
+        }
+        if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
+
+        //addRelatedBoards(matrixCursor, board);
+        // always put an ad at the bottom
+        //if (!board.isVirtualBoard())
+        //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
+    }
+
+    protected boolean loadThread(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread, int i) {
+        if (DEBUG) Log.i(TAG, "Loading thread " + thread);
+        if (ChanBlocklist.isBlocked(context, thread)) {
+            if (DEBUG) Log.i(TAG, "Skipped blocked thread " + thread);
+            return false;
+        }
+        if (!ChanBoard.FAVORITES_BOARD_CODE.equals(board.link) && thread.no <= 0) {
+            if (DEBUG) Log.i(TAG, "Skipped zero thread " + thread);
+            return false;
+        }
+        if (!thread.matchesQuery(query)) {
+            if (DEBUG) Log.i(TAG, "Skipped non-matching to query thread " + thread);
+            return false;
+        }
+        if (ChanBoard.isRemoved(thread.board)) {
+            if (DEBUG) Log.i(TAG, "Board /" + thread.board + "/ has been removed from 4chan");
+            return false;
+        }
+        boolean matchedQuery = !query.isEmpty();
+        Object row[];
+        if (thread.no <= 0) {
+            String name = ChanBoard.getName(context, thread.board);
+            int imageId = ChanBoard.getImageResourceId(thread.board, 0, 0);
+            if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + thread.board
+                    + "/ name=" + name
+                    + " resourceId=" + imageId);
+            row = ChanThread.makeBoardRow(context, thread.board, name, imageId, 0);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "loadBoard adding thread row " + thread);
+            row = ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard(), abbrev);
+        }
+        matrixCursor.addRow(row);
+        i++;
+        if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
                 /*
                 if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
                     matrixCursor.addRow(board.makeThreadAdRow(context, i));
@@ -277,15 +297,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     adSpace--;
                 }
                 */
-            }
-            if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
-
-            //addRelatedBoards(matrixCursor, board);
-            // always put an ad at the bottom
-            //if (!board.isVirtualBoard())
-            //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
-        }
+        return matchedQuery;
     }
+
     /*
     protected void addRelatedBoards(MatrixCursor matrixCursor, ChanBoard board) {
         long threadNo = (board.threads != null && board.threads.length >= 3 && board.threads[2] != null)

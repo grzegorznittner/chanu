@@ -19,7 +19,9 @@ public class BoardGridViewHolder {
     public ImageView grid_item_country_flag;
     public TextView grid_item_board_code;
     public TextView grid_item_thread_subject;
+    public TextView grid_item_thread_subject_header;
     public TextView grid_item_thread_info;
+    public TextView grid_item_thread_info_header;
     public TextView grid_item_num_replies_text;
     public TextView grid_item_num_images_text;
     public TextView grid_item_num_replies_label;
@@ -37,7 +39,9 @@ public class BoardGridViewHolder {
         grid_item_country_flag = (ImageView)item.findViewById(R.id.grid_item_country_flag);
         grid_item_board_code = (TextView)item.findViewById(R.id.grid_item_board_code);
         grid_item_thread_subject = (TextView)item.findViewById(R.id.grid_item_thread_subject);
+        grid_item_thread_subject_header = (TextView)item.findViewById(R.id.grid_item_thread_subject_header);
         grid_item_thread_info = (TextView)item.findViewById(R.id.grid_item_thread_info);
+        grid_item_thread_info_header = (TextView)item.findViewById(R.id.grid_item_thread_info_header);
         grid_item_num_replies_text = (TextView)item.findViewById(R.id.grid_item_num_replies_text);
         grid_item_num_images_text = (TextView)item.findViewById(R.id.grid_item_num_images_text);
         grid_item_num_replies_label = (TextView)item.findViewById(R.id.grid_item_num_replies_label);
