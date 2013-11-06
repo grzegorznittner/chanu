@@ -52,7 +52,6 @@
                 android:layout_width="@dimen/BoardGridItemCountryFlagWidth"
                 android:layout_height="@dimen/BoardGridItemCountryFlagHeight"
                 android:paddingBottom="@dimen/BoardGridItemCountryFlagPaddingBottom"
-                android:layout_marginBottom="@dimen/BoardGridView.spacing"
                 android:layout_marginLeft="@dimen/BoardGridView.spacing"
                 android:scaleType="fitXY"
                 android:layout_toRightOf="@+id/grid_item_thread_thumb"
