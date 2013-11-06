@@ -7,6 +7,8 @@
     <dimen name="BoardGridLargeSubject">16sp</dimen>
     <dimen name="BoardGridSubject">14sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
+    <dimen name="BoardGridSubjectHeader">42sp</dimen>
+    <dimen name="BoardGridInfoHeader">16sp</dimen>
     <dimen name="BoardGridAction">16sp</dimen>
     <dimen name="BoardGridNumReplies">14sp</dimen>
     <dimen name="BoardGridAbbrev">14sp</dimen>

@@ -991,7 +991,7 @@ public class ThreadActivity
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
             //setProgress(true);
-            return new BoardCursorLoader(getActivityContext(), boardCode, "", true);
+            return new BoardCursorLoader(getActivityContext(), boardCode, "", true, false);
         }
 
         @Override

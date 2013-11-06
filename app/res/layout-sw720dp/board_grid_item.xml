@@ -37,6 +37,7 @@
             <TextView style="@style/ThreadListHeaderNumLabelHorizontal" android:id="@+id/grid_item_num_replies_label"/>
         </LinearLayout>
         <View
+                android:id="@+id/grid_item_line_1"
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_gravity="bottom"
@@ -58,6 +59,7 @@
             <TextView style="@style/ThreadListHeaderNumLabelHorizontal" android:id="@+id/grid_item_num_images_label"/>
         </LinearLayout>
         <View
+                android:id="@+id/grid_item_line_2"
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_gravity="bottom"
@@ -163,6 +165,18 @@
             />
 
     <TextView
+            android:id="@+id/grid_item_thread_subject_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/BoardGridView.spacing"
+            android:paddingRight="@dimen/BoardGridView.rightSpacing"
+            android:paddingTop="@dimen/BoardGridView.topSpacing"
+            android:textColor="?themedCardSubjectTextColor"
+            android:textSize="@dimen/BoardGridSubjectHeader"
+            android:visibility="gone"
+            />
+
+    <TextView
             android:id="@+id/grid_item_thread_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -176,6 +190,18 @@
             android:visibility="gone"
             />
 
+    <TextView
+            android:id="@+id/grid_item_thread_info_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingLeft="@dimen/BoardGridView.spacing"
+            android:paddingBottom="@dimen/BoardGridView.infoBottomPadding"
+            android:textColor="@color/PaletteLightGray"
+            android:textSize="@dimen/BoardGridInfoHeader"
+            />
+<!--             android:layout_below="@+id/grid_item_thread_subject_header"
+-->
 </RelativeLayout>
 
 <ImageView

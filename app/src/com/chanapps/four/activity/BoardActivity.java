@@ -673,7 +673,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
             setProgress(true);
             boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
-            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query, abbrev);
+            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query, abbrev, true);
             return cursorLoader;
         }
         @Override

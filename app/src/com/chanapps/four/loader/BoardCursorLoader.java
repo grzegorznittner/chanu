@@ -33,6 +33,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     protected String boardName;
     protected String query;
     protected boolean abbrev;
+    protected boolean header;
 
     protected long generatorSeed;
     protected Random generator;
@@ -42,12 +43,13 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         mObserver = new ForceLoadContentObserver();
     }
 
-    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev) {
+    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev, boolean header) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.query = query == null ? "" : query.toLowerCase().trim();
         this.abbrev = abbrev;
+        this.header = header;
         //initRandomGenerator();
         ChanBoard.initBoards(context);
     }
@@ -227,7 +229,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             return;
         }
 
-        if (!board.isVirtualBoard()) {
+        if (!board.isVirtualBoard() && header) {
             Object[] headerRow = board.makeHeaderRow(context);
             matrixCursor.addRow(headerRow);
         }

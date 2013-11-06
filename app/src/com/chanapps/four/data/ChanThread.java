@@ -132,13 +132,14 @@ public class ChanThread extends ChanPost {
 
     public static Object[] makeHeaderRow(Context context, ChanBoard board) {
         String boardCode = board.link;
-        String boardName = board.getName(context);
-        String safeText = context.getString(board.isWorksafe(context, boardCode) ? R.string.board_type_worksafe : R.string.board_type_adult);
+        String boardName = "/" + boardCode + "/ " + board.getName(context);
+        //String safeText = context.getString(board.isWorksafe(context, boardCode) ? R.string.board_type_worksafe : R.string.board_type_adult);
         String dateText = String.format(context.getString(R.string.board_last_updated),
                 DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date(board.lastFetched)));
-        String description = board.getDescription(context) + "<br/>"
-                + safeText + "<br/>"
-                + dateText;
+        //String description = board.getDescription(context) + "<br/>"
+        //        + safeText + "<br/>"
+        //        + dateText;
+        String description = dateText;
         return new Object[] {
                 boardCode.hashCode(),
                 boardCode,

@@ -89,6 +89,12 @@ public class BoardGridViewer {
                                      View.OnClickListener overlayListener,
                                      View.OnClickListener overflowListener,
                                      int flags) {
+        boolean isHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0;
+        if (viewHolder.grid_item_line_1 != null)
+            viewHolder.grid_item_line_1.setVisibility(isHeader ? View.GONE : View.VISIBLE);
+        if (viewHolder.grid_item_line_2 != null)
+            viewHolder.grid_item_line_2.setVisibility(isHeader ? View.GONE : View.VISIBLE);
+
         View overflow = viewHolder.grid_item_overflow_icon;
         if (overflow != null) {
             if (overflowListener != null) {
@@ -99,9 +105,10 @@ public class BoardGridViewer {
                 overflow.setVisibility(View.GONE);
             }
         }
+
         ViewGroup overlay = viewHolder.grid_item;
         if (overlay != null) {
-            if (overlayListener != null && (flags & ChanThread.THREAD_FLAG_HEADER) == 0) {
+            if (overlayListener != null && !isHeader) {
                 overlay.setOnClickListener(overlayListener);
                 overlay.setClickable(true);
             }
@@ -109,6 +116,7 @@ public class BoardGridViewer {
                 overlay.setClickable(false);
             }
         }
+
         return true;
     }
     
