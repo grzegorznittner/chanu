@@ -7,7 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
-import com.chanapps.four.data.*;
+
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;

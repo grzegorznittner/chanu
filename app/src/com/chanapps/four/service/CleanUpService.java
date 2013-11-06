@@ -22,17 +22,21 @@ public class CleanUpService extends BaseChanService {
     protected static final String TAG = CleanUpService.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    private static final long MIN_DELAY_BETWEEN_CLEANUPS = 240000; // 4min
+    private static final long MIN_DELAY_BETWEEN_CLEANUPS = 4 * 60 * 1000; // 2min
+    private static final long MAX_DELAY_BETWEEN_CLEANUPS = 30 * 60 * 1000; // 10min
     private static long scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS;
     private static long lastScheduled = Calendar.getInstance().getTimeInMillis();
 
     public static void startService(Context context) {
         if (lastScheduled > Calendar.getInstance().getTimeInMillis() - scheduleDelay) {
-            if (DEBUG) Log.d(TAG, "Cleanup service was called less than " + (scheduleDelay / 1000) + "s ago");
+            if (DEBUG) Log.w(TAG, "Cleanup service was called less than " + (scheduleDelay / 1000) + "s ago");
             return;
         }
         scheduleDelay += MIN_DELAY_BETWEEN_CLEANUPS;
-        if (DEBUG) Log.i(TAG, "Scheduling clean up service");
+        if (scheduleDelay > MAX_DELAY_BETWEEN_CLEANUPS) {
+        	scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS;
+        }
+        if (DEBUG) Log.w(TAG, "Scheduling clean up service");
         lastScheduled = Calendar.getInstance().getTimeInMillis();
         Intent intent = new Intent(context, CleanUpService.class);
         intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
@@ -66,6 +70,7 @@ public class CleanUpService extends BaseChanService {
         try {
             Context context = getBaseContext();
             cacheFolder = ChanFileStorage.getCacheDirectory(context);
+            if (DEBUG) Log.w(TAG, "Cache dir: " + cacheFolder.getAbsolutePath());
             otherFiles = new ArrayList<FileDesc>();
             sizeByBoard = new HashMap<String, Long>();
             filesByBoard = new HashMap<String, List<FileDesc>>();
@@ -88,14 +93,14 @@ public class CleanUpService extends BaseChanService {
 
             startTime = Calendar.getInstance().getTimeInMillis();
             long maxCacheSize = getPreferredCacheSize() * 1024 * 1024;
-            if (DEBUG) Log.i(TAG, "Preferred cache size is " + (maxCacheSize / (1024 * 1024)) + "MB");
+            if (DEBUG) Log.w(TAG, "Preferred cache size is " + (maxCacheSize / (1024 * 1024)) + "MB");
             targetCacheSize = maxCacheSize * 80 / 100;
 
             if (totalSize > targetCacheSize) {
                 // delete other files older than 3 days
                 int numDeletedFiles = trimByDate(otherFiles, 3L * 24L * 60L * 60L * 1000L);
                 totalDeletedFiles += numDeletedFiles;
-                if (DEBUG) Log.i(TAG, "Deleted " + numDeletedFiles + " 'other' files.");
+                if (DEBUG) Log.w(TAG, "Deleted " + numDeletedFiles + " 'other' files.");
 
                 List<String> watchedOrTopBoard = prepareTopWatchedBoards(context);
 
