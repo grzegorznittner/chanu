@@ -125,7 +125,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     else {
                         ChanFileStorage.addFavoriteBoard(context, thread);
                         refreshFavorites(context);
-                        setFavoritesMenuAsync();
+                        //setFavoritesMenuAsync();
                         msgId = R.string.board_added_to_favorites;
                         if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/ to favorites");
                     }
@@ -196,7 +196,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     else {
                         ChanFileStorage.deleteFavoritesBoard(context, thread);
                         refreshFavorites(context);
-                        setFavoritesMenuAsync();
+                        //setFavoritesMenuAsync();
                         msgId = R.string.dialog_deleted_from_watchlist;
                         if (DEBUG) Log.i(TAG, "Removed /" + boardCode + "/ from favorites");
                     }
@@ -773,12 +773,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 else
                     PostReplyActivity.startActivity(this, boardCode, 0, 0, "", "");
                 return true;
-            case R.id.offline_board_view_menu:
-            	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
-                return true;
-            case R.id.board_rules_menu:
-                displayBoardRules();
-                return true;
             case R.id.offline_chan_view_menu:
                 GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
@@ -788,6 +782,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                         R.string.global_rules_header,
                         R.string.global_rules_detail))
                         .show();
+                return true;
+            case R.id.offline_board_view_menu:
+                GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
+                return true;
+            case R.id.board_rules_menu:
+                displayBoardRules();
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(boardCode);
@@ -850,12 +850,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(true);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
-            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
-            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
+            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
-            menu.findItem(R.id.offline_board_view_menu).setVisible(false);
-            menu.findItem(R.id.board_rules_menu).setVisible(false);
+            //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
+            //menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
@@ -863,12 +863,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(true);
-            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
-            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
+            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
+            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
-            menu.findItem(R.id.offline_board_view_menu).setVisible(false);
-            menu.findItem(R.id.board_rules_menu).setVisible(false);
+            //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
+            //menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
@@ -876,12 +876,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else if (board.isPopularBoard()) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
-            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
-            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
+            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
-            menu.findItem(R.id.offline_board_view_menu).setVisible(false);
-            menu.findItem(R.id.board_rules_menu).setVisible(false);
+            //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
+            //menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
             menu.findItem(R.id.web_menu).setVisible(true);
@@ -889,12 +889,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else if (board.isVirtualBoard()) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
-            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
-            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
+            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
-            menu.findItem(R.id.offline_board_view_menu).setVisible(false);
-            menu.findItem(R.id.board_rules_menu).setVisible(false);
+            //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
+            //menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
             menu.findItem(R.id.web_menu).setVisible(false);
@@ -906,12 +906,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(true);
-            menu.findItem(R.id.offline_board_view_menu).setVisible(true);
-            menu.findItem(R.id.board_rules_menu).setVisible(true);
+            //menu.findItem(R.id.offline_board_view_menu).setVisible(true);
+            //menu.findItem(R.id.board_rules_menu).setVisible(true);
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
-            menu.findItem(R.id.web_menu).setVisible(true);
-            setFavoritesMenuAsync();
+            menu.findItem(R.id.web_menu).setVisible(false);
+            //setFavoritesMenuAsync();
         }
         menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
 
@@ -1158,27 +1158,33 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 Log.e(TAG, "Exception getting view position v=" + v, e);
                 return;
             }
+            if (adapter == null)
+                return;
+            Cursor cursor = adapter.getCursor();
+            if (cursor == null)
+                return;
+            if (!cursor.moveToPosition(checkedPos))
+                return;
+            final String groupBoardCode = boardCode;
+            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            final int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+
             final PopupMenu popup = new PopupMenu(BoardActivity.this, v);
             int menuId;
-            if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+            if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode) || ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
                 menuId = R.menu.watchlist_context_menu;
-            else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
+            else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) || ChanBoard.FAVORITES_BOARD_CODE.equals(groupBoardCode))
                 menuId = R.menu.favorites_context_menu;
             else if (ChanBoard.isMetaBoard(boardCode))
                 menuId = R.menu.meta_board_context_menu;
+            else if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0)
+                menuId = R.menu.board_header_context_menu;
             else
                 menuId = R.menu.board_context_menu;
             popup.inflate(menuId);
+
             if (menuId == R.menu.board_context_menu) {
-                if (adapter == null)
-                    return;
-                Cursor cursor = adapter.getCursor();
-                if (cursor == null)
-                    return;
-                if (!cursor.moveToPosition(checkedPos))
-                    return;
-                final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -1186,20 +1192,19 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     }
                 }).start();
             }
-            else if (menuId == R.menu.meta_board_context_menu) {
-                if (adapter == null)
-                    return;
-                Cursor cursor = adapter.getCursor();
-                if (cursor == null)
-                    return;
-                if (!cursor.moveToPosition(checkedPos))
-                    return;
-                final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            else if (menuId == R.menu.board_header_context_menu) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        showMetaOverflowMenuAsync(popup, boardCode, threadNo);
+                        showMetaOverflowMenuAsync(popup, boardCode);
+                    }
+                }).start();
+            }
+            else if (menuId == R.menu.meta_board_context_menu) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showMetaOverflowMenuAsync(popup, boardCode);
                     }
                 }).start();
             }
@@ -1211,7 +1216,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
-    protected void showMetaOverflowMenuAsync(final PopupMenu popup, String boardCode, long threadNo) {
+    protected void showMetaOverflowMenuAsync(final PopupMenu popup, String boardCode) {
         final ChanBoard favoritesBoard = ChanFileStorage.loadBoardData(BoardActivity.this, ChanBoard.FAVORITES_BOARD_CODE);
         final ChanThread thread = ChanBoard.makeFavoritesThread(BoardActivity.this, boardCode);
         final boolean favorited = ChanFileStorage.isFavoriteBoard(favoritesBoard, thread);
@@ -1241,6 +1246,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void showOverflowMenuAsync(final PopupMenu popup, String boardCode, long threadNo) {
         final ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
         final boolean watched = ChanFileStorage.isThreadWatched(BoardActivity.this, thread);
+        final boolean isHeader = threadNo == 0;
         if (handler != null)
             handler.post(new Runnable() {
                 @Override
@@ -1308,6 +1314,16 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     return true;
                 case R.id.favorites_remove_board_menu:
                     removeFromFavorites(BoardActivity.this, handler, boardCode);
+                    return true;
+                case R.id.offline_board_view_menu:
+                    GalleryViewActivity.startOfflineAlbumViewActivity(BoardActivity.this, boardCode);
+                    return true;
+                case R.id.board_rules_menu:
+                    displayBoardRules();
+                    return true;
+                case R.id.web_menu:
+                    String url = ChanBoard.boardUrl(boardCode);
+                    ActivityDispatcher.launchUrlInBrowser(BoardActivity.this, url);
                     return true;
                 default:
                     return false;
@@ -1477,6 +1493,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
+    /*
     protected void setFavoritesMenuAsync() {
         new Thread(new Runnable() {
             @Override
@@ -1502,5 +1519,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             }
         }).start();
     }
+    */
 
 }

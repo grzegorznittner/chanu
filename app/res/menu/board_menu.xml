@@ -15,12 +15,12 @@
           android:icon="@drawable/content_discard"
           android:visible="false"
             />
+
     <item android:id="@+id/board_add_to_favorites_menu"
           android:title="@string/board_add_to_favorites_menu"
           android:icon="@drawable/content_new"
           android:visible="false"
             />
-
     <item android:id="@+id/favorites_remove_board_menu"
           android:title="@string/favorites_remove_board_menu"
           android:icon="@drawable/rating_important"
@@ -44,6 +44,7 @@
     <item android:id="@+id/offline_board_view_menu"
           android:title="@string/offline_board_view_menu"
           android:icon="@drawable/device_access_storage"
+          android:visible="false"
             />
     <item android:id="@+id/offline_chan_view_menu"
           android:title="@string/offline_chan_view_menu"
@@ -53,6 +54,7 @@
     <item android:id="@+id/board_rules_menu"
           android:title="@string/board_rules_menu"
           android:icon="@drawable/action_help"
+          android:visible="false"
             />
     <item android:id="@+id/global_rules_menu"
           android:title="@string/global_rules_menu"
@@ -61,6 +63,7 @@
     <item android:id="@+id/web_menu"
           android:title="@string/direct_web_menu"
           android:icon="@drawable/location_web_site"
+          android:visible="false"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

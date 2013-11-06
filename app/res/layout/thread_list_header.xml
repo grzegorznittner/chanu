@@ -41,6 +41,7 @@
                         android:id="@+id/list_item_web_link"
                         style="@style/ThreadListItemBarChat"
                         android:foreground="@drawable/thread_list_selector_bg"
+                        android:visibility="gone"
                         >
                     <ImageView style="@style/ThreadListItemBarWebIcon"/>
                 </FrameLayout>

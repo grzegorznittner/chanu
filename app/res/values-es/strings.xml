@@ -174,7 +174,7 @@
   <string name="share_text_menu">Compartir texto</string>
   <string name="post_reply_send_menu">Enviar</string>
   <string name="offline_board_view_menu">Galería de tablones</string>
-  <string name="offline_board_view_title">%1$ s</string>
+  <string name="offline_board_view_title">%1$s</string>
   <string name="offline_chan_view_menu">Todos los tableros</string>
   <string name="japanese_culture">Cultura japonesa</string>
   <string name="interests">Intereses</string>
@@ -230,11 +230,11 @@
   <string name="thread_no_replies">NINGUNA RESPUESTA</string>
   <string name="thread_no_replies_found">No se encontraron respuestas</string>
   <string name="thread_no_same_poster_found">No se encontraron publicaciones del mismo usuario</string>
-  <string name="thread_prev_replies_found">Se encontraron %1$ d referencias</string>
-  <string name="thread_next_replies_found">Se encontraron %1$ d respuestas</string>
-  <string name="thread_no_id_found">No se encontraron otras publicaciones para %1$ s</string>
+  <string name="thread_prev_replies_found">Se encontraron %1$d referencias</string>
+  <string name="thread_next_replies_found">Se encontraron %1$d respuestas</string>
+  <string name="thread_no_id_found">No se encontraron otras publicaciones para %1$s</string>
   <string name="thread_invalid_id">No se encontró el hilo</string>
-  <string name="thread_id_found">Se encontraron %1$ d publicaciones del mismo usuario</string>
+  <string name="thread_id_found">Se encontraron %1$d publicaciones del mismo usuario</string>
   <string name="thread_no_text_subject"></string>
   <string name="thread_not_found">No se encontró el hilo, mostrando el primer hilo</string>
   <string name="thread_go_to_link">Ir al enlace</string>
@@ -533,19 +533,19 @@
   <string name="pref_theme_summary">Claro, oscuro, o automático para seleccionar la luz de ambiente</string>
   <string name="pref_theme_light">Claro</string>
   <string name="pref_theme_dark">Oscuro</string>
-  <string name="pref_theme_auto">Automático</string>
+  <string name="pref_theme_auto">Auto</string>
   <string name="pref_theme_default">@string/pref_theme_light</string>
   <string name="pref_autoload_images_title">Auto cargar los hilos de imagenes</string>
   <string name="pref_autoload_images_summary">Nunca, siempre, o automático basado en la velocidad de conexión</string>
   <string name="pref_autoload_images_never">Nunca</string>
   <string name="pref_autoload_images_always">Siempre</string>
-  <string name="pref_autoload_images_auto">Automático</string>
+  <string name="pref_autoload_images_auto">Auto</string>
   <string name="pref_autoload_images_default">@string/pref_autoload_images_auto</string>
   <string name="pref_about_title">Chanu</string>
   <string name="pref_about_title_sum">4chan recargado</string>
   <string name="pref_about_application_category">Aplicación</string>
   <string name="pref_about_application_version">Versión %1$s</string>
-  <string name="pref_about_application_version_sum">Liberados %1$s</string>
+  <string name="pref_about_application_version_sum">Fecha de publicación %1$s</string>
   <string name="pref_about_application_rate">Valórenos</string>
   <string name="pref_about_application_rate_sum">Valorar Chanu en Google Play</string>
   <string name="pref_about_application_gplus">Visitenos</string>
@@ -603,7 +603,7 @@
   <string name="mobile_profile_loading_thread">Cargando hilo</string>
   <string name="mobile_profile_loading_image">Cargando imagen</string>
   <string name="mobile_profile_preloading_defaults">Precargando tableros /a/, /b/, /v/, /vg/ and /s/</string>
-  <string name="mobile_profile_health_status">No se pudo cargar la red</string>
+  <string name="mobile_profile_health_status">No se pudo cargar la red \"%1$s\"</string>
   <string name="mobile_profile_no_auto_refresh">Actualización automática desactivada</string>
   <string name="mobile_profile_loaded_board">Cargados /%1$s/</string>
   <string name="mobile_profile_loaded_thread">Cargado /%1$s/%2$d</string>
@@ -654,7 +654,7 @@
   <string name="board_g">Tecnología</string>
   <string name="board_tv">Cine y Televisión </string>
   <string name="board_k">Armas</string>
-  <string name="board_o">Automático</string>
+  <string name="board_o">Auto</string>
   <string name="board_an">Animales y Naturaleza</string>
   <string name="board_tg">Juegos Tradicionales</string>
   <string name="board_sp">Deportes</string>
@@ -669,14 +669,14 @@
   <string name="board_p">Fotografía</string>
   <string name="board_ck">Comida y cocina</string>
   <string name="board_ic">Obra de arte/crítica</string>
-  <string name="board_wg">Fondos de pantalla/General</string>
+  <string name="board_wg">Wallpapers/General</string>
   <string name="board_mu">Música</string>
   <string name="board_fa">Moda</string>
   <string name="board_toy">Juguetes</string>
   <string name="board_3">3DCG</string>
   <string name="board_gd">Diseño gráfico</string>
   <string name="board_diy">Hágalo usted mismo</string>
-  <string name="board_wsg">GIF de trabajo seguro</string>
+  <string name="board_wsg">GIFs seguros para el trabajo</string>
   <string name="board_type_adult">Adultos</string>
   <string name="board_type_adult_desc">Imágenes y contenidos no seguros para el trabajo</string>
   <string name="board_s">Mujeres hermosas y sexys</string>
@@ -697,11 +697,11 @@
   <string name="board_fit">Fitness</string>
   <string name="board_x">Paranormal</string>
   <string name="board_lit">Literatura</string>
-  <string name="board_adv">Asesoramiento</string>
+  <string name="board_adv">Consejos</string>
   <string name="board_lgbt">LGBT</string>
   <string name="board_mlp">Pony</string>
   <string name="board_type_misc">Misceláneo</string>
-  <string name="board_type_misc_desc">GIF de trabajo seguro</string>
+  <string name="board_type_misc_desc">Política, camwhores y /b/</string>
   <string name="board_b">Aleatorio</string>
   <string name="board_r">Petición</string>
   <string name="board_r9k">ROBOT9001</string>
@@ -733,7 +733,7 @@
   <string name="board_desc_a">Novelas y videos</string>
   <string name="board_desc_adv">Pide y recibirás</string>
   <string name="board_desc_an">Mascotas, plantas, achuchables</string>
-  <string name="board_desc_asp">BMX, esquí, paracaidismo</string>
+  <string name="board_desc_asp">BMX, esquí, parapente</string>
   <string name="board_desc_b">Anarquistas anónimos</string>
   <string name="board_desc_c">Waifus y otros</string>
   <string name="board_desc_cgl">Disfraces y lolita</string>
@@ -744,7 +744,7 @@
   <string name="board_desc_diy">Planes y proyectos</string>
   <string name="board_desc_e">Anime femenino suave</string>
   <string name="board_desc_fa">Atuendos y armarios</string>
-  <string name="board_desc_fit">Levantamiento para las ganancias</string>
+  <string name="board_desc_fit">Ganar músculo</string>
   <string name="board_desc_g">Geeks y gadgets</string>
   <string name="board_desc_gd">Sitios web y logos</string>
   <string name="board_desc_gif">Bucles sin censura</string>
@@ -763,7 +763,7 @@
   <string name="board_desc_mlp">El paraíso de los Bronie</string>
   <string name="board_desc_mu">Fans, haters y audio</string>
   <string name="board_desc_n">Trenes y bicicletas</string>
-  <string name="board_desc_o">Paseos y conversaciones de coches</string>
+  <string name="board_desc_o">Todo sobre coches</string>
   <string name="board_desc_out">Trekking y camping</string>
   <string name="board_desc_p">Contenido y crítica</string>
   <string name="board_desc_po">Recortes y plegables</string>
@@ -775,32 +775,30 @@
   <string name="board_desc_s4s">Locura curada</string>
   <string name="board_desc_sci">El paraiso Nerd</string>
   <string name="board_desc_soc">Ideales, valorame</string>
-  <string name="board_desc_sp">Equipos y deportes profesionales</string>
+  <string name="board_desc_sp">Equipos y deporte profesional</string>
   <string name="board_desc_t">Compartir enlaces</string>
   <string name="board_desc_tg">Tablones y juego de rol</string>
   <string name="board_desc_toy">Figuras y coleccionables</string>
   <string name="board_desc_trv">Viajes, aventuras</string>
-  <string name="board_desc_tv">Serie y conjuntos</string>
+  <string name="board_desc_tv">Series y pelis</string>
   <string name="board_desc_u">Anime lésbico</string>
   <string name="board_desc_v">Consolas y juegos de PC</string>
   <string name="board_desc_vg">Discusiones duraderas</string>
-  <string name="board_desc_vp">Entrenamiento, evolucionando</string>
+  <string name="board_desc_vp">Práctica y evolución</string>
   <string name="board_desc_vr">Vídeo juegos pre-2000</string>
   <string name="board_desc_w">J-pop e imágenes de Anime</string>
   <string name="board_desc_wg">Non-Animes de alta resolución</string>
   <string name="board_desc_wsg">Bucles del humor</string>
-  <string name="board_desc_x">Extraterrestres y espíritus</string>
+  <string name="board_desc_x">Aliens y espíritus</string>
   <string name="board_desc_y">Anime homosexual</string>
   <string name="categories" value="Categories"></string>
   <string name="board_rules_header">Reglas del tablón</string>
   <string name="global_rules_header">Reglas Generales</string>
-  <string name="global_rules_detail">        
-<![CDATA[
-<p>1. No se puede cargar, publicar, discutir, solicitar, o enlazar cualquier cosa que viole las leyes locales o las leyes de los Estados Unidos. El cumplimiento será estrictamente obligatorio y en caso de no cumplimiento será severamente castigado.</p>
+  <string name="global_rules_detail"><![CDATA[<p>1. No se puede cargar, publicar, discutir, solicitar, o enlazar cualquier cosa que viole las leyes locales o las leyes de los Estados Unidos. El cumplimiento será estrictamente obligatorio y en caso de no cumplimiento será severamente castigado.</p>
 <p>2. Si usted es menor de 18 años o es ilegal para usted ver los contenidos de este sitio web , deje de navegar inmediatamente.</p>
 <p>3. No se debe publicar lo siguiente /b/ : "Trolls", "flames", racismos, respuestas fuera de tema, fuera de lugar/contexto , respuestas de "imágenes macro", textos indescifrables como (ejemplo: "¿ lol u él tk 2da bar|?"), antropomórfico ("peludo"), grotesque ("guro"), el número de publicación GET ("dubs") o pornografía "loli/shota".</p>
 <p>4. La publicación de información personal o llamadas invasivas están prohibidas.</p>
-<p>5. Todas los tablones que incumplan temas de la Yotsuba B o Burichan (blue) deben ser considerados seguro para el trabajo. Los infractores pueden ser prohibidos temporalmente y sus mensajes serán eliminados. Nota: La pornografía tipo spoiler u otro contenido no seguro para el trabajo NO está permitido.</p>
+<p>5. Todas los tablones que incumplan temas de la Yotsuba B o Burichan (blue) deben ser considerados seguros para el trabajo. Los infractores pueden ser prohibidos temporalmente y sus mensajes serán eliminados. Nota: La pornografía tipo spoiler u otro contenido no seguro para el trabajo NO está permitido.</p>
 <p>6. La calidad de las publicaciones es muy importante en esta comunidad. Se anima a los autores a proporcionar imágenes de alta calidad y comentarios informativos.</p>
 <p>7. La presentación de informes falsos o de otra manera, abusar del sistema de informes se traducirá en una prohibición con duración indeterminada. Tampoco está permitido que en un hilo indique que ha denunciado este u otro artículo - por favor no anuncie sus informes</p>
 <p>8. Quejarse de 4chan (sus políticas, la moderación, etc) en los tablones puede acabar en la eliminación y prohibición de las publicaciones. El administrador de preguntas frecuentes en <a href="http://4chan.org/faq#whoadmin">http://4chan.org/faq#whoadmin</a> abordará sus preguntas, comentarios, quejas e inquietudes a través del correo electrónico. La crítica constructiva y la retroalimentación deberán ser publicadas en <a href="http://boards.4chan.org/q/">http://boards.4chan.org/q/</a>.</p>
@@ -815,17 +813,15 @@
 <p>17. Recuerde: El uso de 4chan es un privilegio, no un derecho. El personal de 4chan se reserva el derecho de revocar el acceso y eliminar contenido, por cualquier motivo y sin previo aviso.</p>
 <p>Las reglas globales se aplican a todos los tablones a menos que se indique lo contrario .</p>
 ]]></string>
-  <string name="board_3_rules">
-<![CDATA[
+  <string name="board_3_rules"><![CDATA[
 <h3>/3/ - 3DCG</h3>
 <p>Las imágenes y las discusiones deberán estar relacionadas con el modelaje en 3D y la imaginación.</p>
-<p>Recuerde: Este es un tablón para trabajo seguro! No está permitido el contenido para adultos.</p>
+<p>Recuerde: Este es un tablón seguro para el trabajo! No está permitido el contenido para adultos.</p>
 ]]>
 </string>
-  <string name="board_a_rules">
-<![CDATA[
+  <string name="board_a_rules"><![CDATA[
 <h3>/a/ - Anime y manga</h3>
-<p>1. Todas las imágenes y discusiones resultantes deben estar relacionadas con el anime y manga.Para las discusiones de larga dureación, por favor consulte <a href="http://dis.4chan.org/anime/">http://dis.4chan.org/anime/</a> board.</p>
+<p>1. Todas las imágenes y discusiones resultantes deben estar relacionadas con el anime y manga.Para las discusiones de larga duración, por favor consulte <a href="http://dis.4chan.org/anime/">http://dis.4chan.org/anime/</a> board.</p>
 <p>2. Se recomienda el uso de etiquetas sobre spoilers. Para textos con spoilers, póngalo tal cual: [spoiler]spoiled text[/spoiler]. Además, las imágenes pueden ser "spoilerizadas" marcando la casilla "[Spoiler Image?]" en el formulario de presentación.</p>
 <p>3. El spoiler de una serie de una forma intencionada, puede tener como resultado  la eliminación de las publicaciones y la prohibición temporal.</p>
 <p>4. Las discusiones sobre los programas de televisión "en vivo" están permitidas, siempre y cuando estén claramente relacionadas con una serie de anime o manga.</p>
@@ -835,7 +831,7 @@
 </string>
   <string name="board_adv_rules">
 <![CDATA[
-<h3>/adv/ - Asesoramiento</h3>
+<h3>/adv/ - Consejos</h3>
 
 <p>1. Todos los hilos sobre asesoramiento son bienvenidos. Se puede ofrecer o solicitar consejo.</p>
 <p>2. Este es el destino de <strong>todas</strong> las preguntas con respecto a problemas personales específicos.</p>
@@ -1093,12 +1089,11 @@
 
 ]]>
 </string>
-  <string name="board_lgbt_rules">
-<![CDATA[
+  <string name="board_lgbt_rules"><![CDATA[
 <h3>/lgbt/ - LGBT</h3>
 <p>1. Este tablón es para la discusión respetuosa sobre el estilo de vida LGBT y la comunidad LGBT.</p>
-<p>2. Los hilos de Hookup y "valorame"/camwhore pertenecen a /soc/.</p>
-<p>3. Recuerde, este es un TABLÓN PARA TABAJO SEGURO. Nada de desnudez o pornografia</p>
+<p>2. Los hilos de Hookup y "valórame"/camwhore pertenecen a /soc/.</p>
+<p>3. Recuerde, este es un TABLÓN SEGURO PARA EL TRABAJO. Nada de desnudez o pornografÍa</p>
 ]]>
 </string>
   <string name="board_lit_rules">
@@ -1374,10 +1369,9 @@
 
 ]]>
 </string>
-  <string name="board_vr_rules">
-<![CDATA[
+  <string name="board_vr_rules"><![CDATA[
 <h3>/vr/ - Juegos Retro </h3>
-<p>1. Este tablón es para las discusiones sobre juegos clásicos o retro. Los juegos retro significan consolas, videojuegos, juegos de arcade (incluyendo pinball) y otras formas de videojuegos alrededor de 2001 o de antes. Las consolas de sexta generación en adelante no son consideradas como retro.</p>
+<p>1. Este tablón es para las discusiones sobre juegos clásicos o retro. Con juegos retro nos referimos a consolas, videojuegos, juegos de arcade (incluyendo pinball) y otras formas de videojuegos con anterioridad a 2001. Las consolas de sexta generación o posterior no son consideradas como retro.</p>
 ]]>
 </string>
   <string name="board_w_rules">
@@ -1398,13 +1392,8 @@
 
 ]]>
 </string>
-  <string name="board_wsg_rules">
-<![CDATA[
-<h3>/wsg/ - GIF de trabajo seguro</h3>
-
-<p>1. Todos los GIF de trabajo seguro son bienvenidos.</p>
-
-]]>
+  <string name="board_wsg_rules"><![CDATA[
+<h3>/wsg/ - GIFs seguros para el trabajo</h3> <p>1. Todos los GIFs seguros para el trabajo son bienvenidos.</p> ]]>
 </string>
   <string name="board_x_rules">
 <![CDATA[
@@ -1431,7 +1420,7 @@
   <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
   <string name="board_3_with_abbrev">/3/ 3DCG</string>
   <string name="board_a_with_abbrev">/a/ Anime y Manga</string>
-  <string name="board_adv_with_abbrev">/adv/ asesoramiento</string>
+  <string name="board_adv_with_abbrev">/adv/ Consejos</string>
   <string name="board_an_with_abbrev">/an/ Animales &amp; Naturaleza</string>
   <string name="board_asp_with_abbrev">/asp/ Deportes alternativos</string>
   <string name="board_b_with_abbrev">/b/ aleatorio</string>
@@ -1487,31 +1476,31 @@
   <string name="board_vp_with_abbrev">/vp/ Pokemon</string>
   <string name="board_vr_with_abbrev">/vr/ Juegos Retro</string>
   <string name="board_w_with_abbrev">/ w/ Anime/Wallpapers</string>
-  <string name="board_wg_with_abbrev">/WG/ Fondos de escritorio</string>
-  <string name="board_wsg_with_abbrev">/wg/ GIF de trabajo seguro</string>
-  <string name="board_x_with_abbrev">/ x / Paranormal</string>
+  <string name="board_wg_with_abbrev">/wg/ Fondos de escritorio</string>
+  <string name="board_wsg_with_abbrev">/wsg/ GIFs seguros para el trabajo</string>
+  <string name="board_x_with_abbrev">/x/ Paranormal</string>
   <string name="board_y_with_abbrev">/y/ Yaoi</string>
   <string name="report_post_type_rule">Infracción de las normas</string>
   <string name="report_post_type_illegal">Contenido ilegal</string>
   <string name="report_post_type_spam">Spam/publicidad</string>
-  <string name="plurals_thread_activity_udpdated_one">%1$ d nuevo comentario</string>
-  <string name="plurals_thread_actviity_updated_other">%1$ d nuevos comentarios</string>
+  <string name="plurals_thread_activity_udpdated_one">%1$d nuevo comentario</string>
+  <string name="plurals_thread_actviity_updated_other">%1$d nuevos comentarios</string>
   <string name="plurals_board_grid_item_num_replies_one">Ver 1 publicación</string>
-  <string name="plurals_board_grid_item_num_replies_other">Ver %1$ d publicaciones</string>
+  <string name="plurals_board_grid_item_num_replies_other">Ver %1$d publicaciones</string>
   <string name="plurals_board_grid_item_num_imgs_one">Mostrar 1 imagen</string>
-  <string name="plurals_board_grid_item_num_imgs_other">Ver %1$ d imágenes</string>
+  <string name="plurals_board_grid_item_num_imgs_other">Ver %1$d imágenes</string>
   <string name="plurals_board_grid_item_num_threads_one">Mostrar 1 hilo</string>
   <string name="plurals_board_grid_item_num_threads_other">Ver %1$ d hilos</string>
   <string name="plurals_thread_num_replies_one">1 publicación</string>
-  <string name="plurals_thread_num_replies_other">%1$ d publicaciones</string>
+  <string name="plurals_thread_num_replies_other">%1$d publicaciones</string>
   <string name="plurals_thread_num_images_one">1 imagen</string>
-  <string name="plurals_thread_num_images_other">%1$ d imágenes</string>
+  <string name="plurals_thread_num_images_other">%1$d imágenes</string>
   <string name="plurals_thread_num_imgs_one">1 imagen</string>
-  <string name="plurals_thread_num_imgs_other">%1$ d imágenes</string>
+  <string name="plurals_thread_num_imgs_other">%1$d imágenes</string>
   <string name="plurals_thread_num_backlinks_one">1 enlace de vuelta</string>
   <string name="plurals_thread_num_backlinks_other">Enlaces de vuelta - %1$d</string>
   <string name="plurals_thread_num_links_one">1 enlace</string>
-  <string name="plurals_thread_num_links_other">%1$ d enlaces</string>
+  <string name="plurals_thread_num_links_other">%1$d enlaces</string>
   <string name="plurals_thread_num_replies_label_one">COMENTARIO</string>
   <string name="plurals_thread_num_replies_label_other">COMENTARIOS</string>
   <string name="plurals_thread_num_images_label_one">IMAGEN</string>

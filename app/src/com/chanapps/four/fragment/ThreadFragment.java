@@ -1478,9 +1478,16 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 absListView.setItemChecked(pos, true);
                 postNo = absListView.getItemIdAtPosition(pos);
             }
+            boolean isHeader = pos == 0;
             updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
             PopupMenu popup = new PopupMenu(getActivityContext(), v);
-            int menuId = undead() ? R.menu.thread_context_menu : R.menu.thread_dead_context_menu;
+            int menuId;
+            if (!undead())
+                menuId = R.menu.thread_dead_context_menu;
+            else if (isHeader)
+                menuId = R.menu.thread_header_context_menu;
+            else
+                menuId = R.menu.thread_context_menu;
             popup.inflate(menuId);
             popup.setOnMenuItemClickListener(popupListener);
             popup.setOnDismissListener(popupDismissListener);
