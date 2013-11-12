@@ -178,14 +178,25 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 	}
 	
 	private boolean isChanForegroundActivity() {
-		ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-		 // get the info from the currently running task
-		List <ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        boolean isFg = true;
+        try {
+            ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+            // get the info from the currently running task
+            if (am != null) {
+                List <ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+                if (taskInfo != null && taskInfo.get(0) != null && taskInfo.get(0).topActivity != null) {
+                    if (DEBUG) Log.d(TAG, "foreground activity: " + taskInfo.get(0).topActivity.getClass().getSimpleName());
 
-		if (DEBUG) Log.d(TAG, "foreground activity: " + taskInfo.get(0).topActivity.getClass().getSimpleName());
-
-		ComponentName componentInfo = taskInfo.get(0).topActivity;
-		return componentInfo != null && componentInfo.getPackageName().startsWith("com.chanapps");
+                    ComponentName componentInfo = taskInfo.get(0).topActivity;
+                    isFg = componentInfo != null && componentInfo.getPackageName().startsWith("com.chanapps");
+                }
+            }
+        }
+        catch (Exception e) {
+            if (DEBUG) Log.e(TAG, "Exception getting foreground activity", e);
+            isFg = false;
+        }
+        return isFg;
 	}
 
 	private void handleBoard() {
