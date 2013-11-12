@@ -284,7 +284,7 @@
     <string name="thread_not_added_to_watchlist">Couldn\'t add thread to watchlist</string>
     <string name="board_not_added_to_favorites">Couldn\'t add board to favorites</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
-    <string name="thread_deleted_from_watchlist">Thread added to watchlist</string>
+    <string name="thread_deleted_from_watchlist">Thread deleted from watchlist</string>
     <string name="board_added_to_favorites">Board added to favorites</string>
     <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>

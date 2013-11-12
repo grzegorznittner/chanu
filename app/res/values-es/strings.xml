@@ -258,7 +258,7 @@
   <string name="thread_not_added_to_watchlist">No se pudo añadir el hilo a la watchlist</string>
   <string name="board_not_added_to_favorites">No se pudo añadir el tablón a favoritos</string>
   <string name="thread_added_to_watchlist">Hilo añadido a watchlist</string>
-  <string name="thread_deleted_from_watchlist">Hilo añadido a watchlist</string>
+  <string name="thread_deleted_from_watchlist">Hilo eliminado a watchlist</string>
   <string name="board_added_to_favorites">Tablón añadido a \"Favoritos\"</string>
   <string name="thread_added_to_watchlist_activity_based">Hilo automaticamente añadido a la watchlist</string>
   <string name="thread_watchlist_cleared">Watchlist despejada</string>
