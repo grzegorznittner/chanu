@@ -470,10 +470,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        if (ChanBoard.isPopularBoard(boardCode) || !ChanBoard.isVirtualBoard(boardCode)) {
+        if (ChanBoard.isPopularBoard(boardCode)
+                || ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
+                || !ChanBoard.isVirtualBoard(boardCode)) {
             //try {
-                mPullToRefreshAttacher = new PullToRefreshAttacher(this);
-                mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+            PullToRefreshAttacher.Options options = new PullToRefreshAttacher.Options();
+            options.refreshScrollDistance = 0.1f;
+            mPullToRefreshAttacher = new PullToRefreshAttacher(this, options);
+            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
             //}
             //catch (Error e) {
             //    Log.e(TAG, "createAbsListView() error creating pull to refresh attacher", e);
