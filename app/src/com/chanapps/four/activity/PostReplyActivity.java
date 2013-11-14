@@ -505,8 +505,8 @@ public class PostReplyActivity
     private boolean isPassAvailable() {
         switch (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
             case WIFI:
-                return true;
             case MOBILE:
+                return true;
             case NO_CONNECTION:
             default:
                 return false;
@@ -532,6 +532,7 @@ public class PostReplyActivity
     private void updatePassRecaptchaViews(boolean passEnabled) {
         switch (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
             case WIFI:
+            case MOBILE:
                 if (passEnabled) {
                     passStatusText.setText(R.string.post_reply_pass_enabled_text);
                     setPassEnabled();
@@ -543,11 +544,13 @@ public class PostReplyActivity
                     setRecaptchaEnabled();
                 }
                 break;
+            /*
             case MOBILE:
                 passStatusText.setText(R.string.post_reply_pass_mobile_text);
                 setPassUnavailable();
                 setRecaptchaEnabled();
                 break;
+            */
             case NO_CONNECTION:
             default:
                 passStatusText.setText(R.string.post_reply_pass_no_connection_text);

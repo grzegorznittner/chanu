@@ -104,8 +104,8 @@ public class PassSettingsFragment extends PreferenceFragment
     private boolean isPassAvailable() {
         switch (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
             case WIFI:
-                return true;
             case MOBILE:
+                return true;
             case NO_CONNECTION:
             default:
                 return false;
