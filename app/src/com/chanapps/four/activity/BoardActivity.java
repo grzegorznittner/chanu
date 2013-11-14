@@ -48,7 +48,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
     public static final String UPDATE_BOARD_ACTION = "updateBoardAction";
 
     public static String topBoardCode = null;
@@ -464,6 +464,17 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         adapter = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
                 ? new BoardGridSmallCursorAdapter(this, viewBinder)
                 : new BoardGridCursorAdapter(this, viewBinder);
+        adapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence constraint) {
+                boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
+                String search = constraint == null ? "" : constraint.toString();
+                BoardCursorLoader filteredCursorLoader =
+                        new BoardCursorLoader(getApplicationContext(), boardCode, search, abbrev, true);
+                Cursor filteredCursor = filteredCursorLoader.loadInBackground();
+                return filteredCursor;
+            }
+        });
         absListView = (GridView)findViewById(R.id.board_grid_view);
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
@@ -677,7 +688,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
             setProgress(true);
             boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
-            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query, abbrev, true);
+            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, "", abbrev, true);
             return cursorLoader;
         }
         @Override
@@ -699,6 +710,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             else if (query != null && !query.isEmpty()) {
                 displaySearchTitle();
                 hideEmptyText();
+                adapter.getFilter().filter(query);
             }
             else if ((data == null || data.getCount() < 1) && handler != null) {
                 NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -1176,11 +1188,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
             final PopupMenu popup = new PopupMenu(BoardActivity.this, v);
             int menuId;
+            if (DEBUG) Log.i(TAG, "overflowListener /" + boardCode + "/ group=/" + groupBoardCode + "/");
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode) || ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
                 menuId = R.menu.watchlist_context_menu;
             else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) || ChanBoard.FAVORITES_BOARD_CODE.equals(groupBoardCode))
                 menuId = R.menu.favorites_context_menu;
-            else if (ChanBoard.isMetaBoard(boardCode))
+            else if (ChanBoard.isMetaBoard(boardCode) || ChanBoard.isMetaBoard(groupBoardCode))
                 menuId = R.menu.meta_board_context_menu;
             else if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0)
                 menuId = R.menu.board_header_context_menu;
