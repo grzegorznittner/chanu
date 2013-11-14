@@ -342,6 +342,7 @@ public class ThreadActivity
         }
         if (handler == null)
             handler = new Handler();
+        NetworkProfileManager.instance().activityChange(this);
         if (onTablet())
             createAbsListView();
         createPagerAsync();
@@ -361,11 +362,12 @@ public class ThreadActivity
                 NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
                 ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
                 if (mAdapter != null && mAdapter.getCount() > 0 && board.hasData() && board.isCurrent()) {
-                    if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
+                    if (DEBUG) Log.i(TAG, "createPagerAsync() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
                 }
                 else if (board.hasData()) { // && board.isCurrent()) {
-                    if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " board has current data, loading");
+                    if (DEBUG) Log.i(TAG, "createPagerAsync() /" + boardCode + "/" + threadNo + " board has current data, loading");
                     createPager(board);
+                    setCurrentItemToThread();
                 }
                 else if (board.hasData() &&
                         (health == NetworkProfile.Health.NO_CONNECTION
@@ -374,11 +376,12 @@ public class ThreadActivity
                                 //        || health == NetworkProfile.Health.SLOW
                         ))
                 {
-                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " board has old data but connection " + health + ", loading");
+                    if (DEBUG) Log.i(TAG, "createPagerAsync() /" + boardCode + "/" + threadNo + " board has old data but connection " + health + ", loading");
                     createPager(board);
+                    setCurrentItemToThread();
                 }
                 else if (health == NetworkProfile.Health.NO_CONNECTION) {
-                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no board data and connection is down");
+                    if (DEBUG) Log.i(TAG, "createPagerAsync() /" + boardCode + "/" + threadNo + " no board data and connection is down");
                     if (handler != null)
                         handler.post(new Runnable() {
                             @Override
@@ -403,7 +406,7 @@ public class ThreadActivity
                     createPager();
                     */
                     //if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " non-current board data, manual refreshing");
-                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no board data, priority refreshing board");
+                    if (DEBUG) Log.i(TAG, "createPagerAsync() /" + boardCode + "/" + threadNo + " no board data, priority refreshing board");
                     if (handler != null)
                         handler.post(new Runnable() {
                             @Override
@@ -446,7 +449,13 @@ public class ThreadActivity
             setCurrentItemToThread();
         }
         */
-        setCurrentItemToThreadAsync();
+        if (mAdapter != null && mAdapter.getCount() > 0) {
+            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo + " setting current item pager count=" + mAdapter.getCount());
+            setCurrentItemToThreadAsync();
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo + " pager not loaded, awaiting callback");
+        }
         /*
         else if (fragment != null) {
             activityId = fragment.getChanActivityId();
@@ -704,6 +713,7 @@ public class ThreadActivity
 
     @Override
     public Handler getChanHandler() {
+        ThreadFragment fragment = getCurrentFragment();
         return handler;
     }
 

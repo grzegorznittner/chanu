@@ -245,7 +245,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 tc.setIfModifiedSince(board.lastFetched);
             }
             String contentType = tc.getContentType();
-            if (DEBUG) Log.i(TAG, "Called API " + tc.getURL() + " response length=" + tc.getContentLength()
+            if (DEBUG) Log.i(TAG, "handleBoard() Called API " + tc.getURL() + " response length=" + tc.getContentLength()
             		+ " code=" + tc.getResponseCode() + " type=" + contentType);
             if (tc.getResponseCode() == 304) {
             	if (DEBUG) Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + board.lastFetched);
@@ -347,7 +347,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 tc.setIfModifiedSince(thread.lastFetched);
             }
             String contentType = tc.getContentType();
-            if (DEBUG) Log.i(TAG, "Called API " + tc.getURL() + " response length=" + tc.getContentLength()
+            if (DEBUG) Log.i(TAG, "handleThread() Called API " + tc.getURL() + " response length=" + tc.getContentLength()
             		+ " code=" + tc.getResponseCode() + " type=" + contentType);
             if (tc.getResponseCode() == 304) {
             	if (DEBUG) Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + thread.lastFetched);
@@ -369,10 +369,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 NetworkProfileManager.instance().failedFetchingData(this, Failure.DEAD_THREAD);
                 return;
             } else if (contentType == null || !contentType.contains("json")) {
+                if (DEBUG) Log.i(TAG, "Failed fetching data, contentType = " + contentType);
                 NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
                 return;
             }
             else {
+                if (DEBUG) Log.i(TAG, "Fetch succeeded, storing thread file");
                 long fileSize = ChanFileStorage.storeThreadFile(getBaseContext(), boardCode, threadNo, new InputStreamReader(tc.getInputStream()));
                 int fetchTime = (int)(new Date().getTime() - startTime);
                 final ChanActivityId activityId = getChanActivityId();
@@ -387,6 +389,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                         return context;
                     }
                 };
+                if (DEBUG) Log.i(TAG, "Thread file store succeeded, calling profile manager finished fetching data");
                 NetworkProfileManager.instance().finishedFetchingData(service, fetchTime, (int)fileSize);
             }
 

@@ -450,7 +450,7 @@ public class ThreadViewer {
         if (viewHolder.list_item_sticky_icon != null)
             viewHolder.list_item_sticky_icon.setVisibility((flags & ChanPost.FLAG_IS_STICKY) > 0 ? View.VISIBLE : View.GONE);
         if (DEBUG)
-            Log.i(TAG, "setSubjectIcons()"
+            Log.d(TAG, "setSubjectIcons()"
                     + " dead=" + ((flags & ChanPost.FLAG_IS_DEAD) > 0)
                     + " closed=" + ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
                     + " sticky=" + ((flags & ChanPost.FLAG_IS_STICKY) > 0)

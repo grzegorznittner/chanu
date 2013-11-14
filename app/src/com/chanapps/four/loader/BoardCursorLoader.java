@@ -229,7 +229,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             return;
         }
 
-        if (!board.isVirtualBoard() && header) {
+        if (!board.isVirtualBoard() && header && query.isEmpty()) {
             Object[] headerRow = board.makeHeaderRow(context);
             matrixCursor.addRow(headerRow);
         }
@@ -240,6 +240,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
         if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
         //int adSpace = MINIMUM_AD_SPACING;
+        /*
         int numQueryMatches = 0;
         int i = 0;
         for (ChanThread thread : board.threads) {
@@ -247,7 +248,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             if (match)
                 numQueryMatches++;
         }
-        if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
+        */
+        for (ChanThread thread : board.threads)
+            loadThread(matrixCursor, board, thread);
+        if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads");
 
         //addRelatedBoards(matrixCursor, board);
         // always put an ad at the bottom
@@ -255,25 +259,29 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
     }
 
-    protected boolean loadThread(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread, int i) {
+    //protected boolean loadThread(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread, int i) {
+    protected void loadThread(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
         if (DEBUG) Log.i(TAG, "Loading thread " + thread);
         if (ChanBlocklist.isBlocked(context, thread)) {
             if (DEBUG) Log.i(TAG, "Skipped blocked thread " + thread);
-            return false;
+            //return false;
+            return;
         }
         if (!ChanBoard.FAVORITES_BOARD_CODE.equals(board.link) && thread.no <= 0) {
             if (DEBUG) Log.i(TAG, "Skipped zero thread " + thread);
-            return false;
+            //return false;
+            return;
         }
         if (!thread.matchesQuery(query)) {
             if (DEBUG) Log.i(TAG, "Skipped non-matching to query thread " + thread);
-            return false;
+            return;
         }
         if (ChanBoard.isRemoved(thread.board)) {
             if (DEBUG) Log.i(TAG, "Board /" + thread.board + "/ has been removed from 4chan");
-            return false;
+            //return false;
+            return;
         }
-        boolean matchedQuery = !query.isEmpty();
+        //boolean matchedQuery = !query.isEmpty();
         Object row[];
         if (thread.no <= 0) {
             String name = ChanBoard.getName(context, thread.board);
@@ -285,10 +293,11 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         }
         else {
             if (DEBUG) Log.i(TAG, "loadBoard adding thread row " + thread);
+            //row = ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard(), abbrev);
             row = ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard(), abbrev);
         }
         matrixCursor.addRow(row);
-        i++;
+        //i++;
         if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
                 /*
                 if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
@@ -299,7 +308,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     adSpace--;
                 }
                 */
-        return matchedQuery;
+        //return matchedQuery;
     }
 
     /*
