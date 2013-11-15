@@ -104,6 +104,7 @@ class PositionController {
     }
 
     public void setImageSize(int width, int height) {
+        Log.i(TAG, "setImageSize() scale=" + mCurrentScale + " maxScale=" + mScaleMax);
 
         // If no image available, use view size.
         if (width == 0 || height == 0) {
@@ -162,6 +163,8 @@ class PositionController {
     }
 
     public void zoomIn(float tapX, float tapY, float targetScale) {
+        Log.i(TAG, "zoomIn() scale=" + mCurrentScale + " maxScale=" + mScaleMax);
+
         if (targetScale > mScaleMax) targetScale = mScaleMax;
 
         // Convert the tap position to image coordinate
@@ -173,6 +176,10 @@ class PositionController {
         int targetY = Utils.clamp(tempY, mBoundTop, mBoundBottom);
 
         startAnimation(targetX, targetY, targetScale, ANIM_KIND_ZOOM);
+    }
+
+    public float getScaleMax() {
+        return mScaleMax;
     }
 
     public void resetToFullView() {
@@ -267,13 +274,13 @@ class PositionController {
     }
 
     public void scaleBy(float s, float focusX, float focusY) {
-
+        Log.i(TAG, "scaleBy s=" + s + " focusX=" + focusX + " focusY=" + focusY);
         // We want to keep the focus point (on the bitmap) the same as when
         // we begin the scale guesture, that is,
         //
         // mCurrentX' + (focusX - mViewW / 2f) / scale = mFocusBitmapX
         //
-        s *= getTargetScale();
+        s *= getTargetScale() * 1.1f;
         int x = Math.round(mFocusBitmapX - (focusX - mViewW / 2f) / s);
         int y = Math.round(mFocusBitmapY - (focusY - mViewH / 2f) / s);
 

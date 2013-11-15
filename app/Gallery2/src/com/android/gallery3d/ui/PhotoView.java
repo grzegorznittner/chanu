@@ -177,6 +177,7 @@ public class PhotoView extends GLView {
     }
 
     public void setPosition(int centerX, int centerY, float scale) {
+        Log.i(TAG, "setPosition x=" + centerX + " y=" + centerY + " scale=" + scale);
         if (setTileViewPosition(centerX, centerY, scale)) {
             layoutScreenNails();
         }
@@ -524,6 +525,25 @@ public class PhotoView extends GLView {
                 controller.resetToFullView();
             }
             return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            if (mTransitionMode != TRANS_NONE) return;
+            PositionController controller = mPositionController;
+            float scale = controller.getCurrentScale();
+            // onDoubleTap happened on the second ACTION_DOWN.
+            // We need to ignore the next UP event.
+            //mIgnoreUpEvent = true;
+            // if (scale <= 1.0f || controller.isAtMinimalScale()) {
+            if (scale <= 1.0f) {
+                // Convert the tap position to image coordinate
+                float newScale = controller.getScaleMax();
+                controller.zoomIn(e.getX(), e.getY(), newScale);
+            } else {
+                controller.resetToFullView();
+            }
+            return;
         }
     }
 
