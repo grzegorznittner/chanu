@@ -1329,7 +1329,7 @@ public class ChanPost {
     }
 
     public static String postUrl(Context context, String boardCode, long threadNo, long postNo) {
-        return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_POST_URL_FORMAT), boardCode, threadNo);
+        return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_POST_URL_FORMAT), boardCode, threadNo, postNo);
     }
 
 }
