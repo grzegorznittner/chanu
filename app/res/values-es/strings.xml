@@ -465,6 +465,9 @@
   <string name="pref_use_google_analytics">Google Analytics</string>
   <string name="pref_use_google_analytics_summ_on">Enviar los datos de uso anónimos</string>
   <string name="pref_use_google_analytics_summ_off">No enviar los datos de uso anónimos</string>
+  <string name="pref_use_https">Seguridad</string>
+  <string name="pref_use_https_summ_on">Uso de HTTPS para todas las conexiones</string>
+  <string name="pref_use_https_summ_off">No utilice HTTPS para todas las conexiones</string>
   <string name="pref_autoupdate_threads">Hilos de actualización automática</string>
   <string name="pref_autoupdate_threads_summ_on">Actualizar hilos cada 30 segundos</string>
   <string name="pref_autoupdate_threads_summ_off">No actualizar los hilos automáticamente</string>

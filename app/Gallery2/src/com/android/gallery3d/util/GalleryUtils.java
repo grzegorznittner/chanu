@@ -16,6 +16,7 @@
 
 package com.android.gallery3d.util;
 
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.PackagesMonitor;
 import com.android.gallery3d.data.DataManager;
@@ -223,7 +224,8 @@ public class GalleryUtils {
             // the MapView to the specified location, but we need a marker
             // for further operations (routing to/from).
             // The q=(lat, lng) syntax is suggested by geo-team.
-            String uri = formatLatitudeLongitude("http://maps.google.com/maps?f=q&q=(%f,%f)",
+            String uri = formatLatitudeLongitude(
+                    URLFormatComponent.getUrl(context, URLFormatComponent.GOOGLE_MAPS_URL_FORMAT),
                     latitude, longitude);
             ComponentName compName = new ComponentName(MAPS_PACKAGE_NAME,
                     MAPS_CLASS_NAME);

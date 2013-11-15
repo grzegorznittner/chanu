@@ -76,7 +76,7 @@ public abstract class BaseChanService extends Service {
         @Override
         public void handleMessage(Message msg) {
         	Intent intent = (Intent)msg.obj;
-        	if (intent.getIntExtra(PRIORITY_MESSAGE_FETCH, 0) == 1) {
+        	if (intent != null && intent.getIntExtra(PRIORITY_MESSAGE_FETCH, 0) == 1) {
         		synchronized(this) {
         			priorityMessageCounter--;
         			if (priorityMessageCounter < 0) {
@@ -91,7 +91,8 @@ public abstract class BaseChanService extends Service {
         			}
         		}
         	}
-            onHandleIntent(intent);
+            if (intent != null)
+                onHandleIntent(intent);
             stopSelf(msg.arg1);
         }        
     }

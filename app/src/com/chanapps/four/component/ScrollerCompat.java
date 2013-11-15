@@ -25,7 +25,7 @@ import android.widget.Scroller;
  * current device's preferred scroll physics and fling behavior. It offers a subset of
  * the APIs from Scroller or OverScroller.</p>
  */
-class ScrollerCompat {
+public class ScrollerCompat {
     Scroller mScroller;
 
     static class ScrollerCompatImplIcs extends ScrollerCompat {
@@ -35,7 +35,7 @@ class ScrollerCompat {
 
         @Override
         public float getCurrVelocity() {
-            return ScrollerCompatIcs.getCurrVelocity(mScroller);
+            return ScrollerCompatICS.getCurrVelocity(mScroller);
         }
     }
 

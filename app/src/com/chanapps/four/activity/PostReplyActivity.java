@@ -3,11 +3,9 @@ package com.chanapps.four.activity;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.*;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
@@ -753,7 +751,7 @@ public class PostReplyActivity
         recaptchaText.setText("");
         recaptchaText.setHint(R.string.post_reply_recaptcha_hint);
         loadCaptchaTask = new LoadCaptchaTask(getApplicationContext(), recaptchaButton, recaptchaLoading, true);
-        loadCaptchaTask.execute(getString(R.string.post_reply_recaptcha_url_root));
+        loadCaptchaTask.execute(URLFormatComponent.getUrl(this, URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_URL));
     }
 
     @Override
@@ -1183,7 +1181,6 @@ public class PostReplyActivity
     public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, Integer> {
 
         public final String TAG = PostReplyTask.class.getSimpleName();
-        public static final String POST_URL_ROOT = "https://sys.4chan.org/";
         public static final String MAX_FILE_SIZE = "3145728";
         public static final boolean DEBUG = false;
 
@@ -1334,7 +1331,7 @@ public class PostReplyActivity
         }
 
         protected String executePostReply(MultipartEntity entity) {
-            String url = POST_URL_ROOT + boardCode + "/post";
+            String url = String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POST_URL_FORMAT), boardCode);
             AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
             HttpParams params = client.getParams();
             if (params != null)

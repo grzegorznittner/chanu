@@ -373,25 +373,30 @@ public class PhotoView extends GLView {
         int y = h / 2;
         int s = Math.min(getWidth(), getHeight()) / 6;
 
-        if (mLoadingState == LOADING_TIMEOUT) {
-            StringTexture m = mLoadingText;
-            ProgressSpinner r = mLoadingSpinner;
-            r.draw(canvas, x - r.getWidth() / 2, y - r.getHeight() / 2);
-            m.draw(canvas, x - m.getWidth() / 2, y + s / 2 + 5);
-            invalidate(); // we need to keep the spinner rotating
-        } else if (mLoadingState == LOADING_FAIL) {
-            StringTexture m = mNoThumbnailText;
-            m.draw(canvas, x - m.getWidth() / 2, y + s / 2 + 5);
-        }
+        try {
+            if (mLoadingState == LOADING_TIMEOUT) {
+                StringTexture m = mLoadingText;
+                ProgressSpinner r = mLoadingSpinner;
+                r.draw(canvas, x - r.getWidth() / 2, y - r.getHeight() / 2);
+                m.draw(canvas, x - m.getWidth() / 2, y + s / 2 + 5);
+                invalidate(); // we need to keep the spinner rotating
+            } else if (mLoadingState == LOADING_FAIL) {
+                StringTexture m = mNoThumbnailText;
+                m.draw(canvas, x - m.getWidth() / 2, y + s / 2 + 5);
+            }
 
-        // Draw the video play icon (in the place where the spinner was)
-        if (mShowVideoPlayIcon
-                && mLoadingState != LOADING_INIT
-                && mLoadingState != LOADING_TIMEOUT) {
-            mVideoPlayIcon.draw(canvas, x - s / 2, y - s / 2, s, s);
-        }
+            // Draw the video play icon (in the place where the spinner was)
+            if (mShowVideoPlayIcon
+                    && mLoadingState != LOADING_INIT
+                    && mLoadingState != LOADING_TIMEOUT) {
+                mVideoPlayIcon.draw(canvas, x - s / 2, y - s / 2, s, s);
+            }
 
-        if (mPositionController.advanceAnimation()) invalidate();
+            if (mPositionController.advanceAnimation()) invalidate();
+        }
+        catch (RuntimeException e) {
+            Log.e(TAG, "Exception rentering spinner", e);
+        }
     }
 
     private void stopCurrentSwipingIfNeeded() {

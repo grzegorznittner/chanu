@@ -75,8 +75,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         super(path, nextVersionNumber());
         mApplication = application;
         activityId = new ChanActivityId(post.board, post.resto != 0 ? post.resto : post.no, false);
-        url = post.imageUrl();
-        thumbUrl = post.thumbnailUrl();
+        url = post.imageUrl(getApplicationContext());
+        thumbUrl = post.thumbnailUrl(getApplicationContext());
         tn_h = post.tn_h;
         tn_w = post.tn_w;
         w = post.w;

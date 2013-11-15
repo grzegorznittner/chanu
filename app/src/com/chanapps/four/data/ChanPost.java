@@ -14,8 +14,8 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.database.MatrixCursor;
 import android.util.Log;
 
-import android.view.View;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.URLFormatComponent;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
@@ -480,17 +480,17 @@ public class ChanPost {
     }
 
     public String toString() {
-		return "/" + board + "/" + (resto == 0 ? no : resto + "#p" + no) + " sub=" + sub + " com=" + com + " thumb=" + thumbnailUrl() + " size=" + tn_w + "x" + tn_h;
+		return "/" + board + "/" + (resto == 0 ? no : resto + "#p" + no) + " sub=" + sub + " com=" + com + " size=" + tn_w + "x" + tn_h;
 	}
 
-    public String thumbnailUrl() { // thumbnail with fallback
+    public String thumbnailUrl(Context context) { // thumbnail with fallback
         int stickyId = ChanBoard.imagelessStickyDrawableId(board, no);
         if (stickyId > 0)
             return "drawable://" + stickyId;
         else if (spoiler > 0)
-            return ChanBoard.spoilerThumbnailUrl(board);
+            return ChanBoard.spoilerThumbnailUrl(context, board);
         else if (tim > 0 && filedeleted == 0) // && tn_w > 2 && tn_h > 2)
-            return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_THUMBS_URL_FORMAT), board, tim);
         else if (resto <= 0) // thread default
             return "drawable://" + ChanBoard.getRandomImageResourceId(board, no);
         else
@@ -511,13 +511,13 @@ public class ChanPost {
             return 0;
     }
 
-    public String imageUrl() {
-        return imageUrl(board, tim, ext);
+    public String imageUrl(Context context) {
+        return imageUrl(context, board, tim, ext);
    	}
 
-    public static String imageUrl(String board, long tim, String ext) {
+    protected static String imageUrl(Context context, String board, long tim, String ext) {
         if (tim != 0) {
-            return "http://images.4chan.org/" + board + "/src/" + tim + ext;
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_IMAGE_URL_FORMAT), board, tim, ext);
         }
         return null;
     }
@@ -526,18 +526,20 @@ public class ChanPost {
    		return no + ext;
    	}
 
-    public String countryFlagUrl() {
+    public String countryFlagUrl(Context context) {
         if (country != null && !country.isEmpty())
-            return countryFlagUrl(board, country);
+            return countryFlagUrl(context, board, country);
         else
             return null;
     }
 
-    public String countryFlagUrl(String boardCode, String countryCode) {
-        return "http://static.4chan.org/image/country/"
-                + (boardCode.equals("pol") ? "troll/" : "")
-                + countryCode.toLowerCase()
-                + ".gif";
+    public String countryFlagUrl(Context context, String boardCode, String countryCode) {
+        if (boardCode.equals("pol"))
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POL_COUNTRY_IMAGE_URL_FORMAT),
+                    countryCode.toLowerCase());
+        else
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_COUNTRY_IMAGE_URL_FORMAT),
+                    countryCode.toLowerCase());
     }
 
     public String dateText() {
@@ -1048,9 +1050,9 @@ public class ChanPost {
                 no,
                 board,
                 resto,
-                thumbnailUrl(),
-                imageUrl(),
-                countryFlagUrl(),
+                thumbnailUrl(context),
+                imageUrl(context),
+                countryFlagUrl(context),
                 headline,
                 replies,
                 images,
@@ -1326,8 +1328,8 @@ public class ChanPost {
     	w = t.w;
     }
 
-    public static String postUrl(String boardCode, long threadNo, long postNo) {
-        return ChanThread.threadUrl(boardCode, threadNo) + "#p" + postNo;
+    public static String postUrl(Context context, String boardCode, long threadNo, long postNo) {
+        return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_POST_URL_FORMAT), boardCode, threadNo);
     }
 
 }

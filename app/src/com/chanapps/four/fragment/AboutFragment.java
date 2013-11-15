@@ -1,7 +1,6 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -13,6 +12,7 @@ import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.BillingComponent;
+import com.chanapps.four.component.URLFormatComponent;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.DateFormat;
@@ -42,18 +42,16 @@ public class AboutFragment extends PreferenceFragment
         //addConsumePreference();
 
         versionPreference("pref_about_application_version");
-        linkPreference("pref_about_icon", "market://search?q=pub:Chanapps Software");
-        linkPreference("pref_about_application_version", "market://details?id=com.chanapps.four.activity");
-        linkPreference("pref_about_application_rate", "market://details?id=com.chanapps.four.activity");
-        //intentOrLinkPreference("pref_about_application_gplus", "107363899339170685863", "https://plus.google.com/communities/107363899339170685863");
-        linkPreference("pref_about_application_gplus", "https://plus.google.com/communities/107363899339170685863");
-        linkPreference("pref_about_data_4chan", "https://github.com/4chan/4chan-API");
-        linkPreference("pref_about_data_uil", "https://github.com/nostra13/Android-Universal-Image-Loader");
-        linkPreference("pref_about_data_pulltorefresh", "https://github.com/chrisbanes/ActionBar-PullToRefresh");
-        linkPreference("pref_about_data_color", "https://code.google.com/p/color-picker-view/");
-        //linkPreference("pref_about_developer_chanapps", "http://www.nibelungenliedstudios.com");
-        linkPreference("pref_about_store_chanapps", "http://www.skreened.com/chanapps/");
-        linkPreference("pref_about_translations_de", "http://www.reddit.com/user/le_avx");
+        linkPreference("pref_about_icon", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.MARKET_CORP_URL));
+        linkPreference("pref_about_application_version", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.MARKET_APP_URL));
+        linkPreference("pref_about_application_rate", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.MARKET_APP_URL));
+        linkPreference("pref_about_application_gplus", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_PLUS_CHANU_URL));
+        linkPreference("pref_about_data_4chan", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GITHUB_CHAN_API_URL));
+        linkPreference("pref_about_data_uil", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GITHUB_UIL_URL));
+        linkPreference("pref_about_data_pulltorefresh", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GITHUB_ABPTR_URL));
+        linkPreference("pref_about_data_color", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_CODE_COLOR_PICKER_URL));
+        linkPreference("pref_about_store_chanapps", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.SKREENED_CHANU_STORE_URL));
+        linkPreference("pref_about_translations_de", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GERMAN_TRANSLATOR_URL));
 
         /*
         emailPreference("pref_about_developer_burns", getString(R.string.pref_about_developer_burns_sum));

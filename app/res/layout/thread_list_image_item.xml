@@ -36,7 +36,6 @@
                     non-clickable: android:foreground="@drawable/null_selector_bg"
                     clickable: android:foreground="@drawable/thread_list_selector_bg"
                     -->
-                    <!-- http://www.youtube.com/watch?v=w-llZmPPNwU -->
                     <FrameLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
                         <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
                     </FrameLayout>

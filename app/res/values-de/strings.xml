@@ -472,6 +472,9 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="pref_use_google_analytics">Google Analytics</string>
   <string name="pref_use_google_analytics_summ_on">Sende anonyme Nutzungsstatistiken</string>
   <string name="pref_use_google_analytics_summ_off">Sende keine anonymen Nutzungsstatistiken</string>
+  <string name="pref_use_https">Sicherheit</string>
+  <string name="pref_use_https_summ_on">Verwenden HTTPS für alle Verbindungen</string>
+  <string name="pref_use_https_summ_off">Nicht verwenden HTTPS für alle Verbindungen</string>
   <string name="pref_autoupdate_threads">Thread Aktualisierung</string>
   <string name="pref_autoupdate_threads_summ_on">Automatische Aktualisierung ist aktiviert</string>
   <string name="pref_autoupdate_threads_summ_off">Automatische Aktualisierung ist deaktiviert</string>

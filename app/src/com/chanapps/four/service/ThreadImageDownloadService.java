@@ -364,7 +364,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		OutputStream out = null;
 		HttpURLConnection conn = null;
 		try {
-			conn = (HttpURLConnection)new URL(post.imageUrl()).openConnection();
+			conn = (HttpURLConnection)new URL(post.imageUrl(getApplicationContext())).openConnection();
 			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
 			// we need to double read timeout as file might be large
 			conn.setReadTimeout(fetchParams.readTimeout * 2);
@@ -375,7 +375,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			int fileLength = IOUtils.copy(in, out);
 			long endTime = Calendar.getInstance().getTimeInMillis();
 			NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
-			if (DEBUG) Log.i(TAG, "Stored image " + post.imageUrl() + " to file "
+			if (DEBUG) Log.i(TAG, "Stored image " + post.imageUrl(getApplicationContext()) + " to file "
 					+ targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
 			return fileLength;
 		} finally {

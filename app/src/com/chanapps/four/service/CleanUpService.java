@@ -14,6 +14,8 @@ import com.chanapps.four.widget.AbstractBoardWidgetProvider;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -49,6 +51,8 @@ public class CleanUpService extends BaseChanService {
     private Map<String, List<FileDesc>> filesByBoard = null;
     private long sizeOfWidget = 0;
     private List<FileDesc> filesOfWidget = null;
+    List<String> watchedOrTopBoardCode = new ArrayList<String>();
+    Map<String, List<Long>> watchedThreads = new HashMap<String, List<Long>>();
 
     private long targetCacheSize = 0;
     private long totalSize = 0;
@@ -102,14 +106,12 @@ public class CleanUpService extends BaseChanService {
                 totalDeletedFiles += numDeletedFiles;
                 if (DEBUG) Log.w(TAG, "Deleted " + numDeletedFiles + " 'other' files.");
 
-                List<String> watchedOrTopBoard = prepareTopWatchedBoards(context);
-
                 // clean up non top nor watched boards first
                 for (String board : filesByBoard.keySet()) {
                     if (totalSize < targetCacheSize) {
                         break;
                     }
-                    if (watchedOrTopBoard.contains(board)) {
+                    if (watchedOrTopBoardCode.contains(board)) {
                         continue;
                     }
 
@@ -128,8 +130,57 @@ public class CleanUpService extends BaseChanService {
                     totalDeletedFiles += numDeletedFiles;
                 }
 
+                // clean up top or watched boards except thread files
+                for (String board : watchedOrTopBoardCode) {
+                    if (totalSize < targetCacheSize) {
+                        break;
+                    }
+                    List<FileDesc> preBoardFiles = filesByBoard.get(board);
+                    List<Long> threads = watchedThreads.get(board);
+                    List<FileDesc> boardFiles = new ArrayList<FileDesc>();
+                    for (FileDesc d : preBoardFiles) {
+                        String THREAD_FILE_PATTERN = ".*/t_([0-9]+)\\.txt";
+                        Pattern threadFilePattern = Pattern.compile(THREAD_FILE_PATTERN);
+                        Matcher m = threadFilePattern.matcher(d.path);
+                        if (!m.matches()) {
+                            boardFiles.add(d); // not a thread file
+                            continue;
+                        }
+                        long threadNo = 0;
+                        try {
+                            String threadStr = m.group(1);
+                            threadNo = Long.valueOf(threadNo);
+                            if (!threads.contains(threadNo))
+                                boardFiles.add(d);
+                        }
+                        catch (IllegalStateException e) {
+                            Log.i(TAG, "bad match thread number, adding file to cleanup: " + d.path, e);
+                            boardFiles.add(d);
+                            continue;
+                        }
+                        catch (NumberFormatException e) {
+                            Log.i(TAG, "unmatched thread number, adding file to cleanup: " + d.path, e);
+                            boardFiles.add(d);
+                            continue;
+                        }
+                    }
+
+                    // delete old files first
+                    numDeletedFiles = trimByDate(boardFiles, 5L * 24L * 60L * 60L * 1000L);
+                    if (DEBUG && numDeletedFiles > 0)
+                        Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
+                    if (totalSize < targetCacheSize) {
+                        break;
+                    }
+                    // then by file size
+                    numDeletedFiles = trimBySize(boardFiles, 500 * 1024);
+                    if (DEBUG && numDeletedFiles > 0)
+                        Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
+                    totalDeletedFiles += numDeletedFiles;
+                }
+
                 // clean up top or watched boards
-                for (String board : watchedOrTopBoard) {
+                for (String board : watchedOrTopBoardCode) {
                     if (totalSize < targetCacheSize) {
                         break;
                     }
@@ -175,31 +226,35 @@ public class CleanUpService extends BaseChanService {
         return prefSize < 512 ? 512 : prefSize;
     }
 
-    private List<String> prepareTopWatchedBoards(Context context) {
-        List<String> watchedOrTopBoard = new ArrayList<String>();
+    private void prepareTopWatchedBoards(Context context) {
+        watchedOrTopBoardCode = new ArrayList<String>();
+        watchedThreads = new HashMap<String, List<Long>>();
         ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
         if (board != null && board.threads != null) {
             for (ChanPost thread : board.threads) {
-                if (!watchedOrTopBoard.contains(thread.board)) {
-                    watchedOrTopBoard.add(thread.board);
+                if (!watchedOrTopBoardCode.contains(thread.board)) {
+                    watchedOrTopBoardCode.add(thread.board);
                 }
+                if (!watchedThreads.containsKey(thread.board))
+                    watchedThreads.put(thread.board, new ArrayList<Long>());
+                if (!watchedThreads.get(thread.board).contains(thread.no))
+                    watchedThreads.get(thread.board).add(thread.no);
             }
         }
         UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
         for (ChanBoardStat stat : userStats.topBoards()) {
-            if (!watchedOrTopBoard.contains(stat.board)) {
-                watchedOrTopBoard.add(stat.board);
+            if (!watchedOrTopBoardCode.contains(stat.board)) {
+                watchedOrTopBoardCode.add(stat.board);
             }
         }
         board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
         if (board != null && board.threads != null) {
             for (ChanPost thread : board.threads) {
-                if (!watchedOrTopBoard.contains(thread.board)) {
-                    watchedOrTopBoard.add(thread.board);
+                if (!watchedOrTopBoardCode.contains(thread.board)) {
+                    watchedOrTopBoardCode.add(thread.board);
                 }
             }
         }
-        return watchedOrTopBoard;
     }
 
     private void logCacheFileInfo(String logMsg, long startTime, long endTime) {

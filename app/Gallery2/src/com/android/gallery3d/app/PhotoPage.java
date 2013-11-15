@@ -16,8 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import java.io.File;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -27,13 +25,11 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.*;
 import android.view.View.MeasureSpec;
 import android.webkit.WebView;
@@ -68,7 +64,7 @@ import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.VideoViewActivity;
 import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.gallery3d.R;
 import com.chanapps.four.service.ImageDownloadService;
@@ -574,11 +570,11 @@ public class PhotoPage extends ActivityState
                     new ImportCompleteListener(mActivity));
             return true;
         } else if (action == R.id.image_search_menu) {
-            imageSearch(IMAGE_SEARCH_ROOT);
+            imageSearch(URLFormatComponent.getUrl(mActivity.getAndroidContext(), URLFormatComponent.TINEYE_IMAGE_SEARCH_URL_FORMAT));
             return true;
         }
         else if (action == R.id.anime_image_search_menu) {
-            imageSearch(IMAGE_SEARCH_ROOT_ANIME);
+            imageSearch(URLFormatComponent.getUrl(mActivity.getAndroidContext(), URLFormatComponent.ANIME_IMAGE_SEARCH_URL_FORMAT));
             return true;
         } else {
             return false;
@@ -928,10 +924,7 @@ public class PhotoPage extends ActivityState
         setShareIntent(intent);
     }
 
-    private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
-    private static final String IMAGE_SEARCH_ROOT_ANIME = "http://iqdb.org/?url=";
-
-    private void imageSearch(String rootUrl) {
+    private void imageSearch(String urlFormat) {
         MediaDetails details = mCurrentPhoto.getDetails();
         if (details == null) {
             Toast.makeText((Context)mActivity, com.chanapps.four.activity.R.string.full_screen_image_search_not_found, Toast.LENGTH_SHORT)
@@ -953,7 +946,7 @@ public class PhotoPage extends ActivityState
         try {
             ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
             String encodedImageUrl = URLEncoder.encode(imageUrl, "UTF-8");
-            String url =  rootUrl + encodedImageUrl;
+            String url = String.format(urlFormat, encodedImageUrl);
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             ((Activity)activity).startActivity(intent);
         }

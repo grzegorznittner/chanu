@@ -304,7 +304,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         for (int i = 0; i < imageIds.length; i++) {
             int imageId = imageIds[i];
             ChanPost thread = j >= threads.size() ? null : threads.get(j++);
-            String url = thread == null ? null : thread.thumbnailUrl();
+            String url = thread == null ? null : thread.thumbnailUrl(context);
             File f = thread == null ? null : ChanImageLoader.getInstance(context).getDiscCache().get(url);
             if (f != null && f.canRead() && f.length() > 0) {
                 views.setImageViewUri(imageId, Uri.parse(f.getAbsolutePath()));

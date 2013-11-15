@@ -806,7 +806,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 displayBoardRules();
                 return true;
             case R.id.web_menu:
-                String url = ChanBoard.boardUrl(boardCode);
+                String url = ChanBoard.boardUrl(this, boardCode);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
                 return true;
             case R.id.clear_watchlist_menu:
@@ -1339,7 +1339,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     displayBoardRules();
                     return true;
                 case R.id.web_menu:
-                    String url = ChanBoard.boardUrl(boardCode);
+                    String url = ChanBoard.boardUrl(BoardActivity.this, boardCode);
                     ActivityDispatcher.launchUrlInBrowser(BoardActivity.this, url);
                     return true;
                 default:

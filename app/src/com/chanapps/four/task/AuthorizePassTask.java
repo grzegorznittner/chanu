@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.AuthorizePassResponse;
 import com.chanapps.four.data.PersistentCookieStore;
 import com.chanapps.four.fragment.AuthorizingPassDialogFragment;
@@ -39,9 +40,7 @@ import java.util.List;
 public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, Void, Integer> {
 
     public static final String TAG = AuthorizePassTask.class.getSimpleName();
-
-    public static final String POST_URL_ROOT = "https://sys.4chan.org/";
-    public static final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
     private ChanIdentifiedActivity refreshableActivity;
     private Context context;
@@ -125,7 +124,7 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
     }
 
     protected String executeReportPost(MultipartEntity entity) {
-        String url = POST_URL_ROOT + "/auth";
+        String url = URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_AUTH_URL);
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         try {
             // setup cookies

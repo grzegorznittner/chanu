@@ -145,7 +145,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
                         .show();
                 return true;
             case R.id.web_menu:
-                String url = ChanBoard.boardUrl(null);
+                String url = ChanBoard.boardUrl(this, null);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
                 return SettingsActivity.startActivity(this);

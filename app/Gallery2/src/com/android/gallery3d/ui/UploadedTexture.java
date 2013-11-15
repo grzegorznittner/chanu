@@ -210,6 +210,7 @@ abstract class UploadedTexture extends BasicTexture {
             }
             uploadToCanvas(canvas);
         } else if (!mContentValid) {
+            try {
             Bitmap bitmap = getBitmap();
             int format = GLUtils.getInternalFormat(bitmap);
             int type = GLUtils.getType(bitmap);
@@ -218,6 +219,13 @@ abstract class UploadedTexture extends BasicTexture {
                     bitmap, format, type);
             freeBitmap();
             mContentValid = true;
+            }
+            catch (Error e) {
+                Log.e(TAG, "Error loading bitmap", e);
+                if (mBitmap != null)
+                    freeBitmap();
+                mContentValid = false;
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.*;
 
 import android.util.Log;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.NetworkProfileManager;
 import org.apache.http.impl.cookie.DateUtils;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
@@ -98,8 +99,8 @@ public class ChanThread extends ChanPost {
                 textComponents[0],
                 post.headline(context, query, true, null, showNumReplies, abbrev),
                 textComponents[1],
-                post.thumbnailUrl(),
-                post.countryFlagUrl(),
+                post.thumbnailUrl(context),
+                post.countryFlagUrl(context),
                 "",
                 post.replies,
                 post.images,
@@ -213,26 +214,6 @@ public class ChanThread extends ChanPost {
 
     public static final String AD_DELIMITER = "\t";
 
-    public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
-        return new Object[] {
-                ad.hashCode(),
-                boardCode,
-                0,
-                context.getResources().getString(R.string.board_advert_full),
-                "",
-                context.getResources().getString(R.string.board_advert_info),
-                ad.imageUrl() + AD_DELIMITER + ad.bannerImageUrl(),
-                "",
-                ad.clickUrl() + AD_DELIMITER + ad.bannerClickUrl(),
-                0,
-                0,
-                MAX_THUMBNAIL_PX,
-                MAX_THUMBNAIL_PX,
-                0,
-                THREAD_FLAG_AD
-        };
-    }
-
     public static boolean threadNeedsRefresh(Context context, String boardCode, long threadNo, boolean forceRefresh) {
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
         if (thread == null)
@@ -267,7 +248,7 @@ public class ChanThread extends ChanPost {
                     + ", posts[0].images: " + posts[0].images + ", posts[0].defData: " + posts[0].defData
                     + ", posts[0].isDead: " + posts[0].isDead
                     : "")
-				+ ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
+				+ ", tn_w: " + tn_w + " tn_h: " + tn_h;
 	}
 	
     public void mergePosts(List<ChanPost> newPosts) {
@@ -376,8 +357,8 @@ public class ChanThread extends ChanPost {
     	return t;
     }
 
-    public static String threadUrl(String boardCode, long threadNo) {
-        return ChanBoard.boardUrl(boardCode) + "res/" + threadNo;
+    public static String threadUrl(Context context, String boardCode, long threadNo) {
+        return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_THREAD_URL_FORMAT), boardCode, threadNo);
     }
 
     public boolean isCurrent() {

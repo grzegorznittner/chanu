@@ -20,12 +20,8 @@ import android.widget.*;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
-import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.BillingComponent;
-import com.chanapps.four.component.ThemeSelector;
-import com.chanapps.four.component.ThreadViewable;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
-import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -63,9 +59,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
     public static final boolean DEBUG = false;
-
-    public static final String GOOGLE_TRANSLATE_PATTERN = "http://translate.google.com/m?hl=%s&sl=auto&tl=%s&ie=UTF8&prev=_m&q=%s"; // %1 = locale, %2 = locale, %3 = query
-    // e.g. http://translate.google.com/m?hl=en&sl=auto&tl=en&ie=ISO-8859-1&prev=_m&q=reich
 
     public static final int MAX_HTTP_GET_URL_LEN = 1000;
     protected static final int LOADER_ID = 0;
@@ -764,7 +757,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             case R.id.play_thread_menu:
                 return playThreadMenu();
             case R.id.web_menu:
-                String url = ChanThread.threadUrl(boardCode, threadNo);
+                String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
             default:
                 ThreadActivity activity = (ThreadActivity)getActivity();
@@ -1012,7 +1005,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             Toast.makeText(getActivityContext(), R.string.translate_no_text, Toast.LENGTH_SHORT);
             return true;
         }
-        String translateUrl = String.format(GOOGLE_TRANSLATE_PATTERN, localeCode, localeCode, escaped);
+        String translateUrl = String.format(
+                URLFormatComponent.getUrl(getActivityContext(), URLFormatComponent.GOOGLE_TRANSLATE_URL_FORMAT),
+                localeCode, localeCode, escaped);
         if (translateUrl.length() > MAX_HTTP_GET_URL_LEN)
             translateUrl = translateUrl.substring(0, MAX_HTTP_GET_URL_LEN);
         if (DEBUG) Log.i(TAG, "translatePosts() launching url=" + translateUrl);
@@ -1164,8 +1159,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         // set share text
         if (DEBUG) Log.i(TAG, "updateSharedIntent() found postNo=" + firstPost + " for threadNo=" + threadNo);
         String linkUrl = (firstPost > 0 && firstPost != threadNo)
-                ? ChanPost.postUrl(boardCode, threadNo, firstPost)
-                : ChanThread.threadUrl(boardCode, threadNo);
+                ? ChanPost.postUrl(getActivityContext(), boardCode, threadNo, firstPost)
+                : ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
 
         // create intent
         Intent intent;
@@ -1224,43 +1219,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }).start();
     }
 
-    private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
-    private static final String IMAGE_SEARCH_ROOT_ANIME = "http://iqdb.org/?url=";
-
-    private void imageSearch(SparseBooleanArray postPos, String rootUrl) {
-        String imageUrl = "";
-        for (int i = 0; i < absListView.getCount(); i++) {
-            if (!postPos.get(i))
-                continue;
-            Cursor cursor = (Cursor) adapter.getItem(i);
-            if (cursor == null)
-                continue;
-            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0)
-                continue;
-            String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
-            if (url == null || url.isEmpty())
-                continue;
-            imageUrl = url;
-            break;
-        }
-        if (imageUrl.isEmpty()) {
-            Toast.makeText(getActivityContext(), R.string.full_screen_image_search_not_found, Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-        try {
-            String encodedImageUrl = URLEncoder.encode(imageUrl, "UTF-8");
-            String url =  rootUrl + encodedImageUrl;
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(intent);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Couldn't do image search imageUrl=" + imageUrl, e);
-            Toast.makeText(getActivityContext(), R.string.full_screen_image_search_error, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -1317,12 +1275,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             getActivityContext(), boardCode, threadNo, postNos);
                     Toast.makeText(getActivityContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                     return true;
-                case R.id.image_search_menu:
-                    imageSearch(postPos, IMAGE_SEARCH_ROOT);
-                    return true;
-                case R.id.anime_image_search_menu:
-                    imageSearch(postPos, IMAGE_SEARCH_ROOT_ANIME);
-                    return true;
                 case R.id.translate_posts_menu:
                     return translatePosts(postPos);
                 case R.id.delete_posts_menu:
@@ -1339,7 +1291,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             getActivity().getFragmentManager(), TAG);
                     return true;
                 case R.id.web_menu:
-                    String url = ChanPost.postUrl(boardCode, threadNo, postNos[0]);
+                    String url = ChanPost.postUrl(getActivityContext(), boardCode, threadNo, postNos[0]);
                     ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
                 default:
                     return false;
@@ -1441,12 +1393,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             getActivityContext(), boardCode, threadNo, postNos);
                     Toast.makeText(getActivityContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                     return true;
-                case R.id.image_search_menu:
-                    imageSearch(postPos, IMAGE_SEARCH_ROOT);
-                    return true;
-                case R.id.anime_image_search_menu:
-                    imageSearch(postPos, IMAGE_SEARCH_ROOT_ANIME);
-                    return true;
                 case R.id.translate_posts_menu:
                     return translatePosts(postPos);
                 case R.id.delete_posts_menu:
@@ -1463,7 +1409,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             .show(getActivity().getFragmentManager(), TAG);
                     return true;
                 case R.id.web_menu:
-                    String url = ChanPost.postUrl(boardCode, threadNo, postNos[0]);
+                    String url = ChanPost.postUrl(getActivityContext(), boardCode, threadNo, postNos[0]);
                     ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
                 default:
                     return false;
@@ -1513,7 +1459,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public void onClick(View view) {
             if (getActivityContext() != null) {
-                String url = ChanThread.threadUrl(boardCode, threadNo);
+                String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
             }
         }

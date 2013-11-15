@@ -35,7 +35,6 @@ public class AnalyticsComponent {
                 .getDefaultSharedPreferences(activity)
                 .getBoolean(SettingsActivity.PREF_USE_GOOGLE_ANALYTICS, true))
             EasyTracker.getInstance().activityStart(activity);
-
     }
 
     public static void onStop(final Activity activity) {

@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.chanapps.four.component.URLFormatComponent;
 import org.apache.commons.io.IOUtils;
 
 import android.app.ActivityManager;
@@ -120,10 +121,12 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 		return componentInfo != null && componentInfo.getPackageName().startsWith("com.chanapps");
 	}
 
-	private void handlePopularThreadsFetch() {
+    private void handlePopularThreadsFetch() {
         URL chanApi;
         try {
-            chanApi = new URL("http://www.4chan.org/");
+            String url = URLFormatComponent.getUrl(getApplicationContext(), URLFormatComponent.CHAN_FRONTPAGE_URL);
+            chanApi = new URL(url);
+            if (DEBUG) Log.i(TAG, "Fetching " + url);
         }
         catch (MalformedURLException e) {
             Log.e(TAG, "malformed url", e);
@@ -297,7 +300,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
                     ChanThread thread = parseThread(strings[i]);
                     if (DEBUG) Log.v(TAG, "parsed thread /" + thread.board + "/" + thread.no
                             + " tn_w=" + thread.tn_w + " tn_h=" + thread.tn_h + " tim=" + thread.tim
-                            + " thumbUrl=" + thread.thumbnailUrl());
+                            + " thumbUrl=" + thread.thumbnailUrl(getApplicationContext()));
 					threads.add(thread);
 				} catch (Exception e) {
 					Log.e(TAG, "Problem occured for: " + strings[i], e);
@@ -377,7 +380,8 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
         		+ ", sub: " + thread.sub + ", com: " + thread.com
         		+ ", size: " + thread.fsize + ", wXh=" + thread.w + "x" + thread.h
         		+ ", tn_wXtn_h=" + thread.tn_w + "x" + thread.tn_h
-				+ ", img: " + thread.imageUrl() + ", thumb: " + thread.thumbnailUrl()
+				+ ", img: " + thread.imageUrl(getApplicationContext())
+                + ", thumb: " + thread.thumbnailUrl(getApplicationContext())
 				+ ", topic: " + thread.sub);
 		return thread;
 	}

@@ -33,6 +33,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     //public static final String PREF_START_WITH_FAVORITES = "pref_start_with_favorites";
     public static final String PREF_USE_FRIENDLY_IDS = "pref_use_friendly_ids";
     public static final String PREF_USE_GOOGLE_ANALYTICS = "pref_use_google_analytics";
+    public static final String PREF_USE_HTTPS = "pref_use_https";
     public static final String PREF_AUTOUPDATE_THREADS = "pref_autoupdate_threads";
     public static final String PREF_THEME = "pref_theme";
     public static final String PREF_AUTOLOAD_IMAGES = "pref_autoload_images";
@@ -170,7 +171,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                         .show();
                 return true;
             case R.id.web_menu:
-                String url = ChanBoard.boardUrl(null);
+                String url = ChanBoard.boardUrl(this, null);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.send_feedback_menu:
                 return SendFeedback.email(this);

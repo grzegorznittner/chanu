@@ -39,13 +39,13 @@ public class AuthorizePassResponse {
 </div>
 <hr style="width: 90%">
 <br>
-<div style="text-align: center;"><span style="font-size: 14pt; color: red; font-weight: bold;">Success! Your device is now authorized.<br><br>You can begin using your Pass immediately&mdash;just visit any board and start posting!<br><br>[<a href="http://www.4chan.org">Back to 4chan</a>]<br><br><div style="text-align: center;">[<a href="https://sys.4chan.org/auth">Return</a>]</div></span></div>
+<div style="text-align: center;"><span style="font-size: 14pt; color: red; font-weight: bold;">Success! Your device is now authorized.<br><br>You can begin using your Pass immediately&mdash;just visit any board and start posting!<br><br>[<a href="http ://www.4chan.org">Back to 4chan</a>]<br><br><div style="text-align: center;">[<a href="https ://sys.4chan.org/auth">Return</a>]</div></span></div>
 </body>
 </html>
 
 RESPONSE ERROR:
 
-<div style="text-align: center;"><span style="font-size: 14pt; color: red; font-weight: bold;">Incorrect Token or PIN.<br><br><div style="text-align: center;">[<a href="https://sys.4chan.org/auth">Return</a>]</div></span></div>
+<div style="text-align: center;"><span style="font-size: 14pt; color: red; font-weight: bold;">Incorrect Token or PIN.<br><br><div style="text-align: center;">[<a href="https ://sys.4chan.org/auth">Return</a>]</div></span></div>
 
      */
 

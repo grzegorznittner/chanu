@@ -448,9 +448,6 @@
         This number has been generated for you, but you may change it if you wish.</string>
     <string name="post_reply_password_text">Password</string>
     <string name="post_reply_spoiler">Spoiler Image</string>
-    <string name="post_reply_recaptcha_url_root">
-        http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc
-    </string>
     <string name="post_reply_no_board">Can\'t post, unknown board</string>
     <string name="post_reply_added_image">Added image to post</string>
     <string name="post_reply_no_load_camera_image">Couldn\'t load camera image</string>
@@ -521,6 +518,9 @@
     <string name="pref_use_google_analytics">Google Analytics</string>
     <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
     <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
+    <string name="pref_use_https">Security</string>
+    <string name="pref_use_https_summ_on">Use HTTPS for all connections</string>
+    <string name="pref_use_https_summ_off">Don\'t use HTTPS for all connections</string>
     <string name="pref_autoupdate_threads">Auto-Update Threads</string>
     <string name="pref_autoupdate_threads_summ_on">Refresh threads every 30 seconds</string>
     <string name="pref_autoupdate_threads_summ_off">Don\'t automatically refresh threads</string>

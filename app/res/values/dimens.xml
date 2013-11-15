@@ -405,7 +405,6 @@
     <string name="pref_autoload_images_always_value">1</string>
     <string name="pref_autoload_images_auto_value">2</string>
     <string name="pref_autoload_images_default_value">@string/pref_autoload_images_never_value</string>
-    <string name="post_reply_recaptcha_url_root">http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc</string>
     <string name="pref_about_developer_burns">John Burns</string>
     <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>
     <string name="pref_about_developer_nittner">Grzegorz Nittner</string>

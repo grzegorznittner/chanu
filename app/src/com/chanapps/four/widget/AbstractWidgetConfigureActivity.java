@@ -311,7 +311,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
         ChanPost[] threads = WidgetProviderUtils.loadBestWidgetThreads(this, boardCode, numThreads);
         for (int i = 0; i < numThreads; i++) {
             ChanPost thread = threads[i];
-            String url = ChanBoard.getBestWidgetImageUrl(thread, boardCode, i);
+            String url = ChanBoard.getBestWidgetImageUrl(context, thread, boardCode, i);
             urls[i] = url;
         }
         return urls;

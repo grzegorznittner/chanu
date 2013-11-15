@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.ReportPostTask;
 
@@ -157,7 +158,7 @@ public class ReportPostDialogFragment extends DialogFragment {
         reportRecaptchaResponse.setText("");
         reportRecaptchaResponse.setHint(R.string.post_reply_recaptcha_hint);
         loadCaptchaTask = new LoadCaptchaTask(getActivity(), recaptchaButton, recaptchaLoading, false);
-        loadCaptchaTask.execute(getString(R.string.post_reply_recaptcha_url_root));
+        loadCaptchaTask.execute(URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_URL));
     }
 
 }

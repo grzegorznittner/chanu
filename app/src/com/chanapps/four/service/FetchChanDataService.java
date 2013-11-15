@@ -20,8 +20,8 @@ import android.util.Log;
 
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.*;
-import com.chanapps.four.service.profile.MobileProfile;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
@@ -32,6 +32,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
 	private static final boolean DEBUG = false;
+
     public static final String SECONDARY_THREAD_NO = "secondaryThreadNo";
 
     private String boardCode;
@@ -223,15 +224,17 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 				if (DEBUG) Log.i(TAG, "Board file exists within last modified time, quiting fetch");
 				return;
 			}
-			
-			URL chanApi = null;
+		
+            String apiUrl;
 			if (boardCatalog) {
-				chanApi = new URL("http://api.4chan.org/" + boardCode + "/catalog.json");
-				if (DEBUG) Log.i(TAG, "Fetching board " + boardCode + " catalog priority=" + priority);
+                apiUrl = String.format(URLFormatComponent.getUrl(getApplicationContext(),
+                        URLFormatComponent.CHAN_CATALOG_API_URL_FORMAT), boardCode);
 			} else {
-				chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
-				if (DEBUG) Log.i(TAG, "Fetching board " + boardCode + " page " + pageNo);
+                apiUrl = String.format(URLFormatComponent.getUrl(getApplicationContext(),
+                        URLFormatComponent.CHAN_PAGE_API_URL_FORMAT), boardCode, pageNo);
 			}
+			URL chanApi = new URL(apiUrl);
+        	if (DEBUG) Log.i(TAG, "Fetching " + apiUrl + " priority=" + priority);
 			
     		final long startTime = new Date().getTime();
             tc = (HttpURLConnection) chanApi.openConnection();
@@ -338,7 +341,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             }
 
     		long startTime = Calendar.getInstance().getTimeInMillis();
-            URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
+            String apiUrl = String.format(
+                    URLFormatComponent.getUrl(getApplicationContext(), URLFormatComponent.CHAN_THREAD_URL_FORMAT), boardCode, threadNo);
+            URL chanApi = new URL(apiUrl);
+            if (DEBUG) Log.i(TAG, "Fetching " + apiUrl);
             tc = (HttpURLConnection) chanApi.openConnection();
             tc.setReadTimeout(NetworkProfileManager.instance().getFetchParams().readTimeout);
             if (thread.lastFetched > 0 && !priority) {

@@ -1,24 +1,15 @@
 package com.chanapps.four.data;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -30,9 +21,6 @@ public class ChanBoard {
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
     //private static final int NUM_RELATED_THREADS = 3;
-
-    public static final String WEB_HOME_URL = "http://www.4chan.org";
-    public static final String WEB_ROOT_URL = "http://boards.4chan.org";
 
     public static final String BOARD_CODE = "boardCode";
     public static final String ALL_BOARDS_BOARD_CODE = BoardType.ALL_BOARDS.boardCode();
@@ -635,11 +623,10 @@ public class ChanBoard {
     /i - lots of stuff
     */
 
-    static public final String SPOILER_THUMBNAIL_IMAGE_ROOT = "http://static.4chan.org/image/spoiler-";
-    static public final String SPOILER_THUMBNAIL_IMAGE_EXTENSION = ".png";
     static public final Map<String, Integer> spoilerImageCount = new HashMap<String, Integer>();
     static public final Random spoilerGenerator = new Random();
-    static public String spoilerThumbnailUrl(String boardCode) {
+
+    static public String spoilerThumbnailUrl(Context context, String boardCode) {
         if (spoilerImageCount.isEmpty()) {
             spoilerImageCount.put("m", 4);
             spoilerImageCount.put("co", 5);
@@ -649,10 +636,12 @@ public class ChanBoard {
         int spoilerImages = spoilerImageCount.containsKey(boardCode) ? spoilerImageCount.get(boardCode) : 1;
         if (spoilerImages > 1) {
             int spoilerImageNum = spoilerGenerator.nextInt(spoilerImages) + 1;
-            return SPOILER_THUMBNAIL_IMAGE_ROOT + boardCode + spoilerImageNum + SPOILER_THUMBNAIL_IMAGE_EXTENSION;
+            return String.format(
+                    URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_SPOILER_NUMBERED_IMAGE_URL_FORMAT), boardCode, spoilerImageNum);
         }
         else {
-            return SPOILER_THUMBNAIL_IMAGE_ROOT + boardCode + SPOILER_THUMBNAIL_IMAGE_EXTENSION;
+            return String.format(
+                    URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_SPOILER_IMAGE_URL_FORMAT), boardCode);
         }
     }
 
@@ -862,9 +851,9 @@ public class ChanBoard {
         return false;
     }
 
-    public static String getBestWidgetImageUrl(ChanPost thread, String backupBoardCode, int i) {
+    public static String getBestWidgetImageUrl(Context context, ChanPost thread, String backupBoardCode, int i) {
         return (thread != null && thread.tim > 0)
-                ? thread.thumbnailUrl()
+                ? thread.thumbnailUrl(context)
                 : ChanBoard.getIndexedImageDrawableUrl(
                 thread != null ? thread.board : backupBoardCode,
                 i);
@@ -980,11 +969,11 @@ public class ChanBoard {
         }
     }
 
-    public static String boardUrl(String boardCode) {
+    public static String boardUrl(Context context, String boardCode) {
         if (boardCode == null || boardCode.isEmpty() || isVirtualBoard(boardCode))
-            return WEB_HOME_URL;
+            return URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_FRONTPAGE_URL);
         else
-            return WEB_ROOT_URL + "/" + boardCode + "/";
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_BOARD_URL_FORMAT), boardCode);
     }
 
     public int getThreadIndex(String boardCode, long threadNo) {
