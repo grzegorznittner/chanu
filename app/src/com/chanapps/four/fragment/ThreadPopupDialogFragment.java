@@ -187,26 +187,23 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             dismiss();
             return;
         }
-        if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " fragment=" + fragment);
+        if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " fragment=" + fragment + " query=" + query);
 
+        ResourceCursorAdapter fragmentAdapter;
         if (query == null || query.isEmpty()) { // load directly from fragment for empty queries
-            setCursorFromFragment(fragment);
+            if ((fragmentAdapter = fragment.getAdapter()) == null) {
+                if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null adapter, exiting");
+                dismiss();
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo
+                        + " loading empty query cursor async count=" + fragmentAdapter.getCount());
+                cursor = fragmentAdapter.getCursor();
+                loadCursorAsync();
+            }
         }
         else { // load from callback for non-empty queries
             loadCursorFromFragmentCallback(fragment);
-        }
-    }
-
-    protected void setCursorFromFragment(ThreadFragment fragment) {
-        final ResourceCursorAdapter fragmentAdapter = fragment.getAdapter();
-        if (fragmentAdapter == null) {
-            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null adapter, exiting");
-            dismiss();
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " loading empty query cursor async");
-            cursor = fragmentAdapter.getCursor();
-            loadCursorAsync();
         }
     }
 
@@ -238,7 +235,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             adapter.swapCursor(null);
         }
     };
-    
+
     protected void loadCursorAsync() {
         if (cursor == null) {
             if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null cursor, exiting");
@@ -347,19 +344,24 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     public ResourceCursorAdapter getAdapter() {
         Activity activity = getActivity();
         if (activity == null || !(activity instanceof ThreadActivity)) {
-            if (DEBUG) Log.i(TAG, "onItemClick() no activity");
+            if (DEBUG) Log.i(TAG, "getAdapter() no activity");
             return adapter;
         }
         ThreadFragment fragment = ((ThreadActivity) activity).getCurrentFragment();
         if (fragment == null) {
-            if (DEBUG) Log.i(TAG, "onItemClick() no thread fragment");
+            if (DEBUG) Log.i(TAG, "getAdapter() no thread fragment");
             return adapter;
         }
         ResourceCursorAdapter fragmentAdapter = fragment.getAdapter();
         if (fragmentAdapter == null) {
-            if (DEBUG) Log.i(TAG, "onItemClick() no thread fragment adapter");
+            if (DEBUG) Log.i(TAG, "getAdapter() no thread fragment adapter");
             return adapter;
         }
+        if (query != null && !query.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "getAdapter() has query so returing adpter");
+            return adapter;
+        }
+        if (DEBUG) Log.i(TAG, "getAdapter() returning fragment adapter");
         return fragmentAdapter;
     }
 

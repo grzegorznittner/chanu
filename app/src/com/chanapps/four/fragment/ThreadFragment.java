@@ -69,6 +69,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected long threadNo;
 
     protected AbstractBoardCursorAdapter adapter;
+    protected AbstractBoardCursorAdapter fullAdapter; // only used for search
     protected View layout;
     protected AbsListView absListView;
     protected Handler handler;
