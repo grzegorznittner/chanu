@@ -10,6 +10,7 @@
     <dimen name="BoardGridSubject">14sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridSubjectHeader">28sp</dimen>
+    <dimen name="BoardGridSubjectHeaderAbbr">36sp</dimen>
     <dimen name="BoardGridInfoHeader">14sp</dimen>
     <dimen name="BoardGridAction">12sp</dimen>
     <dimen name="BoardGridInfoPaddingBottom">4dp</dimen>

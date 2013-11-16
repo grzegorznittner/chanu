@@ -509,7 +509,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                     threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
             notifBuilder.setContentIntent(pendingIntent);
-            notificationManager.notify(notificationId, notifBuilder.getNotification());
+            notificationManager.notify(notificationId, notifBuilder.build());
         }
 	}
 	
@@ -535,7 +535,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		notifBuilder.setContentIntent(pendingIntent);
 		
-		notificationManager.notify(notificationId, notifBuilder.getNotification());	}
+		notificationManager.notify(notificationId, notifBuilder.build());	}
 	
 	@Override
 	public ChanActivityId getChanActivityId() {

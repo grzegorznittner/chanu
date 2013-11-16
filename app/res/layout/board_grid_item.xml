@@ -185,4 +185,17 @@
             android:background="@drawable/board_grid_selector_bg"
             />
 
+    <com.chanapps.four.component.LetterSpacingTextView
+            android:id="@+id/grid_item_board_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:gravity="center"
+            android:textSize="@dimen/BoardGridBoardCode"
+            android:textStyle="bold"
+            android:textColor="@color/PaletteBoardCodeText"
+            android:paddingRight="@dimen/BoardGridItemIconSpacing"
+            android:paddingBottom="@dimen/BoardGridView.infoBottomPadding"
+            />
+
 </FrameLayout>

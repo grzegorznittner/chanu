@@ -1,10 +1,12 @@
 package com.chanapps.four.viewer;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.preference.PreferenceManager;
 import android.text.*;
 import android.text.style.CharacterStyle;
 import android.util.Log;
@@ -78,10 +80,10 @@ public class BoardGridViewer {
         setSubject(viewHolder, cursor, flags);
         setSubjectLarge(viewHolder, cursor, flags, subjectTypeface);
         setInfo(viewHolder, cursor, groupBoardCode, flags, options);
-        setNumReplies(viewHolder, cursor, flags);
+        setNumReplies(viewHolder, cursor, groupBoardCode, flags, options);
         setCountryFlag(viewHolder, cursor);
         setIcons(viewHolder, flags, isDark);
-        setImage(viewHolder, cursor, flags, columnWidth, columnHeight, options, titleTypeface);
+        setImage(viewHolder, cursor, groupBoardCode, flags, columnWidth, columnHeight, options, titleTypeface);
         return true;
     }
 
@@ -127,11 +129,11 @@ public class BoardGridViewer {
             ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
             String name = board == null ? null : board.getName(context);
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
-                threadAbbrev += "/" + boardCode + "/";
+                threadAbbrev += ""; // "/" + boardCode + "/";
             else if (name != null)
-                threadAbbrev += "/" + boardCode + "/ " + name;
+                threadAbbrev += name; //"/" + boardCode + "/ " + name;
             else
-                threadAbbrev += "/" + boardCode + "/";
+                threadAbbrev += ""; // "/" + boardCode + "/";
         }
         return threadAbbrev;
     }
@@ -186,49 +188,80 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setImage(BoardGridViewHolder viewHolder, Cursor cursor, int flags,
-                                      int columnWidth, int columnHeight, int options, Typeface titleTypeface) {
+    protected static boolean setImage(BoardGridViewHolder viewHolder, Cursor cursor, String groupBoardCode,
+                                      int flags, int columnWidth, int columnHeight, int options, Typeface titleTypeface) {
         ImageView iv = viewHolder.grid_item_thread_thumb;
         if (iv == null)
             return false;
-        if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0) {
+        if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & SMALL_GRID) == 0) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
             return true;
         }
-        else {
-            iv.setVisibility(View.VISIBLE);
-        }
         View item = viewHolder.grid_item;
+        iv.setVisibility(View.VISIBLE);
         sizeImage(iv, item, columnWidth, columnHeight, options);
+
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-        displayBoardCode(viewHolder, boardCode, titleTypeface);
-        String url = imageUrl(iv, boardCode, cursor, flags);
+        displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
+        String url = imageUrl(iv, boardCode, groupBoardCode, cursor, flags, options);
         if (url != null && !url.isEmpty())
             imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         return true;
     }
 
-    protected static final float BOARD_CODE_LETTER_SPACING = 1f;
+    protected static final float BOARD_CODE_LETTER_SPACING = 0.8f;
 
-    protected static void displayBoardCode(BoardGridViewHolder viewHolder, String boardCode, Typeface titleTypeface) {
+    protected static void displayBoardCode(BoardGridViewHolder viewHolder,
+                                           Cursor cursor,
+                                           String boardCode, String groupBoardCode,
+                                           Typeface titleTypeface,
+                                           int flags,
+                                           int options) {
         TextView tv = viewHolder.grid_item_board_code;
-        if (tv != null) {
-            String boardCodeTitle = "/" + boardCode + "/";
-            if (DEBUG) Log.i(TAG, "displayBoardCode() boardCodeTitle=" + boardCodeTitle);
-            if (titleTypeface != null)
-                tv.setTypeface(titleTypeface);
-            if (tv instanceof LetterSpacingTextView)
-                ((LetterSpacingTextView) tv).setLetterSpacing(BOARD_CODE_LETTER_SPACING);
-            tv.setText(boardCodeTitle);
+        if (tv == null)
+            return;
+        if (groupBoardCode != null
+                && !ChanBoard.isVirtualBoard(groupBoardCode)
+                && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
+                && (options & SMALL_GRID) > 0
+                && viewHolder.grid_item_thread_subject_header_abbr != null) { // grid header
+            tv.setText("");
+            tv = viewHolder.grid_item_thread_subject_header_abbr;
         }
+        else {
+            if (viewHolder.grid_item_thread_subject_header_abbr != null)
+                viewHolder.grid_item_thread_subject_header_abbr.setText("");
+            if (boardCode == null || boardCode.equals(groupBoardCode)) {
+                tv.setText("");
+                return;
+            }
+        }
+        String boardCodeTitle = "/" + boardCode + "/";
+        if (DEBUG) Log.i(TAG, "displayBoardCode() boardCodeTitle=" + boardCodeTitle);
+        if (titleTypeface != null)
+            tv.setTypeface(titleTypeface);
+        if (tv instanceof LetterSpacingTextView)
+            ((LetterSpacingTextView) tv).setLetterSpacing(BOARD_CODE_LETTER_SPACING);
+        tv.setText(boardCodeTitle);
     }
 
-    protected static String imageUrl(ImageView iv, String boardCode, Cursor cursor, int flags) {
+    protected static String imageUrl(ImageView iv, String boardCode, String groupBoardCode,
+                                     Cursor cursor, int flags, int options) {
         String url;
         long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
         if (DEBUG) Log.i(TAG, "setImage() /" + boardCode + "/" + threadNo);
-        if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
+        if (groupBoardCode != null
+                && !ChanBoard.isVirtualBoard(groupBoardCode)
+                && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
+                && (options & SMALL_GRID) > 0) { // grid header
+            //url = "drawable://" + R.drawable.transparent;
+            int drawableId = ThemeSelector.instance(iv.getContext()).isDark()
+                    ? R.drawable.bg_222
+                    : R.drawable.bg_333;
+            url = "drawable://" + drawableId;
+        }
+        else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
             url = null;
         }
         else if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
@@ -355,12 +388,6 @@ public class BoardGridViewer {
         TextView headerTv = viewHolder.grid_item_thread_info_header;
         if (tv == null)
             return false;
-        /*
-        if ((options & SMALL_GRID) > 0) {
-            tv.setText("");
-            return true;
-        }
-        */
         if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0) {
             tv.setText("");
             if (headerTv != null)
@@ -393,14 +420,19 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setNumReplies(BoardGridViewHolder viewHolder, Cursor cursor, int flags) {
+    protected static boolean setNumReplies(BoardGridViewHolder viewHolder, Cursor cursor, String groupBoardCode,
+                                           int flags, int options) {
         TextView numReplies = viewHolder.grid_item_num_replies_text;
         TextView numImages = viewHolder.grid_item_num_images_text;
         TextView numRepliesLabel = viewHolder.grid_item_num_replies_label;
         TextView numImagesLabel = viewHolder.grid_item_num_images_label;
+        TextView numRepliesLabelAbbr = viewHolder.grid_item_num_replies_label_abbr;
+        TextView numImagesLabelAbbr = viewHolder.grid_item_num_images_label_abbr;
         ImageView numRepliesImg = viewHolder.grid_item_num_replies_img;
         ImageView numImagesImg = viewHolder.grid_item_num_images_img;
-        if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0) {
+
+        if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0
+                || (ChanBoard.isVirtualBoard(groupBoardCode) && !ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))) {
             if (numReplies != null)
                 numReplies.setVisibility(View.GONE);
             if (numImages != null)
@@ -409,6 +441,10 @@ public class BoardGridViewer {
                 numRepliesLabel.setVisibility(View.GONE);
             if (numImagesLabel != null)
                 numImagesLabel.setVisibility(View.GONE);
+            if (numRepliesLabelAbbr != null)
+                numRepliesLabelAbbr.setVisibility(View.GONE);
+            if (numImagesLabelAbbr != null)
+                numImagesLabelAbbr.setVisibility(View.GONE);
             if (numRepliesImg != null)
                 numRepliesImg.setVisibility(View.GONE);
             if (numImagesImg != null)
@@ -425,6 +461,12 @@ public class BoardGridViewer {
         if (numImagesLabel != null) {
             numImagesLabel.setText(numImagesLabel.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
             numImagesLabel.setVisibility(View.VISIBLE);
+        }
+        if (numRepliesLabelAbbr != null) {
+            numRepliesLabelAbbr.setVisibility(View.VISIBLE);
+        }
+        if (numImagesLabelAbbr != null) {
+            numImagesLabelAbbr.setVisibility(View.VISIBLE);
         }
         if (numReplies != null) {
             numReplies.setText(r >= 0 ? String.valueOf(r) : "");
@@ -471,15 +513,15 @@ public class BoardGridViewer {
         int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
         if (viewHolder.grid_item_dead_icon != null) {
             viewHolder.grid_item_dead_icon.setVisibility((flags & ChanThread.THREAD_FLAG_DEAD) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_dead_icon.setAlpha(alpha);
+            viewHolder.grid_item_dead_icon.setImageAlpha(alpha);
         }
         if (viewHolder.grid_item_closed_icon != null) {
             viewHolder.grid_item_closed_icon.setVisibility((flags & ChanThread.THREAD_FLAG_CLOSED) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_closed_icon.setAlpha(alpha);
+            viewHolder.grid_item_closed_icon.setImageAlpha(alpha);
         }
         if (viewHolder.grid_item_sticky_icon != null) {
             viewHolder.grid_item_sticky_icon.setVisibility((flags & ChanThread.THREAD_FLAG_STICKY) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_sticky_icon.setAlpha(alpha);
+            viewHolder.grid_item_sticky_icon.setImageAlpha(alpha);
         }
         if (DEBUG)
             Log.i(TAG, "setSubjectIcons()"

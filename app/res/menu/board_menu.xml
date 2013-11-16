@@ -6,6 +6,15 @@
           android:icon="@drawable/action_search"
           android:showAsAction="collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
+    <item android:id="@+id/view_as_grid_menu"
+          android:title="@string/view_as_grid_menu"
+          android:icon="@drawable/collections_view_as_grid"
+            />
+    <item android:id="@+id/view_as_list_menu"
+          android:title="@string/view_as_list_menu"
+          android:icon="@drawable/collections_view_as_list"
+          android:visible="false"
+            />
     <item android:id="@+id/refresh_menu"
           android:title="@string/refresh_board_menu"
           android:icon="@drawable/navigation_refresh"

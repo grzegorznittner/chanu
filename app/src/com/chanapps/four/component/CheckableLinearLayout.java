@@ -56,7 +56,7 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
             ;
         }
         else {
-            setBackgroundDrawable(null);
+            setBackground(null);
         }
     }
 }

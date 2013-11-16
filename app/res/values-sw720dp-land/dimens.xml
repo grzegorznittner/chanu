@@ -1,6 +1,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
 
     <dimen name="BoardGridSubjectHeader">64sp</dimen>
+    <dimen name="BoardGridSubjectHeaderAbbr">72sp</dimen>
 
     <integer name="StaggeredGridView.Board.numColumns">2</integer>
 

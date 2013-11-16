@@ -149,6 +149,7 @@
     <string name="watch_thread_menu">Add to watchlist</string>
     <string name="watch_remove_thread_menu">Remove from watchlist</string>
     <string name="watch_thread_not_found">Couldn\'t remove thread from watchlist</string>
+    <string name="catalog_menu">Catalog</string>
     <string name="view_as_grid_menu">View as grid</string>
     <string name="view_as_list_menu">View as list</string>
     <string name="thread_image_popup_menu">Thread images</string>

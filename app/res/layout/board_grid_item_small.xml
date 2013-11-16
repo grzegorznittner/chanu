@@ -23,6 +23,53 @@
                 android:padding="@dimen/BoardGridBoardCodePadding"
                 />
 
+        <TextView
+                android:id="@+id/grid_item_num_replies_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/BoardGridView.spacing"
+                android:layout_above="@+id/grid_item_thumb_frame"
+                android:paddingBottom="@dimen/BoardGridBoardCodePadding"
+                android:textColor="@color/PaletteLightGray"
+                android:textSize="@dimen/BoardGridInfo"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_num_replies_label_abbr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/grid_item_thumb_frame"
+                android:layout_toRightOf="@+id/grid_item_num_replies_text"
+                android:paddingBottom="@dimen/BoardGridBoardCodePadding"
+                android:textColor="@color/PaletteLightGray"
+                android:textSize="@dimen/BoardGridInfo"
+                android:text="p"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_num_images_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/grid_item_thumb_frame"
+                android:layout_toLeftOf="@+id/grid_item_num_images_label_abbr"
+                android:paddingBottom="@dimen/BoardGridBoardCodePadding"
+                android:textColor="@color/PaletteLightGray"
+                android:textSize="@dimen/BoardGridInfo"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_num_images_label_abbr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/BoardGridView.spacing"
+                android:layout_above="@+id/grid_item_thumb_frame"
+                android:layout_alignParentRight="true"
+                android:paddingBottom="@dimen/BoardGridBoardCodePadding"
+                android:textColor="@color/PaletteLightGray"
+                android:textSize="@dimen/BoardGridInfo"
+                android:text="i"
+                />
+
         <FrameLayout
                 android:id="@+id/grid_item_thumb_frame"
                 android:layout_width="match_parent"
@@ -47,6 +94,16 @@
                     android:visibility="gone"
                     />
 
+            <com.chanapps.four.component.LetterSpacingTextView
+                    android:id="@+id/grid_item_thread_subject_header_abbr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="?themedCardSubjectTextColor"
+                    android:textSize="@dimen/BoardGridSubjectHeaderAbbr"
+                    />
+
         </FrameLayout>
 
         <RelativeLayout
@@ -63,6 +120,17 @@
                     android:id="@+id/grid_item_thread_info"
                     style="@style/BoardGridItemSmallInfo"
                     android:layout_below="@+id/grid_item_thread_subject"
+                    />
+
+            <TextView
+                    android:id="@+id/grid_item_thread_info_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textColor="@color/PaletteLightGray"
+                    android:textSize="@dimen/BoardGridInfoHeader"
                     />
         </RelativeLayout>
 

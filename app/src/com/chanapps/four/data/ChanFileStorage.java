@@ -4,9 +4,11 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.audiofx.BassBoost;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -1039,7 +1041,8 @@ public class ChanFileStorage {
         Intent threadActivityIntent = ThreadActivity.createIntent(context, board, threadNo, "");
         PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)System.currentTimeMillis(),
                 threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
+        Notification.Builder notifBuilder = new Notification.Builder(context)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.app_icon_notification_large))
                 .setSmallIcon(R.drawable.app_icon_notification)
                 .setContentTitle(title)
                 .setContentText(text)
@@ -1047,9 +1050,14 @@ public class ChanFileStorage {
                 .setContentIntent(pendingIntent);
         if (numNewReplies > 0)
             notifBuilder.setNumber(numNewReplies);
-
+        Notification noti = new Notification.InboxStyle(
+                notifBuilder)
+                .addLine("extra replies")
+                .addLine("extra replies")
+                .setSummaryText("last n replies")
+                .build();
         if (DEBUG) Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);
-        notificationManager.notify(notificationId, notifBuilder.build());
+        notificationManager.notify(notificationId, noti);
     }
 
 }

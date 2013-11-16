@@ -51,6 +51,6 @@ public class CheckableRelativeLayout extends RelativeLayout implements Checkable
         if (isChecked)
             setBackgroundResource(backgroundDrawable);
         else
-            setBackgroundDrawable(null);
+            setBackground(null);
     }
 }

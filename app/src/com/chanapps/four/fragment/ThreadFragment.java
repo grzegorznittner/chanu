@@ -1516,7 +1516,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
         if (drawableId > 0) {
             boardIcon.setImageResource(drawableId);
-            boardIcon.setAlpha(alpha);
+            boardIcon.setImageAlpha(alpha);
         }
         boardTitleBar.setVisibility(View.VISIBLE);
     }
