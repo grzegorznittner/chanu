@@ -100,7 +100,7 @@ class ColorSeekBar extends AbstractSeekBar {
         paint.setColor(colors[colors.length - 1]);
         canvas.drawRect(left, 0, right, h, paint);
 
-        setBackgroundDrawable(new BitmapDrawable(getResources(), background));
+        setBackground(new BitmapDrawable(getResources(), background));
     }
 
     public void setOnColorChangeListener(final OnColorChangeListener listener) {

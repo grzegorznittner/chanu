@@ -613,7 +613,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
                     }
                 }
 
-                mHeaderTextView.setBackgroundDrawable(abBg);
+                mHeaderTextView.setBackground(abBg);
             }
 
             // Call onReset to make sure that the View is consistent
