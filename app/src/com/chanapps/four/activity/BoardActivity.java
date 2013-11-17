@@ -11,6 +11,7 @@ import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -244,12 +245,25 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected void initGridViewOptions() {
         if (ChanBoard.isVirtualBoard(boardCode)
-                && !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+                && !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
             gridViewOptions |= BoardGridViewer.SMALL_GRID;
-        else
-            gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+        }
+        else { // check for user pref
+            boolean useCatalog = PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(SettingsActivity.PREF_USE_CATALOG, false);
+            if (useCatalog)
+                gridViewOptions |= BoardGridViewer.SMALL_GRID;
+            else
+                gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+        }
     }
 
+    protected void setUseCatalogPref(boolean useCatalog) {
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putBoolean(SettingsActivity.PREF_USE_CATALOG, useCatalog)
+                .commit();
+    }
 
     protected void setBoardCodeToDefault() {
         boardCode = ChanBoard.defaultBoardCode(this);
@@ -756,6 +770,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             case R.id.view_as_grid_menu:
                 Cursor c = adapter.getCursor();
                 gridViewOptions |= BoardGridViewer.SMALL_GRID;
+                setUseCatalogPref(true);
                 createAbsListView();
                 setupBoardTitle();
                 adapter.swapCursor(c);
@@ -763,6 +778,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             case R.id.view_as_list_menu:
                 c = adapter.getCursor();
                 gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+                setUseCatalogPref(false);
                 createAbsListView();
                 setupBoardTitle();
                 adapter.swapCursor(c);

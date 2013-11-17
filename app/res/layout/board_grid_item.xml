@@ -194,7 +194,8 @@
             android:textSize="@dimen/BoardGridBoardCode"
             android:textStyle="bold"
             android:textColor="@color/PaletteBoardCodeText"
-            android:paddingRight="@dimen/BoardGridItemIconSpacing"
+            android:padding="@dimen/BoardGridBoardCodePadding"
+            android:paddingLeft="@dimen/BoardGridItemIconSpacing"
             android:paddingBottom="@dimen/BoardGridView.infoBottomPadding"
             />
 

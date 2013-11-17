@@ -43,7 +43,7 @@
                 android:paddingBottom="@dimen/BoardGridBoardCodePadding"
                 android:textColor="@color/PaletteLightGray"
                 android:textSize="@dimen/BoardGridInfo"
-                android:text="p"
+                android:text="r"
                 />
 
         <TextView
@@ -121,7 +121,6 @@
                     style="@style/BoardGridItemSmallInfo"
                     android:layout_below="@+id/grid_item_thread_subject"
                     />
-
             <TextView
                     android:id="@+id/grid_item_thread_info_header"
                     android:layout_width="match_parent"
@@ -132,6 +131,48 @@
                     android:textColor="@color/PaletteLightGray"
                     android:textSize="@dimen/BoardGridInfoHeader"
                     />
+
+            <ImageView
+                    android:id="@+id/grid_item_dead_icon"
+                    android:layout_width="@dimen/BoardGridItemIconWidth"
+                    android:layout_height="@dimen/BoardGridItemIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
+                    android:layout_alignParentBottom="true"
+                    android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
+                    android:layout_marginBottom="6dp"
+                    android:scaleType="fitCenter"
+                    android:src="?themedDeadIcon"
+                    android:visibility="visible"/>
+
+            <ImageView
+                    android:id="@+id/grid_item_sticky_icon"
+                    android:layout_width="@dimen/BoardGridItemIconWidth"
+                    android:layout_height="@dimen/BoardGridItemIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
+                    android:layout_toRightOf="@+id/grid_item_dead_icon"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="6dp"
+                    android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
+                    android:scaleType="fitCenter"
+                    android:src="?themedStickyIcon"
+                    android:visibility="visible"/>
+
+            <ImageView
+                    android:id="@+id/grid_item_closed_icon"
+                    android:layout_width="@dimen/BoardGridItemIconWidth"
+                    android:layout_height="@dimen/BoardGridItemIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
+                    android:layout_toRightOf="@+id/grid_item_sticky_icon"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="6dp"
+                    android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
+                    android:scaleType="fitCenter"
+                    android:src="?themedClosedIcon"
+                    android:visibility="visible"/>
+
         </RelativeLayout>
 
         <ImageView
