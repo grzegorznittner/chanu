@@ -63,6 +63,7 @@ public class BoardSortOrderDialogFragment extends DialogFragment {
             sortType = BoardSortType.valueOfDisplayString(getActivity(), item.toString());
             if (notifySortOrderListener != null)
                 notifySortOrderListener.onSortOrderChanged(sortType);
+            dismiss();
         }
     };
 

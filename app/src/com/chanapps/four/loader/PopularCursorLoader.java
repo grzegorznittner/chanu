@@ -28,7 +28,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
     @Override
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
-        MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
+        MatrixCursor matrixCursor = ChanThread.buildMatrixCursor(10);
         loadBoard(matrixCursor, ChanBoard.POPULAR_BOARD_CODE);
         loadBoard(matrixCursor, ChanBoard.LATEST_BOARD_CODE);
         loadBoard(matrixCursor, ChanBoard.LATEST_IMAGES_BOARD_CODE);

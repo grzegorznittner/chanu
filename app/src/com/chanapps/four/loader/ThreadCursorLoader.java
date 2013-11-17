@@ -75,7 +75,9 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (DEBUG) Log.i(TAG, "loadInBackground " + thread.board + "/" + thread.no + " num posts " + (thread.posts != null ? thread.posts.length : 0));
             if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
             if (DEBUG) Log.i(TAG, "Thread closed status for " + boardName + "/" + threadNo + " is closed=" + thread.closed);
-            MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
+
+            int capacity = thread != null && thread.posts != null && (query == null || query.isEmpty()) ? thread.posts.length : 0;
+            MatrixCursor matrixCursor = ChanPost.buildMatrixCursor(capacity);
 
             if (board != null && thread != null && thread.posts != null && thread.posts.length > 0) { // show loading for no thread data
                 loadMatrixCursor(matrixCursor, board, thread);

@@ -827,8 +827,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                         msgId = R.string.thread_watchlist_not_deleted_thread;
                     }
                     else {
+                        boolean isDead = thread.isDead;
                         ChanFileStorage.deleteWatchedThread(context, thread);
                         BoardActivity.refreshWatchlist(context);
+                        if (isDead)
+                            BoardActivity.updateBoard(context, boardCode);
                         msgId = R.string.thread_deleted_from_watchlist;
                         if (DEBUG) Log.i(TAG, "Deleted /" + boardCode + "/" + threadNo + " from watchlist");
                     }

@@ -73,8 +73,8 @@ public class ChanThread extends ChanPost {
             THREAD_FLAGS
     };
 
-    public static MatrixCursor buildMatrixCursor() {
-        return new MatrixCursor(THREAD_COLUMNS);
+    public static MatrixCursor buildMatrixCursor(int capacity) {
+        return new MatrixCursor(THREAD_COLUMNS, capacity);
     }
 
     private static int threadFlags(ChanPost post) {

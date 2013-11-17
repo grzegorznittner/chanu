@@ -371,7 +371,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     }
 
     protected Cursor detailsCursor() {
-        MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
+        MatrixCursor matrixCursor = ChanPost.buildMatrixCursor(0);
         switch (popupType) {
             case BACKLINKS:
                 addBlobRows(matrixCursor, ChanPost.POST_BACKLINKS_BLOB);

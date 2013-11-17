@@ -1035,8 +1035,8 @@ public class ChanPost {
         return false;
     }
 
-    public static MatrixCursor buildMatrixCursor() {
-        return new MatrixCursor(POST_COLUMNS);
+    public static MatrixCursor buildMatrixCursor(int capacity) {
+        return new MatrixCursor(POST_COLUMNS, capacity);
     }
 
     public Object[] makeRow(Context context, String query, int i, byte[] backlinksBlob, byte[] repliesBlob, byte[] sameIdsBlob) {

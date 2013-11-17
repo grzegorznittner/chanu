@@ -367,7 +367,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
                 // store dead status for thread
                 thread.isDead = true;
-                if (thread.posts != null && thread.posts[0] != null)
+                if (thread.posts != null && thread.posts.length > 0 && thread.posts[0] != null)
                     thread.posts[0].isDead = true;
                 if (DEBUG) Log.i(TAG, "After handleBoard dead thread calling storeThreadData for /" + thread.board + "/" + thread.no);
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
