@@ -29,6 +29,9 @@ public class BlocklistSelectToAddDialogFragment extends ListDialogFragment {
     private Map<ChanBlocklist.BlockType, List<String>> blocklist;
     private String[] displayBlockTypes;
 
+    public BlocklistSelectToAddDialogFragment() {
+    }
+
     public BlocklistSelectToAddDialogFragment(Map<ChanBlocklist.BlockType, List<String>> blocklist) {
         this.blocklist = blocklist;
         List<ChanBlocklist.BlockType> blockTypes = new ArrayList<ChanBlocklist.BlockType>();

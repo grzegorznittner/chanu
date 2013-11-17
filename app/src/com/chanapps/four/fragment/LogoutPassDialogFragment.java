@@ -21,6 +21,7 @@ import com.chanapps.four.task.LogoutPassTask;
 public class LogoutPassDialogFragment extends DialogFragment {
     public static final String TAG = LogoutPassDialogFragment.class.getSimpleName();
     LogoutPassTask task;
+    public LogoutPassDialogFragment(){}
     public LogoutPassDialogFragment(LogoutPassTask task) {
         super();
         this.task = task;

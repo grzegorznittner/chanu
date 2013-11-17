@@ -12,6 +12,11 @@
           android:visible="false"
             />
 
+    <item android:id="@+id/sort_order_menu"
+          android:title="@string/sort_order_menu"
+          android:icon="@drawable/collections_sort_by_size"
+            />
+
     <item android:id="@+id/board_rules_menu"
           android:title="@string/board_rules_menu"
           android:icon="@drawable/action_help"

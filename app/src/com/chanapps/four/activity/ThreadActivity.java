@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.*;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
@@ -1001,7 +1002,13 @@ public class ThreadActivity
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
             //setProgress(true);
-            return new BoardCursorLoader(getActivityContext(), boardCode, "", true, false);
+            BoardSortType sortType =
+                    BoardSortType.valueOfDisplayString(ThreadActivity.this,
+                            PreferenceManager
+                                    .getDefaultSharedPreferences(ThreadActivity.this)
+                                    .getString(SettingsActivity.PREF_BOARD_SORT_TYPE,
+                                            getString(R.string.sort_order_bump_order)));
+            return new BoardCursorLoader(getActivityContext(), boardCode, "", true, false, sortType);
         }
 
         @Override

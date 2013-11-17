@@ -77,6 +77,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected int gridViewOptions;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected int checkedPos = -1;
+    protected BoardSortType boardSortType;
 
     public static void startDefaultActivity(Context from) {
         startActivity(from, ChanBoard.defaultBoardCode(from), "");
@@ -237,6 +238,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         //setupStaticBoards();
         initGridViewOptions();
+        initBoardSortTypeOptions();
         createAbsListView();
         setupBoardTitle();
         IntentFilter intentFilter = new IntentFilter(UPDATE_BOARD_ACTION);
@@ -256,6 +258,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             else
                 gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
         }
+    }
+
+    protected void initBoardSortTypeOptions() {
+        boardSortType = BoardSortType.valueOfDisplayString(
+                this,
+                PreferenceManager.getDefaultSharedPreferences(this)
+                    .getString(SettingsActivity.PREF_BOARD_SORT_TYPE,
+                            getString(BoardSortType.BUMP_ORDER.displayStringId())));
+
     }
 
     protected void setUseCatalogPref(boolean useCatalog) {
@@ -408,7 +419,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
                 String search = constraint == null ? "" : constraint.toString();
                 BoardCursorLoader filteredCursorLoader =
-                        new BoardCursorLoader(getApplicationContext(), boardCode, search, abbrev, true);
+                        new BoardCursorLoader(getApplicationContext(), boardCode, search, abbrev, true, boardSortType);
                 Cursor filteredCursor = filteredCursorLoader.loadInBackground();
                 return filteredCursor;
             }
@@ -629,7 +640,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
             setProgress(true);
             boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
-            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, "", abbrev, true);
+            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, "", abbrev, true, boardSortType);
             return cursorLoader;
         }
         @Override
@@ -1301,6 +1312,23 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     return true;
                 case R.id.offline_board_view_menu:
                     GalleryViewActivity.startOfflineAlbumViewActivity(BoardActivity.this, boardCode);
+                    return true;
+                case R.id.sort_order_menu:
+                    (new BoardSortOrderDialogFragment(boardSortType))
+                            .setNotifySortOrderListener(new BoardSortOrderDialogFragment.NotifySortOrderListener() {
+                                @Override
+                                public void onSortOrderChanged(BoardSortType boardSortType) {
+                                    BoardActivity.this.boardSortType = boardSortType;
+                                    PreferenceManager
+                                            .getDefaultSharedPreferences(BoardActivity.this)
+                                            .edit()
+                                            .putString(SettingsActivity.PREF_BOARD_SORT_TYPE,
+                                                    getString(boardSortType.displayStringId()))
+                                            .commit();
+                                    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                                }
+                            })
+                            .show(getSupportFragmentManager(), TAG);
                     return true;
                 case R.id.board_rules_menu:
                     displayBoardRules();

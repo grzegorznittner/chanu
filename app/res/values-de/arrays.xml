@@ -314,4 +314,11 @@
 
     <string name="board_desc_all_boards">@string/board_all_boards_desc</string>
 
+    <string-array name="sort_order_types">
+        <item>@string/sort_order_bump_order</item>
+        <item>@string/sort_order_reply_count</item>
+        <item>@string/sort_order_image_count</item>
+        <item>@string/sort_order_creation_date</item>
+    </string-array>
+
 </resources>

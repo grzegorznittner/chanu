@@ -29,8 +29,8 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     public static final String GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION = "com.chanapps.four.component.GlobalAlarmReceiver.schedule";
 
-    private static final long WIDGET_UPDATE_INTERVAL_MS = AlarmManager.INTERVAL_HOUR; // FIXME should be configurable
-    //private static final long WIDGET_UPDATE_INTERVAL_MS = 60000; // 60 sec, just for testing
+    //private static final long WIDGET_UPDATE_INTERVAL_MS = AlarmManager.INTERVAL_HOUR; // FIXME should be configurable
+    private static final long WIDGET_UPDATE_INTERVAL_MS = 60000; // 60 sec, just for testing
     private static final boolean DEBUG = false;
 
     @Override

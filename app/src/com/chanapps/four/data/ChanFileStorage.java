@@ -1046,7 +1046,6 @@ public class ChanFileStorage {
                 .setSmallIcon(R.drawable.app_icon_notification)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
         if (numNewReplies > 0)
             notifBuilder.setNumber(numNewReplies);

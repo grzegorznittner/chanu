@@ -31,6 +31,9 @@ public class BlocklistAddDialogFragment extends DialogFragment {
     ChanBlocklist.BlockType blockType;
     List<String> blocks;
 
+    public BlocklistAddDialogFragment() {
+    }
+
     public BlocklistAddDialogFragment(ChanBlocklist.BlockType blockType,
                                       List<String> blocks)
     {

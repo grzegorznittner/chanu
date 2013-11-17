@@ -20,7 +20,7 @@ import com.chanapps.four.data.*;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected static final String TAG = BoardCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     //protected static final double AD_PROBABILITY = 0.20;
     //protected static final int MINIMUM_AD_SPACING = 4;
@@ -38,18 +38,22 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     protected long generatorSeed;
     protected Random generator;
 
+    protected BoardSortType boardSortType;
+
     protected BoardCursorLoader(Context context) {
         super(context);
         mObserver = new ForceLoadContentObserver();
     }
 
-    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev, boolean header) {
+    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev, boolean header,
+                             BoardSortType boardSortType) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.query = query == null ? "" : query.toLowerCase().trim();
         this.abbrev = abbrev;
         this.header = header;
+        this.boardSortType = boardSortType;
         //initRandomGenerator();
         ChanBoard.initBoards(context);
     }
@@ -214,6 +218,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         if (DEBUG)  {
             Log.i(TAG, "loadBoard /" + boardName + "/");
+            Log.i(TAG, "boardSortType=" + boardSortType + " ");
             Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
                     + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
         }

@@ -38,6 +38,8 @@ public class ClearCacheDialogFragment extends DialogFragment {
 
     private static ClearCacheAsyncTask clearCacheAsyncTask;
 
+    public ClearCacheDialogFragment() {}
+
     public ClearCacheDialogFragment(SettingsFragment fragment) {
         super();
         this.fragment = fragment;

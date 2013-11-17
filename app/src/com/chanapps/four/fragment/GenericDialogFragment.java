@@ -21,6 +21,7 @@ public class GenericDialogFragment extends DialogFragment {
     public static final String TAG = GenericDialogFragment.class.getSimpleName();
     protected String titleString;
     protected String messageString;
+    public GenericDialogFragment(){}
     public GenericDialogFragment(String title, String message) {
         super();
         titleString = title;

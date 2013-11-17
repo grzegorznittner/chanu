@@ -32,6 +32,8 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
     private Handler handler;
     private ChanThread thread;
 
+    public WatchlistDeleteDialogFragment(){}
+
     public WatchlistDeleteDialogFragment(Handler handler, ChanThread thread) {
         super();
         this.handler = handler;

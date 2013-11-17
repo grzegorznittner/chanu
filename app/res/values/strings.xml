@@ -1744,4 +1744,12 @@
 
 <string name="cancel_download_title">Image Download</string>
 <string name="cancel_download_message">Cancel image download?</string>
+
+    <!-- new strings -->
+    <string name="sort_order_menu">Sort order</string>
+    <string name="sort_order_bump_order">Bump order</string>
+    <string name="sort_order_reply_count">Reply count</string>
+    <string name="sort_order_image_count">Image count</string>
+    <string name="sort_order_creation_date">Creation date</string>
+
 </resources>

@@ -39,6 +39,7 @@ public class ReportPostDialogFragment extends DialogFragment {
     private TextView reportPostBugWarning;
     private LoadCaptchaTask loadCaptchaTask;
 
+    public ReportPostDialogFragment(){}
 
     public ReportPostDialogFragment(String boardCode, long threadNo, long[] postNos) {
         super();

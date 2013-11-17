@@ -33,6 +33,8 @@ public class FavoritesDeleteBoardDialogFragment extends DialogFragment {
     private Handler handler;
     private ChanThread thread;
 
+    public FavoritesDeleteBoardDialogFragment(){}
+
     public FavoritesDeleteBoardDialogFragment(Handler handler, ChanThread thread) {
         super();
         this.handler = handler;

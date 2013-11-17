@@ -188,6 +188,13 @@
                     android:summaryOff="@string/view_as_list_menu"
                     android:defaultValue="false" />
 
+            <ListPreference
+                    android:key="pref_board_sort_type"
+                    android:title="@string/sort_order_menu"
+                    android:entries="@array/sort_order_types"
+                    android:entryValues="@array/sort_order_types"
+                    android:defaultValue="@string/sort_order_bump_order" />
+
             <!--
             <CheckBoxPreference
                     android:key="pref_show_nsfw_boards"
