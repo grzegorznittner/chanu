@@ -193,7 +193,14 @@ public class ThreadListener {
                 return;
             if (threadViewable.getAbsListView() == null)
                 return;
-            int pos = threadViewable.getAbsListView().getPositionForView(v);
+            int pos = -1;
+            try {
+                pos = threadViewable.getAbsListView().getPositionForView(v);
+            }
+            catch (Exception e)  {
+                Log.e(TAG, "Exception getting thread viewable for view = " + v, e);
+                pos = -1;
+            }
             if (pos < 0)
                 return;
             Cursor cursor = threadViewable.getAdapter().getCursor();

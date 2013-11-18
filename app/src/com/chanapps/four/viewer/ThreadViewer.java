@@ -55,7 +55,7 @@ public class ThreadViewer {
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
@@ -823,13 +823,13 @@ public class ThreadViewer {
         //baseBox <= scaleBox <= cardBox;
 
         //Point scaledBox = new Point(baseBox.x, baseBox.y);
-        if (baseBox.x > cardBox.x) { // downscale to fix x in card
-            double scale = (double)cardBox.x / (double)baseBox.x;
+        if (scaledBox.x > cardBox.x) { // downscale to fix x in card
+            double scale = (double)cardBox.x / (double)scaledBox.x;
             scaledBox.x = (int)(scale * scaledBox.x);
             scaledBox.y = (int)(scale * scaledBox.y);
         }
-        if (baseBox.y > cardBox.y) { // downscale to fit y in card
-            double scale = (double)cardBox.y / (double)baseBox.y;
+        if (scaledBox.y > cardBox.y) { // downscale to fit y in card
+            double scale = (double)cardBox.y / (double)scaledBox.y;
             scaledBox.x = (int)(scale * scaledBox.x);
             scaledBox.y = (int)(scale * scaledBox.y);
         }
@@ -850,7 +850,9 @@ public class ThreadViewer {
         }
         */
         
-        if (DEBUG) Log.v(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + scaledBox.x + "x" + scaledBox.y);
+        if (DEBUG) Log.v(TAG, "Image size input=" + tn_w + "x" + tn_h
+                + " box=" + cardBox.x + "x" + cardBox.y
+                + " output=" + scaledBox.x + "x" + scaledBox.y);
         return scaledBox;
     }
 

@@ -34,7 +34,7 @@ import java.net.URI;
 public class ThreadImageExpander {
 
     private static final String TAG = ThreadImageExpander.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     //private static final double MAX_EXPANDED_SCALE = 1.5;
 
     private ThreadViewHolder viewHolder;
