@@ -1,7 +1,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
 
     <dimen name="BoardGridSubjectHeader">64sp</dimen>
-    <dimen name="BoardGridSubjectHeaderAbbr">72sp</dimen>
 
     <integer name="StaggeredGridView.Board.numColumns">2</integer>
 
@@ -25,6 +24,8 @@
     <dimen name="BoardGridViewTablet_image_width">144dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width">400dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">400dp</dimen>
+
+    <dimen name="BoardGridItemIconSmallMarginBottom">0dp</dimen>
 
     <bool name="narrow_tablet">false</bool>
 

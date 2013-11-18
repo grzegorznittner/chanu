@@ -437,4 +437,62 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     }
 
+    public static ChanBoard loadBoardSorted(Context context, String boardCode) {
+        BoardSortType boardSortType = BoardSortType.loadFromPrefs(context);
+        final ChanBoard bumpOrderBoard = ChanFileStorage.loadBoardData(context, boardCode);
+        return BoardCursorLoader.copyBoardSorted(bumpOrderBoard, boardSortType);
+    }
+
+    private static ChanBoard copyBoardSorted(ChanBoard board, BoardSortType boardSortType) {
+        if (boardSortType == BoardSortType.BUMP_ORDER)
+            return board;
+
+        ChanThread[] threads = board.threads;
+        Map<Long, List<Integer>> positionMap = new HashMap<Long, List<Integer>>(threads.length);
+        Set<Long> valueSet = new HashSet<Long>(threads.length);
+        for (int pos = 0; pos < threads.length; pos++) {
+            ChanThread thread = threads[pos];
+            long value;
+            switch (boardSortType) {
+                case REPLY_COUNT:
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
+                            ? thread.replies
+                            : thread.posts[0].replies;
+                    break;
+                case IMAGE_COUNT:
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
+                            ? thread.images
+                            : thread.posts[0].images;
+                    break;
+                case CREATION_DATE:
+                    value = thread.no;
+                    break;
+                default:
+                    throw new AssertionError("board sort type = " + boardSortType + " should have been handled elsewhere");
+            }
+            if (!positionMap.containsKey(value))
+                positionMap.put(value, new ArrayList<Integer>(1));
+            positionMap.get(value).add(pos);
+            valueSet.add(value);
+        }
+
+        List<Long> values = new ArrayList<Long>(valueSet);
+        Collections.sort(values); // natural order
+        Collections.reverse(values);
+
+        ChanThread[] sortedThreads = new ChanThread[threads.length];
+        int i = 0;
+        for (Long value : values) {
+            if (positionMap.containsKey(value)) {
+                for (int pos : positionMap.get(value)) {
+                    sortedThreads[i++] = threads[pos];
+                }
+            }
+        }
+
+        ChanBoard sortedBoard = board.copy();
+        sortedBoard.threads = sortedThreads;
+        return sortedBoard;
+    }
+
 }

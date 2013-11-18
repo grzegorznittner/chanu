@@ -261,12 +261,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void initBoardSortTypeOptions() {
-        boardSortType = BoardSortType.valueOfDisplayString(
-                this,
-                PreferenceManager.getDefaultSharedPreferences(this)
-                    .getString(SettingsActivity.PREF_BOARD_SORT_TYPE,
-                            getString(BoardSortType.BUMP_ORDER.displayStringId())));
-
+        boardSortType = BoardSortType.loadFromPrefs(this);
     }
 
     protected void setUseCatalogPref(boolean useCatalog) {
@@ -1319,12 +1314,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                                 @Override
                                 public void onSortOrderChanged(BoardSortType boardSortType) {
                                     BoardActivity.this.boardSortType = boardSortType;
-                                    PreferenceManager
-                                            .getDefaultSharedPreferences(BoardActivity.this)
-                                            .edit()
-                                            .putString(SettingsActivity.PREF_BOARD_SORT_TYPE,
-                                                    getString(boardSortType.displayStringId()))
-                                            .commit();
+                                    BoardSortType.saveToPrefs(BoardActivity.this, boardSortType);
                                     getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
                                 }
                             })

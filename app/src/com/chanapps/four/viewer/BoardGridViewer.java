@@ -258,7 +258,7 @@ public class BoardGridViewer {
             //url = "drawable://" + R.drawable.transparent;
             int drawableId = ThemeSelector.instance(iv.getContext()).isDark()
                     ? R.drawable.bg_222
-                    : R.drawable.bg_333;
+                    : R.drawable.bg_f4f4f4;
             url = "drawable://" + drawableId;
         }
         else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {

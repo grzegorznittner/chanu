@@ -27,10 +27,10 @@
                 android:id="@+id/grid_item_num_replies_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/BoardGridView.spacing"
+                android:layout_marginLeft="8dp"
                 android:layout_above="@+id/grid_item_thumb_frame"
                 android:paddingBottom="@dimen/BoardGridBoardCodePadding"
-                android:textColor="@color/PaletteLightGray"
+                android:textColor="?themedBoardGridNumReplies"
                 android:textSize="@dimen/BoardGridInfo"
                 />
 
@@ -41,7 +41,7 @@
                 android:layout_above="@+id/grid_item_thumb_frame"
                 android:layout_toRightOf="@+id/grid_item_num_replies_text"
                 android:paddingBottom="@dimen/BoardGridBoardCodePadding"
-                android:textColor="@color/PaletteLightGray"
+                android:textColor="?themedBoardGridNumReplies"
                 android:textSize="@dimen/BoardGridInfo"
                 android:text="r"
                 />
@@ -53,7 +53,7 @@
                 android:layout_above="@+id/grid_item_thumb_frame"
                 android:layout_toLeftOf="@+id/grid_item_num_images_label_abbr"
                 android:paddingBottom="@dimen/BoardGridBoardCodePadding"
-                android:textColor="@color/PaletteLightGray"
+                android:textColor="?themedBoardGridNumReplies"
                 android:textSize="@dimen/BoardGridInfo"
                 />
 
@@ -61,11 +61,11 @@
                 android:id="@+id/grid_item_num_images_label_abbr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/BoardGridView.spacing"
+                android:layout_marginRight="8dp"
                 android:layout_above="@+id/grid_item_thumb_frame"
                 android:layout_alignParentRight="true"
                 android:paddingBottom="@dimen/BoardGridBoardCodePadding"
-                android:textColor="@color/PaletteLightGray"
+                android:textColor="?themedBoardGridNumReplies"
                 android:textSize="@dimen/BoardGridInfo"
                 android:text="i"
                 />
@@ -140,7 +140,7 @@
                     android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
                     android:layout_alignParentBottom="true"
                     android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginBottom="@dimen/BoardGridItemIconSmallMarginBottom"
                     android:scaleType="fitCenter"
                     android:src="?themedDeadIcon"
                     android:visibility="visible"/>
@@ -153,7 +153,7 @@
                     android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
                     android:layout_toRightOf="@+id/grid_item_dead_icon"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginBottom="@dimen/BoardGridItemIconSmallMarginBottom"
                     android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
                     android:scaleType="fitCenter"
                     android:src="?themedStickyIcon"
@@ -167,7 +167,7 @@
                     android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
                     android:layout_toRightOf="@+id/grid_item_sticky_icon"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginBottom="@dimen/BoardGridItemIconSmallMarginBottom"
                     android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
                     android:scaleType="fitCenter"
                     android:src="?themedClosedIcon"

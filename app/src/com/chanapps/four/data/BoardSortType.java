@@ -1,7 +1,9 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
 
 public enum BoardSortType {
 
@@ -28,6 +30,22 @@ public enum BoardSortType {
 
     public int displayStringId() {
         return displayStringId;
+    }
+
+    public static BoardSortType loadFromPrefs(Context context) {
+        return BoardSortType.valueOfDisplayString(context, PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getString(SettingsActivity.PREF_BOARD_SORT_TYPE,
+                        context.getString(R.string.sort_order_bump_order)));
+    }
+
+    public static void saveToPrefs(Context context, BoardSortType boardSortType) {
+        PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit()
+                .putString(SettingsActivity.PREF_BOARD_SORT_TYPE,
+                        context.getString(boardSortType.displayStringId()))
+                .commit();
     }
 
 }

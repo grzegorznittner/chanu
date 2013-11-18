@@ -112,7 +112,7 @@
         <item name="android:textColor">?themedCardSubjectTextColor</item>
         <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:visibility">gone</item>
-        <item name="android:maxLines">4</item>
+        <item name="android:maxLines">@integer/BoardGridSubject_maxLines</item>
         <!--
         <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:ellipsize">end</item>
