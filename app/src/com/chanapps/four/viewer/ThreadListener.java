@@ -28,7 +28,7 @@ import java.util.HashSet;
 public class ThreadListener {
 
     private static final String TAG = ThreadListener.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private ThreadViewable threadViewable;
     private boolean isDark;
@@ -156,11 +156,20 @@ public class ThreadListener {
             if (DEBUG) Log.i(TAG, "found itemView=" + itemView);
             if (itemView == null)
                 return;
-            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED))
-                return;
             ThreadViewHolder viewHolder = (ThreadViewHolder)itemView.getTag(R.id.VIEW_HOLDER);
             if (viewHolder == null)
                 return;
+
+            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED)) {
+                if (DEBUG) Log.i(TAG, "image already expanded, collapsing");
+                if (viewHolder.list_item_image_expanded_wrapper != null)
+                    viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
+                if (viewHolder.list_item_image != null)
+                    viewHolder.list_item_image.setVisibility(View.VISIBLE);
+                if (viewHolder.list_item != null)
+                    viewHolder.list_item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
+                return;
+            }
 
             if (threadViewable == null)
                 return;

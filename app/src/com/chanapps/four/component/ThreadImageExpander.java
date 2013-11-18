@@ -77,15 +77,15 @@ public class ThreadImageExpander {
             if (DEBUG) Log.i(TAG, "Couldn't hide thumbnail, null thumbnail image");
             return;
         }
-        viewHolder.list_item_image.setImageDrawable(null);
-        viewHolder.list_item_image.setVisibility(View.GONE);
+        //viewHolder.list_item_image.setImageDrawable(null);
+        viewHolder.list_item_image.setVisibility(View.INVISIBLE);
         if (viewHolder.list_item_image_wrapper == null) {
             if (DEBUG) Log.i(TAG, "Skipping adjusting thumbnail height, null thumbnail image wrapper");
             return;
         }
         if (viewHolder.list_item_left_spacer != null)
             viewHolder.list_item_left_spacer.setVisibility(View.VISIBLE);
-        viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+        //viewHolder.list_item_image_wrapper.setVisibility(View.INVISIBLE);
     }
 
     private void setImageDimensions(Point targetSize) {
@@ -193,6 +193,7 @@ public class ThreadImageExpander {
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                if (DEBUG) Log.v(TAG, "onLoadingComplete uri=" + imageUri);
                 if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
                     viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
                 if (viewHolder.list_item_image_expanded_click_effect != null) {
@@ -206,8 +207,8 @@ public class ThreadImageExpander {
                     }
                 }
                 if (viewHolder.list_item_image_expansion_target != null) {
-                    viewHolder.list_item_image_expansion_target.setOnClickListener(null);
-                    viewHolder.list_item_image_expansion_target.setForeground(view.getResources().getDrawable(R.drawable.null_selector_bg));
+                    //viewHolder.list_item_image_expansion_target.setOnClickListener(null);
+                    //viewHolder.list_item_image_expansion_target.setForeground(view.getResources().getDrawable(R.drawable.null_selector_bg));
                 }
                 if (withProgress)
                     hideThumbnail();
