@@ -19,6 +19,7 @@ import com.chanapps.four.service.ThreadImageDownloadService;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +34,7 @@ public class NotificationComponent {
     private static final boolean DEBUG = false;
 
     private static final int CLEAR_CACHE_NOTIFY_ID = 0x870932; // a unique notify idea is needed for each notify to "clump" together
+    private static final long NOTIFICATION_UPDATE_TIME = 3000;  // 1s
 
     public static void notifyNewReplies(Context context, ChanPost watchedThread, ChanThread loadedThread) {
         if (DEBUG) Log.i(TAG, "notifyNewReplies() watched=" + watchedThread + " loaded=" + loadedThread);
@@ -93,7 +95,7 @@ public class NotificationComponent {
                 .setContentIntent(pendingIntent);
         if (numNewReplies > 0)
             notifBuilder.setNumber(numNewReplies);
-        Notification noti = notifBuilder.build();
+        Notification noti = notifBuilder.getNotification();
         if (DEBUG) Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);
         notificationManager.notify(notificationId, noti);
     }
@@ -181,7 +183,7 @@ public class NotificationComponent {
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                     threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
             notifBuilder.setContentIntent(pendingIntent);
-            notificationManager.notify(notificationId, notifBuilder.build());
+            notificationManager.notify(notificationId, notifBuilder.getNotification());
         }
     }
 
@@ -217,4 +219,66 @@ public class NotificationComponent {
         return Bitmap.createBitmap(tmp, offsetX, offsetY, widthPx, heightPx);
     }
 
+    public static long notifyDownloadUpdated(Context context, int notificationId, String board, long threadNo,
+                                             int totalNumImages, int downloadedImages, long lastUpdateTime) {
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+            return lastUpdateTime;
+        if (ThreadImageDownloadService.checkIfStopped(notificationId)) {
+			return lastUpdateTime;
+		}
+		long now = new Date().getTime();
+		if (now - lastUpdateTime < NOTIFICATION_UPDATE_TIME) {
+			return lastUpdateTime;
+		}
+		lastUpdateTime = now;
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String titleText = totalNumImages > 1
+                ? context.getString(R.string.download_all_images_to_gallery_menu)
+                : context.getString(R.string.download_images_to_gallery_menu);
+        String threadText = "/" + board + "/" + threadNo;
+        String downloadText = downloadedImages + "/" + totalNumImages;
+        String text = titleText + " " + threadText + " " + downloadText;
+
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
+                .setContentTitle(context.getString(R.string.app_name_title))
+                .setContentText(text)
+                .setProgress(totalNumImages, downloadedImages, false)
+                .setSmallIcon(R.drawable.app_icon_notification);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                CancelDownloadActivity.createIntent(context, notificationId, board, threadNo),
+        		Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
+        notifBuilder.setContentIntent(pendingIntent);
+
+		notificationManager.notify(notificationId, notifBuilder.build());
+        return lastUpdateTime;
+	}
+
+    public static void notifyDownloadError(Context context, int notificationId, ChanThread thread) {
+        if (thread == null)
+            return;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+            return;
+
+        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        if (thread != null)
+            thread.useFriendlyIds = useFriendlyIds;
+
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder notifBuilder = new Notification.Builder(context);
+        notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
+        notifBuilder.setAutoCancel(true);
+        notifBuilder.setContentTitle(context.getString(R.string.thread_image_download_error));
+        notifBuilder.setContentText(thread.board + "/" + thread.no);
+        notifBuilder.setSmallIcon(R.drawable.app_icon_notification);
+
+        Intent threadActivityIntent = ThreadActivity.createIntent(context, thread.board, thread.no, "");
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        notifBuilder.setContentIntent(pendingIntent);
+
+        notificationManager.notify(notificationId, notifBuilder.getNotification());
+    }
 }

@@ -513,15 +513,15 @@ public class BoardGridViewer {
         int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
         if (viewHolder.grid_item_dead_icon != null) {
             viewHolder.grid_item_dead_icon.setVisibility((flags & ChanThread.THREAD_FLAG_DEAD) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_dead_icon.setImageAlpha(alpha);
+            viewHolder.grid_item_dead_icon.setAlpha(alpha);
         }
         if (viewHolder.grid_item_closed_icon != null) {
             viewHolder.grid_item_closed_icon.setVisibility((flags & ChanThread.THREAD_FLAG_CLOSED) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_closed_icon.setImageAlpha(alpha);
+            viewHolder.grid_item_closed_icon.setAlpha(alpha);
         }
         if (viewHolder.grid_item_sticky_icon != null) {
             viewHolder.grid_item_sticky_icon.setVisibility((flags & ChanThread.THREAD_FLAG_STICKY) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_sticky_icon.setImageAlpha(alpha);
+            viewHolder.grid_item_sticky_icon.setAlpha(alpha);
         }
         if (DEBUG)
             Log.i(TAG, "setSubjectIcons()"

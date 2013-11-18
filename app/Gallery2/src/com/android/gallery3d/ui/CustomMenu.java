@@ -42,7 +42,7 @@ public class CustomMenu implements OnMenuItemClickListener {
         public DropDownMenu(Context context, Button button, int menuId,
                 OnMenuItemClickListener listener) {
             mButton = button;
-            mButton.setBackground(context.getResources().getDrawable(
+            mButton.setBackgroundDrawable(context.getResources().getDrawable(
                     R.drawable.dropdown_normal_holo_dark));
             mPopupMenu = new PopupMenu(context, mButton);
             mMenu = mPopupMenu.getMenu();
