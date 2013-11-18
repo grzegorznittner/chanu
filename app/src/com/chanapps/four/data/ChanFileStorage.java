@@ -4,21 +4,12 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.media.audiofx.BassBoost;
 import android.os.Environment;
-import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import com.chanapps.four.activity.*;
+import com.chanapps.four.component.NotificationComponent;
 import com.chanapps.four.service.BoardParserService;
-import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.widget.WidgetProviderUtils;
 import com.nostra13.universalimageloader.utils.L;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -849,7 +840,7 @@ public class ChanFileStorage {
         for (int i = 0; i < watchlistBoard.threads.length; i++) {
             ChanThread watchedThread = watchlistBoard.threads[i];
             if (watchedThread.no == loadedThread.no && watchedThread.board.equals(loadedThread.board)) {
-                notifyNewReplies(context, watchedThread, loadedThread);
+                NotificationComponent.notifyNewReplies(context, watchedThread, loadedThread);
                 watchlistBoard.threads[i].updateThreadData(loadedThread);
                 if (DEBUG) Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no
                         + " replies: " + watchedThread.replies + " images: " + watchedThread.images);
@@ -874,7 +865,7 @@ public class ChanFileStorage {
                 for (int t = 0; t < loadedBoard.loadedThreads.length; t++) {
                     ChanThread loadedThread = loadedBoard.loadedThreads[t];
                     if (watchedThread.no == loadedThread.no) {
-                        notifyNewReplies(context, watchedThread, loadedThread);
+                        NotificationComponent.notifyNewReplies(context, watchedThread, loadedThread);
                         watchedThread.updateThreadDataWithPost(loadedThread);
                         if (DEBUG) Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no
                                 + " replies: " + watchedThread.replies + " images: " + watchedThread.images);
@@ -992,71 +983,6 @@ public class ChanFileStorage {
             IOUtils.closeQuietly(fos);
             IOUtils.closeQuietly(fis);
         }
-    }
-
-    private static void notifyNewReplies(Context context, ChanPost watchedThread, ChanThread loadedThread) {
-        if (DEBUG) Log.i(TAG, "notifyNewReplies watched=" + watchedThread + " loaded=" + loadedThread);
-        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
-            return;
-        if (watchedThread == null || loadedThread == null)
-            return;
-        if (loadedThread.posts == null || loadedThread.posts.length == 0 || loadedThread.posts[0] == null)
-            return;
-
-        String board = loadedThread.board;
-        long threadNo = loadedThread.no;
-        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-        ChanActivityId aid = NetworkProfileManager.instance().getActivityId();
-        if (activity != null && activity.getChanHandler() != null && aid != null) {
-            if (board.equals(aid.boardCode) && threadNo == aid.threadNo) {
-                if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on thread, skipping notification");
-                return;
-            }
-            else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(aid.boardCode)) {
-                if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on watchlist, skipping notification");
-                return;
-            }
-        }
-
-        int numNewReplies = loadedThread.posts[0].replies - (watchedThread.replies >= 0 ? watchedThread.replies : 0);
-        if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " newReplies=" + numNewReplies);
-        if (numNewReplies <= 0 && !loadedThread.isDead)
-            return;
-        int notificationId = board.hashCode() + (int)threadNo;
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String title = context.getString(R.string.app_name_title);
-        String postText;
-        if (loadedThread.isDead) {
-            postText = context.getString(R.string.mobile_profile_fetch_dead_thread);
-        }
-        else {
-            String postPlurals = context.getResources().getQuantityString(R.plurals.thread_activity_updated, numNewReplies);
-            //String imagePlurals = context.getResources().getQuantityString(R.plurals.thread_num_images, numNewImages);
-            postText = String.format(postPlurals, 0).replace("0", "");
-        }
-        String threadId = "/" + board + "/" + threadNo;
-        //String imageText = String.format(imagePlurals, numNewImages);
-        //String text = String.format("%s and %s for %s/%d", postText, imageText, board, threadNo);
-        String text = (postText + " " + threadId).trim();
-        Intent threadActivityIntent = ThreadActivity.createIntent(context, board, threadNo, "");
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)System.currentTimeMillis(),
-                threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-        Notification.Builder notifBuilder = new Notification.Builder(context)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.app_icon_notification_large))
-                .setSmallIcon(R.drawable.app_icon_notification)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setContentIntent(pendingIntent);
-        if (numNewReplies > 0)
-            notifBuilder.setNumber(numNewReplies);
-        Notification noti = new Notification.InboxStyle(
-                notifBuilder)
-                .addLine("extra replies")
-                .addLine("extra replies")
-                .setSummaryText("last n replies")
-                .build();
-        if (DEBUG) Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);
-        notificationManager.notify(notificationId, noti);
     }
 
 }
