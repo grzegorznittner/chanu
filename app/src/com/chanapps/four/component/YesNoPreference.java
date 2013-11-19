@@ -72,7 +72,7 @@ public class YesNoPreference extends DialogPreference {
 
     protected void setSummary(boolean value) {
         int id = value ? R.string.pref_show_nsfw_boards_summ_on : R.string.pref_show_nsfw_boards_summ_off;
-        setSummary(id);
+        super.setSummary(id);
         BoardActivity.refreshAllBoards(getContext());
     }
 

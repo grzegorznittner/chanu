@@ -34,7 +34,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
 
     public static final String TAG = LoadCaptchaTask.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private Context context = null;
     private ImageView recaptchaButton = null;

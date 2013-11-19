@@ -23,6 +23,7 @@ public class ThreadViewHolder {
     public ImageView list_item_header_bar_chat;
     public ImageView list_item_header_bar_overflow;
     public ImageView list_item_image;
+    public ImageView list_item_image_collapse;
     public FrameLayout list_item_image_expansion_target;
     public ImageView list_item_image_expanded;
     public ImageView list_item_num_comments_spinner;
@@ -54,7 +55,7 @@ public class ThreadViewHolder {
     public View list_item_left_spacer;
     public View list_item_num_horizontal_border;
     public View list_item_num_vertical_border;
-    public View list_item_web_link;
+    public View list_item_right_menu_spacer;
 
     public ThreadViewHolder(View item) {
         list_item = (ViewGroup)item;
@@ -66,6 +67,7 @@ public class ThreadViewHolder {
         list_item_header_bar_chat = (ImageView)item.findViewById(R.id.list_item_header_bar_chat);
         list_item_header_bar_overflow = (ImageView)item.findViewById(R.id.list_item_header_bar_overflow);
         list_item_image = (ImageView)item.findViewById(R.id.list_item_image);
+        list_item_image_collapse = (ImageView)item.findViewById(R.id.list_item_image_collapse);
         list_item_image_expansion_target = (FrameLayout)item.findViewById(R.id.list_item_image_expansion_target);
         list_item_image_expanded = (ImageView)item.findViewById(R.id.list_item_image_expanded);
         list_item_num_comments_spinner = (ImageView)item.findViewById(R.id.list_item_num_comments_spinner);
@@ -97,7 +99,7 @@ public class ThreadViewHolder {
         list_item_left_spacer = item.findViewById(R.id.list_item_left_spacer);
         list_item_num_horizontal_border = item.findViewById(R.id.list_item_num_horizontal_border);
         list_item_num_vertical_border = item.findViewById(R.id.list_item_num_vertical_border);
-        list_item_web_link = item.findViewById(R.id.list_item_web_link);
+        list_item_right_menu_spacer = item.findViewById(R.id.list_item_right_menu_spacer);
     }
 
 }

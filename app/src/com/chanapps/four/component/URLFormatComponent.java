@@ -41,7 +41,8 @@ public class URLFormatComponent {
     public static final String GOOGLE_MAPS_URL_FORMAT = "//maps.google.com/maps?f=q&q=(%f,%f)";
     public static final String GOOGLE_PLUS_CHANU_URL = "//plus.google.com/communities/107363899339170685863";
     public static final String GOOGLE_QUERY_IMAGE_URL_FORMAT = "//www.google.com/search?safe=off&site=imghp&tbm=isch&source=hp&q=%s";
-    public static final String GOOGLE_RECAPTCHA_API_URL_FORMAT = "//api.recaptcha.net/%s";
+    //public static final String GOOGLE_RECAPTCHA_API_URL_FORMAT = "//api.recaptcha.net/%s";
+    public static final String GOOGLE_RECAPTCHA_API_URL_FORMAT = "//www.google.com/recaptcha/api/%s";
     public static final String GOOGLE_TRANSLATE_URL_FORMAT = "//translate.google.com/m?hl=%s&sl=auto&tl=%s&ie=UTF8&prev=_m&q=%s";
     public static final String SKREENED_CHANU_STORE_URL = "//www.skreened.com/chanapps/";
     public static final String TINEYE_IMAGE_SEARCH_URL_FORMAT = "//tineye.com/search?url=%s";

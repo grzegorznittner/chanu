@@ -44,6 +44,12 @@
     <dimen name="MessageText">16sp</dimen>
     <dimen name="DialogFragmentMessageSize">16sp</dimen>
 
+    <dimen name="FontSizeTiny">12sp</dimen>
+    <dimen name="FontSizeSmall">14sp</dimen>
+    <dimen name="FontSizeMedium">16sp</dimen>
+    <dimen name="FontSizeLarge">18sp</dimen>
+    <dimen name="FontSizeHuge">20sp</dimen>
+
     <!-- Padding & Margins -->
 
     <dimen name="BoardGridItemSmallHeight">104dp</dimen>

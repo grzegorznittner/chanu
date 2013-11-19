@@ -1746,10 +1746,21 @@
 <string name="cancel_download_message">Cancel image download?</string>
 
     <!-- new strings -->
+    <string name="pref_view_options">View Options</string>
+    <string name="pref_view_options_summ">Customize appearance</string>
+    <string name="pref_advanced_category_summ">Modify behavior</string>
+
     <string name="sort_order_menu">Sort order</string>
     <string name="sort_order_bump_order">Bump order</string>
     <string name="sort_order_reply_count">Reply count</string>
     <string name="sort_order_image_count">Image count</string>
     <string name="sort_order_creation_date">Creation date</string>
+
+    <string name="font_size_menu">Font Size</string>
+    <string name="font_size_tiny">Tiny</string>
+    <string name="font_size_small">Small</string>
+    <string name="font_size_medium">Medium</string>
+    <string name="font_size_large">Large</string>
+    <string name="font_size_huge">Huge</string>
 
 </resources>

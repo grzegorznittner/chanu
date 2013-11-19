@@ -164,6 +164,8 @@ public class ThreadListener {
                 if (DEBUG) Log.i(TAG, "image already expanded, collapsing");
                 if (viewHolder.list_item_image_expanded_wrapper != null)
                     viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
+                if (viewHolder.list_item_image_collapse != null)
+                    viewHolder.list_item_image_collapse.setVisibility(View.GONE);
                 if (viewHolder.list_item_image != null)
                     viewHolder.list_item_image.setVisibility(View.VISIBLE);
                 if (viewHolder.list_item != null)

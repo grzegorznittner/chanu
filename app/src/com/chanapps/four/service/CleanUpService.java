@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.CacheSizePreference;
 import com.chanapps.four.data.*;
 import com.chanapps.four.widget.AbstractBoardWidgetProvider;
 
@@ -222,8 +223,8 @@ public class CleanUpService extends BaseChanService {
 
     private int getPreferredCacheSize() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int prefSize = prefs.getInt(SettingsActivity.PREF_CACHE_SIZE, 512);
-        return prefSize < 512 ? 512 : prefSize;
+        int prefSize = prefs.getInt(SettingsActivity.PREF_CACHE_SIZE, CacheSizePreference.DEFAULT_VALUE);
+        return prefSize < CacheSizePreference.DEFAULT_VALUE ? CacheSizePreference.DEFAULT_VALUE : prefSize;
     }
 
     private void prepareTopWatchedBoards(Context context) {

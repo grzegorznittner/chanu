@@ -79,6 +79,8 @@ public class ThreadImageExpander {
         }
         //viewHolder.list_item_image.setImageDrawable(null);
         viewHolder.list_item_image.setVisibility(View.INVISIBLE);
+        if (viewHolder.list_item_image_collapse != null)
+            viewHolder.list_item_image_collapse.setVisibility(View.VISIBLE);
         if (viewHolder.list_item_image_wrapper == null) {
             if (DEBUG) Log.i(TAG, "Skipping adjusting thumbnail height, null thumbnail image wrapper");
             return;

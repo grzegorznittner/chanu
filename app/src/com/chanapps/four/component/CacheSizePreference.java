@@ -29,10 +29,10 @@ import android.widget.TextView;
 public class CacheSizePreference extends Preference implements OnSeekBarChangeListener {
 	private static final String TAG = "CacheSizePreference";
 	private static final boolean DEBUG = false;
+    public static final int DEFAULT_VALUE = 128;
 
 	private static final String ANDROIDNS = "http://schemas.android.com/apk/res/android";
 	private static final String CHANAPPS = "http://chanapps.com";
-	private static final int DEFAULT_VALUE = 512;
 
 	private int maxValue = 1024;
 	private int minValue = DEFAULT_VALUE;
