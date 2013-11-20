@@ -191,20 +191,27 @@ public class NotificationComponent {
         Bitmap largeIcon = null;
         try {
             largeIcon = loadIconBitmap(context, loadedThread);
-            if (DEBUG) Log.i(TAG, "notifyNewReplies() loaded notification large icon=" + largeIcon);
+            if (DEBUG) Log.i(TAG, "loadLargeIcon() loaded notification large icon=" + largeIcon);
         }
         catch (Exception e) {
-            Log.e(TAG, "notifyNewReplies() exception loading thumbnail for notification for thread=" + loadedThread.no, e);
+            Log.e(TAG, "loadLargeIcon() exception loading thumbnail for notification for thread=" + loadedThread.no, e);
             if (DEBUG) Log.i(TAG, "using default notification large icon");
         }
         if (largeIcon == null) {
-            if (DEBUG) Log.i(TAG, "loadLargeIcon() null bitmap, loading from resource");
+            if (DEBUG) Log.i(TAG, "loadLargeIcon() null bitmap, loading board default");
+            int drawableId = ChanBoard.getRandomImageResourceId(loadedThread.board, loadedThread.no);
+            largeIcon = BitmapFactory.decodeResource(context.getResources(), drawableId);
+        }
+        if (largeIcon == null) {
+            if (DEBUG) Log.i(TAG, "loadLargeIcon() null bitmap, loading app-wide resource");
             largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.app_icon_notification_large);
         }
         return largeIcon;
     }
 
     private static Bitmap loadIconBitmap(Context context, ChanPost loadedThread) throws Exception {
+        if (loadedThread == null)
+            return null;
         String imageUrl = loadedThread.thumbnailUrl(context);
         if (DEBUG) Log.i(TAG, "loadLargeIcon() imageUrl=" + imageUrl);
         if (imageUrl == null)
@@ -281,4 +288,60 @@ public class NotificationComponent {
 
         notificationManager.notify(notificationId, notifBuilder.getNotification());
     }
+
+    private static final int FAVORITES_NOTIFICATION_TOKEN = 0x13;
+
+    public static void notifyNewThreads(final Context context, final String boardCode, final int numNewThreads,
+                                        final ChanThread newThread) {
+        if (DEBUG) Log.i(TAG, "notifyNewThreads() /" + boardCode + "/ numThreads=" + numNewThreads);
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
+            return;
+        if (boardCode == null || boardCode.isEmpty())
+            return;
+        if (numNewThreads <= 0)
+            return;
+
+        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        ChanActivityId aid = NetworkProfileManager.instance().getActivityId();
+        // limit notification when on watchlist or active thread
+        if (activity != null && activity.getChanHandler() != null && aid != null) {
+            if (boardCode.equals(aid.boardCode)) {
+                if (DEBUG) Log.i(TAG, "notifyNewThreads() /" + boardCode + "/ user on board, skipping notification");
+                return;
+            }
+        }
+
+        int notificationId = boardCode.hashCode() + FAVORITES_NOTIFICATION_TOKEN;
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String title = context.getString(R.string.app_name_title);
+        String postPlurals = context.getResources().getQuantityString(R.plurals.board_activity_updated, numNewThreads);
+        String text = String.format(postPlurals, boardCode);
+
+        ChanPost iconThread;
+        if (newThread == null)
+            iconThread = null;
+        else if (newThread.posts == null || newThread.posts.length == 0 || newThread.posts[0] == null)
+            iconThread = newThread;
+        else
+            iconThread = newThread.posts[0];
+        Bitmap largeIcon = loadLargeIcon(context, iconThread);
+
+        Intent boardActivityIntent = BoardActivity.createIntent(context, boardCode, "");
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)System.currentTimeMillis(),
+                boardActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        Notification.Builder notifBuilder = new Notification.Builder(context)
+                .setLargeIcon(largeIcon)
+                .setSmallIcon(R.drawable.app_icon_notification)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setNumber(numNewThreads)
+                ;
+        Notification noti = notifBuilder.getNotification();
+        if (DEBUG) Log.i(TAG, "notifyNewThreads() sending notification for " + numNewThreads
+                + " new threads for /" + boardCode + "/");
+        notificationManager.notify(notificationId, noti);
+    }
+
 }

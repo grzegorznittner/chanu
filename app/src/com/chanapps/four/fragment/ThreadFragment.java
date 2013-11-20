@@ -1456,7 +1456,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     @Override
     public void showDialog(String boardCode, long threadNo, long postNo, int pos, ThreadPopupDialogFragment.PopupType popupType) {
         if (DEBUG) Log.i(TAG, "showDialog /" + boardCode + "/" + threadNo + "#p" + postNo + " pos=" + pos);
-        (new ThreadPopupDialogFragment(this, boardCode, threadNo, postNo, pos, popupType, query))
+        //(new ThreadPopupDialogFragment(this, boardCode, threadNo, postNo, pos, popupType, query))
+        (new ThreadPopupDialogFragment(this, boardCode, threadNo, postNo, popupType, query))
                 .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
     }
 

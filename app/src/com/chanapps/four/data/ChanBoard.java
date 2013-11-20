@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.NotificationComponent;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -16,8 +17,8 @@ import com.chanapps.four.service.NetworkProfileManager;
 public class ChanBoard {
 
 	public static final String TAG = ChanBoard.class.getSimpleName();
-
     private static final boolean DEBUG = false;
+
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
     //private static final int NUM_RELATED_THREADS = 3;
@@ -777,7 +778,7 @@ public class ChanBoard {
         return ChanPost.makeBoardLinkRow(context, this, threadNo);
     }
 
-    public void updateCountersAfterLoad() {
+    public void updateCountersAfterLoad(Context context) {
     	if (loadedThreads.length == 0) {
     		return;
     	}
@@ -787,17 +788,22 @@ public class ChanBoard {
     	}
     	this.newThreads = 0;
     	this.updatedThreads = 0;
-    	for (ChanPost newPost : loadedThreads) {
-    		if (currentThreads.containsKey(newPost.no)) {
-    			ChanPost currentPost = currentThreads.get(newPost.no);
-    			if (currentPost.replies != newPost.replies) {
+        ChanThread firstNewThread = null;
+    	for (ChanThread newThread : loadedThreads) {
+    		if (currentThreads.containsKey(newThread.no)) {
+    			ChanPost currentPost = currentThreads.get(newThread.no);
+    			if (currentPost.replies != newThread.replies) {
     				updatedThreads++;
     			}
     		} else {
+                if (firstNewThread == null)
+                    firstNewThread = newThread;
     			newThreads++;
     		}
     	}
-    	if (DEBUG) Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
+        if (newThreads > 0 && isFavoriteBoard(context, link))
+            NotificationComponent.notifyNewThreads(context, link, newThreads, firstNewThread);
+        if (DEBUG) Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
     }
 
     public boolean isVirtualBoard() {
@@ -967,6 +973,17 @@ public class ChanBoard {
                 lastSwapped = (new Date()).getTime();
             }
         }
+    }
+
+    public static boolean isFavoriteBoard(final Context context, final String boardCode) {
+        ChanBoard favorites = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        if (favorites == null || !favorites.hasData())
+            return false;
+        for (ChanThread thread : favorites.threads) {
+            if (boardCode.equals(thread.board))
+                return true;
+        }
+        return false;
     }
 
     public static String boardUrl(Context context, String boardCode) {

@@ -261,7 +261,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         		} else {
         			board.loadedThreads = threads.toArray(new ChanThread[0]);
         		}
-        		board.updateCountersAfterLoad();
+        		board.updateCountersAfterLoad(getBaseContext());
         	}
         }
 	}

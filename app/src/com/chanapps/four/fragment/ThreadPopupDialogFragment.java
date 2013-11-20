@@ -79,13 +79,14 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         if (DEBUG) Log.i(TAG, "ThreadPopupDialogFragment()");
     }
 
-    public ThreadPopupDialogFragment(Fragment parent, String boardCode, long threadNo, long postNo, int pos, PopupType popupType, String query) {
+    //public ThreadPopupDialogFragment(Fragment parent, String boardCode, long threadNo, long postNo, int pos, PopupType popupType, String query) {
+    public ThreadPopupDialogFragment(Fragment parent, String boardCode, long threadNo, long postNo, PopupType popupType, String query) {
         super();
         this.parent = parent;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
         this.postNo = postNo;
-        this.pos = pos;
+        this.pos = -1;
         this.popupType = popupType;
         this.query = query;
         if (DEBUG) Log.i(TAG, "ThreadPopupDialogFragment() /" + boardCode + "/" + threadNo + "#p" + postNo + " pos=" + pos + " query=" + query);
@@ -105,7 +106,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
             threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO);
             postNo = savedInstanceState.getLong(ChanPost.POST_NO);
-            pos = savedInstanceState.getInt(LAST_POSITION);
+            //pos = savedInstanceState.getInt(LAST_POSITION);
             popupType = PopupType.valueOf(savedInstanceState.getString(POPUP_TYPE));
             query = savedInstanceState.getString(SearchManager.QUERY);
             if (DEBUG) Log.i(TAG, "onCreateDialog() /" + boardCode + "/" + threadNo + " restored from bundle");
@@ -148,7 +149,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         outState.putString(ChanBoard.BOARD_CODE, boardCode);
         outState.putLong(ChanThread.THREAD_NO, threadNo);
         outState.putLong(ChanPost.POST_NO, postNo);
-        outState.putInt(LAST_POSITION, pos);
+        //outState.putInt(LAST_POSITION, pos);
         outState.putString(POPUP_TYPE, popupType.toString());
         outState.putString(SearchManager.QUERY, query);
     }
@@ -251,7 +252,9 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (pos == 0 && postNo != threadNo && cursor.moveToFirst()) { // on multi-jump the original position is invalid, so re-scan position
+                //if (pos == 0 && postNo != threadNo && cursor.moveToFirst()) { // on multi-jump the original position is invalid, so re-scan position
+                pos = -1;
+                if (cursor.moveToFirst()) { // on multi-jump the original position is invalid, so re-scan position
                     while (!cursor.isAfterLast()) {
                         long id = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
                         if (id == postNo) {
@@ -260,6 +263,10 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                         }
                         cursor.moveToNext();
                     }
+                }
+                if (pos == -1) {
+                    Log.e(TAG, "Couldn't find post position in cursor");
+                    return;
                 }
                 final Cursor detailCursor = detailsCursor();
                 if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " detail cursor size=" + detailCursor.getCount());
@@ -372,6 +379,10 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
 
     protected Cursor detailsCursor() {
         MatrixCursor matrixCursor = ChanPost.buildMatrixCursor(0);
+        if (pos == -1) {
+            Log.e(TAG, "Error: invalid pos position pos=" + -1);
+            return matrixCursor;
+        }
         switch (popupType) {
             case BACKLINKS:
                 addBlobRows(matrixCursor, ChanPost.POST_BACKLINKS_BLOB);
@@ -479,7 +490,8 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         }
         if (DEBUG) Log.i(TAG, "onItemClick() scrolling to postNo=" + postNo);
         dismiss();
-        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, popupType, query))
+        //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, popupType, query))
+        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, popupType, query))
                 .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
     }
 

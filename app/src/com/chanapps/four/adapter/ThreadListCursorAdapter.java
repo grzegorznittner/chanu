@@ -162,7 +162,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         if (DEBUG) Log.i(TAG, "should dismiss parent here fragment=" + fragment);
                         if (onDismissCallback != null)
                             onDismissCallback.run();
-                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
+                        //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
+                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, ThreadPopupDialogFragment.PopupType.REPLIES, query))
                                 .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
                     }
                 }
@@ -179,7 +180,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         if (DEBUG) Log.i(TAG, "should dismiss parent here fragment=" + fragment);
                         if (onDismissCallback != null)
                             onDismissCallback.run();
-                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
+                        //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
+                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, ThreadPopupDialogFragment.PopupType.REPLIES, query))
                                 .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
                     }
                 }
