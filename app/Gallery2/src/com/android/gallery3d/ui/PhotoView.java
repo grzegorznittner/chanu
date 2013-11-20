@@ -31,8 +31,8 @@ import com.android.gallery3d.ui.PositionRepository.Position;
 import com.chanapps.four.gallery3d.R;
 
 public class PhotoView extends GLView {
-    @SuppressWarnings("unused")
-    private static final String TAG = "PhotoView";
+    private static final String TAG = PhotoView.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
     public static final int INVALID_SIZE = -1;
 
@@ -552,14 +552,19 @@ public class PhotoView extends GLView {
         }
     }
 
+    private static final float MIN_SCALE_FOR_EVENT = 0.1f;
+
     private class MyScaleListener
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             float scale = detector.getScaleFactor();
+            if (DEBUG) Log.v(TAG, "onScale() scale=" + scale);
             if (Float.isNaN(scale) || Float.isInfinite(scale)
                     || mTransitionMode != TRANS_NONE) return true;
+            if (scale < MIN_SCALE_FOR_EVENT)
+                return false;
             mPositionController.scaleBy(scale,
                     detector.getFocusX(), detector.getFocusY());
             return true;

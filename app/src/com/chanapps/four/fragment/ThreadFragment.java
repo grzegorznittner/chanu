@@ -1238,13 +1238,18 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             boolean isHeader = pos == 0;
             updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
             PopupMenu popup = new PopupMenu(getActivityContext(), v);
+            Cursor cursor = adapter.getCursor();
+            boolean hasImage = cursor != null
+                    && (cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS)) & ChanPost.FLAG_HAS_IMAGE) > 0;
             int menuId;
             if (!undead())
                 menuId = R.menu.thread_dead_context_menu;
             else if (isHeader)
                 menuId = R.menu.thread_header_context_menu;
+            else if (hasImage)
+                menuId = R.menu.thread_image_context_menu;
             else
-                menuId = R.menu.thread_context_menu;
+                menuId = R.menu.thread_text_context_menu;
             popup.inflate(menuId);
             popup.setOnMenuItemClickListener(popupListener);
             popup.setOnDismissListener(popupDismissListener);
@@ -1348,7 +1353,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             if (DEBUG) Log.i(TAG, "onCreateActionMode");
             MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.thread_context_menu, menu);
+            inflater.inflate(R.menu.thread_text_context_menu, menu);
             MenuItem shareItem = menu.findItem(R.id.thread_context_share_action_menu);
             if (shareItem != null) {
                 shareActionProvider = (ShareActionProvider) shareItem.getActionProvider();

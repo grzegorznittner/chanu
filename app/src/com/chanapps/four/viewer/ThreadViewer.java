@@ -645,6 +645,8 @@ public class ThreadViewer {
         ImageView spinner = viewHolder.list_item_image_spinner;
         if (iv == null)
             return false;
+        if (viewHolder.list_item_image_collapse != null)
+            viewHolder.list_item_image_collapse.setVisibility(View.GONE);
         if (hideNoImage(iv, spinner, flags))
             return true;
         //if (isListLink(flags))

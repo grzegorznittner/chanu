@@ -35,6 +35,8 @@ import android.widget.Scroller;
 
 class PositionController {
     private static final String TAG = "PositionController";
+    private static final boolean DEBUG = true;
+
     private long mAnimationStartTime = NO_ANIMATION;
     private static final long NO_ANIMATION = -1;
     private static final long LAST_ANIMATION = -2;
@@ -104,7 +106,7 @@ class PositionController {
     }
 
     public void setImageSize(int width, int height) {
-        Log.i(TAG, "setImageSize() scale=" + mCurrentScale + " maxScale=" + mScaleMax);
+        if (DEBUG) Log.i(TAG, "setImageSize() scale=" + mCurrentScale + " maxScale=" + mScaleMax);
 
         // If no image available, use view size.
         if (width == 0 || height == 0) {
@@ -163,7 +165,7 @@ class PositionController {
     }
 
     public void zoomIn(float tapX, float tapY, float targetScale) {
-        Log.i(TAG, "zoomIn() scale=" + mCurrentScale + " maxScale=" + mScaleMax);
+        if (DEBUG) Log.i(TAG, "zoomIn() scale=" + mCurrentScale + " maxScale=" + mScaleMax);
 
         if (targetScale > mScaleMax) targetScale = mScaleMax;
 
@@ -273,18 +275,40 @@ class PositionController {
                 (focusY - mViewH / 2f) / mCurrentScale);
     }
 
+    private static final float MIN_SCALE_DELTA = 0.001f;
+    private static final float MIN_SCALE_TO_GROW = 1.0f + MIN_SCALE_DELTA;
+    private static final float MAX_SCALE_TO_SHRINK = 1.0f - MIN_SCALE_DELTA;
+    private static final float SCALE_FACTOR_DELTA = 0.15f;
+    private static final float SCALE_GROW_FACTOR = 1.0f + SCALE_FACTOR_DELTA;
+    private static final float SCALE_SHRINK_FACTOR = 1.0f - SCALE_FACTOR_DELTA;
+
     public void scaleBy(float s, float focusX, float focusY) {
-        Log.i(TAG, "scaleBy s=" + s + " focusX=" + focusX + " focusY=" + focusY);
         // We want to keep the focus point (on the bitmap) the same as when
         // we begin the scale guesture, that is,
         //
         // mCurrentX' + (focusX - mViewW / 2f) / scale = mFocusBitmapX
         //
-        s *= getTargetScale() * 1.1f;
-        int x = Math.round(mFocusBitmapX - (focusX - mViewW / 2f) / s);
-        int y = Math.round(mFocusBitmapY - (focusY - mViewH / 2f) / s);
+        float inDeltaScale = s;
+        float inScale = getTargetScale();
+        float outDeltaScale;
+        if (inDeltaScale > MIN_SCALE_TO_GROW)
+            outDeltaScale = inDeltaScale * SCALE_GROW_FACTOR;
+        else if (inDeltaScale < MAX_SCALE_TO_SHRINK)
+            outDeltaScale = inDeltaScale * SCALE_SHRINK_FACTOR;
+        else
+            outDeltaScale = 1.0f;
+        float outScale = inScale * outDeltaScale;
+        if (DEBUG) Log.i(TAG, "scaleBy() in=" + inScale + " inDelta=" + inDeltaScale
+                + " outDelta=" + outDeltaScale + " out=" + outScale
+                + " focusX=" + focusX + " focusY=" + focusY);
+        if (outDeltaScale == 1)
+            return;
 
-        startAnimation(x, y, s, ANIM_KIND_SCALE);
+        //int x = Math.round(mFocusBitmapX - (focusX - mViewW / 2f) / s);
+        //int y = Math.round(mFocusBitmapY - (focusY - mViewH / 2f) / s);
+        int x = Math.round(mFocusBitmapX - (focusX - mViewW / 2f) / outScale);
+        int y = Math.round(mFocusBitmapY - (focusY - mViewH / 2f) / outScale);
+        startAnimation(x, y, outScale, ANIM_KIND_SCALE);
     }
 
     public void endScale() {
