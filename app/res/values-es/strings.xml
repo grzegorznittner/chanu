@@ -1512,4 +1512,26 @@
   <string name="plurals_thread_num_direct_replies_label_other">RESPUESTAS</string>
   <string name="cancel_download_title">Descargar imagen</string>
   <string name="cancel_download_message">¿Cancelar descarga de imagen?</string>
+
+    <!-- new strings -->
+    <string name="pref_view_options">Opciones visuales</string>
+    <string name="pref_view_options_summ">Cambiar apariencia</string>
+    <string name="pref_advanced_category_summ">Modifique ajustes</string>
+
+    <string name="sort_order_menu">Orden de clasificación</string>
+    <string name="sort_order_bump_order">Bump (defecto)</string>
+    <string name="sort_order_reply_count">Número de comentarios</string>
+    <string name="sort_order_image_count">Número de imágenes</string>
+    <string name="sort_order_creation_date">Fecha de apertura</string>
+
+    <string name="font_size_menu">Talla de letra</string>
+    <string name="font_size_tiny">Minúsculo</string>
+    <string name="font_size_small">Pequeña</string>
+    <string name="font_size_medium">Medio</string>
+    <string name="font_size_large">Grande</string>
+    <string name="font_size_huge">Enorme</string>
+
+    <string name="plurals_board_activity_udpdated_one">Nuevo hilo en /%1$s/</string>
+    <string name="plurals_board_actviity_updated_other">New threads en /%1$s/</string>
+
 </resources>

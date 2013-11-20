@@ -1716,6 +1716,8 @@
 
 <!-- MOVED FROM PLURALS.XML -->
 
+<string name="plurals_board_activity_udpdated_one">New thread on /%1$s/</string>
+<string name="plurals_board_actviity_updated_other">New threads on /%1$s/</string>
 <string name="plurals_thread_activity_udpdated_one">%1$d new comment</string>
 <string name="plurals_thread_actviity_updated_other">%1$d new comments</string>
 <string name="plurals_board_grid_item_num_replies_one">View 1 post</string>
@@ -1747,8 +1749,8 @@
 
     <!-- new strings -->
     <string name="pref_view_options">View Options</string>
-    <string name="pref_view_options_summ">Customize appearance</string>
-    <string name="pref_advanced_category_summ">Modify behavior</string>
+    <string name="pref_view_options_summ">Change appearance</string>
+    <string name="pref_advanced_category_summ">Modify settings</string>
 
     <string name="sort_order_menu">Sort order</string>
     <string name="sort_order_bump_order">Bump order</string>
