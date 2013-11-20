@@ -32,7 +32,7 @@ import com.chanapps.four.gallery3d.R;
 
 public class PhotoView extends GLView {
     private static final String TAG = PhotoView.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final int INVALID_SIZE = -1;
 

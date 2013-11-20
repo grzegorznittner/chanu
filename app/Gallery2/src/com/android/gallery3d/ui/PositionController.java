@@ -35,7 +35,7 @@ import android.widget.Scroller;
 
 class PositionController {
     private static final String TAG = "PositionController";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private long mAnimationStartTime = NO_ANIMATION;
     private static final long NO_ANIMATION = -1;
