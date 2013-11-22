@@ -210,7 +210,7 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static final float BOARD_CODE_LETTER_SPACING = 0.8f;
+    protected static final float BOARD_CODE_LETTER_SPACING = 0.65f;
 
     protected static void displayBoardCode(BoardGridViewHolder viewHolder,
                                            Cursor cursor,
