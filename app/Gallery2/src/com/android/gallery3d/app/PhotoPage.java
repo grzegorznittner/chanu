@@ -301,20 +301,28 @@ public class PhotoPage extends ActivityState
             @Override
             public void onPhotoAvailable(long version, boolean fullImage) {
                 if (DEBUG) Log.w(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
-
-                MediaItem photo = mModel.getCurrentMediaItem();
-                if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
-                    if (DEBUG) Log.w(TAG, "Playing anim gif version: " + version + ", fullImage: " + fullImage);
-                    playAnimatedGif(photo);
-                }
-                else {
-                    if (DEBUG) Log.w(TAG, "Hiding anim gif view version: " + version + ", fullImage: " + fullImage);
-                    hideAnimatedGif();
-                }
+                hideOrPlayAnimGif(mModel.getCurrentMediaItem(), version);
                 if (mFilmStripView == null) initFilmStripView();
             }
         });
     }
+
+    private void hideOrPlayAnimGif(MediaItem photo) {
+        hideOrPlayAnimGif(photo, photo == null ? 0 : photo.getDataVersion());
+    }
+
+    private void hideOrPlayAnimGif(MediaItem photo, long version) {
+        if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
+            if (DEBUG) Log.w(TAG, "Playing anim gif");
+            if (!isAnimatedGifVisible())
+                playAnimatedGif(photo, version);
+        }
+        else {
+            if (DEBUG) Log.w(TAG, "Hiding anim gif view");
+            hideAnimatedGif();
+        }
+    }
+
 
     private void getDefaultMediaSet(final Path itemPath) {
         // Get default media set by the URI
@@ -342,12 +350,7 @@ public class PhotoPage extends ActivityState
 
     private void updateCurrentPhoto(final MediaItem photo) {
         if (DEBUG) Log.w(TAG, "updateCurrentPhoto photo: " + photo.getPath() + ", uri: " + photo.getPlayUri());
-        if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
-            playAnimatedGif(photo);
-        }
-        else {
-            hideAnimatedGif();
-        }
+        hideOrPlayAnimGif(photo);
         if (mCurrentPhoto == photo) return;
         mCurrentPhoto = photo;
         if (mCurrentPhoto == null) return;
@@ -437,6 +440,7 @@ public class PhotoPage extends ActivityState
         if (mFilmStripView != null) {
             mFilmStripView.hide();
         }
+        //FOO
     }
 
     private void refreshHidingMessage() {
@@ -601,6 +605,9 @@ public class PhotoPage extends ActivityState
     }
 
     public void onSingleTapUp(int x, int y) {
+        hideOrPlayAnimGif(mModel.getCurrentMediaItem());
+        onUserInteractionTap();
+/*
         MediaItem item = mModel.getCurrentMediaItem();
         if (item == null) {
             // item is not ready, ignore
@@ -624,6 +631,7 @@ public class PhotoPage extends ActivityState
         } else {
             onUserInteractionTap();
         }
+        */
     }
 
     public static void playVideo(Activity activity, Uri uri, Path path) {
@@ -650,13 +658,24 @@ public class PhotoPage extends ActivityState
         if (activity == null)
             return;
         View view = activity.findViewById(com.chanapps.four.activity.R.id.gifview);
-        //if (view == null || view.getVisibility() != View.GONE) {
-        if (view != null) {
-            view.setVisibility(View.GONE);
-        }
+        if (view == null)
+            return;
+        view.setVisibility(View.GONE);
     }
 
-    public void playAnimatedGif(MediaItem item) {
+    private boolean isAnimatedGifVisible() {
+        Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
+        if (activity == null)
+            return false;
+        View view = activity.findViewById(com.chanapps.four.activity.R.id.gifview);
+        if (view == null)
+            return false;
+        return (view.getVisibility() == View.VISIBLE);
+    }
+
+    public void playAnimatedGif(MediaItem item, long version) {
+        if (item == null)
+            return;
         Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
         if (activity == null) {
             if (DEBUG) Log.i(TAG, "Play anim gif null activity, exiting");
@@ -692,11 +711,15 @@ public class PhotoPage extends ActivityState
             if (DEBUG) Log.i(TAG, "Exiting play anim gif since null webview url");
             return;
         }
-        if (localPlayUri.equals(myWebView.getTag())) {
-            if (DEBUG) Log.i(TAG, "Exiting play anim gif since already playing tagged webview url = " + localPlayUri);
+        if (myWebView.isFocused()) {
+            if (DEBUG) Log.i(TAG, "Already focused, exiting");
+        }
+        /*
+        if ((localPlayUri + "#" + version).equals(myWebView.getTag())) {
+            if (DEBUG) Log.i(TAG, "Exiting play anim gif since already loaded url=" + localPlayUri + " version=" + version);
             return;
         }
-
+        */
         if (DEBUG) Log.w(TAG, "Screen size w: " + rootView.getMeasuredWidth() + " h: " + rootView.getMeasuredHeight());
         if (DEBUG) Log.w(TAG, "Image  size w: " + item.getWidth() + " h: " + item.getHeight());
 
@@ -717,7 +740,7 @@ public class PhotoPage extends ActivityState
 
         if (DEBUG) Log.i(TAG, "Loading anim gif webview url = " + localPlayUri);
         myWebView.loadUrl(localPlayUri.toString());
-        myWebView.setTag(localPlayUri);
+        myWebView.setTag(localPlayUri + "#" + version);
 
         view.setVisibility(View.VISIBLE);
     }
@@ -774,6 +797,7 @@ public class PhotoPage extends ActivityState
         if (mHandler != null) mHandler.removeMessages(MSG_HIDE_BARS);
         if (mActionBar != null) mActionBar.removeOnMenuVisibilityListener(mMenuVisibilityListener);
         if (mMenuExecutor != null) mMenuExecutor.pause();
+        hideAnimatedGif();
     }
 
     @Override
