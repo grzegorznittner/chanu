@@ -1180,9 +1180,7 @@ public class PostReplyActivity
 
     public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, Integer> {
 
-        public final String TAG = PostReplyTask.class.getSimpleName();
         public static final String MAX_FILE_SIZE = "3145728";
-        public static final boolean DEBUG = false;
 
         //private PostReplyActivity activity = null;
         private boolean usePass = false;

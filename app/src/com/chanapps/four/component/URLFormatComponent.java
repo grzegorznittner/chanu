@@ -4,6 +4,10 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 import com.chanapps.four.activity.SettingsActivity;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created with IntelliJ IDEA.
  * User: johnarleyburns
@@ -42,7 +46,6 @@ public class URLFormatComponent {
     public static final String GOOGLE_PLUS_CHANU_URL = "//plus.google.com/communities/107363899339170685863";
     public static final String GOOGLE_QUERY_IMAGE_URL_FORMAT = "//www.google.com/search?safe=off&site=imghp&tbm=isch&source=hp&q=%s";
     public static final String GOOGLE_RECAPTCHA_API_URL_FORMAT = "//www.google.com/recaptcha/api/%s";
-    private static final String GOOGLE_RECAPTCHA_API_NOHTTPS_URL_FORMAT = "//api.recaptcha.net/%s";
     public static final String GOOGLE_TRANSLATE_URL_FORMAT = "//translate.google.com/m?hl=%s&sl=auto&tl=%s&ie=UTF8&prev=_m&q=%s";
     public static final String SKREENED_CHANU_STORE_URL = "//www.skreened.com/chanapps/";
     public static final String TINEYE_IMAGE_SEARCH_URL_FORMAT = "//tineye.com/search?url=%s";
@@ -50,14 +53,25 @@ public class URLFormatComponent {
     public static final String MARKET_APP_URL = "market://details?id=com.chanapps.four.activity";
     public static final String MARKET_CORP_URL = "market://search?q=pub:Chanapps Software";
 
+    private static final String[] FORCE_HTTPS_URLS = {
+            CHAN_AUTH_URL,
+            CHAN_POST_URL_FORMAT,
+            CHAN_POST_URL_DELETE_FORMAT,
+            GOOGLE_CHANU_RECAPTCHA_URL,
+            GOOGLE_RECAPTCHA_API_URL_FORMAT
+    };
+    private static final Set<String> forceHttpsUrls = new HashSet<String>(FORCE_HTTPS_URLS.length);
+
     public static String getUrl(Context context, String url) {
         if (url.startsWith("market://"))
             return url;
         boolean useHttps = PreferenceManager
                         .getDefaultSharedPreferences(context)
                         .getBoolean(SettingsActivity.PREF_USE_HTTPS, true);
-        if (!useHttps && GOOGLE_RECAPTCHA_API_URL_FORMAT.equals(url))
-            return "http:" + GOOGLE_RECAPTCHA_API_NOHTTPS_URL_FORMAT;
+        if (forceHttpsUrls.isEmpty() && FORCE_HTTPS_URLS.length > 0)
+            forceHttpsUrls.addAll(Arrays.asList(FORCE_HTTPS_URLS));
+        if (forceHttpsUrls.contains(url))
+            useHttps = true;
         String protocol = useHttps ? "https:" : "http:";
         return protocol + url;
     }
