@@ -1207,7 +1207,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 }
                 if (handler != null && getActivity() != null && getActivity().getLoaderManager() != null) {
                     if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " scheduling handler post");
-                    handler.post(new Runnable() {
+                    if (handler != null)
+                        handler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");

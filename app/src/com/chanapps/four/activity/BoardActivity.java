@@ -340,7 +340,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         boardCode = bundle.getString(ChanBoard.BOARD_CODE);
         query = bundle.getString(SearchManager.QUERY);
-        //firstVisiblePosition = bundle.getInt(FIRST_VISIBLE_POSITION);
+        boardSortType = BoardSortType.loadFromPrefs(this);
+//firstVisiblePosition = bundle.getInt(FIRST_VISIBLE_POSITION);
         //firstVisiblePositionOffset = bundle.getInt(FIRST_VISIBLE_POSITION_OFFSET);
         if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query);
     }
@@ -1313,9 +1314,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                             .setNotifySortOrderListener(new BoardSortOrderDialogFragment.NotifySortOrderListener() {
                                 @Override
                                 public void onSortOrderChanged(BoardSortType boardSortType) {
-                                    BoardActivity.this.boardSortType = boardSortType;
-                                    BoardSortType.saveToPrefs(BoardActivity.this, boardSortType);
-                                    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                                    if (boardSortType != null) {
+                                        BoardActivity.this.boardSortType = boardSortType;
+                                        BoardSortType.saveToPrefs(BoardActivity.this, boardSortType);
+                                        getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                                    }
                                 }
                             })
                             .show(getSupportFragmentManager(), TAG);

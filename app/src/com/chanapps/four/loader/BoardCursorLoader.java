@@ -38,7 +38,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     protected long generatorSeed;
     protected Random generator;
 
-    protected BoardSortType boardSortType;
+    protected BoardSortType boardSortType = BoardSortType.BUMP_ORDER;
 
     protected BoardCursorLoader(Context context) {
         super(context);
@@ -53,7 +53,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         this.query = query == null ? "" : query.toLowerCase().trim();
         this.abbrev = abbrev;
         this.header = header;
-        this.boardSortType = boardSortType;
+        this.boardSortType = boardSortType != null ? boardSortType : BoardSortType.BUMP_ORDER;
         //initRandomGenerator();
         ChanBoard.initBoards(context);
     }

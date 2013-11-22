@@ -275,12 +275,12 @@ class PositionController {
                 (focusY - mViewH / 2f) / mCurrentScale);
     }
 
-    private static final float MIN_SCALE_DELTA = 0.001f;
+    private static final float MIN_SCALE_FOR_EVENT = 0.00001f; // 0.005f;
+    private static final float MIN_SCALE_DELTA = 0.00001f; //0.005f;
     private static final float MIN_SCALE_TO_GROW = 1.0f + MIN_SCALE_DELTA;
     private static final float MAX_SCALE_TO_SHRINK = 1.0f - MIN_SCALE_DELTA;
-    private static final float SCALE_FACTOR_DELTA = 0.15f;
-    private static final float SCALE_GROW_FACTOR = 1.0f + SCALE_FACTOR_DELTA;
-    private static final float SCALE_SHRINK_FACTOR = 1.0f - SCALE_FACTOR_DELTA;
+    private static final float SCALE_GROW_FACTOR = 1.4f;
+    private static final float SCALE_SHRINK_FACTOR = 0.6f;
 
     public void scaleBy(float s, float focusX, float focusY) {
         // We want to keep the focus point (on the bitmap) the same as when
@@ -296,12 +296,12 @@ class PositionController {
         else if (inDeltaScale < MAX_SCALE_TO_SHRINK)
             outDeltaScale = inDeltaScale * SCALE_SHRINK_FACTOR;
         else
-            outDeltaScale = 1.0f;
+            outDeltaScale = inDeltaScale;
         float outScale = inScale * outDeltaScale;
         if (DEBUG) Log.i(TAG, "scaleBy() in=" + inScale + " inDelta=" + inDeltaScale
                 + " outDelta=" + outDeltaScale + " out=" + outScale
                 + " focusX=" + focusX + " focusY=" + focusY);
-        if (outDeltaScale == 1)
+        if (inDeltaScale == outDeltaScale)
             return;
 
         //int x = Math.round(mFocusBitmapX - (focusX - mViewW / 2f) / s);

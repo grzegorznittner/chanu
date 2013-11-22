@@ -552,8 +552,6 @@ public class PhotoView extends GLView {
         }
     }
 
-    private static final float MIN_SCALE_FOR_EVENT = 0.1f;
-
     private class MyScaleListener
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
@@ -563,8 +561,6 @@ public class PhotoView extends GLView {
             if (DEBUG) Log.v(TAG, "onScale() scale=" + scale);
             if (Float.isNaN(scale) || Float.isInfinite(scale)
                     || mTransitionMode != TRANS_NONE) return true;
-            if (scale < MIN_SCALE_FOR_EVENT)
-                return false;
             mPositionController.scaleBy(scale,
                     detector.getFocusX(), detector.getFocusY());
             return true;

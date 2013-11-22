@@ -1031,7 +1031,9 @@ public class ThreadActivity
             return super.dispatchKeyEvent(event);
         }
         AbsListView absListView = fragment.getAbsListView();
-        boolean handled = ListViewKeyScroller.dispatchKeyEvent(event, absListView);
+        boolean handled = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(SettingsActivity.PREF_USE_VOLUME_SCROLL, false)
+            && ListViewKeyScroller.dispatchKeyEvent(event, absListView);
         if (handled)
             return true;
         else

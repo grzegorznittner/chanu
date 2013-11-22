@@ -294,6 +294,7 @@ public class NotificationComponent {
     public static void notifyNewThreads(final Context context, final String boardCode, final int numNewThreads,
                                         final ChanThread newThread) {
         if (DEBUG) Log.i(TAG, "notifyNewThreads() /" + boardCode + "/ numThreads=" + numNewThreads);
+        /*
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
             return;
         if (boardCode == null || boardCode.isEmpty())
@@ -342,6 +343,7 @@ public class NotificationComponent {
         if (DEBUG) Log.i(TAG, "notifyNewThreads() sending notification for " + numNewThreads
                 + " new threads for /" + boardCode + "/");
         notificationManager.notify(notificationId, noti);
+        */
     }
 
 }

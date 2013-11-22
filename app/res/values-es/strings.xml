@@ -1513,7 +1513,6 @@
   <string name="cancel_download_title">Descargar imagen</string>
   <string name="cancel_download_message">¿Cancelar descarga de imagen?</string>
 
-    <!-- new strings -->
     <string name="pref_view_options">Opciones visuales</string>
     <string name="pref_view_options_summ">Cambiar apariencia</string>
     <string name="pref_advanced_category_summ">Modifique ajustes</string>
@@ -1533,5 +1532,8 @@
 
     <string name="plurals_board_activity_udpdated_one">Nuevo hilo en /%1$s/</string>
     <string name="plurals_board_actviity_updated_other">New threads en /%1$s/</string>
+
+    <!-- new strings -->
+    <string name="pref_use_volume_scroll">Tecla de volumen recorrer</string>
 
 </resources>

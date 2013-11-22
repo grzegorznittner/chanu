@@ -647,6 +647,8 @@ public class PhotoPage extends ActivityState
 
     private void hideAnimatedGif() {
         Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
+        if (activity == null)
+            return;
         View view = activity.findViewById(com.chanapps.four.activity.R.id.gifview);
         //if (view == null || view.getVisibility() != View.GONE) {
         if (view != null) {

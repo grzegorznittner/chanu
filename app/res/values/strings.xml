@@ -1747,7 +1747,6 @@
 <string name="cancel_download_title">Image Download</string>
 <string name="cancel_download_message">Cancel image download?</string>
 
-    <!-- new strings -->
     <string name="pref_view_options">View Options</string>
     <string name="pref_view_options_summ">Change appearance</string>
     <string name="pref_advanced_category_summ">Modify settings</string>
@@ -1764,5 +1763,8 @@
     <string name="font_size_medium">Medium</string>
     <string name="font_size_large">Large</string>
     <string name="font_size_huge">Huge</string>
+
+    <!-- new strings -->
+    <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
 
 </resources>

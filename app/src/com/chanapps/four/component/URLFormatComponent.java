@@ -41,8 +41,8 @@ public class URLFormatComponent {
     public static final String GOOGLE_MAPS_URL_FORMAT = "//maps.google.com/maps?f=q&q=(%f,%f)";
     public static final String GOOGLE_PLUS_CHANU_URL = "//plus.google.com/communities/107363899339170685863";
     public static final String GOOGLE_QUERY_IMAGE_URL_FORMAT = "//www.google.com/search?safe=off&site=imghp&tbm=isch&source=hp&q=%s";
-    //public static final String GOOGLE_RECAPTCHA_API_URL_FORMAT = "//api.recaptcha.net/%s";
     public static final String GOOGLE_RECAPTCHA_API_URL_FORMAT = "//www.google.com/recaptcha/api/%s";
+    private static final String GOOGLE_RECAPTCHA_API_NOHTTPS_URL_FORMAT = "//api.recaptcha.net/%s";
     public static final String GOOGLE_TRANSLATE_URL_FORMAT = "//translate.google.com/m?hl=%s&sl=auto&tl=%s&ie=UTF8&prev=_m&q=%s";
     public static final String SKREENED_CHANU_STORE_URL = "//www.skreened.com/chanapps/";
     public static final String TINEYE_IMAGE_SEARCH_URL_FORMAT = "//tineye.com/search?url=%s";
@@ -51,10 +51,14 @@ public class URLFormatComponent {
     public static final String MARKET_CORP_URL = "market://search?q=pub:Chanapps Software";
 
     public static String getUrl(Context context, String url) {
-        String protocol =
-                (PreferenceManager
+        if (url.startsWith("market://"))
+            return url;
+        boolean useHttps = PreferenceManager
                         .getDefaultSharedPreferences(context)
-                        .getBoolean(SettingsActivity.PREF_USE_HTTPS, true)) ? "https:" : "http:";
+                        .getBoolean(SettingsActivity.PREF_USE_HTTPS, true);
+        if (!useHttps && GOOGLE_RECAPTCHA_API_URL_FORMAT.equals(url))
+            return "http:" + GOOGLE_RECAPTCHA_API_NOHTTPS_URL_FORMAT;
+        String protocol = useHttps ? "https:" : "http:";
         return protocol + url;
     }
 

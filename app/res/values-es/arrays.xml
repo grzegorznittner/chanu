@@ -238,11 +238,11 @@
         <item>@string/board_x_with_abbrev</item>
         <item>@string/board_y_with_abbrev</item>
         <item>@string/board_3_with_abbrev</item>
+        <item>@string/board_watch</item>
         <!--
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-        <item>@string/board_watch</item>
         -->
     </string-array>
 
@@ -292,11 +292,11 @@
         <item>@string/board_wsg_with_abbrev</item>
         <item>@string/board_x_with_abbrev</item>
         <item>@string/board_3_with_abbrev</item>
+        <item>@string/board_watch</item>
         <!--
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-        <item>@string/board_watch</item>
         -->
     </string-array>
 

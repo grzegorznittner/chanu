@@ -1534,7 +1534,6 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
 
     <string name="tutorial_all">Chanu ist ein Browser für 4chan, ein Forum für Menschen aus aller Welt, die Bilder hochladen und darüber diskutieren.\n\nWähle ein Board, um zu beginnen!</string>
 
-    <!-- new strings -->
     <string name="cancel_download_title">Bild Download</string>
     <string name="cancel_download_message">Abbrechen Bild Download?</string>
 
@@ -1557,5 +1556,8 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
 
     <string name="plurals_board_activity_udpdated_one">Neuer Thread bei /%1$s/</string>
     <string name="plurals_board_actviity_updated_other">Neuere Threads bei /%1$s/</string>
+
+    <!-- new strings -->
+    <string name="pref_use_volume_scroll">Lautstärkeknopf rollen</string>
 
 </resources>

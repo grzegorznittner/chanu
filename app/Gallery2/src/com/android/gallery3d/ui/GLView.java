@@ -104,7 +104,8 @@ public class GLView {
 
     // This should only be called on the content pane (the topmost GLView).
     public void attachToRoot(GLRoot root) {
-        Utils.assertTrue(mParent == null && mRoot == null);
+        Utils.assertTrue(mParent == null);
+        Utils.assertTrue(mRoot == null);
         onAttachToRoot(root);
     }
 

@@ -32,6 +32,10 @@
                  android:summaryOff="@string/view_as_list_menu"
                  -->
 
+        <CheckBoxPreference
+                android:key="pref_use_volume_scroll"
+                android:title="@string/pref_use_volume_scroll"
+                android:defaultValue="false" />
 
         <ListPreference
                 android:key="pref_theme"

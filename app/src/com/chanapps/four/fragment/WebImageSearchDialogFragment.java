@@ -72,7 +72,8 @@ public class WebImageSearchDialogFragment extends DialogFragment {
             ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
         }
         else {
-            ActivityDispatcher.launchUrlInBrowser(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL);
+            ActivityDispatcher.launchUrlInBrowser(getActivity(),
+                    URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
         }
         dismiss();
     }

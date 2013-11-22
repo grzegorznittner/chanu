@@ -91,7 +91,8 @@ public class WebImageDialogFragment extends DialogFragment {
         webBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityDispatcher.launchUrlInBrowser(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL);
+                ActivityDispatcher.launchUrlInBrowser(getActivity(),
+                        URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
             }
         });
         frame = (ViewGroup)view.findViewById(R.id.frame);
