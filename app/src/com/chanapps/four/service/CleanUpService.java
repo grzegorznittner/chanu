@@ -25,26 +25,24 @@ public class CleanUpService extends BaseChanService {
     protected static final String TAG = CleanUpService.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    private static final long MIN_DELAY_BETWEEN_CLEANUPS = 4 * 60 * 1000; // 2min
-    private static final long MAX_DELAY_BETWEEN_CLEANUPS = 30 * 60 * 1000; // 10min
-    private static long scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS;
-    private static long lastScheduled = Calendar.getInstance().getTimeInMillis();
+    private static final long MIN_DELAY_BETWEEN_CLEANUPS_MS = 4 * 60 * 1000; // 2min
+    private static final long MAX_DELAY_BETWEEN_CLEANUPS_MS = 30 * 60 * 1000; // 10min
+    private static long scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS_MS;
+    private static long lastScheduled = 0;
 
-    public static void startService(Context context) {
-        if (lastScheduled > Calendar.getInstance().getTimeInMillis() - scheduleDelay) {
-            if (DEBUG) Log.w(TAG, "Cleanup service was called less than " + (scheduleDelay / 1000) + "s ago");
-            return;
-        }
-        scheduleDelay += MIN_DELAY_BETWEEN_CLEANUPS;
-        if (scheduleDelay > MAX_DELAY_BETWEEN_CLEANUPS) {
-        	scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS;
-        }
-        if (DEBUG) Log.w(TAG, "Scheduling clean up service");
-        lastScheduled = Calendar.getInstance().getTimeInMillis();
-        Intent intent = new Intent(context, CleanUpService.class);
-        intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
-        context.startService(intent);
-    }
+    private static final long ONE_MIN_MS = 60L * 60L * 1000L;
+    private static final long ONE_HOUR_MS = 60L * ONE_MIN_MS;
+    private static final long ONE_DAY_MS = 24L * ONE_HOUR_MS;
+    private static final long ONE_MIN_KEEP_SIZE_BYTES = 10L * 1024L;
+    private static final long ONE_HOUR_KEEP_SIZE_BYTES = 10L * 1024L;
+    private static final long ONE_DAY_KEEP_SIZE_BYTES = 250L * 1024L;
+    private static final long ONE_MB_BYTES = 1024L * 1024L;
+
+    private static final String NOMEDIA_FILE_PATTERN = ".*/\\.nomedia";
+    private static final Pattern nomediaFilePattern = Pattern.compile(NOMEDIA_FILE_PATTERN);
+    private static final String BOARD_FILE_PATTERN_FORMAT = ".*/%s\\.txt";
+    private static final String THREAD_FILE_PATTERN = ".*/t_([0-9]+)\\.txt";
+    private static final Pattern threadFilePattern = Pattern.compile(THREAD_FILE_PATTERN);
 
     private File cacheFolder = null;
     private List<FileDesc> otherFiles = null;
@@ -61,6 +59,25 @@ public class CleanUpService extends BaseChanService {
     private int totalDeletedFiles = 0;
     private long otherSize = 0;
 
+    public static void startService(Context context) {
+        /*
+        if (lastScheduled > Calendar.getInstance().getTimeInMillis() - scheduleDelay) {
+            if (DEBUG) Log.i(TAG, "Cleanup service was called less than " + (scheduleDelay / 1000) + "s ago, skipping call");
+            return;
+        }
+        lastScheduled = Calendar.getInstance().getTimeInMillis();
+        scheduleDelay += MIN_DELAY_BETWEEN_CLEANUPS_MS;
+        if (scheduleDelay > MAX_DELAY_BETWEEN_CLEANUPS_MS) {
+        	scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS_MS;
+        }
+        */
+        if (DEBUG) Log.w(TAG, "Scheduling clean up service");
+        lastScheduled = Calendar.getInstance().getTimeInMillis();
+        Intent intent = new Intent(context, CleanUpService.class);
+        intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
+        context.startService(intent);
+    }
+
     public CleanUpService() {
         super("cleanup");
     }
@@ -71,160 +88,46 @@ public class CleanUpService extends BaseChanService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        long startTime = Calendar.getInstance().getTimeInMillis();
         try {
-            Context context = getBaseContext();
-            cacheFolder = ChanFileStorage.getCacheDirectory(context);
-            if (DEBUG) Log.w(TAG, "Cache dir: " + cacheFolder.getAbsolutePath());
-            otherFiles = new ArrayList<FileDesc>();
-            sizeByBoard = new HashMap<String, Long>();
-            filesByBoard = new HashMap<String, List<FileDesc>>();
-            sizeOfWidget = 0;
-            filesOfWidget = null;
-
-            totalSize = 0;
-            totalFiles = 0;
-            totalDeletedFiles = 0;
-            otherSize = 0;
-
-            scanFiles();
-
-            long endTime = Calendar.getInstance().getTimeInMillis();
-            logCacheFileInfo("ClearUp init.", startTime, endTime);
-            if (DEBUG) {
-                toastUI("" + totalFiles + " files of size " + (totalSize / 1024)
-                        + " kB. Calculated in " + ((endTime - startTime) / 1000) + "s.");
-            }
-
-            startTime = Calendar.getInstance().getTimeInMillis();
-            long maxCacheSize = getPreferredCacheSize() * 1024 * 1024;
-            if (DEBUG) Log.w(TAG, "Preferred cache size is " + (maxCacheSize / (1024 * 1024)) + "MB");
-            targetCacheSize = maxCacheSize * 80 / 100;
-
-            if (totalSize > targetCacheSize) {
-                // delete other files older than 3 days
-                int numDeletedFiles = trimByDate(otherFiles, 3L * 24L * 60L * 60L * 1000L);
-                totalDeletedFiles += numDeletedFiles;
-                if (DEBUG) Log.w(TAG, "Deleted " + numDeletedFiles + " 'other' files.");
-
-                // clean up non top nor watched boards first
-                for (String board : filesByBoard.keySet()) {
-                    if (totalSize < targetCacheSize) {
-                        break;
-                    }
-                    if (watchedOrTopBoardCode.contains(board)) {
-                        continue;
-                    }
-
-                    List<FileDesc> boardFiles = filesByBoard.get(board);
-                    // delete old files first
-                    numDeletedFiles = trimByDate(boardFiles, 3L * 24L * 60L * 60L * 1000L);
-                    if (DEBUG && numDeletedFiles > 0)
-                        Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
-                    if (totalSize < targetCacheSize) {
-                        break;
-                    }
-                    // then by file size
-                    numDeletedFiles = trimBySize(boardFiles, 300 * 1024); // delete files larger than 300kB
-                    if (DEBUG && numDeletedFiles > 0)
-                        Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
-                    totalDeletedFiles += numDeletedFiles;
-                }
-
-                // clean up top or watched boards except thread files
-                for (String board : watchedOrTopBoardCode) {
-                    if (totalSize < targetCacheSize) {
-                        break;
-                    }
-                    List<FileDesc> preBoardFiles = filesByBoard.get(board);
-                    List<Long> threads = watchedThreads.get(board);
-                    List<FileDesc> boardFiles = new ArrayList<FileDesc>();
-                    for (FileDesc d : preBoardFiles) {
-                        String THREAD_FILE_PATTERN = ".*/t_([0-9]+)\\.txt";
-                        Pattern threadFilePattern = Pattern.compile(THREAD_FILE_PATTERN);
-                        Matcher m = threadFilePattern.matcher(d.path);
-                        if (!m.matches()) {
-                            boardFiles.add(d); // not a thread file
-                            continue;
-                        }
-                        long threadNo = 0;
-                        try {
-                            String threadStr = m.group(1);
-                            threadNo = Long.valueOf(threadNo);
-                            if (!threads.contains(threadNo))
-                                boardFiles.add(d);
-                        }
-                        catch (IllegalStateException e) {
-                            Log.i(TAG, "bad match thread number, adding file to cleanup: " + d.path, e);
-                            boardFiles.add(d);
-                            continue;
-                        }
-                        catch (NumberFormatException e) {
-                            Log.i(TAG, "unmatched thread number, adding file to cleanup: " + d.path, e);
-                            boardFiles.add(d);
-                            continue;
-                        }
-                    }
-
-                    // delete old files first
-                    numDeletedFiles = trimByDate(boardFiles, 5L * 24L * 60L * 60L * 1000L);
-                    if (DEBUG && numDeletedFiles > 0)
-                        Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
-                    if (totalSize < targetCacheSize) {
-                        break;
-                    }
-                    // then by file size
-                    numDeletedFiles = trimBySize(boardFiles, 500 * 1024);
-                    if (DEBUG && numDeletedFiles > 0)
-                        Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
-                    totalDeletedFiles += numDeletedFiles;
-                }
-
-                // clean up top or watched boards
-                for (String board : watchedOrTopBoardCode) {
-                    if (totalSize < targetCacheSize) {
-                        break;
-                    }
-                    List<FileDesc> boardFiles = filesByBoard.get(board);
-                    // delete old files first
-                    numDeletedFiles = trimByDate(boardFiles, 5L * 24L * 60L * 60L * 1000L);
-                    if (DEBUG && numDeletedFiles > 0)
-                        Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
-                    if (totalSize < targetCacheSize) {
-                        break;
-                    }
-                    // then by file size
-                    numDeletedFiles = trimBySize(boardFiles, 500 * 1024);
-                    if (DEBUG && numDeletedFiles > 0)
-                        Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
-                    totalDeletedFiles += numDeletedFiles;
-                }
-
-                // finally clean widgets if we absolutely have to
-                if (totalSize > targetCacheSize
-                        && sizeOfWidget > 0 && filesOfWidget != null && filesOfWidget.size() > 0) {
-                    List<FileDesc> widgetFiles = filesOfWidget;
-                    numDeletedFiles = trimByDate(widgetFiles, 0);
-                    if (DEBUG && numDeletedFiles > 0) Log.i(TAG, "Deleted " + numDeletedFiles + " files from widgets");
-                    totalDeletedFiles += numDeletedFiles;
-                }
-            }
-
-            endTime = Calendar.getInstance().getTimeInMillis();
-            logCacheFileInfo("Deletion report.", startTime, endTime);
-            if (totalDeletedFiles > 0) {
-                toastUI("" + totalFiles + " files of size " + (totalSize / 1024) + " kB."
-                        + totalDeletedFiles + " files has been deleted in " + ((endTime - startTime) / 1000) + "s.");
-            }
+            cleanUpCache();
         } catch (Exception e) {
             Log.e(TAG, "Error in clean up service", e);
         }
     }
 
+    private void cleanUpCache() throws Exception {
+        long startTime = Calendar.getInstance().getTimeInMillis();
+        prepareCache();
+        scanFiles();
+        long endTime = Calendar.getInstance().getTimeInMillis();
+        if (DEBUG) logCacheFileInfo("ClearUp init.", startTime, endTime);
+        long diffSec = (endTime - startTime) / 1000;
+        if (DEBUG) Log.i(TAG, "cache files=" + totalFiles + " size=" + (totalSize / 1024) + "KB scanned in " +  diffSec + "s.");
+
+        startTime = Calendar.getInstance().getTimeInMillis();
+        long maxCacheSize = getPreferredCacheSize() * ONE_MB_BYTES;
+        targetCacheSize = maxCacheSize * 80 / 100;
+        if (DEBUG) Log.i(TAG, "cache size current=" + (totalSize/ONE_MB_BYTES) + "MB target=" + (targetCacheSize/ONE_MB_BYTES) + "MB  max=" + (maxCacheSize / ONE_MB_BYTES) + "MB");
+
+        for (int daysAgo = 6; daysAgo >= 0; daysAgo--)
+            cleanUpBoards(daysAgo * ONE_DAY_MS, DeleteType.BY_DATE);
+        for (int hoursAgo = 23; hoursAgo >= 0; hoursAgo--)
+            cleanUpBoards(hoursAgo * ONE_HOUR_MS, DeleteType.BY_DATE);
+        for (int minsAgo = 59; minsAgo >= 0; minsAgo--)
+            cleanUpBoards(minsAgo * ONE_MIN_MS, DeleteType.BY_DATE);
+        cleanUpWidgets();
+
+        endTime = Calendar.getInstance().getTimeInMillis();
+        if (DEBUG) logCacheFileInfo("Deletion report.", startTime, endTime);
+        diffSec = (endTime - startTime) / 1000;
+        if (DEBUG) Log.i(TAG, "deleted cache files=" + totalDeletedFiles + " out of original=" + totalFiles + " in " + diffSec + "s");
+        if (DEBUG) Log.i(TAG, "final cache size=" + (totalSize/ONE_MB_BYTES) + "MB target=" + (targetCacheSize/ONE_MB_BYTES) + "MB  max=" + (maxCacheSize / ONE_MB_BYTES) + "MB");
+    }
+
     private int getPreferredCacheSize() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int prefSize = prefs.getInt(SettingsActivity.PREF_CACHE_SIZE, CacheSizePreference.DEFAULT_VALUE);
-        return prefSize < CacheSizePreference.DEFAULT_VALUE ? CacheSizePreference.DEFAULT_VALUE : prefSize;
+        return prefSize < CacheSizePreference.MIN_VALUE ? CacheSizePreference.MIN_VALUE : prefSize;
     }
 
     private void prepareTopWatchedBoards(Context context) {
@@ -259,20 +162,15 @@ public class CleanUpService extends BaseChanService {
     }
 
     private void logCacheFileInfo(String logMsg, long startTime, long endTime) {
-        if (DEBUG) {
-            if (DEBUG)
-                Log.i(TAG, logMsg + " Cache folder contains " + totalFiles + " files of size " + (totalSize / 1024)
-                        + " kB. Calculated in " + (endTime - startTime) + "ms.");
-            for (Map.Entry<String, Long> entry : sizeByBoard.entrySet()) {
-                if (filesByBoard.get(entry.getKey()).size() == 0) {
-                    continue;
-                }
-                if (DEBUG) Log.i(TAG, "Board " + entry.getKey() + " size " + (entry.getValue() / 1024) + "kB "
-                        + filesByBoard.get(entry.getKey()).size() + " files.");
-            }
-            if (DEBUG) Log.i(TAG, "Other files' size " + (otherSize / 1024) + "kB "
-                    + otherFiles.size() + " files.");
+        Log.i(TAG, logMsg + " Cache folder contains " + totalFiles + " files of size " + (totalSize / ONE_MB_BYTES )
+                + "MB. Calculated in " + (endTime - startTime) + "ms.");
+        for (Map.Entry<String, Long> entry : sizeByBoard.entrySet()) {
+            if (filesByBoard.get(entry.getKey()).size() == 0)
+                continue;
+            Log.i(TAG, "Board " + entry.getKey() + " size=" + (entry.getValue() / ONE_MB_BYTES) + "MB "
+                    + filesByBoard.get(entry.getKey()).size() + " files.");
         }
+        Log.i(TAG, "Other files' size=" + (otherSize / ONE_MB_BYTES) + "MB " + otherFiles.size() + " files.");
     }
 
     private int trimByDate(List<FileDesc> files, long timeOffset) {
@@ -292,6 +190,7 @@ public class CleanUpService extends BaseChanService {
                 new File(file.path).delete();
                 totalSize -= file.size;
                 files.remove(file);
+                Log.i(TAG, "removed old file: " + file);
                 i++;
             }
             if (totalSize < targetCacheSize) {
@@ -317,6 +216,7 @@ public class CleanUpService extends BaseChanService {
                 new File(file.path).delete();
                 totalSize -= file.size;
                 files.remove(file);
+                Log.i(TAG, "removed large file: " + file);
                 i++;
             }
             if (totalSize < targetCacheSize) {
@@ -324,6 +224,21 @@ public class CleanUpService extends BaseChanService {
             }
         }
         return i;
+    }
+
+    private void prepareCache() {
+        cacheFolder = ChanFileStorage.getCacheDirectory(getBaseContext());
+        if (DEBUG) Log.w(TAG, "Cache dir: " + cacheFolder.getAbsolutePath());
+        otherFiles = new ArrayList<FileDesc>();
+        sizeByBoard = new HashMap<String, Long>();
+        filesByBoard = new HashMap<String, List<FileDesc>>();
+        sizeOfWidget = 0;
+        filesOfWidget = null;
+
+        totalSize = 0;
+        totalFiles = 0;
+        totalDeletedFiles = 0;
+        otherSize = 0;
     }
 
     private void scanFiles() {
@@ -379,4 +294,93 @@ public class CleanUpService extends BaseChanService {
         }
         return totalSize;
     }
+
+    private static enum DeleteType {
+        BY_DATE,
+        BY_SIZE
+    }
+
+    private void cleanUpBoards(long olderThanMsOrMaxKeepSizeBytes, DeleteType deleteType) {
+        if (totalSize < targetCacheSize)
+            return;
+        for (String board : filesByBoard.keySet()) {
+            if (totalSize < targetCacheSize)
+                break;
+            //if (watchedOrTopBoardCode.contains(board))
+            //    continue;
+
+            List<FileDesc> preBoardFiles = filesByBoard.get(board);
+            List<FileDesc> boardFiles = new ArrayList<FileDesc>();
+            List<Long> watchedBoardThreadNos = watchedThreads.get(board);
+            String boardFilePatternString = String.format(BOARD_FILE_PATTERN_FORMAT, board);
+            Pattern boardFilePattern = Pattern.compile(boardFilePatternString);
+
+            for (FileDesc d : preBoardFiles) {
+                if (isNomediaFile(d))
+                    continue;
+                if (isRootBoardFile(d, boardFilePattern))
+                    continue;
+                if (isWatchedThreadFile(d, watchedBoardThreadNos))
+                    continue;
+                boardFiles.add(d);
+            }
+
+            int numDeletedFiles;
+            switch (deleteType) {
+                case BY_DATE:
+                    numDeletedFiles = trimByDate(boardFiles, olderThanMsOrMaxKeepSizeBytes);
+                    if (DEBUG)
+                        Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
+                    break;
+                case BY_SIZE:
+                default:
+                    numDeletedFiles = trimBySize(boardFiles, olderThanMsOrMaxKeepSizeBytes);
+                    if (DEBUG)
+                        Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
+            }
+            totalDeletedFiles += numDeletedFiles;
+        }
+    }
+
+    private void cleanUpWidgets() {
+        if (totalSize < targetCacheSize)
+            return;
+        if (sizeOfWidget > 0 && filesOfWidget != null && filesOfWidget.size() > 0) {
+            List<FileDesc> widgetFiles = filesOfWidget;
+            int numDeletedFiles = trimByDate(widgetFiles, 0);
+            if (DEBUG && numDeletedFiles > 0) Log.i(TAG, "Deleted " + numDeletedFiles + " files from widgets");
+            totalDeletedFiles += numDeletedFiles;
+        }
+    }
+
+    private boolean isNomediaFile(FileDesc d) {
+        return nomediaFilePattern.matcher(d.path).matches();
+    }
+
+    private boolean isRootBoardFile(FileDesc d, Pattern boardFilePattern) {
+        return boardFilePattern.matcher(d.path).matches();
+    }
+
+    private boolean isWatchedThreadFile(FileDesc d, List<Long> threads) {
+        if (threads == null || threads.size() == 0)
+            return false;
+        Matcher m = threadFilePattern.matcher(d.path);
+        if (!m.matches())
+            return false;
+        long threadNo = 0;
+        try {
+            String threadStr = m.group(1);
+            threadNo = Long.valueOf(threadNo);
+            if (threads.contains(threadNo))
+                return true;
+        }
+        catch (IllegalStateException e) {
+            Log.i(TAG, "bad match thread number, adding file to cleanup: " + d.path, e);
+        }
+        catch (NumberFormatException e) {
+            Log.i(TAG, "unmatched thread number, adding file to cleanup: " + d.path, e);
+        }
+        return false;
+    }
+
 }
