@@ -33,10 +33,13 @@ public enum BoardSortType {
     }
 
     public static BoardSortType loadFromPrefs(Context context) {
-        return BoardSortType.valueOfDisplayString(context, PreferenceManager
+        BoardSortType sortType = BoardSortType.valueOfDisplayString(context, PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getString(SettingsActivity.PREF_BOARD_SORT_TYPE,
                         context.getString(R.string.sort_order_bump_order)));
+        if (sortType == null)
+            sortType = BoardSortType.BUMP_ORDER;
+        return sortType;
     }
 
     public static void saveToPrefs(Context context, BoardSortType boardSortType) {

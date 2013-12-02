@@ -15,6 +15,6 @@
         <item name="android:orientation">horizontal</item>
         <!--<item name="android:background">@color/PaletteYellowWhite</item>-->
     </style>
-    <dimen name="Drawer.layout_width">280dp</dimen>
+    <dimen name="Drawer.layout_width">360dp</dimen>
     <dimen name="Drawer.paddingTop">16dp</dimen>
 </resources>

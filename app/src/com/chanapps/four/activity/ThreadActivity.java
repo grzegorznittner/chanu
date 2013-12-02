@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.*;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.util.Pair;
 import android.view.*;
 import android.widget.*;
 
@@ -1006,14 +1007,14 @@ public class ThreadActivity
     }
 
     public void navigateUp() {
-        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(2);
-        if (tasks == null
-                || tasks.size() == 0
-                || (tasks.size() == 1
-                && tasks.get(0) != null
-                && tasks.get(0).topActivity != null
-                && tasks.get(0).topActivity.getClassName().equals(getClass().getName()))) {
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
+        if (numTasks == 0
+                || (numTasks == 1
+                && task != null
+                && task.topActivity != null
+                && task.topActivity.getClassName().equals(getClass().getName()))) {
             if (DEBUG) Log.i(TAG, "no valid up task found, creating new one");
             Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

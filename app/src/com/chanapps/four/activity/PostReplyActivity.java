@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.util.Log;
+import android.util.Pair;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
@@ -1102,9 +1103,9 @@ public class PostReplyActivity
     }
 
     public void navigateUp() {
-        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
         if (task != null) {
             if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null && !this.getClass().getName().equals(task.baseActivity.getClassName())) {

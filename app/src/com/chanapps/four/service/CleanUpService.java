@@ -170,9 +170,11 @@ public class CleanUpService extends BaseChanService {
                 + Arrays.toString(watchedImagePath.toArray()));
 
         UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
-        for (ChanBoardStat stat : userStats.topBoards()) {
-            if (!watchedOrTopBoardCode.contains(stat.board)) {
-                watchedOrTopBoardCode.add(stat.board);
+        if (userStats != null) {
+            for (ChanBoardStat stat : userStats.topBoards()) {
+                if (!watchedOrTopBoardCode.contains(stat.board)) {
+                    watchedOrTopBoardCode.add(stat.board);
+                }
             }
         }
 

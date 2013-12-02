@@ -184,13 +184,16 @@ public final class WidgetProviderUtils {
         return true;
     }
 
+    public static boolean hasWidgets(final Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
+    }
+
     public static void asyncUpdateWidgetsAndWatchlist(final Context context) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                boolean hasWidgets = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
-                if (hasWidgets)
+               if (hasWidgets(context))
                     fetchAllWidgets(context);
 
                 /*

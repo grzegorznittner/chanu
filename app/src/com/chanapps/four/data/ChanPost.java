@@ -411,6 +411,21 @@ public class ChanPost {
         return context.getResources().getString(R.string.thread_no_text_subject);
     }
 
+    public String drawerSubject(Context context) {
+        String threadSuffix = no > 0 ? String.valueOf(no) : "";
+        String prefix = "/" + board + "/" + threadSuffix + " ";
+        String subText = sanitizeText(sub, false);
+        String comText = sanitizeText(com, false);
+        String suffix;
+        if (subText != null && !subText.isEmpty())
+            suffix = subText;
+        else if (comText != null && !comText.isEmpty())
+            suffix = comText.substring(0, Math.min(comText.length(), MAX_THREAD_SUBJECT_LEN)); // always shorter than this since only one line
+        else
+            suffix = "";
+        return prefix + (suffix.length() > 0 ? " " : "") + suffix;
+    }
+
     private String sanitizeText(String text, boolean collapseNewlines) {
         if (text == null || text.isEmpty())
             return "";

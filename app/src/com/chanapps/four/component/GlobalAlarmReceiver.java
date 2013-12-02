@@ -29,7 +29,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     public static final String GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION = "com.chanapps.four.component.GlobalAlarmReceiver.schedule";
 
-    private static final long WIDGET_UPDATE_INTERVAL_MS = AlarmManager.INTERVAL_HALF_HOUR; // FIXME should be configurable
+    private static final long WIDGET_UPDATE_INTERVAL_MS = AlarmManager.INTERVAL_HOUR; // FIXME should be configurable
     //private static final long WIDGET_UPDATE_INTERVAL_MS = 60000; // 60 sec, just for testing
     private static final boolean DEBUG = false;
 
@@ -58,24 +58,23 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     }
 
     private static void updateAndFetch(Context context) {
+        if (!ChanBoard.hasWatchlist(context) || !WidgetProviderUtils.hasWidgets(context)) {
+            if (DEBUG) Log.i(TAG, "updateAndFetch no watchlist or widgets, cancelling global alarm");
+            cancelGlobalAlarm(context);
+            return;
+        }
         WidgetProviderUtils.updateAll(context);
-        fetchAll(context);
-    }
-
-    private static void fetchAll(Context context) {
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context); // always check since state may have changed
         NetworkProfile currentProfile = NetworkProfileManager.instance().getCurrentProfile();
-        if (DEBUG) Log.i(TAG, "fetchAll network profile=" + currentProfile + " health=" + currentProfile.getConnectionHealth());
+        if (DEBUG) Log.i(TAG, "updateAndFetch network profile=" + currentProfile + " health=" + currentProfile.getConnectionHealth());
         if (currentProfile.getConnectionType() != NetworkProfile.Type.NO_CONNECTION
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.NO_CONNECTION
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.BAD) {
-            if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
+            if (DEBUG) Log.i(TAG, "updateAndFetch fetching widgets, watchlists, and uncached boards");
             fetchWatchlistThreads(context);
-            fetchFavoriteBoards(context);
             WidgetProviderUtils.fetchAllWidgets(context);
-            //ChanBoard.preloadUncachedBoards(context);
         } else {
-            if (DEBUG) Log.i(TAG, "fetchAll no connection, skipping fetch");
+            if (DEBUG) Log.i(TAG, "updateAndFetch no connection, skipping fetch");
         }
     }
 

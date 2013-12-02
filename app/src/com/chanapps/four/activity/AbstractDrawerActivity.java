@@ -16,11 +16,10 @@ import android.widget.*;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanThread;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +37,8 @@ abstract public class
     protected DrawerLayout mDrawerLayout;
     protected SimpleAdapter mDrawerAdapter;
     protected ActionBarDrawerToggle mDrawerToggle;
+    protected boolean hasFavorites = false;
+    protected boolean hasWatchlist = false;
 
     protected int activityLayout() {
         return R.layout.drawer_activity_layout;
@@ -88,36 +89,85 @@ abstract public class
             R.id.drawer_list_item_icon
     };
 
-    protected void setDrawerAdapter() {
-        mDrawerArrayId = mShowNSFW
-                ? R.array.long_drawer_array
-                : R.array.long_drawer_array_worksafe;
-        mDrawerArray = getResources().getStringArray(mDrawerArrayId);
-        List<HashMap<String, String>> fillMaps = new ArrayList<HashMap<String, String>>();
-        for (int i = 0; i < mDrawerArray.length; i++) {
-            String drawerText = mDrawerArray[i];
-            BoardType type = BoardType.valueOfDrawerString(this, drawerText);
-            int drawableId = type.drawableId();
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put(ROW_ID, "" + i);
-            map.put(TEXT, drawerText);
-            map.put(DRAWABLE_ID, "" + drawableId);
-            fillMaps.add(map);
-        }
-        mDrawerAdapter = new SimpleAdapter(this, fillMaps, R.layout.drawer_list_item, adapterFrom, adapterTo) {
-            @Override
-            public boolean isEnabled(int position) {
-                String drawerText = mDrawerArray[position];
-                BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
-                if (type == BoardType.META)
-                    return false;
-                else
-                    return true;
-            }
-        };
-        mDrawerAdapter.setViewBinder(mViewBinder);
-        mDrawerList.setAdapter(mDrawerAdapter);
+    protected void loadDrawerArray() {
+        mDrawerArrayId = R.array.long_drawer_array;
+        List<String> drawer = new ArrayList<String>(Arrays.asList(getResources().getStringArray(mDrawerArrayId)));
+        loadFavorites(drawer);
+        loadWatchlist(drawer);
+        mDrawerArray = drawer.toArray(new String[drawer.size()]);
+        Handler handler = getChanHandler();
+        if (handler != null)
+            handler.post(setAdaptersCallback);
     }
+
+    protected void loadFavorites(List<String> drawer) {
+        List<String> items = new ArrayList<String>();
+        ChanBoard board = ChanFileStorage.loadBoardData(this, ChanBoard.FAVORITES_BOARD_CODE);
+        if (board != null && board.hasData()) {
+            for (ChanThread thread : board.threads) {
+                String threadText = thread.drawerSubject(this);
+                items.add(threadText);
+            }
+        }
+        hasFavorites = items.size() > 0;
+        drawer.add(getString(R.string.board_favorites));
+        Collections.sort(items);
+        drawer.addAll(items);
+    }
+    
+    protected void loadWatchlist(List<String> drawer) {
+        List<String> items = new ArrayList<String>();
+        ChanBoard board = ChanFileStorage.loadBoardData(this, ChanBoard.WATCHLIST_BOARD_CODE);
+        if (board != null && board.hasData()) {
+            for (ChanThread thread : board.threads) {
+                String threadText = thread.drawerSubject(this);
+                items.add(threadText);
+            }
+        }
+        hasWatchlist = items.size() > 0;
+        drawer.add(getString(R.string.board_watch));
+        Collections.sort(items);
+        drawer.addAll(items);
+    }
+
+    protected void setDrawerAdapter() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                loadDrawerArray();
+            }
+        }).start();
+    }
+
+    protected Runnable setAdaptersCallback = new Runnable() {
+        @Override
+        public void run() {
+            List<HashMap<String, String>> fillMaps = new ArrayList<HashMap<String, String>>();
+            for (int i = 0; i < mDrawerArray.length; i++) {
+                String drawerText = mDrawerArray[i];
+                BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
+                int drawableId = type == null ? 0 : type.drawableId();
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put(ROW_ID, "" + i);
+                map.put(TEXT, drawerText);
+                map.put(DRAWABLE_ID, "" + drawableId);
+                fillMaps.add(map);
+            }
+            mDrawerAdapter = new SimpleAdapter(AbstractDrawerActivity.this, fillMaps, R.layout.drawer_list_item, adapterFrom, adapterTo) {
+                @Override
+                public boolean isEnabled(int position) {
+                    String drawerText = mDrawerArray[position];
+                    BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
+                    if (type == BoardType.META)
+                        return false;
+                    else
+                        return true;
+                }
+            };
+            mDrawerAdapter.setViewBinder(mViewBinder);
+            mDrawerList.setAdapter(mDrawerAdapter);
+        }
+    };
 
     protected SimpleAdapter.ViewBinder mViewBinder = new SimpleAdapter.ViewBinder() {
         public boolean setViewValue(View view, Object data, String textRepresentation) {
@@ -131,7 +181,7 @@ abstract public class
 
                     // set checked state
                     int selector;
-                    if (type.boardCode().equals(boardCode))
+                    if (type != null && type.boardCode() != null && type.boardCode().equals(boardCode))
                         selector = R.drawable.drawer_list_selector_checked_bg;
                     else if (ThemeSelector.instance(getApplicationContext()).isDark())
                         selector = R.drawable.drawer_list_selector_inverse_bg_dark;
@@ -145,28 +195,51 @@ abstract public class
                     ImageView icon = (ImageView)view.findViewById(R.id.drawer_list_item_icon);
                     TextView text = (TextView)view.findViewById(R.id.drawer_list_item_text);
                     TextView title = (TextView)view.findViewById(R.id.drawer_list_item_title);
+                    TextView detail = (TextView)view.findViewById(R.id.drawer_list_item_detail);
                     View divider = view.findViewById(R.id.drawer_list_item_divider);
-                    if (type == BoardType.META) {
-                        title.setText(drawerText);
+                    if (type == null) {
+                        title.setText("");
+                        detail.setText(drawerText);
+                        text.setText("");
+                        title.setVisibility(View.GONE);
+                        detail.setVisibility(View.VISIBLE);
                         icon.setVisibility(View.GONE);
                         text.setVisibility(View.GONE);
                         title.setVisibility(View.VISIBLE);
+                        divider.setVisibility(View.GONE);
+                    }
+                    else if (type == BoardType.META ||
+                            (type == BoardType.FAVORITES && hasFavorites) ||
+                            (type == BoardType.WATCHLIST && hasWatchlist)) {
+                        title.setText(drawerText);
+                        detail.setText("");
+                        text.setText("");
+                        icon.setVisibility(View.GONE);
+                        text.setVisibility(View.GONE);
+                        title.setVisibility(View.VISIBLE);
+                        detail.setVisibility(View.GONE);
                         divider.setVisibility(View.VISIBLE);
                     }
                     else {
+                        title.setText("");
+                        detail.setText("");
+                        text.setText(drawerText);
                         icon.setVisibility(View.VISIBLE);
                         text.setVisibility(View.VISIBLE);
                         title.setVisibility(View.GONE);
                         divider.setVisibility(View.GONE);
+                        detail.setVisibility(View.GONE);
                     }
 
                     // set text color
+                    /*
                     int textColor;
                     if (type == BoardType.valueOfBoardCode(boardCode))
                         textColor = R.color.PaletteWhite;
                     else
                         textColor = R.color.PaletteDrawerDividerText;
                     text.setTextColor(getResources().getColor(textColor));
+                    */
 
                     if (DEBUG) Log.i(TAG, "mViewBinder:setViewValue() item pos=" + pos + " checked=" + type.boardCode().equals(boardCode) + " type=" + type + " text=" + text + " item=" + item);
 

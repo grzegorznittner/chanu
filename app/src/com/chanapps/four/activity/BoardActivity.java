@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -1401,15 +1402,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     public void navigateUp() { // either pop off stack, or go up to all boards
         if (DEBUG) Log.i(TAG, "navigateUp() /" + boardCode + "/");
-        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
         String upBoardCode = ChanBoard.defaultBoardCode(this);
         if (task != null
                 && task.baseActivity != null
                 && task.baseActivity.getClassName().equals(BoardSelectorActivity.class.getName()))
         {
-            if (DEBUG) Log.i(TAG, "navigateUp() tasks.size=" + tasks.size() + " top=" + task.topActivity + " base=" + task.baseActivity);
+            if (DEBUG) Log.i(TAG, "navigateUp() tasks.size=" + numTasks + " top=" + task.topActivity + " base=" + task.baseActivity);
             if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
                     + getClass().getName() + " base=" + task.baseActivity.getClassName());
             finish();
@@ -1439,7 +1440,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (intent == null || !UPDATE_BOARD_ACTION.equals(intent.getAction()) || !intent.hasExtra(ChanBoard.BOARD_CODE))
                 return;
             String receivedBoardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
-            if (receivedBoardCode == null || !receivedBoardCode.equals(boardCode))
+            if (receivedBoardCode == null)
+                return;
+            if (receivedBoardCode.equals(ChanBoard.FAVORITES_BOARD_CODE)
+                    || receivedBoardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE))
+                setAdapters();
+            if (!receivedBoardCode.equals(boardCode))
                 return;
             if (handler != null)
                 refresh();

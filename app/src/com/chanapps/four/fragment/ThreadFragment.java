@@ -30,6 +30,7 @@ import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.viewer.ThreadListener;
 import com.chanapps.four.viewer.ThreadViewer;
+import com.chanapps.four.widget.WidgetProviderUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
@@ -794,6 +795,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     else {
                         ChanFileStorage.addWatchedThread(context, thread);
                         BoardActivity.refreshWatchlist(context);
+                        WidgetProviderUtils.scheduleGlobalAlarm(context); // insure watchlist is updated
                         msgId = R.string.thread_added_to_watchlist;
                         if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
                     }
@@ -1229,20 +1231,27 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         public void onClick(View v) {
             if (v == null)
                 return;
-            if (absListView == null)
-                return;
-            int pos = absListView.getPositionForView(v);
-            if (pos >= 0) {
-                absListView.setItemChecked(pos, true);
-                postNo = absListView.getItemIdAtPosition(pos);
+            int pos = -1;
+            SparseBooleanArray checked;
+            synchronized (this) {
+                if (absListView == null)
+                    return;
+                pos = absListView == null ? -1 : absListView.getPositionForView(v);
+                if (absListView != null && pos >= 0) {
+                    absListView.setItemChecked(pos, true);
+                    postNo = absListView == null ? -1 : absListView.getItemIdAtPosition(pos);
+                }
+                checked = absListView == null ? null : absListView.getCheckedItemPositions();
             }
-            boolean isHeader = pos == 0;
-            updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
+            if (pos == -1)
+                return;
+            updateSharedIntent(shareActionProvider, checked);
             PopupMenu popup = new PopupMenu(getActivityContext(), v);
             Cursor cursor = adapter.getCursor();
             boolean hasImage = cursor != null
                     && (cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS)) & ChanPost.FLAG_HAS_IMAGE) > 0;
-            int menuId;
+                boolean isHeader = pos == 0;
+                int menuId;
             if (!undead())
                 menuId = R.menu.thread_dead_context_menu;
             else if (isHeader)

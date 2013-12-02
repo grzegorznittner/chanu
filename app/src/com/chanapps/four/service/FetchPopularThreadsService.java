@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 import org.apache.commons.io.IOUtils;
 
@@ -111,14 +112,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 	}
 	
 	private boolean isChanForegroundActivity() {
-		ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-		 // get the info from the currently running task
-		List <ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-
-		if (DEBUG) Log.d(TAG, "foreground activity: " + taskInfo.get(0).topActivity.getClass().getSimpleName());
-
-		ComponentName componentInfo = taskInfo.get(0).topActivity;
-		return componentInfo != null && componentInfo.getPackageName().startsWith("com.chanapps");
+        return ActivityDispatcher.safeGetIsChanForegroundActivity(this);
 	}
 
     private void handlePopularThreadsFetch() {

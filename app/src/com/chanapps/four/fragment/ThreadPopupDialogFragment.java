@@ -326,7 +326,12 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (DEBUG) Log.i(TAG, "onItemClick() pos=" + position + " postNo=" + id);
-            dismiss();
+            try {
+                dismiss();
+            }
+            catch (IllegalStateException e) {
+                Log.e(TAG, "Can't dismiss previous fragment", e);
+            }
             Activity activity = getActivity();
             if (activity == null || !(activity instanceof ThreadActivity)) {
                 if (DEBUG) Log.i(TAG, "onItemClick() no activity");

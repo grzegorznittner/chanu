@@ -18,8 +18,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import android.util.Pair;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.*;
 import com.chanapps.four.service.profile.NetworkProfile;
@@ -179,25 +181,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 	}
 	
 	private boolean isChanForegroundActivity() {
-        boolean isFg = true;
-        try {
-            ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-            // get the info from the currently running task
-            if (am != null) {
-                List <ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-                if (taskInfo != null && taskInfo.get(0) != null && taskInfo.get(0).topActivity != null) {
-                    if (DEBUG) Log.d(TAG, "foreground activity: " + taskInfo.get(0).topActivity.getClass().getSimpleName());
-
-                    ComponentName componentInfo = taskInfo.get(0).topActivity;
-                    isFg = componentInfo != null && componentInfo.getPackageName().startsWith("com.chanapps");
-                }
-            }
-        }
-        catch (Exception e) {
-            if (DEBUG) Log.e(TAG, "Exception getting foreground activity", e);
-            isFg = false;
-        }
-        return isFg;
+        return ActivityDispatcher.safeGetIsChanForegroundActivity(this);
 	}
 
 	private void handleBoard() {
