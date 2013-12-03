@@ -14,7 +14,7 @@
         <item name="android:divider">@color/PaletteLightGray</item>
         <item name="android:dividerHeight">1dp</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:fastScrollEnabled">false</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
     </style>
 
@@ -29,7 +29,7 @@
         <item name="android:divider">@color/PaletteTransparent</item>
         <item name="android:dividerHeight">@dimen/BoardGridView.spacing</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:fastScrollEnabled">false</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
         <item name="android:paddingTop">@dimen/BoardGridView.spacing</item>
         <item name="android:paddingBottom">@dimen/BoardGridView.spacing</item>
@@ -174,7 +174,7 @@
         <item name="android:gravity">top|left</item>
         <item name="android:smoothScrollbar">false</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:fastScrollEnabled">false</item>
         <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
         <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
         <item name="android:numColumns">@integer/BoardGridView.numColumns</item>
@@ -192,7 +192,7 @@
         <item name="android:gravity">top|left</item>
         <item name="android:smoothScrollbar">false</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:fastScrollEnabled">false</item>
         <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
         <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
         <item name="android:numColumns">@integer/BoardGridViewSmall.numColumns</item>
@@ -216,7 +216,7 @@
         <item name="android:smoothScrollbar">false</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:fastScrollEnabled">false</item>
         <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
         <item name="android:drawSelectorOnTop">true</item>
         <item name="android:numColumns">1</item>

@@ -19,19 +19,19 @@ public class URLFormatComponent {
 
     public static final String ANIME_IMAGE_SEARCH_URL_FORMAT = "//iqdb.org/?url=%s";
     public static final String CHAN_AUTH_URL = "//sys.4chan.org/auth";
-    public static final String CHAN_CATALOG_API_URL_FORMAT = "//api.4chan.org/%s/catalog.json";
-    public static final String CHAN_COUNTRY_IMAGE_URL_FORMAT = "//static.4chan.org/image/country/%s.gif";
+    public static final String CHAN_CATALOG_API_URL_FORMAT = "//a.4cdn.org/%s/catalog.json";
+    public static final String CHAN_COUNTRY_IMAGE_URL_FORMAT = "//s.4cdn.org/image/country/%s.gif";
     public static final String CHAN_FRONTPAGE_URL = "//www.4chan.org/";
-    public static final String CHAN_IMAGE_URL_FORMAT = "//images.4chan.org/%s/src/%d%s";
-    public static final String CHAN_PAGE_API_URL_FORMAT = "//api.4chan.org/%s/%d.json";
+    public static final String CHAN_IMAGE_URL_FORMAT = "//i.4cdn.org/%s/src/%d%s";
+    public static final String CHAN_PAGE_API_URL_FORMAT = "//a.4cdn.org/%s/%d.json";
     public static final String CHAN_PASS_PURCHASE_URL = "//www.4chan.org/pass";
-    public static final String CHAN_POL_COUNTRY_IMAGE_URL_FORMAT = "//static.4chan.org/image/country/troll/%s.gif";
+    public static final String CHAN_POL_COUNTRY_IMAGE_URL_FORMAT = "//s.4cdn.org/image/country/troll/%s.gif";
     public static final String CHAN_POST_URL_DELETE_FORMAT = "//sys.4chan.org/%s/imgboard.php";
     public static final String CHAN_POST_URL_FORMAT = "//sys.4chan.org/%s/post";
-    public static final String CHAN_SPOILER_IMAGE_URL_FORMAT = "//static.4chan.org/image/spoiler-%s.png";
-    public static final String CHAN_SPOILER_NUMBERED_IMAGE_URL_FORMAT = "//static.4chan.org/image/spoiler-%s%d.png";
-    public static final String CHAN_THREAD_URL_FORMAT = "//api.4chan.org/%s/res/%d.json";
-    public static final String CHAN_THUMBS_URL_FORMAT = "//0.thumbs.4chan.org/%s/thumb/%ds.jpg";
+    public static final String CHAN_SPOILER_IMAGE_URL_FORMAT = "//s.4cdn.org/image/spoiler-%s.png";
+    public static final String CHAN_SPOILER_NUMBERED_IMAGE_URL_FORMAT = "//s.4cdn.org/image/spoiler-%s%d.png";
+    public static final String CHAN_THREAD_URL_FORMAT = "//a.4cdn.org/%s/res/%d.json";
+    public static final String CHAN_THUMBS_URL_FORMAT = "//0.t.4cdn.org/%s/thumb/%ds.jpg";
     public static final String CHAN_WEB_BOARD_URL_FORMAT = "//boards.4chan.org/%s/";
     public static final String CHAN_WEB_POST_URL_FORMAT = "//boards.4chan.org/%s/res/%d#p%d";
     public static final String CHAN_WEB_THREAD_URL_FORMAT = "//boards.4chan.org/%s/res/%d";

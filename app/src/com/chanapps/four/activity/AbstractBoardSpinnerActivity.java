@@ -29,13 +29,16 @@ abstract public class
         AbstractBoardSpinnerActivity
         extends FragmentActivity
         implements ChanIdentifiedActivity,
-        ThemeSelector.ThemeActivity
+        ThemeSelector.ThemeActivity                       //422 passport bliestift am banhoff 9:30-12:30 nachmichtags pukntlich 899-4152 ara flan freitag
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
     protected static final boolean DEVELOPER_MODE = false;
 
-    protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
+    protected static final String THREAD_PATTERN = "/([a-z0-9]+)/([0-9]+).*";
+    protected static final String BOARD_PATTERN = "/([a-z0-9]+)/.*";
+    protected static final Pattern threadPattern = Pattern.compile(THREAD_PATTERN);
+    protected static final Pattern boardPattern = Pattern.compile(BOARD_PATTERN);
 
     protected String boardCode;
     protected long threadNo = 0;
@@ -129,7 +132,15 @@ abstract public class
         mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bindSpinnerListener();
+    }
+
+    protected void bindSpinnerListener() {
         actionBar.setListNavigationCallbacks(mSpinnerAdapter, spinnerNavigationListener);
+    }
+
+    protected void unbindSpinnerListener() {
+        actionBar.setListNavigationCallbacks(mSpinnerAdapter, null);
     }
 
     @Override
@@ -196,7 +207,7 @@ abstract public class
             });
     }
 
-    abstract public boolean isSelfBoard(String boardAsMenu);
+    abstract public boolean isSelfDrawerMenu(String boardAsMenu);
 
     protected ActionBar.OnNavigationListener spinnerNavigationListener = new ActionBar.OnNavigationListener() {
         @Override
@@ -207,12 +218,21 @@ abstract public class
     };
 
     protected boolean handleSelectItem(String boardAsMenu) {
-
-        // early exits
-        if (isSelfBoard(boardAsMenu)) {
-            if (DEBUG) Log.i(TAG, "self board, returning");
+        if (DEBUG) Log.i(TAG, "handleSelectItem boardAsMenu=" + boardAsMenu);
+        if (isSelfDrawerMenu(boardAsMenu))
             return false;
-        }
+        if (matchForMenu(boardAsMenu))
+            return true;
+        if (matchForBoardType(boardAsMenu))
+            return true;
+        if (matchForThread(boardAsMenu))
+            return true;
+        if (matchForBoard(boardAsMenu))
+            return true;
+        return false;
+    }
+
+    protected boolean matchForMenu(String boardAsMenu) {
         if (getString(R.string.board_select).equals(boardAsMenu))
             return false;
         if (getString(R.string.send_feedback_menu).equals(boardAsMenu))
@@ -221,46 +241,90 @@ abstract public class
             return PurchaseActivity.startActivity(this);
         if (getString(R.string.about_menu).equals(boardAsMenu))
             return AboutActivity.startActivity(this);
+        return false;
+    }
 
-        // match drawer string
+    protected boolean matchForBoardType(String boardAsMenu) {
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
-        if (boardType != null) {
-            String boardTypeCode = boardType.boardCode();
-            if (boardTypeCode.equals(boardCode)) {
-                if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
-                return false;
-            }
-            if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
-            Intent intent = BoardActivity.createIntent(this, boardTypeCode, "");
-            startActivity(intent);
-            finish();
-            return true;
+        if (boardType == null)
+            return false;
+        String boardTypeCode = boardType.boardCode();
+        if (boardTypeCode.equals(boardCode)) {
+            if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
+            return false;
         }
-        Pattern p = Pattern.compile(BOARD_CODE_PATTERN);
-        Matcher m = p.matcher(boardAsMenu);
+        if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
+        Intent intent = BoardActivity.createIntent(this, boardTypeCode, "");
+        startActivity(intent);
+        if (!(this instanceof BoardSelectorActivity)) // don't finish single task activity
+            finish();
+        return true;
+    }
+
+    protected boolean matchForThread(String boardAsMenu) {
+        // try to match board
+        Matcher m = threadPattern.matcher(boardAsMenu);
         if (!m.matches()) {
-            if (DEBUG) Log.i(TAG, "matched nothing, bailing");
+            if (DEBUG) Log.i(TAG, "thread matched nothing, bailing");
             return false;
         }
         String boardCodeForJump = m.group(1);
-        if (boardCodeForJump == null || boardCodeForJump.isEmpty() || isSelfBoard(boardCodeForJump)) {
-            if (DEBUG) Log.i(TAG, "null match, bailing");
+        long threadNoForJump;
+        try {
+            threadNoForJump = m.group(2) == null ? -1 : Long.valueOf(m.group(2));
+        }
+        catch (NumberFormatException e) {
+            if (DEBUG) Log.i(TAG, "matched non-number thread, bailing");
             return false;
         }
-        if (boardCodeForJump.equals(boardCode)) {
+        if (boardCodeForJump == null || boardCodeForJump.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "null thread board match, bailing");
+            return false;
+        }
+        if (threadNoForJump <= 0) {
+            if (DEBUG) Log.i(TAG, "bad thread match, bailing");
+            return false;
+        }
+        if (boardCodeForJump.equals(boardCode) && threadNoForJump == threadNo) {
+            if (DEBUG) Log.i(TAG, "matched same thread, no jump done");
+            return false;
+        }
+        Intent intent = ThreadActivity.createIntent(this, boardCodeForJump, threadNoForJump, "");
+        if (DEBUG) Log.i(TAG, "matched thread /" + boardCodeForJump + "/" + threadNoForJump + ", starting");
+        startActivity(intent);
+        if (!(this instanceof BoardSelectorActivity)) // don't finish single task activity
+            finish();
+        return true;
+    }
+
+    protected boolean matchForBoard(String boardAsMenu) {
+        // try to match board
+        Matcher m = boardPattern.matcher(boardAsMenu);
+        if (!m.matches()) {
+            if (DEBUG) Log.i(TAG, "board matched nothing, bailing");
+            return false;
+        }
+        String boardCodeForJump = m.group(1);
+        if (boardCodeForJump == null || boardCodeForJump.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "null board match, bailing");
+            return false;
+        }
+        if (boardCodeForJump.equals(boardCode) && threadNo <= 0) {
             if (DEBUG) Log.i(TAG, "matched same board code, no jump done");
             return false;
         }
         Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
         if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/, starting");
         startActivity(intent);
-        finish();
+        if (!(this instanceof BoardSelectorActivity)) // don't finish single task activity
+            finish();
         return true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/");
         selectActionBarNavigationItem();
     }
 
@@ -271,6 +335,8 @@ abstract public class
     }
 
     protected void selectActionBarNavigationItem() {
+        if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/");
+        unbindSpinnerListener();
         int pos = 0;
         for (int i = 0; i < mSpinnerAdapter.getCount(); i++) {
             String boardText = mSpinnerAdapter.getItem(i);
@@ -285,6 +351,7 @@ abstract public class
             }
         }
         actionBar.setSelectedNavigationItem(pos);
+        bindSpinnerListener();
     }
 
 }

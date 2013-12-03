@@ -29,7 +29,7 @@ abstract public class
         implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected int mDrawerArrayId;
     protected String[] mDrawerArray;
@@ -241,7 +241,9 @@ abstract public class
                     text.setTextColor(getResources().getColor(textColor));
                     */
 
-                    if (DEBUG) Log.i(TAG, "mViewBinder:setViewValue() item pos=" + pos + " checked=" + type.boardCode().equals(boardCode) + " type=" + type + " text=" + text + " item=" + item);
+                    if (DEBUG) Log.i(TAG, "mViewBinder:setViewValue() item pos=" + pos
+                            + " checked=" + (selector == R.drawable.drawer_list_selector_checked_bg) + " type=" + type
+                            + " text=" + text + " item=" + item);
 
                     return true;
 
@@ -307,11 +309,12 @@ abstract public class
             setProgressBarIndeterminateVisibility(on);
     }
 
-    abstract public boolean isSelfBoard(String boardAsMenu);
+    abstract public boolean isSelfDrawerMenu(String boardAsMenu);
 
     protected ListView.OnItemClickListener drawerClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (DEBUG) Log.i(TAG, "onItemClick parent=" + parent + " view=" + view + " pos=" + position + " id=" + id);
             mDrawerLayout.closeDrawer(mDrawerList);
             HashMap<String, String> item = (HashMap<String, String>)parent.getItemAtPosition(position);
             String boardAsMenu = item.get(TEXT);
@@ -320,6 +323,7 @@ abstract public class
         }
     };
 
+    /*
     protected boolean handleSelectItem(String boardAsMenu) {
         if (DEBUG) Log.i(TAG, "handleSelectItem(\"" + boardAsMenu + "\")");
         if (isSelfBoard(boardAsMenu)) {
@@ -328,12 +332,10 @@ abstract public class
         }
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
         if (boardType != null) {
-            /*
-            if (boardType == BoardType.META) {
-                if (DEBUG) Log.i(TAG, "meta category board not clickable, exiting");
-                return false;
-            }
-            */
+            //if (boardType == BoardType.META) {
+            //    if (DEBUG) Log.i(TAG, "meta category board not clickable, exiting");
+            //    return false;
+            //}
             String boardTypeCode = boardType.boardCode();
             if (boardTypeCode.equals(boardCode)) {
                 if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
@@ -377,14 +379,15 @@ abstract public class
             finish();
         return true;
     }
+    */
 
     @Override
     protected void onResume() {
         super.onResume();
         boolean drawerEnabled;
-        if (threadNo > 0)
-            drawerEnabled = false;
-        else
+        //if (threadNo > 0)
+        //    drawerEnabled = false;
+        //else
             drawerEnabled = true;
         if (DEBUG) Log.i(TAG, "onResume() drawerEnabled=" + drawerEnabled);
         mDrawerToggle.setDrawerIndicatorEnabled(drawerEnabled);

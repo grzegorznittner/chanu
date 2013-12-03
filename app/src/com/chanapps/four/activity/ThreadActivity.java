@@ -48,7 +48,8 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
  * To change this template use File | Settings | File Templates.
  */
 public class ThreadActivity
-        extends AbstractBoardSpinnerActivity
+        //extends AbstractBoardSpinnerActivity
+        extends AbstractDrawerActivity
         implements ChanIdentifiedActivity
 {
 
@@ -72,6 +73,7 @@ public class ThreadActivity
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected boolean wideTablet;
     protected boolean narrowTablet;
+    protected View layout;
 
     //tablet layout
     protected AbstractBoardCursorAdapter adapterBoardsTablet;
@@ -112,14 +114,20 @@ public class ThreadActivity
     }
 
     @Override
-    public boolean isSelfBoard(String boardAsMenu) {
-        return false; // always jump to board
+    public boolean isSelfDrawerMenu(String boardAsMenu) {
+        if (boardAsMenu == null || boardAsMenu.isEmpty())
+            return false;
+        if (boardAsMenu.matches("/" + boardCode + "/" + threadNo + ".*") && (query == null || query.isEmpty()))
+            return true;
+        return false;
     }
 
+    /*
     @Override
     protected int activityLayout() {
         return R.layout.thread_activity_layout;
     }
+    */
 
     @Override
     protected void createViews(Bundle bundle) {
@@ -132,6 +140,12 @@ public class ThreadActivity
             boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
         if (threadNo <= 0)
             redirectToBoard();
+
+        FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
+        if (contentFrame.getChildCount() > 0)
+            contentFrame.removeAllViews();
+        layout = getLayoutInflater().inflate(R.layout.thread_activity_layout, null);
+        contentFrame.addView(layout);
 
         try {
             mPullToRefreshAttacher = new PullToRefreshAttacher(this, new PullToRefreshAttacher.Options());
@@ -622,7 +636,7 @@ public class ThreadActivity
     @Override
     protected void createActionBar() {
         super.createActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     protected Activity getActivity() {
@@ -988,6 +1002,8 @@ public class ThreadActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item))
+            return true;
         return super.onOptionsItemSelected(item);
     }
 
@@ -1039,6 +1055,10 @@ public class ThreadActivity
             return true;
         else
             return super.dispatchKeyEvent(event);
+    }
+
+    public ActionBarDrawerToggle getDrawerToggle() {
+        return mDrawerToggle;
     }
 
 }

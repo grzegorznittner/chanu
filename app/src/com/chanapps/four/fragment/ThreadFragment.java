@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -724,6 +725,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        ThreadActivity a = getActivity() != null && getActivity() instanceof ThreadActivity ? (ThreadActivity)getActivity() : null;
+        ActionBarDrawerToggle t = a != null ? a.getDrawerToggle() : null;
+        if (t != null && t.onOptionsItemSelected(item))
+            return true;
         switch (item.getItemId()) {
             case android.R.id.home:
                 navigateUp();
@@ -1041,7 +1046,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                absListView.setFastScrollEnabled(false);
+                                //absListView.setFastScrollEnabled(false);
                             }
                         });
                     while (true) {
@@ -1087,7 +1092,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                absListView.setFastScrollEnabled(true);
+                                //absListView.setFastScrollEnabled(true);
                                 getActivity().invalidateOptionsMenu();
                             }
                         });
