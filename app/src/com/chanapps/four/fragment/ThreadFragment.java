@@ -1046,7 +1046,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                absListView.setFastScrollEnabled(false);
+                                //absListView.setFastScrollEnabled(false);
                             }
                         });
                     while (true) {
@@ -1092,7 +1092,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                absListView.setFastScrollEnabled(true);
+                                //absListView.setFastScrollEnabled(true);
                                 getActivity().invalidateOptionsMenu();
                             }
                         });
