@@ -3,11 +3,9 @@ package com.chanapps.four.activity;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.*;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
@@ -17,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.util.Log;
+import android.util.Pair;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
@@ -505,8 +504,8 @@ public class PostReplyActivity
     private boolean isPassAvailable() {
         switch (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
             case WIFI:
-                return true;
             case MOBILE:
+                return true;
             case NO_CONNECTION:
             default:
                 return false;
@@ -532,6 +531,7 @@ public class PostReplyActivity
     private void updatePassRecaptchaViews(boolean passEnabled) {
         switch (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
             case WIFI:
+            case MOBILE:
                 if (passEnabled) {
                     passStatusText.setText(R.string.post_reply_pass_enabled_text);
                     setPassEnabled();
@@ -543,11 +543,13 @@ public class PostReplyActivity
                     setRecaptchaEnabled();
                 }
                 break;
+            /*
             case MOBILE:
                 passStatusText.setText(R.string.post_reply_pass_mobile_text);
                 setPassUnavailable();
                 setRecaptchaEnabled();
                 break;
+            */
             case NO_CONNECTION:
             default:
                 passStatusText.setText(R.string.post_reply_pass_no_connection_text);
@@ -750,7 +752,7 @@ public class PostReplyActivity
         recaptchaText.setText("");
         recaptchaText.setHint(R.string.post_reply_recaptcha_hint);
         loadCaptchaTask = new LoadCaptchaTask(getApplicationContext(), recaptchaButton, recaptchaLoading, true);
-        loadCaptchaTask.execute(getString(R.string.post_reply_recaptcha_url_root));
+        loadCaptchaTask.execute(URLFormatComponent.getUrl(this, URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_URL));
     }
 
     @Override
@@ -1101,9 +1103,9 @@ public class PostReplyActivity
     }
 
     public void navigateUp() {
-        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
         if (task != null) {
             if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null && !this.getClass().getName().equals(task.baseActivity.getClassName())) {
@@ -1179,10 +1181,7 @@ public class PostReplyActivity
 
     public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, Integer> {
 
-        public final String TAG = PostReplyTask.class.getSimpleName();
-        public static final String POST_URL_ROOT = "https://sys.4chan.org/";
         public static final String MAX_FILE_SIZE = "3145728";
-        public static final boolean DEBUG = false;
 
         //private PostReplyActivity activity = null;
         private boolean usePass = false;
@@ -1331,7 +1330,7 @@ public class PostReplyActivity
         }
 
         protected String executePostReply(MultipartEntity entity) {
-            String url = POST_URL_ROOT + boardCode + "/post";
+            String url = String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POST_URL_FORMAT), boardCode);
             AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
             HttpParams params = client.getParams();
             if (params != null)

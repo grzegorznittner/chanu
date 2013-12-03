@@ -22,6 +22,7 @@ public class DeletingPostDialogFragment extends DialogFragment {
     public static final String TAG = DeletingPostDialogFragment.class.getSimpleName();
     DeletePostTask task;
     boolean onlyImages;
+    public DeletingPostDialogFragment(){}
     public DeletingPostDialogFragment(DeletePostTask task, boolean onlyImages) {
         super();
         this.task = task;

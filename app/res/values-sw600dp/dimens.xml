@@ -8,6 +8,7 @@
     <dimen name="BoardGridSubject">14sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridSubjectHeader">42sp</dimen>
+    <dimen name="BoardGridSubjectHeaderAbbr">42sp</dimen>
     <dimen name="BoardGridInfoHeader">16sp</dimen>
     <dimen name="BoardGridAction">16sp</dimen>
     <dimen name="BoardGridNumReplies">14sp</dimen>
@@ -352,6 +353,9 @@
     <dimen name="BoardGridItemIconWidth">18dp</dimen>
     <dimen name="BoardGridItemIconHeight">24dp</dimen>
     <dimen name="BoardGridItemIconPaddingBottom">7dp</dimen>
+    <dimen name="BoardGridItemIconSmallMarginBottom">4dp</dimen>
     <dimen name="BoardGridItemIconSpacing">8dp</dimen>
+
+    <integer name="BoardGridSubject_maxLines">4</integer>
 
 </resources>

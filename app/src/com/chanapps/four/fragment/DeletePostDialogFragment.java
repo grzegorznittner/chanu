@@ -40,6 +40,8 @@ public class DeletePostDialogFragment extends DialogFragment {
     private EditText passwordText = null;
     private CheckBox imageOnlyCheckbox = null;
 
+    public DeletePostDialogFragment(){}
+
     public DeletePostDialogFragment(String boardCode, long threadNo, long[] postNos) {
         super();
         this.boardCode = boardCode;

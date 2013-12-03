@@ -26,7 +26,7 @@ import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.fragment.ThreadFragment;
+import com.chanapps.four.data.FontSize;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -189,7 +189,6 @@ public class ThreadViewer {
         setImageWrapper(viewHolder, flags);
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
             setHeaderImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
-            setWebLink(viewHolder, goToThreadUrlListener);
         }
         else {
             setImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
@@ -241,10 +240,14 @@ public class ThreadViewer {
             if (showContextMenu) {
                 overflow.setOnClickListener(overflowListener);
                 overflow.setVisibility(View.VISIBLE);
+                if (viewHolder.list_item_right_menu_spacer != null)
+                    viewHolder.list_item_right_menu_spacer.setVisibility(View.GONE);
             }
             else {
                 overflow.setOnClickListener(null);
                 overflow.setVisibility(View.GONE);
+                if (viewHolder.list_item_right_menu_spacer != null)
+                    viewHolder.list_item_right_menu_spacer.setVisibility(View.VISIBLE);
             }
         }
         item.setVisibility(View.VISIBLE);
@@ -273,14 +276,22 @@ public class ThreadViewer {
         View arrow = viewHolder.list_item_num_comments_spinner;
         View imgWrapper = viewHolder.list_item_num_images;
         View spinner = viewHolder.list_item_num_images_spinner;
-        if (numReplies != null)
+        if (numReplies != null) {
+            FontSize.sizeTextView(numReplies);
             numReplies.setText(String.valueOf(r));
-        if (numImages != null)
+        }
+        if (numImages != null) {
+            FontSize.sizeTextView(numImages);
             numImages.setText(String.valueOf(i));
-        if (numRepliesLabel != null)
+        }
+        if (numRepliesLabel != null) {
+            FontSize.sizeTextView(numRepliesLabel);
             numRepliesLabel.setText(numRepliesLabel.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
-        if (numImagesLabel != null)
+        }
+        if (numImagesLabel != null) {
+            FontSize.sizeTextView(numImagesLabel);
             numImagesLabel.setText(numImagesLabel.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
+        }
         if (cmtWrapper != null) {
             if (r >= 0 && commentsOnClickListener != null && cursor.getCount() > 1) {
                 cmtWrapper.setOnClickListener(commentsOnClickListener);
@@ -327,12 +338,15 @@ public class ThreadViewer {
             String sep = ago.getResources().getString(R.string.list_item_ago_date_separator);
             if (sep != null && !sep.isEmpty())
                 sep += " ";
+            FontSize.sizeTextView(ago);
             ago.setText(sep + dateText);
         }
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         TextView no = viewHolder.list_item_header_bar_no;
-        if (no != null)
+        if (no != null) {
+            FontSize.sizeTextView(no);
             no.setText(String.valueOf(postNo));
+        }
     }
 
     static protected void displayItemCountFields(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
@@ -358,6 +372,7 @@ public class ThreadViewer {
             return 0;
 
         int directReplies = numDirectReplies(cursor);
+        FontSize.sizeTextView(numDirectReplies);
         numDirectReplies.setText(String.valueOf(directReplies));
         if (directReplies > 0) {
             wrapper.setOnClickListener(repliesOnClickListener);
@@ -402,6 +417,7 @@ public class ThreadViewer {
             tv.setMovementMethod(LinkMovementMethod.getInstance());
             addLinkedSpans(spannable, ID_PATTERN, sameIdOnClickListener);
         }
+        FontSize.sizeTextView(tv);
         tv.setText(spannable);
         tv.setVisibility(View.VISIBLE);
         return true;
@@ -426,13 +442,17 @@ public class ThreadViewer {
         if (DEBUG) Log.v(TAG, "setSubject text=" + text);
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
         if (spannable.length() > 0) {
+            if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
+                tv.setTypeface(subjectTypeface);
+            }
+            else {
+                FontSize.sizeTextView(tv);
+            }
+            tv.setText(spannable);
             if (backlinkOnClickListener != null) {
                 tv.setMovementMethod(LinkMovementMethod.getInstance());
                 addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
             }
-            tv.setText(spannable);
-            if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-                tv.setTypeface(subjectTypeface);
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -450,7 +470,7 @@ public class ThreadViewer {
         if (viewHolder.list_item_sticky_icon != null)
             viewHolder.list_item_sticky_icon.setVisibility((flags & ChanPost.FLAG_IS_STICKY) > 0 ? View.VISIBLE : View.GONE);
         if (DEBUG)
-            Log.i(TAG, "setSubjectIcons()"
+            Log.d(TAG, "setSubjectIcons()"
                     + " dead=" + ((flags & ChanPost.FLAG_IS_DEAD) > 0)
                     + " closed=" + ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
                     + " sticky=" + ((flags & ChanPost.FLAG_IS_STICKY) > 0)
@@ -501,6 +521,7 @@ public class ThreadViewer {
             addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
 
         //if (DEBUG) Log.v(TAG, "setText spannable=" + spannable + " len=" + spannable.length());
+        FontSize.sizeTextView(tv);
         tv.setText(spannable);
         tv.setVisibility(View.VISIBLE);
         return true;
@@ -580,6 +601,7 @@ public class ThreadViewer {
         TextView tv = viewHolder.list_item_exif_text;
         if (tv == null)
             return false;
+        FontSize.sizeTextView(tv);
         tv.setText("");
         tv.setVisibility(View.GONE);
         return true;
@@ -604,6 +626,8 @@ public class ThreadViewer {
         if (iv == null)
             return false;
         if (DEBUG) Log.i(TAG, "setHeaderImage()");
+        if (viewHolder.list_item_image_collapse != null)
+            viewHolder.list_item_image_collapse.setVisibility(View.GONE);
         if (hideNoImage(iv, null, flags))
             return true;
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
@@ -621,6 +645,8 @@ public class ThreadViewer {
         ImageView spinner = viewHolder.list_item_image_spinner;
         if (iv == null)
             return false;
+        if (viewHolder.list_item_image_collapse != null)
+            viewHolder.list_item_image_collapse.setVisibility(View.GONE);
         if (hideNoImage(iv, spinner, flags))
             return true;
         //if (isListLink(flags))
@@ -823,13 +849,13 @@ public class ThreadViewer {
         //baseBox <= scaleBox <= cardBox;
 
         //Point scaledBox = new Point(baseBox.x, baseBox.y);
-        if (baseBox.x > cardBox.x) { // downscale to fix x in card
-            double scale = (double)cardBox.x / (double)baseBox.x;
+        if (scaledBox.x > cardBox.x) { // downscale to fix x in card
+            double scale = (double)cardBox.x / (double)scaledBox.x;
             scaledBox.x = (int)(scale * scaledBox.x);
             scaledBox.y = (int)(scale * scaledBox.y);
         }
-        if (baseBox.y > cardBox.y) { // downscale to fit y in card
-            double scale = (double)cardBox.y / (double)baseBox.y;
+        if (scaledBox.y > cardBox.y) { // downscale to fit y in card
+            double scale = (double)cardBox.y / (double)scaledBox.y;
             scaledBox.x = (int)(scale * scaledBox.x);
             scaledBox.y = (int)(scale * scaledBox.y);
         }
@@ -850,7 +876,9 @@ public class ThreadViewer {
         }
         */
         
-        if (DEBUG) Log.v(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + scaledBox.x + "x" + scaledBox.y);
+        if (DEBUG) Log.v(TAG, "Image size input=" + tn_w + "x" + tn_h
+                + " box=" + cardBox.x + "x" + cardBox.y
+                + " output=" + scaledBox.x + "x" + scaledBox.y);
         return scaledBox;
     }
 
@@ -1075,11 +1103,6 @@ public class ThreadViewer {
                     absListView.setSelection(n);
                 }
             });
-    }
-
-    private static void setWebLink(ThreadViewHolder viewHolder, View.OnClickListener goToThreadUrlListener) {
-        if (viewHolder.list_item_web_link != null)
-            viewHolder.list_item_web_link.setOnClickListener(goToThreadUrlListener);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.chanapps.four.component;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,9 +10,12 @@ import android.net.Uri;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.Pair;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -142,4 +147,34 @@ public class ActivityDispatcher {
     public static boolean onUIThread() {
         return Looper.getMainLooper().equals(Looper.myLooper());
     }
+
+    private static final int MAX_RUNNING_TASKS = 2;
+
+    public static Pair<Integer, ActivityManager.RunningTaskInfo> safeGetRunningTasks(final Context context) {
+        try {
+            ActivityManager manager = (ActivityManager)context.getSystemService( Activity.ACTIVITY_SERVICE );
+            List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(MAX_RUNNING_TASKS);
+            int numTasks = tasks == null ? 0 : tasks.size();
+            ActivityManager.RunningTaskInfo topTask = (tasks == null || tasks.size() == 0) ? null : tasks.get(0);
+            return new Pair(numTasks, topTask);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception getting running task", e);
+            return new Pair(0, null);
+        }
+    }
+
+    public static boolean safeGetIsChanForegroundActivity(final Context context) {
+        boolean isFg = true;
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(context);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
+        if (task != null && task.topActivity != null) {
+            if (DEBUG) Log.d(TAG, "foreground activity: " + task.topActivity.getClass().getSimpleName());
+            ComponentName componentInfo = task.topActivity;
+            isFg = componentInfo != null && componentInfo.getPackageName().startsWith("com.chanapps");
+        }
+        return isFg;
+    }
+
 }

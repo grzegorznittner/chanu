@@ -72,7 +72,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         int i = position;
         if (i >= 0 && i< threads.size() && threads.get(i) != null) {
             ChanPost thread = threads.get(i);
-            String url = thread.thumbnailUrl();
+            String url = thread.thumbnailUrl(context);
             File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
             if (f != null && f.canRead() && f.length() > 0) {
                 views.setImageViewUri(R.id.image_coverflow_item, Uri.parse(f.getAbsolutePath()));

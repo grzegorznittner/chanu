@@ -1,5 +1,8 @@
 package com.chanapps.four.data;
 
+import android.content.Context;
+import com.chanapps.four.component.URLFormatComponent;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,7 +14,6 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public class Captcha {
-    public static final String apiBaseUrl = "http://api.recaptcha.net/";
 
     private String challenge;
     private String imageUrl;
@@ -19,7 +21,7 @@ public class Captcha {
     private static final Pattern IMG_REG = Pattern.compile("(<img .*src\\=\")([^\"]*)");
     private static final Pattern CHAL_REG = Pattern.compile("(id=\"recaptcha_challenge_field\" value=\")([^\"]*)");
 
-    public Captcha(String page) {
+    public Captcha(Context context, String page) {
         Matcher challengeMatch = CHAL_REG.matcher(page);
         Matcher imageMatch = IMG_REG.matcher(page);
         boolean bChal = challengeMatch.find();
@@ -27,7 +29,8 @@ public class Captcha {
 
         if (bChal && bImg) {
             challenge = challengeMatch.group(2);
-            imageUrl = apiBaseUrl + imageMatch.group(2);
+            imageUrl = String.format(
+                    URLFormatComponent.getUrl(context, URLFormatComponent.GOOGLE_RECAPTCHA_API_URL_FORMAT), imageMatch.group(2));
         }
     }
 

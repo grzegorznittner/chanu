@@ -36,12 +36,13 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final int TYPE_LINK = 4;
 
     protected boolean showContextMenu;
+    protected Runnable onDismissCallback;
 
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
     }
 
-    public ThreadListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu) {
+    public ThreadListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu, Runnable onDismissCallback) {
         this(context,
                 R.layout.thread_list_image_item,
                 viewBinder,
@@ -68,6 +69,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         R.id.list_item_exif_text
                 });
         this.showContextMenu = showContextMenu;
+        this.onDismissCallback = onDismissCallback;
     }
 
     @Override
@@ -138,14 +140,15 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
         final long threadNo = resto > 0 ? resto : postId;
         final long postNo = resto > 0 ? postId : 0;
         ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        final ThreadFragment fragment = context != null && context instanceof ThreadActivity
+                ? ((ThreadActivity)context).getCurrentFragment()
+                : null;
+        final String query = fragment == null ? "" : fragment.getQuery();
         if (resto == 0) { // it's a header
             if (DEBUG) Log.i(TAG, "view already set for thread header, only adjusting status icons and num comments/images/replies");
             int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
             int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
             ThreadViewer.setSubjectIcons(viewHolder, flags);
-            ThreadFragment fragment = context != null && context instanceof ThreadActivity
-                    ? ((ThreadActivity)context).getCurrentFragment()
-                    : null;
             View.OnClickListener listener = fragment != null
                     ? ThreadViewer.createCommentsOnClickListener(fragment.getAbsListView(), fragment.getHandler())
                     : null;
@@ -155,21 +158,32 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             ThreadViewer.displayNumDirectReplies(viewHolder, cursor, showContextMenu, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (context instanceof FragmentActivity)
-                        (new ThreadPopupDialogFragment(boardCode, threadNo, threadNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES))
+                    if (context instanceof FragmentActivity) {
+                        if (DEBUG) Log.i(TAG, "should dismiss parent here fragment=" + fragment);
+                        if (onDismissCallback != null)
+                            onDismissCallback.run();
+                        //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
+                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, ThreadPopupDialogFragment.PopupType.REPLIES, query))
                                 .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                    }
                 }
             });
             return;
         }
         else {
             if (DEBUG) Log.i(TAG, "view already set for thread item, only adjusting num replies");
+            if (DEBUG) Log.i(TAG, "displayNumDirectReplies showContextMenu=" + showContextMenu + " cursor count" + cursor.getCount());
             ThreadViewer.displayNumDirectReplies(viewHolder, cursor, showContextMenu, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (context instanceof FragmentActivity)
-                        (new ThreadPopupDialogFragment(boardCode, threadNo, postNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES))
+                    if (context instanceof FragmentActivity) {
+                        if (DEBUG) Log.i(TAG, "should dismiss parent here fragment=" + fragment);
+                        if (onDismissCallback != null)
+                            onDismissCallback.run();
+                        //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
+                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, ThreadPopupDialogFragment.PopupType.REPLIES, query))
                                 .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                    }
                 }
             });
             return;

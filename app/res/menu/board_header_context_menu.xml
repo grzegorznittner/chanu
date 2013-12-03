@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:id="@+id/sort_order_menu"
+          android:title="@string/sort_order_menu"
+          android:icon="@drawable/collections_sort_by_size"
+            />
+
     <item android:id="@+id/board_add_to_favorites_menu"
           android:title="@string/board_add_to_favorites_menu"
           android:icon="@drawable/content_new"

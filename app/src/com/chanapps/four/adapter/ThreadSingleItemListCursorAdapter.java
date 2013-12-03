@@ -25,8 +25,8 @@ public class ThreadSingleItemListCursorAdapter extends ThreadListCursorAdapter {
         super(context, layout, viewBinder, from, to);
     }
 
-    public ThreadSingleItemListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu) {
-        super(context, viewBinder, showContextMenu);
+    public ThreadSingleItemListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu, Runnable onDismissCallback) {
+        super(context, viewBinder, showContextMenu, onDismissCallback);
     }
 
     @Override

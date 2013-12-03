@@ -112,12 +112,11 @@
         <item name="android:textColor">?themedCardSubjectTextColor</item>
         <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:visibility">gone</item>
+        <item name="android:maxLines">@integer/BoardGridSubject_maxLines</item>
         <!--
         <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:ellipsize">end</item>
         <item name="android:lines">2</item>
-
-        <item name="android:maxLines">2</item>
         -->
     </style>
 
@@ -147,11 +146,12 @@
         <item name="android:paddingBottom">8dp</item>
         <item name="android:textColor">@color/PaletteLightGray</item>
         <item name="android:textSize">@dimen/BoardGridInfo</item>
+        <item name="android:maxLines">4</item>
         <!--
-        <item name="android:lines">2</item>
-        <item name="android:maxLines">2</item>
-        <item name="android:maxLines">3</item>
-        -->
+               <item name="android:lines">2</item>
+               <item name="android:maxLines">2</item>
+               <item name="android:maxLines">3</item>
+               -->
     </style>
 
     <style name="BoardGridItemSmallTabletColInfo" parent="AppTheme">
@@ -762,10 +762,22 @@
         <!-- <item name="android:foreground">@drawable/thread_list_selector_bg</item> -->
     </style>
 
+    <style name="ThreadListItemRightMenuWrap" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ThreadListItemRightMenuSpacer" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_med_padding</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
     <style name="ThreadListItemReplyWrap" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <item name="android:layout_marginRight">@dimen/ThreadListItemReplyWrap_marginRight</item>
         <item name="android:layout_gravity">right</item>
         <item name="android:foreground">@drawable/thread_list_selector_bg</item>
         <item name="android:orientation">horizontal</item>
@@ -904,6 +916,15 @@
         <item name="android:layout_height">48dp</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
+    </style>
+
+    <style name="ThreadListItemImageCollapse" parent="AppTheme">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:contentDescription">@string/thread_post_collapse_button</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:src">?themedThreadCollapseImageIcon</item>
     </style>
 
     <style name="ThreadListLinkImage" parent="AppTheme">
@@ -1242,7 +1263,7 @@
 
     <!-- Drawer -->
 
-    <dimen name="Drawer.layout_width">240dp</dimen>
+    <dimen name="Drawer.layout_width">320dp</dimen>
     <dimen name="Drawer.paddingTop">16dp</dimen>
 
     <!-- YesNoPreference -->

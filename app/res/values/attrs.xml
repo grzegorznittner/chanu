@@ -74,5 +74,7 @@
     <attr name="themedSpinnerArrow" format="reference" />
     <attr name="themedBoardGridBoardCodeBg" format="reference|color" />
     <attr name="themedWidgetConfigureButtonBg" format="reference|color" />
+    <attr name="themedBoardGridNumReplies" format="reference|color" />
+    <attr name="themedThreadCollapseImageIcon" format="reference" />
 
 </resources>

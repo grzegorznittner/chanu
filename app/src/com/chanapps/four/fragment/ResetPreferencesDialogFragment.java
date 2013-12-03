@@ -30,6 +30,8 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
     public static final String TAG = ResetPreferencesDialogFragment.class.getSimpleName();
     private SettingsFragment fragment;
 
+    public ResetPreferencesDialogFragment(){}
+
     public ResetPreferencesDialogFragment(SettingsFragment fragment) {
         super();
         this.fragment = fragment;

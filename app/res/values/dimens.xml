@@ -10,6 +10,7 @@
     <dimen name="BoardGridSubject">14sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridSubjectHeader">28sp</dimen>
+    <dimen name="BoardGridSubjectHeaderAbbr">36sp</dimen>
     <dimen name="BoardGridInfoHeader">14sp</dimen>
     <dimen name="BoardGridAction">12sp</dimen>
     <dimen name="BoardGridInfoPaddingBottom">4dp</dimen>
@@ -42,6 +43,12 @@
     <dimen name="PopupFullTextView">18sp</dimen>
     <dimen name="MessageText">16sp</dimen>
     <dimen name="DialogFragmentMessageSize">16sp</dimen>
+
+    <dimen name="FontSizeTiny">12sp</dimen>
+    <dimen name="FontSizeSmall">14sp</dimen>
+    <dimen name="FontSizeMedium">16sp</dimen>
+    <dimen name="FontSizeLarge">18sp</dimen>
+    <dimen name="FontSizeHuge">20sp</dimen>
 
     <!-- Padding & Margins -->
 
@@ -390,6 +397,7 @@
     <dimen name="BoardGridItemIconWidth">16dp</dimen>
     <dimen name="BoardGridItemIconHeight">21dp</dimen>
     <dimen name="BoardGridItemIconPaddingBottom">5dp</dimen>
+    <dimen name="BoardGridItemIconSmallMarginBottom">6dp</dimen>
     <dimen name="BoardGridItemIconSpacing">8dp</dimen>
 
     <!-- string pref values for arrays and static variables -->
@@ -405,7 +413,6 @@
     <string name="pref_autoload_images_always_value">1</string>
     <string name="pref_autoload_images_auto_value">2</string>
     <string name="pref_autoload_images_default_value">@string/pref_autoload_images_never_value</string>
-    <string name="post_reply_recaptcha_url_root">http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc</string>
     <string name="pref_about_developer_burns">John Burns</string>
     <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>
     <string name="pref_about_developer_nittner">Grzegorz Nittner</string>
@@ -415,5 +422,7 @@
     <string name="pref_about_developer_milas">Dimitris Milas</string>
     <string name="pref_about_developer_milas_sum">dimitris.leonida.milas@gmail.com</string>
     <string name="pref_about_translations_de_sum">le_avx</string>
-  
+
+    <integer name="BoardGridSubject_maxLines">4</integer>
+
 </resources>

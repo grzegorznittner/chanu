@@ -22,6 +22,9 @@ import com.chanapps.four.task.ReportPostTask;
 public class ReportingPostDialogFragment extends DialogFragment {
     public static final String TAG = ReportingPostDialogFragment.class.getSimpleName();
     ReportPostTask task;
+
+    public ReportingPostDialogFragment(){}
+
     public ReportingPostDialogFragment(ReportPostTask task) {
         super();
         this.task = task;

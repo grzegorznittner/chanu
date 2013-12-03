@@ -13,6 +13,7 @@ import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.BillingComponent;
+import com.chanapps.four.component.URLFormatComponent;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.DateFormat;
@@ -40,7 +41,8 @@ public class PurchaseFragment extends PreferenceFragment
         //addPurchasePreference();
         //addConsumePreference();
 
-        linkPreference("pref_about_store_chanapps", "http://www.skreened.com/chanapps/");
+        linkPreference("pref_about_store_chanapps",
+                URLFormatComponent.getUrl(getActivity(), URLFormatComponent.SKREENED_CHANU_STORE_URL));
         emailPreference("pref_about_contact_us", getString(R.string.pref_about_contact_email));
     }
 

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.ReportPostResponse;
 import com.chanapps.four.fragment.ReportingPostDialogFragment;
 import com.chanapps.four.multipartmime.MultipartEntity;
@@ -33,8 +34,6 @@ import java.util.List;
 public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void, Integer> {
 
     public static final String TAG = ReportPostTask.class.getSimpleName();
-
-    public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final boolean DEBUG = false;
 
     private ChanIdentifiedActivity refreshableActivity = null;
@@ -130,7 +129,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
     }
 
     protected String executeReportPost(MultipartEntity entity) {
-        String url = POST_URL_ROOT + boardCode + "/imgboard.php";
+        String url = String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POST_URL_DELETE_FORMAT), boardCode);;
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         try {
             HttpPost request = new HttpPost(url);

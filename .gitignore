@@ -16,7 +16,6 @@ bin/
 gen/
 out/
 target/
-project.properties
 .classpath
 .project
 

@@ -134,7 +134,12 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
         if (getVisibility() == GLView.INVISIBLE) return;
         AlphaAnimation animation = new AlphaAnimation(1, 0);
         animation.setDuration(HIDE_ANIMATION_DURATION);
-        startAnimation(animation);
+        try {
+            startAnimation(animation);
+        }
+        catch (IllegalStateException e) {
+            Log.i(TAG, "Exception running hide animation for film strip, setting invisible", e);
+        }
         setVisibility(GLView.INVISIBLE);
     }
 

@@ -20,11 +20,7 @@ import android.widget.*;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
-import com.chanapps.four.component.ActivityDispatcher;
-//import com.chanapps.four.component.AdComponent;
-import com.chanapps.four.component.BillingComponent;
-import com.chanapps.four.component.ThemeSelector;
-import com.chanapps.four.component.ThreadViewable;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
@@ -34,6 +30,7 @@ import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.viewer.ThreadListener;
 import com.chanapps.four.viewer.ThreadViewer;
+import com.chanapps.four.widget.WidgetProviderUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
@@ -64,9 +61,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public static final boolean DEBUG = false;
 
-    public static final String GOOGLE_TRANSLATE_PATTERN = "http://translate.google.com/m?hl=%s&sl=auto&tl=%s&ie=UTF8&prev=_m&q=%s"; // %1 = locale, %2 = locale, %3 = query
-    // e.g. http://translate.google.com/m?hl=en&sl=auto&tl=en&ie=ISO-8859-1&prev=_m&q=reich
-
     public static final int MAX_HTTP_GET_URL_LEN = 1000;
     protected static final int LOADER_ID = 0;
     protected static final String FIRST_VISIBLE_POSITION = "firstVisiblePosition";
@@ -76,6 +70,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected long threadNo;
 
     protected AbstractBoardCursorAdapter adapter;
+    protected AbstractBoardCursorAdapter fullAdapter; // only used for search
     protected View layout;
     protected AbsListView absListView;
     protected Handler handler;
@@ -366,6 +361,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         // retry load if maybe data wasn't there yet
         setupShareActionProviderOPMenu(menu);
         selectCurrentThreadAsync();
+        /*
+        if (query == null || query.isEmpty())
+            selectCurrentThreadAsync();
+        else
+            adapter.getFilter().filter(query, new Filter.FilterListener() {
+                @Override
+                public void onFilterComplete(int count) {
+                    selectCurrentThreadAsync();
+                }
+            });
+        */
     }
 
     protected void selectCurrentThreadAsync() {
@@ -519,24 +525,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             }
         }, 100);
 
-        /*
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " highlighting post pos=" + postPos);
-                if (absListView != null)
-                    absListView.setSelection(postPos);
-
-                SparseBooleanArray booleanArray = absListView.getCheckedItemPositions();
-                for (int i = 0; i < absListView.getCount(); i++)
-                    if (booleanArray.get(i, false) && i != postPos)
-                        absListView.setItemChecked(i, false);
-                if (!booleanArray.get(postPos, false))
-                    absListView.setItemChecked(postPos, true);
-                postNo = -1;
-            }
-        }, 150);
-        */
     }
 
     protected void selectCurrentThread(final ChanThread thread) {
@@ -551,10 +539,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     }
                 });
         }
-        //else if (thread.threadNeedsRefresh()) {
-        //    if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " trying thread refresh");
-        //    tryFetchThread();
-        //}
         else if (thread.isDead) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " dead thread, redisplaying");
             if (handler != null)
@@ -566,33 +550,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     }
                 });
         }
-        /*
-        else if (postNo > 0 && postNo != threadNo) {
-            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to postNo=" + postNo);
-            scrollToPost(postNo, new Runnable() {
-                @Override
-                public void run() {
-                    setProgressFromThreadState(thread);
-                }
-            });
-        }
-        else if (firstVisiblePosition >= 0) {
-            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to saved pos=" + firstVisiblePosition);
-            if (handler != null)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (absListView instanceof ListView)
-                            ((ListView)absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
-                        else
-                            absListView.setSelection(firstVisiblePosition);
-                        firstVisiblePosition = -1;
-                        firstVisiblePositionOffset = -1;
-                        setProgressFromThreadState(thread);
-                    }
-                });
-        }
-        */
         else {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " setting spinner from thread state");
             if (handler != null)
@@ -616,11 +573,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected void createAbsListView() {
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
         absListView = (ListView) layout.findViewById(R.id.thread_list_view);
-        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder, true);
+        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder, true, null);
         absListView.setAdapter(adapter);
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         absListView.setOnCreateContextMenuListener(this);
-        //absListView.setOnItemClickListener(threadItemListener);
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
@@ -629,29 +585,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (mPullToRefreshAttacher != null && absListView != null)
             mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
     }
-
-    /*
-    protected AbsListView.OnItemClickListener threadItemListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-            postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " postNo=" + postNo + " flags=" + flags + " view=" + view);
-            // /updateSharedIntent();
-            if ((flags & ChanPost.FLAG_IS_AD) > 0)
-                itemAdListener.onClick(view);
-            else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
-                itemTitleListener.onClick(view);
-            else if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
-                itemButtonListener.onClick(view);
-            else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
-                itemThreadLinkListener.onClick(view);
-            else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
-                itemBoardLinkListener.onClick(view);
-        }
-    };
-    */
 
     private String replyText(long postNos[]) {
         String replyText = "";
@@ -666,25 +599,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 ChanPost.planifyText(replyText),
                 ChanPost.planifyText(quotesText));
     }
-
-
-    /*
-    protected View.OnClickListener postReplyListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            if (pos < 0)
-                return;
-            Cursor cursor = adapter.getCursor();
-            if (!cursor.moveToPosition(pos))
-                return;
-            long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            if (postNo == threadNo)
-                postNo = 0;
-            PostReplyActivity.startActivity(getActivityContext(), boardCode, threadNo, postNo, ChanPost.planifyText(""));
-        }
-    };
-    */
 
     protected boolean isThreadPlayable() {
         return adapter != null
@@ -833,10 +747,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 postReply("", selectQuoteText(0));
                 return true;
             /*
-            case R.id.post_reply_all_quote_menu:
-                String quotesText = selectQuoteText(0);
-                postReply(quotesText);
-                return true;
             case R.id.download_all_images_menu:
                 ThreadImageDownloadService.startDownloadToBoardFolder(getActivityContext(), boardCode, threadNo);
                 Toast.makeText(getActivityContext(), R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
@@ -849,7 +759,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             case R.id.play_thread_menu:
                 return playThreadMenu();
             case R.id.web_menu:
-                String url = ChanThread.threadUrl(boardCode, threadNo);
+                String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
             default:
                 ThreadActivity activity = (ThreadActivity)getActivity();
@@ -885,6 +795,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     else {
                         ChanFileStorage.addWatchedThread(context, thread);
                         BoardActivity.refreshWatchlist(context);
+                        WidgetProviderUtils.scheduleGlobalAlarm(context); // insure watchlist is updated
                         msgId = R.string.thread_added_to_watchlist;
                         if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
                     }
@@ -918,8 +829,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                         msgId = R.string.thread_watchlist_not_deleted_thread;
                     }
                     else {
+                        boolean isDead = thread.isDead;
                         ChanFileStorage.deleteWatchedThread(context, thread);
                         BoardActivity.refreshWatchlist(context);
+                        if (isDead)
+                            BoardActivity.updateBoard(context, boardCode);
                         msgId = R.string.thread_deleted_from_watchlist;
                         if (DEBUG) Log.i(TAG, "Deleted /" + boardCode + "/" + threadNo + " from watchlist");
                     }
@@ -1001,86 +915,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         clipboard.setPrimaryClip(clip);
         Toast.makeText(getActivityContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
     }
-    /*
-    protected View.OnClickListener itemAdListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
-            String adUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-            if (adUrl != null && !adUrl.isEmpty())
-                ActivityDispatcher.launchUrlInBrowser(getActivity(), adUrl);
-        }
-    };
-
-    protected View.OnClickListener itemTitleListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
-            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            final String title = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-            final String desc = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-            if ((flags & ChanPost.FLAG_IS_TITLE) > 0
-                    && title != null && !title.isEmpty()
-                    && desc != null && !desc.isEmpty()) {
-                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
-                        .show(getFragmentManager(), ThreadFragment.TAG);
-            }
-
-        }
-    };
-
-    // we only support reply button currently
-    protected View.OnClickListener itemButtonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
-            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
-                PostReplyActivity.startActivity(getActivity(), boardCode, threadNo, 0, "");
-        }
-    };
-
-    protected View.OnClickListener itemThreadLinkListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
-            String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
-            long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            absListView.setItemChecked(pos, false); // gets checked for some reason
-            if (linkedBoardCode == null || linkedBoardCode.isEmpty() || linkedThreadNo <= 0)
-                return;
-            if (boardCode.equals(linkedBoardCode)) {
-                ((ThreadActivity)getActivity()).showThread(threadNo);
-            } else {
-                ThreadActivity.startActivity(getActivity(), linkedBoardCode, linkedThreadNo, "");
-                getActivity().finish();
-            }
-        }
-    };
-
-    protected View.OnClickListener itemBoardLinkListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
-            String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
-            absListView.setItemChecked(pos, false); // gets checked for some reason
-            if (linkedBoardCode != null && !linkedBoardCode.isEmpty()) {
-                BoardActivity.startActivity(getActivity(), linkedBoardCode, "");
-                getActivity().finish();
-            }
-        }
-    };
-    */
 
     protected View.OnLongClickListener startActionModeListener = new View.OnLongClickListener() {
         @Override
@@ -1177,8 +1011,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             Toast.makeText(getActivityContext(), R.string.translate_no_text, Toast.LENGTH_SHORT);
             return true;
         }
-        String translateUrl = String.format(GOOGLE_TRANSLATE_PATTERN, localeCode, localeCode, escaped);
-        // String translateUrl = GOOGLE_TRANSLATE_PATTERN + "/" + localeCode + "/" + escaped;
+        String translateUrl = String.format(
+                URLFormatComponent.getUrl(getActivityContext(), URLFormatComponent.GOOGLE_TRANSLATE_URL_FORMAT),
+                localeCode, localeCode, escaped);
         if (translateUrl.length() > MAX_HTTP_GET_URL_LEN)
             translateUrl = translateUrl.substring(0, MAX_HTTP_GET_URL_LEN);
         if (DEBUG) Log.i(TAG, "translatePosts() launching url=" + translateUrl);
@@ -1218,12 +1053,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                                 public void run() {
                                     if (absListView == null || adapter == null)
                                         return;
-                                    /*
-                                    int first = absListView.getFirstVisiblePosition();
-                                    int last = absListView.getLastVisiblePosition();
-                                    for (int pos = first; pos <= last; pos++)
-                                        expandVisibleItem(first, pos);
-                                    */
                                     absListView.smoothScrollBy(2, 25);
                                 }
                                 /*
@@ -1336,46 +1165,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         // set share text
         if (DEBUG) Log.i(TAG, "updateSharedIntent() found postNo=" + firstPost + " for threadNo=" + threadNo);
         String linkUrl = (firstPost > 0 && firstPost != threadNo)
-                ? ChanPost.postUrl(boardCode, threadNo, firstPost)
-                : ChanThread.threadUrl(boardCode, threadNo);
-        //String text = selectText(postPos);
-        //String extraText = linkUrl + (text.isEmpty() ? "" : "\n\n" + text);
+                ? ChanPost.postUrl(getActivityContext(), boardCode, threadNo, firstPost)
+                : ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
 
         // create intent
         Intent intent;
-        //if (paths.size() == 0) {
-            intent = new Intent(Intent.ACTION_SEND);
-        //    intent.putExtra(Intent.EXTRA_TEXT, extraText);
-        //    intent.setType("text/html");
-            intent.putExtra(Intent.EXTRA_TEXT, linkUrl);
-            intent.setType("text/plain");
-            setShareIntent(provider, intent);
-        /*
-        } else {
-            ArrayList<Uri> uris = new ArrayList<Uri>();
-            ArrayList<String> missingPaths = new ArrayList<String>();
-            for (String path : paths) {
-                if (checkedImageUris.containsKey(path)) {
-                    Uri uri = checkedImageUris.get(path);
-                    uris.add(uri);
-                    if (DEBUG) Log.i(TAG, "Added uri=" + uri);
-                } else {
-                    uris.add(Uri.fromFile(new File(path)));
-                    missingPaths.add(path);
-                }
-            }
-            intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            intent.putExtra(Intent.EXTRA_TEXT, extraText);
-            intent.setType("image/jpeg");
-            setShareIntent(provider, intent);
-            // causes images to show up in the gallery, so ignoring for now
-            //if (missingPaths.size() > 0) {
-            //    if (DEBUG) Log.i(TAG, "launching scanner for missing paths count=" + missingPaths.size());
-            //    asyncUpdateSharedIntent(missingPaths);
-            //}
-        }
-        */
+        intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, linkUrl);
+        intent.setType("text/plain");
+        setShareIntent(provider, intent);
     }
 
     protected void asyncUpdateSharedIntent(ArrayList<String> pathList) {
@@ -1385,8 +1183,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             paths[i] = pathList.get(i);
             types[i] = "image/jpeg";
         }
-        //MediaScannerConnection.scanFile(getActivityContext(), paths, types, mediaScannerListener);
-        // don't do it, it causes images to show up in gallery every time you click overflow menu
     }
 
     public void onRefresh() {
@@ -1413,7 +1209,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 }
                 if (handler != null && getActivity() != null && getActivity().getLoaderManager() != null) {
                     if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " scheduling handler post");
-                    handler.post(new Runnable() {
+                    if (handler != null)
+                        handler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");
@@ -1429,65 +1226,40 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }).start();
     }
 
-    private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
-    private static final String IMAGE_SEARCH_ROOT_ANIME = "http://iqdb.org/?url=";
-
-    private void imageSearch(SparseBooleanArray postPos, String rootUrl) {
-        String imageUrl = "";
-        for (int i = 0; i < absListView.getCount(); i++) {
-            if (!postPos.get(i))
-                continue;
-            Cursor cursor = (Cursor) adapter.getItem(i);
-            if (cursor == null)
-                continue;
-            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0)
-                continue;
-            String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
-            if (url == null || url.isEmpty())
-                continue;
-            imageUrl = url;
-            break;
-        }
-        if (imageUrl.isEmpty()) {
-            Toast.makeText(getActivityContext(), R.string.full_screen_image_search_not_found, Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-        try {
-            String encodedImageUrl = URLEncoder.encode(imageUrl, "UTF-8");
-            String url =  rootUrl + encodedImageUrl;
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(intent);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Couldn't do image search imageUrl=" + imageUrl, e);
-            Toast.makeText(getActivityContext(), R.string.full_screen_image_search_error, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (v == null)
                 return;
-            if (absListView == null)
-                return;
-            int pos = absListView.getPositionForView(v);
-            if (pos >= 0) {
-                absListView.setItemChecked(pos, true);
-                postNo = absListView.getItemIdAtPosition(pos);
+            int pos = -1;
+            SparseBooleanArray checked;
+            synchronized (this) {
+                if (absListView == null)
+                    return;
+                pos = absListView == null ? -1 : absListView.getPositionForView(v);
+                if (absListView != null && pos >= 0) {
+                    absListView.setItemChecked(pos, true);
+                    postNo = absListView == null ? -1 : absListView.getItemIdAtPosition(pos);
+                }
+                checked = absListView == null ? null : absListView.getCheckedItemPositions();
             }
-            boolean isHeader = pos == 0;
-            updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
+            if (pos == -1)
+                return;
+            updateSharedIntent(shareActionProvider, checked);
             PopupMenu popup = new PopupMenu(getActivityContext(), v);
-            int menuId;
+            Cursor cursor = adapter.getCursor();
+            boolean hasImage = cursor != null
+                    && (cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS)) & ChanPost.FLAG_HAS_IMAGE) > 0;
+                boolean isHeader = pos == 0;
+                int menuId;
             if (!undead())
                 menuId = R.menu.thread_dead_context_menu;
             else if (isHeader)
                 menuId = R.menu.thread_header_context_menu;
+            else if (hasImage)
+                menuId = R.menu.thread_image_context_menu;
             else
-                menuId = R.menu.thread_context_menu;
+                menuId = R.menu.thread_text_context_menu;
             popup.inflate(menuId);
             popup.setOnMenuItemClickListener(popupListener);
             popup.setOnDismissListener(popupDismissListener);
@@ -1512,12 +1284,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
                     postReply(replyText(postNos), selectQuoteText(postPos));
                     return true;
-                /*
-                case R.id.post_reply_all_quote_menu:
-                    String quotesText = selectQuoteText(postPos);
-                    postReply(quotesText);
-                    return true;
-                    */
                 case R.id.copy_text_menu:
                     String selectText = selectText(postPos);
                     copyToClipboard(selectText);
@@ -1527,12 +1293,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     ThreadImageDownloadService.startDownloadToGalleryFolder(
                             getActivityContext(), boardCode, threadNo, postNos);
                     Toast.makeText(getActivityContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.image_search_menu:
-                    imageSearch(postPos, IMAGE_SEARCH_ROOT);
-                    return true;
-                case R.id.anime_image_search_menu:
-                    imageSearch(postPos, IMAGE_SEARCH_ROOT_ANIME);
                     return true;
                 case R.id.translate_posts_menu:
                     return translatePosts(postPos);
@@ -1550,7 +1310,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             getActivity().getFragmentManager(), TAG);
                     return true;
                 case R.id.web_menu:
-                    String url = ChanPost.postUrl(boardCode, threadNo, postNos[0]);
+                    String url = ChanPost.postUrl(getActivityContext(), boardCode, threadNo, postNos[0]);
                     ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
                 default:
                     return false;
@@ -1603,7 +1363,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             if (DEBUG) Log.i(TAG, "onCreateActionMode");
             MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.thread_context_menu, menu);
+            inflater.inflate(R.menu.thread_text_context_menu, menu);
             MenuItem shareItem = menu.findItem(R.id.thread_context_share_action_menu);
             if (shareItem != null) {
                 shareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
@@ -1652,12 +1412,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             getActivityContext(), boardCode, threadNo, postNos);
                     Toast.makeText(getActivityContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                     return true;
-                case R.id.image_search_menu:
-                    imageSearch(postPos, IMAGE_SEARCH_ROOT);
-                    return true;
-                case R.id.anime_image_search_menu:
-                    imageSearch(postPos, IMAGE_SEARCH_ROOT_ANIME);
-                    return true;
                 case R.id.translate_posts_menu:
                     return translatePosts(postPos);
                 case R.id.delete_posts_menu:
@@ -1674,7 +1428,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             .show(getActivity().getFragmentManager(), TAG);
                     return true;
                 case R.id.web_menu:
-                    String url = ChanPost.postUrl(boardCode, threadNo, postNos[0]);
+                    String url = ChanPost.postUrl(getActivityContext(), boardCode, threadNo, postNos[0]);
                     ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
                 default:
                     return false;
@@ -1712,12 +1466,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     @Override
     public void showDialog(String boardCode, long threadNo, long postNo, int pos, ThreadPopupDialogFragment.PopupType popupType) {
         if (DEBUG) Log.i(TAG, "showDialog /" + boardCode + "/" + threadNo + "#p" + postNo + " pos=" + pos);
-        if (popupType == ThreadPopupDialogFragment.PopupType.SELF)
-            (new ThreadSinglePopupDialogFragment(boardCode, threadNo, postNo, pos))
-                    .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
-        else
-            (new ThreadPopupDialogFragment(boardCode, threadNo, postNo, pos, popupType))
-                    .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
+        //(new ThreadPopupDialogFragment(this, boardCode, threadNo, postNo, pos, popupType, query))
+        (new ThreadPopupDialogFragment(this, boardCode, threadNo, postNo, popupType, query))
+                .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
     }
 
     public String toString() {
@@ -1728,7 +1479,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public void onClick(View view) {
             if (getActivityContext() != null) {
-                String url = ChanThread.threadUrl(boardCode, threadNo);
+                String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
             }
         }
@@ -1797,6 +1548,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     protected void jumpToBottom() {
         ThreadViewer.jumpToBottom(absListView, handler);
+    }
+
+    public String getQuery() {
+        return query;
     }
 
 }

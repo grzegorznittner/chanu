@@ -99,7 +99,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         }
 
         try {
-            Captcha captcha = new Captcha(captchaResponse);
+            Captcha captcha = new Captcha(context, captchaResponse);
             String challenge = captcha.getChallenge();
             String imageUrl = captcha.getImageUrl();
             if (imageUrl == null || imageUrl.isEmpty()) {

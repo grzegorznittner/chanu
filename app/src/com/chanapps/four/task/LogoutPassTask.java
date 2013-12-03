@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.LogoutPassResponse;
 import com.chanapps.four.data.PersistentCookieStore;
 import com.chanapps.four.fragment.LogoutPassDialogFragment;
@@ -37,8 +38,6 @@ import java.util.List;
 public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, Integer> {
 
     public static final String TAG = LogoutPassTask.class.getSimpleName();
-
-    public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final boolean DEBUG = false;
 
     private ChanIdentifiedActivity refreshableActivity;
@@ -120,7 +119,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
     }
 
     protected String executeReportPost(MultipartEntity entity) {
-        String url = POST_URL_ROOT + "/auth";
+        String url = URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_AUTH_URL);
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         try {
             // setup cookies

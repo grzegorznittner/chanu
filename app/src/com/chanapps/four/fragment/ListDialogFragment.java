@@ -26,6 +26,8 @@ public abstract class ListDialogFragment extends DialogFragment {
     protected ListView items = null;
     private DialogInterface.OnCancelListener cancelListener = null;
 
+    public ListDialogFragment(){}
+
     public Dialog createListDialog(int titleStringId, int emptyTitleStringId, int emptyStringId, String[] array,
                                    ListView.OnItemClickListener listener) {
         return createListDialog(titleStringId, emptyTitleStringId, emptyStringId, array, listener, null);

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 
+import android.util.Pair;
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.AnalyticsComponent;
@@ -442,9 +443,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 getStateManager().startState(AlbumSetPage.class, data);
 	    		break;
 	    	}
+    	} catch (Error e) {
+    		Log.e(TAG, "Error initializing gallery, navagiting up, viewType: " + viewType + ", board: " + boardCode + ", threadNo: " + threadNo, e);
+    		navigateUp();
     	} catch (Exception e) {
-    		Toast.makeText(this, "Gallery not initialized properly, viewType: " + viewType, Toast.LENGTH_SHORT).show();
-    		Log.e(TAG, "Gallery not initialized properly, viewType: " + viewType + ", board: " + boardCode + ", threadNo: " + threadNo, e);
+    		Log.e(TAG, "Execption initializing gallery, navigating up, viewType: " + viewType + ", board: " + boardCode + ", threadNo: " + threadNo, e);
     		navigateUp();
     	}
     }
@@ -492,9 +495,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             case R.id.web_menu:
                 String url;
                 if (postNo > 0)
-                    url = ChanPost.postUrl(boardCode, threadNo, postNo);
+                    url = ChanPost.postUrl(this, boardCode, threadNo, postNo);
                 else
-                    url = ChanThread.threadUrl(boardCode, threadNo);
+                    url = ChanThread.threadUrl(this, boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
                 return SettingsActivity.startActivity(this);
@@ -513,9 +516,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     private void navigateUp() {
-        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
         if (task != null) {
             if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null && !this.getClass().getName().equals(task.baseActivity.getClassName())) {

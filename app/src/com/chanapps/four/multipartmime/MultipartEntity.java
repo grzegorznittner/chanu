@@ -49,7 +49,7 @@ import android.util.Log;
  * Implements a request entity suitable for an HTTP multipart POST method.
  * <p>
  * The HTTP multipart POST method is defined in section 3.3 of
- * <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC1867</a>:
+ * <a href="http ://www.ietf.org/rfc/rfc1867.txt">RFC1867</a>:
  * <blockquote>
  * The media-type multipart/form-data follows the rules of all multipart
  * MIME data streams as outlined in RFC 1521. The multipart/form-data contains 
@@ -66,7 +66,7 @@ import android.util.Log;
  * multipart posts.  Example usage:</p>
  * <pre>
  *  File f = new File("/path/fileToUpload.txt");
- *  HttpRequest request = new HttpRequest("http://host/some_path");
+ *  HttpRequest request = new HttpRequest("http ://host/some_path");
  *  Part[] parts = {
  *      new StringPart("param_name", "value"),
  *      new FilePart(f.getName(), f)

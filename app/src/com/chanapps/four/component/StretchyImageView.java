@@ -12,7 +12,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-// This works around the issue described here: http://stackoverflow.com/a/12675430/265521
+// This works around the issue described here: http ://stackoverflow.com/a/12675430/265521
 public class StretchyImageView extends ImageView
 {
 

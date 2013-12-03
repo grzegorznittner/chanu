@@ -114,14 +114,19 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
         remoteViews.setPendingIntentTemplate(R.id.stack_view_coverflow, viewPendingIntent);
 
-        if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode
-                + "/ type=" + widgetConf.widgetType + " updating app widget");
-        AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
-        if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode
-                + "/ type=" + widgetConf.widgetType + " notifying app widget data");
-        AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.stack_view_coverflow);
-        int maxThreads = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxThumbnailPrefetches;
-        updateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
+        try {
+            if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode
+                    + "/ type=" + widgetConf.widgetType + " updating app widget");
+            AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
+            if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode
+                    + "/ type=" + widgetConf.widgetType + " notifying app widget data");
+            AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.stack_view_coverflow);
+            int maxThreads = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxThumbnailPrefetches;
+            updateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception updating widget id=" + widgetConf.appWidgetId);
+        }
     }
 
     private void updateCoverFlowCardWidget() {
@@ -304,7 +309,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         for (int i = 0; i < imageIds.length; i++) {
             int imageId = imageIds[i];
             ChanPost thread = j >= threads.size() ? null : threads.get(j++);
-            String url = thread == null ? null : thread.thumbnailUrl();
+            String url = thread == null ? null : thread.thumbnailUrl(context);
             File f = thread == null ? null : ChanImageLoader.getInstance(context).getDiscCache().get(url);
             if (f != null && f.canRead() && f.length() > 0) {
                 views.setImageViewUri(imageId, Uri.parse(f.getAbsolutePath()));

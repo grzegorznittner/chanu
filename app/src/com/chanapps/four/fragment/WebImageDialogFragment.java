@@ -18,6 +18,7 @@ import android.widget.*;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -90,7 +91,8 @@ public class WebImageDialogFragment extends DialogFragment {
         webBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityDispatcher.launchUrlInBrowser(getActivity(), SEARCH_IMAGE);
+                ActivityDispatcher.launchUrlInBrowser(getActivity(),
+                        URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
             }
         });
         frame = (ViewGroup)view.findViewById(R.id.frame);
@@ -105,8 +107,6 @@ public class WebImageDialogFragment extends DialogFragment {
                 })
                 .create();
     }
-
-    protected static final String SEARCH_IMAGE = "http://www.google.com/imghp";
 
     protected void downloadImage() {
         String url = urlTextView.getText().toString();

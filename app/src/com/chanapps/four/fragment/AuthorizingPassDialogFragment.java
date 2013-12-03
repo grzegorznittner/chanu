@@ -22,6 +22,8 @@ import com.chanapps.four.task.AuthorizePassTask;
 public class AuthorizingPassDialogFragment extends DialogFragment {
     public static final String TAG = AuthorizingPassDialogFragment.class.getSimpleName();
     AuthorizePassTask task;
+    public AuthorizingPassDialogFragment() {
+    }
     public AuthorizingPassDialogFragment(AuthorizePassTask task) {
         super();
         this.task = task;

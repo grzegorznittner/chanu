@@ -54,6 +54,17 @@
             android:visibility="gone"
             />
 
+    <TextView
+            android:id="@+id/drawer_list_item_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textColor="@color/PaletteWhite"
+            android:textSize="18sp"
+            android:visibility="gone"
+            android:maxLines="1"
+            />
+
     <View
             android:id="@+id/drawer_list_item_divider"
             android:layout_width="match_parent"

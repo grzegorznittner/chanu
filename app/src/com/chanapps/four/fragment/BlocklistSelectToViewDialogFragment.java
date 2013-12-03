@@ -26,6 +26,9 @@ public class BlocklistSelectToViewDialogFragment extends ListDialogFragment {
     private Map<ChanBlocklist.BlockType, Set<String>> blocklist;
     private String[] displayBlockTypes;
 
+    public BlocklistSelectToViewDialogFragment() {
+    }
+
     public BlocklistSelectToViewDialogFragment(SettingsFragment fragment)
     {
         this.blocklist = ChanBlocklist.getBlocklist(fragment.getActivity().getApplicationContext());

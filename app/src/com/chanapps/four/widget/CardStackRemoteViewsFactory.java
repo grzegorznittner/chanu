@@ -127,7 +127,7 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
     }
 
     private void setImage(RemoteViews views, ChanPost thread, int position) {
-        String url = thread.thumbnailUrl();
+        String url = thread.thumbnailUrl(context);
         File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
         if (f != null && f.canRead() && f.length() > 0) {
             views.setImageViewUri(R.id.widget_coverflowcard_image, Uri.parse(f.getAbsolutePath()));
@@ -154,7 +154,7 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
     }
 
     private void setCountryFlag(RemoteViews views, ChanPost thread) {
-        String url = thread.countryFlagUrl();
+        String url = thread.countryFlagUrl(context);
         if (url == null)
             return;
         File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);

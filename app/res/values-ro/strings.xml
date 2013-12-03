@@ -283,7 +283,7 @@
     <string name="thread_not_added_to_watchlist">Couldn\'t add thread to watchlist</string>
     <string name="board_not_added_to_favorites">Couldn\'t add board to favorites</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
-    <string name="thread_deleted_from_watchlist">Thread added to watchlist</string>
+    <string name="thread_deleted_from_watchlist">Thread deleted from watchlist</string>
     <string name="board_added_to_favorites">Board added to favorites</string>
     <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
@@ -448,9 +448,6 @@
         This number has been generated for you, but you may change it if you wish.</string>
     <string name="post_reply_password_text">Password</string>
     <string name="post_reply_spoiler">Spoiler Image</string>
-    <string name="post_reply_recaptcha_url_root">
-        http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc
-    </string>
     <string name="post_reply_no_board">Can\'t post, unknown board</string>
     <string name="post_reply_added_image">Added image to post</string>
     <string name="post_reply_no_load_camera_image">Couldn\'t load camera image</string>
@@ -521,6 +518,9 @@
     <string name="pref_use_google_analytics">Google Analytics</string>
     <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
     <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
+    <string name="pref_use_https">Security</string>
+    <string name="pref_use_https_summ_on">Use HTTPS for all connections</string>
+    <string name="pref_use_https_summ_off">Don\'t use HTTPS for all connections</string>
     <string name="pref_autoupdate_threads">Auto-Update Threads</string>
     <string name="pref_autoupdate_threads_summ_on">Refresh threads every 30 seconds</string>
     <string name="pref_autoupdate_threads_summ_off">Don\'t automatically refresh threads</string>
@@ -1745,5 +1745,26 @@
     <string name="pref_purchase_prokey_summ">Go ad-free, purchase only once, enables all devices</string>
     <string name="pref_installed_prokey_summ">No ads are shown, enabled for all devices</string>
     -->
+
+    <!-- new strings -->
+    <string name="cancel_download_title">Image Download</string>
+    <string name="cancel_download_message">Cancel image download?</string>
+
+    <string name="pref_view_options">View Options</string>
+    <string name="pref_view_options_summ">Change appearance</string>
+    <string name="pref_advanced_category_summ">Modify settings</string>
+
+    <string name="sort_order_menu">Sort order</string>
+    <string name="sort_order_bump_order">Bump order</string>
+    <string name="sort_order_reply_count">Reply count</string>
+    <string name="sort_order_image_count">Image count</string>
+    <string name="sort_order_creation_date">Creation date</string>
+
+    <string name="font_size_menu">Font Size</string>
+    <string name="font_size_tiny">Tiny</string>
+    <string name="font_size_small">Small</string>
+    <string name="font_size_medium">Medium</string>
+    <string name="font_size_large">Large</string>
+    <string name="font_size_huge">Huge</string>
 
 </resources>

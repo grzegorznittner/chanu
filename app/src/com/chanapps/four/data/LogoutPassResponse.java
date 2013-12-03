@@ -27,7 +27,7 @@ public class LogoutPassResponse {
 
 RESPONSE ERROR:
 
-<div style="text-align: center;"><span style="font-size: 14pt; color: red; font-weight: bold;">Incorrect Token or PIN.<br><br><div style="text-align: center;">[<a href="https://sys.4chan.org/auth">Return</a>]</div></span></div>
+<div style="text-align: center;"><span style="font-size: 14pt; color: red; font-weight: bold;">Incorrect Token or PIN.<br><br><div style="text-align: center;">[<a href="https ://sys.4chan.org/auth">Return</a>]</div></span></div>
 
      */
 

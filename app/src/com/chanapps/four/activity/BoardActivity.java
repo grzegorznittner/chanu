@@ -11,6 +11,7 @@ import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -51,14 +53,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 	public static final boolean DEBUG = false;
     public static final String UPDATE_BOARD_ACTION = "updateBoardAction";
 
-    public static String topBoardCode = null;
-
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
-
-    //private static WeakReference<BoardActivity> allBoardsActivityRef = null;
-    //private static WeakReference<BoardActivity> watchlistActivityRef = null;
-    //private static WeakReference<BoardActivity> favoritesActivityRef = null;
 
     protected static Typeface titleTypeface;
     protected static final String TITLE_FONT = "fonts/Edmondsans-Bold.otf";
@@ -82,6 +78,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected int gridViewOptions;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected int checkedPos = -1;
+    protected BoardSortType boardSortType;
 
     public static void startDefaultActivity(Context from) {
         startActivity(from, ChanBoard.defaultBoardCode(from), "");
@@ -241,27 +238,44 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setBoardCodeToDefault();
         if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         //setupStaticBoards();
+        initGridViewOptions();
+        initBoardSortTypeOptions();
         createAbsListView();
         setupBoardTitle();
         IntentFilter intentFilter = new IntentFilter(UPDATE_BOARD_ACTION);
         LocalBroadcastManager.getInstance(this).registerReceiver(onNotice, intentFilter);
     }
 
+    protected void initGridViewOptions() {
+        if (ChanBoard.isVirtualBoard(boardCode)
+                && !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+            gridViewOptions |= BoardGridViewer.SMALL_GRID;
+        }
+        else { // check for user pref
+            boolean useCatalog = PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(SettingsActivity.PREF_USE_CATALOG, false);
+            if (useCatalog)
+                gridViewOptions |= BoardGridViewer.SMALL_GRID;
+            else
+                gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+        }
+    }
+
+    protected void initBoardSortTypeOptions() {
+        boardSortType = BoardSortType.loadFromPrefs(this);
+    }
+
+    protected void setUseCatalogPref(boolean useCatalog) {
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putBoolean(SettingsActivity.PREF_USE_CATALOG, useCatalog)
+                .commit();
+    }
+
     protected void setBoardCodeToDefault() {
         boardCode = ChanBoard.defaultBoardCode(this);
         if (DEBUG) Log.i(TAG, "defaulted board code to /" + boardCode + "/");
     }
-
-    /*
-    protected void setupStaticBoards() {
-        if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode))
-            setAllBoards(this);
-        else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
-            setWatchlist(this);
-        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
-            setFavorites(this);
-    }
-    */
 
     protected void setupBoardTitle() {
         boardTitleBar = findViewById(R.id.board_title_bar);
@@ -282,81 +296,16 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
-    /*
-    protected static void setAllBoards(BoardActivity activity) {
-        synchronized (BoardActivity.class) {
-            allBoardsActivityRef = new WeakReference<BoardActivity>(activity);
-        }
-    }
-
-    protected static void setWatchlist(BoardActivity activity) {
-        synchronized (BoardActivity.class) {
-            watchlistActivityRef = new WeakReference<BoardActivity>(activity);
-        }
-    }
-
-    protected static void setFavorites(BoardActivity activity) {
-        synchronized (BoardActivity.class) {
-            favoritesActivityRef = new WeakReference<BoardActivity>(activity);
-        }
-    }
-    */
-
     public static void refreshAllBoards(Context context) {
         updateBoard(context, ChanBoard.ALL_BOARDS_BOARD_CODE);
-        /*
-        synchronized (BoardActivity.class) {
-            if (DEBUG) Log.i(TAG, "refreshAllBoards()");
-            BoardActivity allBoards;
-            if (allBoardsActivityRef != null && (allBoards = allBoardsActivityRef.get()) != null) {
-                ChanActivityId activity = NetworkProfileManager.instance().getActivityId();
-                if (activity != null
-                        && activity.activity == LastActivity.BOARD_ACTIVITY
-                        && ChanBoard.ALL_BOARDS_BOARD_CODE.equals(activity.boardCode)
-                        && allBoards.handler != null
-                        )
-                    allBoards.refresh();
-                else
-                    allBoards.backgroundRefresh();
-            }
-        }
-        */
     }
 
     public static void refreshWatchlist(Context context) {
         updateBoard(context, ChanBoard.WATCHLIST_BOARD_CODE);
-        /*
-        synchronized (BoardActivity.class) {
-            BoardActivity watchlist;
-            if (watchlistActivityRef != null && (watchlist = watchlistActivityRef.get()) != null) {
-                ChanActivityId activity = NetworkProfileManager.instance().getActivityId();
-                if (activity != null
-                        && activity.activity == LastActivity.BOARD_ACTIVITY
-                        && ChanBoard.WATCHLIST_BOARD_CODE.equals(activity.boardCode))
-                    watchlist.refresh();
-                else
-                    watchlist.backgroundRefresh();
-            }
-        }
-        */
     }
 
     public static void refreshFavorites(Context context) {
         updateBoard(context, ChanBoard.FAVORITES_BOARD_CODE);
-        /*
-        synchronized (BoardActivity.class) {
-            BoardActivity favorites;
-            if (favoritesActivityRef != null && (favorites = favoritesActivityRef.get()) != null) {
-                ChanActivityId activity = NetworkProfileManager.instance().getActivityId();
-                if (activity != null
-                        && activity.activity == LastActivity.BOARD_ACTIVITY
-                        && ChanBoard.FAVORITES_BOARD_CODE.equals(activity.boardCode))
-                    favorites.refresh();
-                else
-                    favorites.backgroundRefresh();
-            }
-        }
-        */
     }
 
     @Override
@@ -392,7 +341,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         boardCode = bundle.getString(ChanBoard.BOARD_CODE);
         query = bundle.getString(SearchManager.QUERY);
-        //firstVisiblePosition = bundle.getInt(FIRST_VISIBLE_POSITION);
+        boardSortType = BoardSortType.loadFromPrefs(this);
+//firstVisiblePosition = bundle.getInt(FIRST_VISIBLE_POSITION);
         //firstVisiblePositionOffset = bundle.getInt(FIRST_VISIBLE_POSITION_OFFSET);
         if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query);
     }
@@ -428,20 +378,16 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/ q=" + query);
     }
 
-    protected void setGridViewOptions() {
-        if (ChanBoard.isVirtualBoard(boardCode)
-                && !ChanBoard.isPopularBoard(boardCode)
-                && !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
-            gridViewOptions |= BoardGridViewer.SMALL_GRID;
-        else
-            gridViewOptions = 0;
+    protected void forceGridViewOptions() {
+        if (ChanBoard.isVirtualBoard(boardCode) && !(ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)))
+            gridViewOptions |= BoardGridViewer.SMALL_GRID; // force meta boards to small
     }
 
     protected void createAbsListView() {
-        setGridViewOptions();
         FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
         if (contentFrame.getChildCount() > 0)
             contentFrame.removeAllViews();
+        forceGridViewOptions();
         int layoutId;
         if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0)
             layoutId = R.layout.board_grid_layout_small;
@@ -453,27 +399,45 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             layoutId = R.layout.board_grid_layout_no_title;
         layout = getLayoutInflater().inflate(layoutId, null);
         contentFrame.addView(layout);
-        int numColumns = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
-                ? R.integer.BoardGridViewSmall_numColumns
-                : R.integer.BoardGridViewSmall_numColumns;
+        //int numColumns = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
+        //        ? R.integer.BoardGridViewSmall_numColumns
+        //        : R.integer.BoardGridViewSmall_numColumns;
 //                : R.integer.BoardGridView_numColumns;
         columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
-                getResources().getInteger(numColumns),
+                getResources().getInteger(R.integer.BoardGridViewSmall_numColumns),
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
         adapter = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
                 ? new BoardGridSmallCursorAdapter(this, viewBinder)
                 : new BoardGridCursorAdapter(this, viewBinder);
+        adapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence constraint) {
+                boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
+                String search = constraint == null ? "" : constraint.toString();
+                BoardCursorLoader filteredCursorLoader =
+                        new BoardCursorLoader(getApplicationContext(), boardCode, search, abbrev, true, boardSortType);
+                Cursor filteredCursor = filteredCursorLoader.loadInBackground();
+                return filteredCursor;
+            }
+        });
         absListView = (GridView)findViewById(R.id.board_grid_view);
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        if (ChanBoard.isPopularBoard(boardCode) || !ChanBoard.isVirtualBoard(boardCode)) {
+        if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0) {
+            mPullToRefreshAttacher = null; // doesn't work well with grids
+        }
+        else if (ChanBoard.isPopularBoard(boardCode)
+                || ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
+                || !ChanBoard.isVirtualBoard(boardCode)) {
             //try {
-                mPullToRefreshAttacher = new PullToRefreshAttacher(this);
-                mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+            PullToRefreshAttacher.Options options = new PullToRefreshAttacher.Options();
+            options.refreshScrollDistance = 0.1f;
+            mPullToRefreshAttacher = new PullToRefreshAttacher(this, options);
+            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
             //}
             //catch (Error e) {
             //    Log.e(TAG, "createAbsListView() error creating pull to refresh attacher", e);
@@ -507,7 +471,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (handler == null)
             handler = new Handler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
-        topBoardCode = boardCode;
+        forceGridViewOptions();
         startLoaderAsync();
         AnalyticsComponent.onStart(this);
     }
@@ -673,7 +637,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
             setProgress(true);
             boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
-            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query, abbrev, true);
+            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, "", abbrev, true, boardSortType);
             return cursorLoader;
         }
         @Override
@@ -695,6 +659,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             else if (query != null && !query.isEmpty()) {
                 displaySearchTitle();
                 hideEmptyText();
+                adapter.getFilter().filter(query);
             }
             else if ((data == null || data.getCount() < 1) && handler != null) {
                 NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -790,7 +755,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 displayBoardRules();
                 return true;
             case R.id.web_menu:
-                String url = ChanBoard.boardUrl(boardCode);
+                String url = ChanBoard.boardUrl(this, boardCode);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
                 return true;
             case R.id.clear_watchlist_menu:
@@ -809,6 +774,22 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return true;
             case R.id.favorites_remove_board_menu:
                 removeFromFavorites(BoardActivity.this, handler, boardCode);
+                return true;
+            case R.id.view_as_grid_menu:
+                Cursor c = adapter.getCursor();
+                gridViewOptions |= BoardGridViewer.SMALL_GRID;
+                setUseCatalogPref(true);
+                createAbsListView();
+                setupBoardTitle();
+                adapter.swapCursor(c);
+                return true;
+            case R.id.view_as_list_menu:
+                c = adapter.getCursor();
+                gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+                setUseCatalogPref(false);
+                createAbsListView();
+                setupBoardTitle();
+                adapter.swapCursor(c);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -859,6 +840,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
+            menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardGridViewer.SMALL_GRID) == 0);
+            menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -872,6 +855,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
+            menu.findItem(R.id.view_as_grid_menu).setVisible(false);
+            menu.findItem(R.id.view_as_list_menu).setVisible(false);
         }
         else if (board.isPopularBoard()) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -885,6 +870,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
             menu.findItem(R.id.web_menu).setVisible(true);
+            menu.findItem(R.id.view_as_grid_menu).setVisible(false);
+            menu.findItem(R.id.view_as_list_menu).setVisible(false);
         }
         else if (board.isVirtualBoard()) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -898,6 +885,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
             menu.findItem(R.id.web_menu).setVisible(false);
+            menu.findItem(R.id.view_as_grid_menu).setVisible(false);
+            menu.findItem(R.id.view_as_list_menu).setVisible(false);
         }
         else {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -911,6 +900,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
+            menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardGridViewer.SMALL_GRID) == 0);
+            menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0);
             //setFavoritesMenuAsync();
         }
         menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
@@ -1172,11 +1163,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
             final PopupMenu popup = new PopupMenu(BoardActivity.this, v);
             int menuId;
+            if (DEBUG) Log.i(TAG, "overflowListener /" + boardCode + "/ group=/" + groupBoardCode + "/");
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode) || ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
                 menuId = R.menu.watchlist_context_menu;
             else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) || ChanBoard.FAVORITES_BOARD_CODE.equals(groupBoardCode))
                 menuId = R.menu.favorites_context_menu;
-            else if (ChanBoard.isMetaBoard(boardCode))
+            else if (ChanBoard.isMetaBoard(boardCode) || ChanBoard.isMetaBoard(groupBoardCode))
                 menuId = R.menu.meta_board_context_menu;
             else if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0)
                 menuId = R.menu.board_header_context_menu;
@@ -1318,11 +1310,25 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 case R.id.offline_board_view_menu:
                     GalleryViewActivity.startOfflineAlbumViewActivity(BoardActivity.this, boardCode);
                     return true;
+                case R.id.sort_order_menu:
+                    (new BoardSortOrderDialogFragment(boardSortType))
+                            .setNotifySortOrderListener(new BoardSortOrderDialogFragment.NotifySortOrderListener() {
+                                @Override
+                                public void onSortOrderChanged(BoardSortType boardSortType) {
+                                    if (boardSortType != null) {
+                                        BoardActivity.this.boardSortType = boardSortType;
+                                        BoardSortType.saveToPrefs(BoardActivity.this, boardSortType);
+                                        getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                                    }
+                                }
+                            })
+                            .show(getSupportFragmentManager(), TAG);
+                    return true;
                 case R.id.board_rules_menu:
                     displayBoardRules();
                     return true;
                 case R.id.web_menu:
-                    String url = ChanBoard.boardUrl(boardCode);
+                    String url = ChanBoard.boardUrl(BoardActivity.this, boardCode);
                     ActivityDispatcher.launchUrlInBrowser(BoardActivity.this, url);
                     return true;
                 default:
@@ -1396,15 +1402,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     public void navigateUp() { // either pop off stack, or go up to all boards
         if (DEBUG) Log.i(TAG, "navigateUp() /" + boardCode + "/");
-        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
         String upBoardCode = ChanBoard.defaultBoardCode(this);
         if (task != null
                 && task.baseActivity != null
                 && task.baseActivity.getClassName().equals(BoardSelectorActivity.class.getName()))
         {
-            if (DEBUG) Log.i(TAG, "navigateUp() tasks.size=" + tasks.size() + " top=" + task.topActivity + " base=" + task.baseActivity);
+            if (DEBUG) Log.i(TAG, "navigateUp() tasks.size=" + numTasks + " top=" + task.topActivity + " base=" + task.baseActivity);
             if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
                     + getClass().getName() + " base=" + task.baseActivity.getClassName());
             finish();
@@ -1416,50 +1422,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             startActivity(intent);
             finish();
         }
-        /*
-        if (task.baseActivity != null
-                    && !getClass().getName().equals(task.baseActivity.getClassName())
-                    && boardCode.equals(BoardActivity.topBoardCode)
-                    ) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
-                        + getClass().getName() + " base=" + task.baseActivity.getClassName());
-                finish();
-                return;
-            }
-            else if (task.baseActivity != null && tasks.size() >= 2) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + tasks.size());
-                finish();
-                return;
-            }
-            else if (task.baseActivity != null && tasks.size() == 1 && upBoardCode.equals(boardCode))
-            {
-                if (DEBUG) Log.i(TAG, "navigateUp() with all boards or favorites at top of stack exits app, finishing");
-                finish();
-                return;
-            }
-            else if (task.baseActivity != null && task.baseActivity.getClass().getName().equals(BoardActivity.class.getName())) {
-                if (DEBUG) Log.i(TAG, "navigateUp() board activity on top, finishing");
-                finish();
-            }
-            else {
-                if (DEBUG) Log.i(TAG, "navigateUp() unknown activity state, finishing");
-                finish();
-            }
-        }
-        else {
-            if (upBoardCode.equals(boardCode)) {
-                if (DEBUG) Log.i(TAG, "navigateUp() already at top level, ignoring back press");
-                return;
-            }
-            else {
-                if (DEBUG) Log.i(TAG, "navigateUp() null task but not at top level, creating up intent");
-                Intent intent = BoardActivity.createIntent(BoardActivity.this, upBoardCode, "");
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-            }
-        }
-        */
     }
 
     @Override
@@ -1478,7 +1440,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (intent == null || !UPDATE_BOARD_ACTION.equals(intent.getAction()) || !intent.hasExtra(ChanBoard.BOARD_CODE))
                 return;
             String receivedBoardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
-            if (receivedBoardCode == null || !receivedBoardCode.equals(boardCode))
+            if (receivedBoardCode == null)
+                return;
+            if (receivedBoardCode.equals(ChanBoard.FAVORITES_BOARD_CODE)
+                    || receivedBoardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE))
+                setAdapters();
+            if (!receivedBoardCode.equals(boardCode))
                 return;
             if (handler != null)
                 refresh();
@@ -1492,33 +1459,5 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
-
-    /*
-    protected void setFavoritesMenuAsync() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final ChanBoard favoritesBoard = ChanFileStorage.loadBoardData(BoardActivity.this, ChanBoard.FAVORITES_BOARD_CODE);
-                final ChanThread thread = ChanBoard.makeFavoritesThread(BoardActivity.this, boardCode);
-                final boolean favorited = ChanFileStorage.isFavoriteBoard(favoritesBoard, thread);
-                if (DEBUG) Log.i(TAG, "setFavoritesMenuAsync() /" + boardCode + "/ favorited=" + favorited
-                        + " handler=" + handler + " menu=" + menu);
-                if (handler != null)
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (menu == null)
-                                return;
-                            MenuItem item;
-                            if ((item = menu.findItem(R.id.board_add_to_favorites_menu)) != null)
-                                item.setVisible(!favorited);
-                            if ((item = menu.findItem(R.id.favorites_remove_board_menu)) != null)
-                                item.setVisible(favorited);
-                        }
-                    });
-            }
-        }).start();
-    }
-    */
 
 }

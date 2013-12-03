@@ -11,6 +11,8 @@ import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.viewer.BoardGridViewHolder;
 import com.chanapps.four.viewer.ThreadViewHolder;
 
+import java.util.ArrayList;
+
 /**
  * Created with IntelliJ IDEA.
  * User: johnarleyburns
@@ -61,4 +63,5 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
     public int getViewTypeCount() {
         return TYPE_MAX_COUNT;
     }
+
 }

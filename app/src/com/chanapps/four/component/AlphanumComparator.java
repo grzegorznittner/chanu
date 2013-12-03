@@ -5,7 +5,7 @@ package com.chanapps.four.component;
  * containing numbers.  Instead of sorting numbers in ASCII order like
  * a standard sort, this algorithm sorts numbers in numeric order.
  *
- * The Alphanum Algorithm is discussed at http://www.DaveKoelle.com
+ * The Alphanum Algorithm is discussed at http ://www.DaveKoelle.com
  *
  *
  * This library is free software; you can redistribute it and/or

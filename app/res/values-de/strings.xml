@@ -121,7 +121,7 @@
   <string name="refresh_thread_menu">Aktualisieren</string>
   <string name="scroll_to_bottom_menu">Zum Ende springen</string>
   <string name="new_thread_menu">Neuer Thread</string>
-  <string name="new_thread_short">New thread</string>
+  <string name="new_thread_short">Neuer Thread</string>
   <string name="prefetch_board_menu">Threads vorladen</string>
   <string name="board_thread_info_menu">Info</string>
   <string name="board_thread_view_menu">Ansicht</string>
@@ -472,6 +472,9 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="pref_use_google_analytics">Google Analytics</string>
   <string name="pref_use_google_analytics_summ_on">Sende anonyme Nutzungsstatistiken</string>
   <string name="pref_use_google_analytics_summ_off">Sende keine anonymen Nutzungsstatistiken</string>
+  <string name="pref_use_https">Sicherheit</string>
+  <string name="pref_use_https_summ_on">Verwenden HTTPS für alle Verbindungen</string>
+  <string name="pref_use_https_summ_off">Nicht verwenden HTTPS für alle Verbindungen</string>
   <string name="pref_autoupdate_threads">Thread Aktualisierung</string>
   <string name="pref_autoupdate_threads_summ_on">Automatische Aktualisierung ist aktiviert</string>
   <string name="pref_autoupdate_threads_summ_off">Automatische Aktualisierung ist deaktiviert</string>
@@ -1530,5 +1533,31 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
 
 
     <string name="tutorial_all">Chanu ist ein Browser für 4chan, ein Forum für Menschen aus aller Welt, die Bilder hochladen und darüber diskutieren.\n\nWähle ein Board, um zu beginnen!</string>
+
+    <string name="cancel_download_title">Bild Download</string>
+    <string name="cancel_download_message">Abbrechen Bild Download?</string>
+
+    <string name="pref_view_options">Anzeigeoptionen</string>
+    <string name="pref_view_options_summ">Verwenden Aussehen</string>
+    <string name="pref_advanced_category_summ">Verwenden Einstellungen</string>
+
+    <string name="sort_order_menu">Reihenfolge</string>
+    <string name="sort_order_bump_order">Bump (voreingestellt)</string>
+    <string name="sort_order_reply_count">Kommentarezahl</string>
+    <string name="sort_order_image_count">Bilderzahl</string>
+    <string name="sort_order_creation_date">Erstellungsdatum</string>
+
+    <string name="font_size_menu">Schriftgröße</string>
+    <string name="font_size_tiny">Winzig</string>
+    <string name="font_size_small">Klein</string>
+    <string name="font_size_medium">Mittelgroß</string>
+    <string name="font_size_large">Groß</string>
+    <string name="font_size_huge">Riesig</string>
+
+    <string name="plurals_board_activity_udpdated_one">Neuer Thread bei /%1$s/</string>
+    <string name="plurals_board_actviity_updated_other">Neuere Threads bei /%1$s/</string>
+
+    <!-- new strings -->
+    <string name="pref_use_volume_scroll">Lautstärkeknopf rollen</string>
 
 </resources>

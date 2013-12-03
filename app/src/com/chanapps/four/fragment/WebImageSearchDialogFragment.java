@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.*;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.URLFormatComponent;
 
 /**
 * Created with IntelliJ IDEA.
@@ -25,9 +26,6 @@ import com.chanapps.four.component.ActivityDispatcher;
 public class WebImageSearchDialogFragment extends DialogFragment {
 
     public static final String TAG = WebImageSearchDialogFragment.class.getSimpleName();
-
-    protected static final String QUERY_IMAGE = "https://www.google.com/search?safe=off&site=imghp&tbm=isch&source=hp&q=";
-    protected static final String SEARCH_IMAGE = "https://www.google.com/imghp";
 
     private EditText searchTextView;
 
@@ -69,11 +67,13 @@ public class WebImageSearchDialogFragment extends DialogFragment {
                 ? searchTextView.getText().toString()
                 : null;
         if (query != null && !query.isEmpty()) {
-            String url = QUERY_IMAGE + query;
+            String url = String.format(
+                    URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_QUERY_IMAGE_URL_FORMAT), query);
             ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
         }
         else {
-            ActivityDispatcher.launchUrlInBrowser(getActivity(), SEARCH_IMAGE);
+            ActivityDispatcher.launchUrlInBrowser(getActivity(),
+                    URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
         }
         dismiss();
     }

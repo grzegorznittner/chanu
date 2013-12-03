@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +34,11 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     //public static final String PREF_START_WITH_FAVORITES = "pref_start_with_favorites";
     public static final String PREF_USE_FRIENDLY_IDS = "pref_use_friendly_ids";
     public static final String PREF_USE_GOOGLE_ANALYTICS = "pref_use_google_analytics";
+    public static final String PREF_USE_HTTPS = "pref_use_https";
+    public static final String PREF_USE_CATALOG = "pref_use_catalog";
+    public static final String PREF_USE_VOLUME_SCROLL = "pref_use_volume_scroll";
+    public static final String PREF_BOARD_SORT_TYPE = "pref_board_sort_type";
+    public static final String PREF_FONT_SIZE = "pref_font_size";
     public static final String PREF_AUTOUPDATE_THREADS = "pref_autoupdate_threads";
     public static final String PREF_THEME = "pref_theme";
     public static final String PREF_AUTOLOAD_IMAGES = "pref_autoload_images";
@@ -170,7 +176,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                         .show();
                 return true;
             case R.id.web_menu:
-                String url = ChanBoard.boardUrl(null);
+                String url = ChanBoard.boardUrl(this, null);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.send_feedback_menu:
                 return SendFeedback.email(this);
@@ -191,9 +197,9 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
 
     protected void navigateUp() { // either pop off stack, or go up to all boards
         if (DEBUG) Log.i(TAG, "navigateUp()");
-        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
         if (task != null) {
             if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null
@@ -203,8 +209,8 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                 finish();
                 return;
             }
-            else if (task.baseActivity != null && tasks.size() >= 2) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + tasks.size());
+            else if (task.baseActivity != null && numTasks >= 2) {
+                if (DEBUG) Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + numTasks);
                 finish();
                 return;
             }

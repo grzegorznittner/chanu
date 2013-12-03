@@ -32,11 +32,12 @@
 
     <string-array name="long_drawer_array">
         <item>@string/board_all_boards</item>
-        <item>@string/board_favorites</item>
         <item>@string/board_latest</item>
         <item>@string/board_type_recent</item>
-        <!-- <item>@string/board_latest_images</item> -->
+        <!--
+        <item>@string/board_favorites</item>
         <item>@string/board_watch</item>
+        <item>@string/board_latest_images</item>
         <item>@string/board_meta</item>
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
@@ -44,20 +45,7 @@
         <item>@string/board_type_other</item>
         <item>@string/board_type_adult</item>
         <item>@string/board_type_misc</item>
-    </string-array>
-
-    <string-array name="long_drawer_array_worksafe">
-        <item>@string/board_all_boards</item>
-        <item>@string/board_favorites</item>
-        <item>@string/board_latest</item>
-        <item>@string/board_type_recent</item>
-        <!--<item>@string/board_latest_images</item> -->
-        <item>@string/board_watch</item>
-        <item>@string/board_meta</item>
-        <item>@string/board_type_japanese_culture</item>
-        <item>@string/board_type_interests</item>
-        <item>@string/board_type_creative</item>
-        <item>@string/board_type_other</item>
+        -->
     </string-array>
 
     <string-array name="long_board_array">
@@ -238,11 +226,11 @@
         <item>@string/board_x_with_abbrev</item>
         <item>@string/board_y_with_abbrev</item>
         <item>@string/board_3_with_abbrev</item>
+        <item>@string/board_watch</item>
         <!--
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-        <item>@string/board_watch</item>
         -->
     </string-array>
 
@@ -292,11 +280,11 @@
         <item>@string/board_wsg_with_abbrev</item>
         <item>@string/board_x_with_abbrev</item>
         <item>@string/board_3_with_abbrev</item>
+        <item>@string/board_watch</item>
         <!--
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-        <item>@string/board_watch</item>
         -->
     </string-array>
 
@@ -313,5 +301,12 @@
     </string-array>
 
     <string name="board_desc_all_boards">@string/board_all_boards_desc</string>
+
+    <string-array name="sort_order_types">
+        <item>@string/sort_order_bump_order</item>
+        <item>@string/sort_order_reply_count</item>
+        <item>@string/sort_order_image_count</item>
+        <item>@string/sort_order_creation_date</item>
+    </string-array>
 
 </resources>

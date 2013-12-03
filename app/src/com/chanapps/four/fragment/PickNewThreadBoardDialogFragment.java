@@ -45,6 +45,8 @@ public class PickNewThreadBoardDialogFragment extends ListDialogFragment {
         }
     }
 
+    public PickNewThreadBoardDialogFragment(){}
+
     public PickNewThreadBoardDialogFragment(Handler handler) {
         activityHandler = handler;
     }

@@ -58,25 +58,23 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     }
 
     private static void updateAndFetch(Context context) {
+        if (!ChanBoard.hasWatchlist(context) || !WidgetProviderUtils.hasWidgets(context)) {
+            if (DEBUG) Log.i(TAG, "updateAndFetch no watchlist or widgets, cancelling global alarm");
+            cancelGlobalAlarm(context);
+            return;
+        }
         WidgetProviderUtils.updateAll(context);
-        fetchAll(context);
-    }
-
-    private static void fetchAll(Context context) {
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context); // always check since state may have changed
         NetworkProfile currentProfile = NetworkProfileManager.instance().getCurrentProfile();
+        if (DEBUG) Log.i(TAG, "updateAndFetch network profile=" + currentProfile + " health=" + currentProfile.getConnectionHealth());
         if (currentProfile.getConnectionType() != NetworkProfile.Type.NO_CONNECTION
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.NO_CONNECTION
-                && currentProfile.getConnectionHealth() != NetworkProfile.Health.BAD
-                && currentProfile.getConnectionHealth() != NetworkProfile.Health.VERY_SLOW
-                && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW) {
-            if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
+                && currentProfile.getConnectionHealth() != NetworkProfile.Health.BAD) {
+            if (DEBUG) Log.i(TAG, "updateAndFetch fetching widgets, watchlists, and uncached boards");
             fetchWatchlistThreads(context);
-            //fetchFavoriteBoards(context);
             WidgetProviderUtils.fetchAllWidgets(context);
-            //ChanBoard.preloadUncachedBoards(context);
         } else {
-            if (DEBUG) Log.i(TAG, "fetchAll no connection, skipping fetch");
+            if (DEBUG) Log.i(TAG, "updateAndFetch no connection, skipping fetch");
         }
     }
 
@@ -91,7 +89,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     public static void fetchFavoriteBoards(Context context) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
-        if (board == null || board.threads == null)
+        if (!board.hasData())
             return;
         for (ChanPost thread : board.threads) {
             FetchChanDataService.scheduleBoardFetch(context, thread.board, false, true);

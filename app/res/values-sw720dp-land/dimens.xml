@@ -25,6 +25,8 @@
     <dimen name="BoardGridViewTablet_layout_width">400dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">400dp</dimen>
 
+    <dimen name="BoardGridItemIconSmallMarginBottom">0dp</dimen>
+
     <bool name="narrow_tablet">false</bool>
 
 </resources>

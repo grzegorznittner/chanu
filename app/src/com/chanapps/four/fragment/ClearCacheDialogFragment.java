@@ -3,20 +3,17 @@ package com.chanapps.four.fragment;
 import android.app.*;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.component.NotificationComponent;
 import com.chanapps.four.data.ChanFileStorage;
 
 /**
@@ -32,11 +29,11 @@ public class ClearCacheDialogFragment extends DialogFragment {
 
     private static final boolean DEBUG = false;
 
-    private static final int CLEAR_CACHE_NOTIFY_ID = 0x870932; // a unique notify idea is needed for each notify to "clump" together
-
     private SettingsFragment fragment;
 
     private static ClearCacheAsyncTask clearCacheAsyncTask;
+
+    public ClearCacheDialogFragment() {}
 
     public ClearCacheDialogFragment(SettingsFragment fragment) {
         super();
@@ -115,10 +112,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
         public void onCancelled() {
             runningDelete = false;
             if (DEBUG) Log.i(TAG, "Cancelled clear cache");
-            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
-                return;
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(CLEAR_CACHE_NOTIFY_ID, makeNotification(context.getString(R.string.pref_clear_cache_error)));
+            NotificationComponent.notifyClearCacheCancelled(context);
         }
 
         @Override
@@ -127,24 +121,9 @@ public class ClearCacheDialogFragment extends DialogFragment {
             if (result == null)
                 return;
             if (DEBUG) Log.i(TAG, "Post execute with clear cache result=" + result);
-            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
-                return;
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(CLEAR_CACHE_NOTIFY_ID, makeNotification(result));
+            NotificationComponent.notifyClearCacheResult(context, result);
         }
 
-        private Notification makeNotification(String contentText) {
-            Intent intent = BoardActivity.createIntent(context, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            Notification notification = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.app_icon_notification)
-                    .setContentTitle(context.getString(R.string.pref_clear_cache_notification_title))
-                    .setContentText(contentText)
-                    .setContentIntent(pendingIntent)
-                    .build();
-            return notification;
-        }
     }
 
 }

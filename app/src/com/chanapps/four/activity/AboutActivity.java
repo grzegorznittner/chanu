@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -145,7 +146,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
                         .show();
                 return true;
             case R.id.web_menu:
-                String url = ChanBoard.boardUrl(null);
+                String url = ChanBoard.boardUrl(this, null);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
                 return SettingsActivity.startActivity(this);
@@ -179,9 +180,9 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
 
     protected void navigateUp() { // either pop off stack, or go up to all boards
         if (DEBUG) android.util.Log.i(TAG, "navigateUp()");
-        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
+        int numTasks = p.first;
+        ActivityManager.RunningTaskInfo task = p.second;
         if (task != null) {
             if (DEBUG) android.util.Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null
@@ -191,8 +192,8 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
                 finish();
                 return;
             }
-            else if (task.baseActivity != null && tasks.size() >= 2) {
-                if (DEBUG) android.util.Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + tasks.size());
+            else if (task.baseActivity != null && numTasks >= 2) {
+                if (DEBUG) android.util.Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + numTasks);
                 finish();
                 return;
             }

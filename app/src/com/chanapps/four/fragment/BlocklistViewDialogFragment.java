@@ -35,6 +35,8 @@ public class BlocklistViewDialogFragment
     List<String> blocks;
     final Map<Integer, Boolean> checkedBlocks = new HashMap<Integer, Boolean>();
 
+    public BlocklistViewDialogFragment() {}
+
     public BlocklistViewDialogFragment(ChanBlocklist.BlockType blockType,
                                          List<String> blocks)
     {

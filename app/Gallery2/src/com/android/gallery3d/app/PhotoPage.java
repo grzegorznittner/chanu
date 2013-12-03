@@ -16,8 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import java.io.File;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -27,13 +25,11 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.*;
 import android.view.View.MeasureSpec;
 import android.webkit.WebView;
@@ -68,7 +64,7 @@ import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.VideoViewActivity;
 import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.gallery3d.R;
 import com.chanapps.four.service.ImageDownloadService;
@@ -305,20 +301,28 @@ public class PhotoPage extends ActivityState
             @Override
             public void onPhotoAvailable(long version, boolean fullImage) {
                 if (DEBUG) Log.w(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
-
-                MediaItem photo = mModel.getCurrentMediaItem();
-                if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
-                    if (DEBUG) Log.w(TAG, "Playing anim gif version: " + version + ", fullImage: " + fullImage);
-                    playAnimatedGif(photo);
-                }
-                else {
-                    if (DEBUG) Log.w(TAG, "Hiding anim gif view version: " + version + ", fullImage: " + fullImage);
-                    hideAnimatedGif();
-                }
+                hideOrPlayAnimGif(mModel.getCurrentMediaItem(), version);
                 if (mFilmStripView == null) initFilmStripView();
             }
         });
     }
+
+    private void hideOrPlayAnimGif(MediaItem photo) {
+        hideOrPlayAnimGif(photo, photo == null ? 0 : photo.getDataVersion());
+    }
+
+    private void hideOrPlayAnimGif(MediaItem photo, long version) {
+        if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
+            if (DEBUG) Log.w(TAG, "Playing anim gif");
+            if (!isAnimatedGifVisible())
+                playAnimatedGif(photo, version);
+        }
+        else {
+            if (DEBUG) Log.w(TAG, "Hiding anim gif view");
+            hideAnimatedGif();
+        }
+    }
+
 
     private void getDefaultMediaSet(final Path itemPath) {
         // Get default media set by the URI
@@ -346,12 +350,7 @@ public class PhotoPage extends ActivityState
 
     private void updateCurrentPhoto(final MediaItem photo) {
         if (DEBUG) Log.w(TAG, "updateCurrentPhoto photo: " + photo.getPath() + ", uri: " + photo.getPlayUri());
-        if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
-            playAnimatedGif(photo);
-        }
-        else {
-            hideAnimatedGif();
-        }
+        hideOrPlayAnimGif(photo);
         if (mCurrentPhoto == photo) return;
         mCurrentPhoto = photo;
         if (mCurrentPhoto == null) return;
@@ -441,6 +440,7 @@ public class PhotoPage extends ActivityState
         if (mFilmStripView != null) {
             mFilmStripView.hide();
         }
+        //FOO
     }
 
     private void refreshHidingMessage() {
@@ -574,11 +574,11 @@ public class PhotoPage extends ActivityState
                     new ImportCompleteListener(mActivity));
             return true;
         } else if (action == R.id.image_search_menu) {
-            imageSearch(IMAGE_SEARCH_ROOT);
+            imageSearch(URLFormatComponent.getUrl(mActivity.getAndroidContext(), URLFormatComponent.TINEYE_IMAGE_SEARCH_URL_FORMAT));
             return true;
         }
         else if (action == R.id.anime_image_search_menu) {
-            imageSearch(IMAGE_SEARCH_ROOT_ANIME);
+            imageSearch(URLFormatComponent.getUrl(mActivity.getAndroidContext(), URLFormatComponent.ANIME_IMAGE_SEARCH_URL_FORMAT));
             return true;
         } else {
             return false;
@@ -605,6 +605,9 @@ public class PhotoPage extends ActivityState
     }
 
     public void onSingleTapUp(int x, int y) {
+        hideOrPlayAnimGif(mModel.getCurrentMediaItem());
+        onUserInteractionTap();
+/*
         MediaItem item = mModel.getCurrentMediaItem();
         if (item == null) {
             // item is not ready, ignore
@@ -628,6 +631,7 @@ public class PhotoPage extends ActivityState
         } else {
             onUserInteractionTap();
         }
+        */
     }
 
     public static void playVideo(Activity activity, Uri uri, Path path) {
@@ -651,14 +655,27 @@ public class PhotoPage extends ActivityState
 
     private void hideAnimatedGif() {
         Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
+        if (activity == null)
+            return;
         View view = activity.findViewById(com.chanapps.four.activity.R.id.gifview);
-        //if (view == null || view.getVisibility() != View.GONE) {
-        if (view != null) {
-            view.setVisibility(View.GONE);
-        }
+        if (view == null)
+            return;
+        view.setVisibility(View.GONE);
     }
 
-    public void playAnimatedGif(MediaItem item) {
+    private boolean isAnimatedGifVisible() {
+        Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
+        if (activity == null)
+            return false;
+        View view = activity.findViewById(com.chanapps.four.activity.R.id.gifview);
+        if (view == null)
+            return false;
+        return (view.getVisibility() == View.VISIBLE);
+    }
+
+    public void playAnimatedGif(MediaItem item, long version) {
+        if (item == null)
+            return;
         Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
         if (activity == null) {
             if (DEBUG) Log.i(TAG, "Play anim gif null activity, exiting");
@@ -694,11 +711,15 @@ public class PhotoPage extends ActivityState
             if (DEBUG) Log.i(TAG, "Exiting play anim gif since null webview url");
             return;
         }
-        if (localPlayUri.equals(myWebView.getTag())) {
-            if (DEBUG) Log.i(TAG, "Exiting play anim gif since already playing tagged webview url = " + localPlayUri);
+        if (myWebView.isFocused()) {
+            if (DEBUG) Log.i(TAG, "Already focused, exiting");
+        }
+        /*
+        if ((localPlayUri + "#" + version).equals(myWebView.getTag())) {
+            if (DEBUG) Log.i(TAG, "Exiting play anim gif since already loaded url=" + localPlayUri + " version=" + version);
             return;
         }
-
+        */
         if (DEBUG) Log.w(TAG, "Screen size w: " + rootView.getMeasuredWidth() + " h: " + rootView.getMeasuredHeight());
         if (DEBUG) Log.w(TAG, "Image  size w: " + item.getWidth() + " h: " + item.getHeight());
 
@@ -719,7 +740,7 @@ public class PhotoPage extends ActivityState
 
         if (DEBUG) Log.i(TAG, "Loading anim gif webview url = " + localPlayUri);
         myWebView.loadUrl(localPlayUri.toString());
-        myWebView.setTag(localPlayUri);
+        myWebView.setTag(localPlayUri + "#" + version);
 
         view.setVisibility(View.VISIBLE);
     }
@@ -776,6 +797,7 @@ public class PhotoPage extends ActivityState
         if (mHandler != null) mHandler.removeMessages(MSG_HIDE_BARS);
         if (mActionBar != null) mActionBar.removeOnMenuVisibilityListener(mMenuVisibilityListener);
         if (mMenuExecutor != null) mMenuExecutor.pause();
+        hideAnimatedGif();
     }
 
     @Override
@@ -928,10 +950,7 @@ public class PhotoPage extends ActivityState
         setShareIntent(intent);
     }
 
-    private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
-    private static final String IMAGE_SEARCH_ROOT_ANIME = "http://iqdb.org/?url=";
-
-    private void imageSearch(String rootUrl) {
+    private void imageSearch(String urlFormat) {
         MediaDetails details = mCurrentPhoto.getDetails();
         if (details == null) {
             Toast.makeText((Context)mActivity, com.chanapps.four.activity.R.string.full_screen_image_search_not_found, Toast.LENGTH_SHORT)
@@ -953,7 +972,7 @@ public class PhotoPage extends ActivityState
         try {
             ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
             String encodedImageUrl = URLEncoder.encode(imageUrl, "UTF-8");
-            String url =  rootUrl + encodedImageUrl;
+            String url = String.format(urlFormat, encodedImageUrl);
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             ((Activity)activity).startActivity(intent);
         }

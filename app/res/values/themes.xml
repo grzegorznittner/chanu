@@ -28,6 +28,8 @@
         <item name="themedSpinnerArrow">@drawable/arrow_down_alt</item>
         <item name="themedBoardGridBoardCodeBg">@color/PaletteBoardGridBoardCodeBg</item>
         <item name="themedWidgetConfigureButtonBg">@color/PaletteDarkGray</item>
+        <item name="themedBoardGridNumReplies">@color/PaletteBoardCodeText</item>
+        <item name="themedThreadCollapseImageIcon">@drawable/av_return_from_full_screen_light</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.Dark">
@@ -58,6 +60,8 @@
         <item name="themedSpinnerArrow">@drawable/arrow_down_alt_light</item>
         <item name="themedBoardGridBoardCodeBg">@color/DarkPaletteBoardGridBoardCodeBg</item>
         <item name="themedWidgetConfigureButtonBg">@color/DarkPaletteBoardGridBoardCodeBg</item>
+        <item name="themedBoardGridNumReplies">@color/PaletteLightGray</item>
+        <item name="themedThreadCollapseImageIcon">@drawable/av_return_from_full_screen</item>
     </style>
 
 </resources>
