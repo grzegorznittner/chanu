@@ -35,7 +35,7 @@ public class ScrollerCompat {
 
         @Override
         public float getCurrVelocity() {
-            return ScrollerCompatICS.getCurrVelocity(mScroller);
+            return mScroller == null ? 0 : mScroller.getCurrVelocity();
         }
     }
 
