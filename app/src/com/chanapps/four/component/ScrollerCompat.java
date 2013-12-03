@@ -28,8 +28,8 @@ import android.widget.Scroller;
 public class ScrollerCompat {
     Scroller mScroller;
 
-    static class ScrollerCompatImplIcs extends ScrollerCompat {
-        public ScrollerCompatImplIcs(Context context) {
+    static class ScrollerCompatImplICS2 extends ScrollerCompat {
+        public ScrollerCompatImplICS2(Context context) {
             super(context);
         }
 
@@ -41,7 +41,7 @@ public class ScrollerCompat {
 
     public static ScrollerCompat from(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= 14) {
-            return new ScrollerCompatImplIcs(context);
+            return new ScrollerCompatImplICS2(context);
         }
         return new ScrollerCompat(context);
     }
