@@ -215,13 +215,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     @Override
-    public boolean isSelfBoard(String boardAsMenu) {
+    public boolean isSelfDrawerMenu(String boardAsMenu) {
         if (boardAsMenu == null || boardAsMenu.isEmpty())
             return false;
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
         if (boardType != null && boardType.boardCode().equals(boardCode))
             return true;
-        if (boardAsMenu.matches("/" + boardCode + "/.*")
+        if (boardAsMenu.matches("/" + boardCode + "/[^0-9].*")
                 && (query == null || query.isEmpty()))
             return true;
         return false;
@@ -247,8 +247,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void initGridViewOptions() {
-        if (ChanBoard.isVirtualBoard(boardCode)
-                && !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+            gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+        }
+        else if (ChanBoard.isVirtualBoard(boardCode)) {
             gridViewOptions |= BoardGridViewer.SMALL_GRID;
         }
         else { // check for user pref
