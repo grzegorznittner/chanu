@@ -18,10 +18,14 @@ package com.android.gallery3d.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Bitmap.Config;
 
 import com.android.gallery3d.app.GalleryContext;
+import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.DecodeUtils;
 import com.android.gallery3d.util.Future;
@@ -615,11 +619,23 @@ public class TileImageView extends GLView {
 
         @Override
         protected Bitmap onGetBitmap() {
-            Utils.assertTrue(mTileState == STATE_DECODED);
-            Bitmap bitmap = mDecodedTile;
-            mDecodedTile = null;
-            mTileState = STATE_ACTIVATED;
-            return bitmap;
+            // Utils.assertTrue(mTileState == STATE_DECODED);
+        	// instead of failing when state is not decoded we create empty black filled tile
+        	if (mTileState == STATE_DECODED) {
+	            Bitmap bitmap = mDecodedTile;
+	            mDecodedTile = null;
+	            mTileState = STATE_ACTIVATED;
+	            return bitmap;
+        	} else {
+        		mDecodedTile = null;
+	            mTileState = STATE_ACTIVATED;
+	            
+                int borderLength = TILE_BORDER << mTileLevel;
+                Bitmap bitmap = Bitmap.createBitmap(mX - borderLength, mY - borderLength, Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                canvas.drawColor(Color.WHITE);
+	            return bitmap;
+        	}
         }
 
         @Override
