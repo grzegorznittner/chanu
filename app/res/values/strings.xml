@@ -528,6 +528,9 @@
     <string name="pref_use_https">Security</string>
     <string name="pref_use_https_summ_on">Use HTTPS for all connections</string>
     <string name="pref_use_https_summ_off">Don\'t use HTTPS for all connections</string>
+    <string name="pref_background_data">Background Data</string>
+    <string name="pref_background_data_summ_on">Background data enabled when on mobile data plan</string>
+    <string name="pref_background_data_summ_off">Background data disabled when on mobile data plan</string>
     <string name="pref_autoupdate_threads">Auto-Update Threads</string>
     <string name="pref_autoupdate_threads_summ_on">Refresh threads every 30 seconds</string>
     <string name="pref_autoupdate_threads_summ_off">Don\'t automatically refresh threads</string>

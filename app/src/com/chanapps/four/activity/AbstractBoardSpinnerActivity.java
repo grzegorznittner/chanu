@@ -32,7 +32,7 @@ abstract public class
         ThemeSelector.ThemeActivity                       //422 passport bliestift am banhoff 9:30-12:30 nachmichtags pukntlich 899-4152 ara flan freitag
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
     protected static final boolean DEVELOPER_MODE = false;
 
     protected static final String THREAD_PATTERN = "/([a-z0-9]+)/([0-9]+).*";
@@ -125,6 +125,7 @@ abstract public class
     }
 
     protected void setSpinnerAdapter() {
+        if (DEBUG) Log.i(TAG, "setSpinnerAdapter()");
         mSpinnerArrayId = mShowNSFW
                 ? R.array.long_board_array
                 : R.array.long_board_array_worksafe;
@@ -132,7 +133,10 @@ abstract public class
         mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (DEBUG) Log.i(TAG, "setSpinnerAdapter() before bind listener");
         bindSpinnerListener();
+        if (DEBUG) Log.i(TAG, "setSpinnerAdapter() after bind listener");
+        selectActionBarNavigationItem();
     }
 
     protected void bindSpinnerListener() {
@@ -213,7 +217,10 @@ abstract public class
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
             String item = mSpinnerAdapter.getItem(itemPosition);
-            return handleSelectItem(item);
+            if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=" + item + " calling handleSelectItem");
+            boolean handle = handleSelectItem(item);
+            if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=" + item + " returned handleSelectItem=" + handle);
+            return handle;
         }
     };
 
@@ -325,7 +332,6 @@ abstract public class
     protected void onResume() {
         super.onResume();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/");
-        selectActionBarNavigationItem();
     }
 
     @Override
@@ -335,9 +341,9 @@ abstract public class
     }
 
     protected void selectActionBarNavigationItem() {
-        if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ begin");
         unbindSpinnerListener();
-        int pos = 0;
+        int pos = -1;
         for (int i = 0; i < mSpinnerAdapter.getCount(); i++) {
             String boardText = mSpinnerAdapter.getItem(i);
             BoardType type = BoardType.valueOfDrawerString(this, boardText);
@@ -350,8 +356,17 @@ abstract public class
                 break;
             }
         }
+        if (pos >= 0) {
+            String boardText = mSpinnerAdapter.getItem(pos);
+            if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ found pos=" + pos + " text=" + boardText);
+        }
+        else {
+            pos = 0;
+            if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ not found defaulted pos=" + pos);
+        }
         actionBar.setSelectedNavigationItem(pos);
         bindSpinnerListener();
+        if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ pos=" + pos + " end");
     }
 
 }

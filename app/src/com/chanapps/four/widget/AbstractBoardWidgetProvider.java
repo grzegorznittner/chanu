@@ -63,7 +63,7 @@ public abstract class AbstractBoardWidgetProvider extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         if (DEBUG) Log.i(TAG, "disabled all widgets");
-        GlobalAlarmReceiver.cancelGlobalAlarm(context);
+        GlobalAlarmReceiver.scheduleGlobalAlarm(context); // will deschedule if appropriate
     }
 
 }

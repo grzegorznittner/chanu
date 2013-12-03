@@ -29,7 +29,7 @@ abstract public class
         implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected int mDrawerArrayId;
     protected String[] mDrawerArray;
@@ -318,8 +318,9 @@ abstract public class
             mDrawerLayout.closeDrawer(mDrawerList);
             HashMap<String, String> item = (HashMap<String, String>)parent.getItemAtPosition(position);
             String boardAsMenu = item.get(TEXT);
-            if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu);
+            if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu + " calling handleSelectItem");
             handleSelectItem(boardAsMenu);
+            if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu + " complete");
         }
     };
 
@@ -389,8 +390,9 @@ abstract public class
         //    drawerEnabled = false;
         //else
             drawerEnabled = true;
-        if (DEBUG) Log.i(TAG, "onResume() drawerEnabled=" + drawerEnabled);
+        if (DEBUG) Log.i(TAG, "onResume() drawerEnabled setting to=" + drawerEnabled);
         mDrawerToggle.setDrawerIndicatorEnabled(drawerEnabled);
+        if (DEBUG) Log.i(TAG, "onResume() drawerEnabled set to=" + drawerEnabled);
     }
 
 }

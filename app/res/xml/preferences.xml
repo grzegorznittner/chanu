@@ -232,6 +232,13 @@
                 android:summaryOff="@string/pref_use_https_summ_off"
                 android:defaultValue="true" />
 
+        <CheckBoxPreference
+                android:key="pref_background_data_on_mobile"
+                android:title="@string/pref_background_data"
+                android:summaryOn="@string/pref_background_data_summ_on"
+                android:summaryOff="@string/pref_background_data_summ_off"
+                android:defaultValue="false" />
+
         <!--
         <CheckBoxPreference
                 android:key="pref_show_nsfw_boards"

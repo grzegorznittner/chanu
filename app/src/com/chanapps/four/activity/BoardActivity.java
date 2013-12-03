@@ -558,6 +558,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             handler = new Handler();
         //invalidateOptionsMenu();
         activityChangeAsync();
+        //selectActionBarNavigationItem();
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
     }
 
     protected void updateThreads(ChanBoard board) { // WARNING don't call on UI thread
@@ -594,7 +596,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
 	public void onWindowFocusChanged (boolean hasFocus) {
 		if (DEBUG) Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
-	}
+    }
 
     @Override
 	protected void onPause() {

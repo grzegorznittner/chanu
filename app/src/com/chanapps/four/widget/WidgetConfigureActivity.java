@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.AnalyticsComponent;
+import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.loader.ChanImageLoader;
 
 /**
@@ -82,6 +83,7 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
                 updateWidget.putExtra(WidgetProviderUtils.WIDGET_PROVIDER_UTILS, WidgetConfigureActivity.this.getWidgetType());
                 WidgetConfigureActivity.this.sendBroadcast(updateWidget);
                 WidgetConfigureActivity.this.finish();
+                GlobalAlarmReceiver.scheduleGlobalAlarm(getApplicationContext()); // will deschedule if appropriate
             }
         });
 

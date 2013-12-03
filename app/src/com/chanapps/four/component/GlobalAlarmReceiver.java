@@ -6,8 +6,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
@@ -58,23 +60,29 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     }
 
     private static void updateAndFetch(Context context) {
-        if (!ChanBoard.hasWatchlist(context) || !WidgetProviderUtils.hasWidgets(context)) {
+        if (!ChanBoard.hasWatchlist(context) && !WidgetProviderUtils.hasWidgets(context)) {
             if (DEBUG) Log.i(TAG, "updateAndFetch no watchlist or widgets, cancelling global alarm");
             cancelGlobalAlarm(context);
             return;
         }
         WidgetProviderUtils.updateAll(context);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context); // always check since state may have changed
-        NetworkProfile currentProfile = NetworkProfileManager.instance().getCurrentProfile();
-        if (DEBUG) Log.i(TAG, "updateAndFetch network profile=" + currentProfile + " health=" + currentProfile.getConnectionHealth());
-        if (currentProfile.getConnectionType() != NetworkProfile.Type.NO_CONNECTION
-                && currentProfile.getConnectionHealth() != NetworkProfile.Health.NO_CONNECTION
-                && currentProfile.getConnectionHealth() != NetworkProfile.Health.BAD) {
-            if (DEBUG) Log.i(TAG, "updateAndFetch fetching widgets, watchlists, and uncached boards");
+        NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
+        boolean backgroundDataOnMobile = PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_BACKGROUND_DATA_ON_MOBILE, false);
+        if (DEBUG) Log.i(TAG, "updateAndFetch network profile=" + profile + " health=" + profile.getConnectionHealth());
+        if (profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION ||
+                profile.getConnectionHealth() == NetworkProfile.Health.BAD) {
+            if (DEBUG) Log.i(TAG, "updateAndFetch no connection, skipping fetch");
+        }
+        else if (profile.getConnectionType() == NetworkProfile.Type.MOBILE && !backgroundDataOnMobile) {
+            if (DEBUG) Log.i(TAG, "updateAndFetch background data is set to disabled on mobile, skipping fetch");
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "updateAndFetch fetching watchlist threads and widget boards");
             fetchWatchlistThreads(context);
             WidgetProviderUtils.fetchAllWidgets(context);
-        } else {
-            if (DEBUG) Log.i(TAG, "updateAndFetch no connection, skipping fetch");
         }
     }
 
