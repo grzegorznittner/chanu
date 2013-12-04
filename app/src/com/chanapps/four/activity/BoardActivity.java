@@ -50,7 +50,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
     public static final String UPDATE_BOARD_ACTION = "updateBoardAction";
 
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
@@ -381,7 +381,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void forceGridViewOptions() {
-        if (ChanBoard.isVirtualBoard(boardCode) && !(ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)))
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+            gridViewOptions &= ~BoardGridViewer.SMALL_GRID; // force watchlist to full size
+        else  if (ChanBoard.isVirtualBoard(boardCode))
             gridViewOptions |= BoardGridViewer.SMALL_GRID; // force meta boards to small
     }
 
@@ -429,27 +431,33 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0) {
-            mPullToRefreshAttacher = null; // doesn't work well with grids
-        }
-        else if (ChanBoard.isPopularBoard(boardCode)
-                || ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
-                || !ChanBoard.isVirtualBoard(boardCode)) {
-            //try {
+        emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
+        bindPullToRefresh();
+    }
+
+    protected void bindPullToRefresh() {
+        if (mPullToRefreshAttacher == null) {
             PullToRefreshAttacher.Options options = new PullToRefreshAttacher.Options();
             options.refreshScrollDistance = 0.1f;
             mPullToRefreshAttacher = new PullToRefreshAttacher(this, options);
-            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
-            //}
-            //catch (Error e) {
-            //    Log.e(TAG, "createAbsListView() error creating pull to refresh attacher", e);
-            //    mPullToRefreshAttacher = null;
-            //}
         }
-        else {
-            mPullToRefreshAttacher = null;
-        }
-        emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
+        mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+        //if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0) {
+        //    mPullToRefreshAttacher = null; // doesn't work well with grids
+        //}
+        //else
+        boolean enabled;
+        if (ChanBoard.isPopularBoard(boardCode))
+            enabled = true;
+        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
+            enabled = true;
+        else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+            enabled = true;
+        else if (!ChanBoard.isVirtualBoard(boardCode))
+            enabled = true;
+        else
+            enabled = false;
+        mPullToRefreshAttacher.setEnabled(enabled);
     }
 
     protected class LoggingPauseOnScrollListener extends PauseOnScrollListener {
@@ -473,8 +481,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (handler == null)
             handler = new Handler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
+        /*
         forceGridViewOptions();
         startLoaderAsync();
+        */
         AnalyticsComponent.onStart(this);
     }
 
@@ -484,6 +494,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             public void run() {
                 ChanBoard board = null;
                 try {
+                    if (DEBUG) Log.i(TAG, "startLoaderAsync /" + boardCode + "/");
                     board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
                 }
                 catch (Exception e) {
@@ -507,6 +518,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void startLoader(final ChanBoard board) {
+        if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/");
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
         if (board.isVirtualBoard() && !board.isPopularBoard()) { // always ready, start loading
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ non-popular virtual board, loading immediately");
@@ -556,6 +568,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         if (handler == null)
             handler = new Handler();
+        forceGridViewOptions();
+        startLoaderAsync();
         //invalidateOptionsMenu();
         activityChangeAsync();
         //selectActionBarNavigationItem();
@@ -704,7 +718,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void onRefresh() {
-        if (!ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
+        if (!ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)
+                && !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
                 && ChanBoard.isVirtualBoard(boardCode)
                 && !ChanBoard.isPopularBoard(boardCode)) {
             if (DEBUG) Log.i(TAG, "manual refresh skipped for non-popular virtual board /" + boardCode + "/");
@@ -716,6 +731,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) && handler != null)
+                    handler.post(new ToastRunnable(BoardActivity.this, R.string.refresh_favorites));
+                else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode) && handler != null)
+                    handler.post(new ToastRunnable(BoardActivity.this, R.string.refresh_watchlist));
                 NetworkProfileManager.instance().manualRefresh(activity);
             }
         }).start();
@@ -844,8 +863,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
-            menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardGridViewer.SMALL_GRID) == 0);
-            menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0);
+            menu.findItem(R.id.view_as_grid_menu).setVisible(false);
+            menu.findItem(R.id.view_as_list_menu).setVisible(false);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
@@ -1172,6 +1191,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 menuId = R.menu.watchlist_context_menu;
             else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) || ChanBoard.FAVORITES_BOARD_CODE.equals(groupBoardCode))
                 menuId = R.menu.favorites_context_menu;
+            else if (ChanBoard.isPopularBoard(boardCode) || ChanBoard.isPopularBoard(groupBoardCode))
+                menuId = R.menu.popular_context_menu;
             else if (ChanBoard.isMetaBoard(boardCode) || ChanBoard.isMetaBoard(groupBoardCode))
                 menuId = R.menu.meta_board_context_menu;
             else if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0)
@@ -1287,6 +1308,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     return true;
                 case R.id.board_thread_watch_remove_menu:
                     ThreadFragment.removeFromWatchlist(BoardActivity.this, handler, boardCode, threadNo);
+                    return true;
+                case R.id.board_thread_goto_menu:
+                    FetchChanDataService.scheduleThreadFetch(BoardActivity.this, boardCode, threadNo, true, false);
+                    ThreadActivity.startActivity(BoardActivity.this, boardCode, threadNo, "");
                     return true;
                 case R.id.board_thread_gallery_menu:
                     FetchChanDataService.scheduleThreadFetch(BoardActivity.this, boardCode, threadNo, true, false);

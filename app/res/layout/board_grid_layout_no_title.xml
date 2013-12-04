@@ -6,7 +6,7 @@
         style="@style/BoardGridLayout"
         >
 
-    <!-- <include layout="@layout/board_title_bar"/> -->
+    <!-- <include layout="@layout/board_title_bar" android:id="@+id/board_title_bar"/> -->
 
     <!-- <include layout="@layout/board_refresh_bar"/> -->
 

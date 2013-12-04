@@ -1769,5 +1769,11 @@
 
     <!-- new strings -->
     <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
+    <string name="pref_background_data">Background Data</string>
+    <string name="pref_background_data_summ_on">Background data enabled when on mobile data plan</string>
+    <string name="pref_background_data_summ_off">Background data disabled when on mobile data plan</string>
+    <string name="refresh_favorites">Refreshing all favorite boards in the background...</string>
+    <string name="refresh_watchlist">Refreshing all watchlist threads in the background...</string>
+
 
 </resources>

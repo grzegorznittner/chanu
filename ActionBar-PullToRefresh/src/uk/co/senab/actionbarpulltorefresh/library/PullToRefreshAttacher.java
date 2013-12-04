@@ -119,7 +119,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
 
         // Get Window Decor View
         final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-
+        if (DEBUG) Log.i(LOG_TAG, "got decor view=" + decorView);
         // Create Header view and then add to Decor View
         mHeaderView = LayoutInflater.from(mEnvironmentDelegate.getContextForInflater(activity))
                 .inflate(options.headerLayout, decorView, false);
@@ -729,6 +729,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
              */
             mHeaderViewWrapper = new FrameLayout(context);
             mHeaderViewWrapper.addView(headerView);
+            if (DEBUG) Log.i(LOG_TAG, "adedd view to wrapper view=" + headerView);
             addView(mHeaderViewWrapper, ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
         }

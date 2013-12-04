@@ -303,10 +303,15 @@ abstract public class
     public void closeSearch() {}
 
     @Override
-    public void setProgress(boolean on) {
+    public void setProgress(final boolean on) {
         Handler handler = getChanHandler();
         if (handler != null)
-            setProgressBarIndeterminateVisibility(on);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    setProgressBarIndeterminateVisibility(on);
+                }
+            });
     }
 
     abstract public boolean isSelfDrawerMenu(String boardAsMenu);

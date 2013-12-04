@@ -220,6 +220,10 @@ public class MobileProfile extends AbstractNetworkProfile {
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
+        } else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
+            if (DEBUG) Log.i(TAG, "Manual refresh favorites");
+            GlobalAlarmReceiver.fetchFavoriteBoards(context);
+            postStopMessage(handler, 0);
         } else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
             if (DEBUG) Log.i(TAG, "Manual refresh watchlist");
             GlobalAlarmReceiver.fetchWatchlistThreads(context);
