@@ -800,10 +800,10 @@ public class ThreadActivity
             return;
         if (data.threadNo != threadNo)
             return;
-        setProgress(on);
-        if (mPullToRefreshAttacher != null && !on) {
-            if (DEBUG) Log.i(TAG, "mPullToRefreshAttacher.setRefreshComplete()");
-            mPullToRefreshAttacher.setRefreshComplete();
+        //setProgress(on);
+        if (mPullToRefreshAttacher != null) {
+            if (DEBUG) Log.i(TAG, "mPullToRefreshAttacher.setRefreshing(" + on + ")");
+            mPullToRefreshAttacher.setRefreshing(on);
         }
     }
 

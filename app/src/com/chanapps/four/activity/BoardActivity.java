@@ -733,8 +733,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             public void run() {
                 if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) && handler != null)
                     handler.post(new ToastRunnable(BoardActivity.this, R.string.refresh_favorites));
-                else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode) && handler != null)
-                    handler.post(new ToastRunnable(BoardActivity.this, R.string.refresh_watchlist));
+                //else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode) && handler != null)
+                //    handler.post(new ToastRunnable(BoardActivity.this, R.string.refresh_watchlist));
                 NetworkProfileManager.instance().manualRefresh(activity);
             }
         }).start();
@@ -856,7 +856,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            menu.findItem(R.id.refresh_menu).setVisible(true);
+            //menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -871,7 +871,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(true);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            menu.findItem(R.id.refresh_menu).setVisible(false);
+            //menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -886,7 +886,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            menu.findItem(R.id.refresh_menu).setVisible(true);
+            //menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -901,7 +901,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            menu.findItem(R.id.refresh_menu).setVisible(false);
+            //menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -916,7 +916,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            menu.findItem(R.id.refresh_menu).setVisible(true);
+            //menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(true);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(true);
             //menu.findItem(R.id.board_rules_menu).setVisible(true);
@@ -1070,11 +1070,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
     public void setProgress(boolean on) {
         if (DEBUG) Log.i(TAG, "setProgress(" + on + ")");
-        if (handler != null)
-            setProgressBarIndeterminateVisibility(on);
-        if (mPullToRefreshAttacher != null && !on) {
-            if (DEBUG) Log.i(TAG, "mPullToRefreshAttacher.setRefreshComplete()");
-            mPullToRefreshAttacher.setRefreshComplete();
+        //if (handler != null)
+        //    setProgressBarIndeterminateVisibility(on);
+        if (mPullToRefreshAttacher != null) {
+            if (DEBUG) Log.i(TAG, "mPullToRefreshAttacher.setRefreshing(" + on + ")");
+            mPullToRefreshAttacher.setRefreshing(on);
         }
     }
 

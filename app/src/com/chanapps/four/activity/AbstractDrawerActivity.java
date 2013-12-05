@@ -302,6 +302,7 @@ abstract public class
     @Override
     public void closeSearch() {}
 
+    /*
     @Override
     public void setProgress(final boolean on) {
         Handler handler = getChanHandler();
@@ -313,6 +314,7 @@ abstract public class
                 }
             });
     }
+    */
 
     abstract public boolean isSelfDrawerMenu(String boardAsMenu);
 

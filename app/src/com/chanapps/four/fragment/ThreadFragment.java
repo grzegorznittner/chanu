@@ -404,6 +404,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() not current fragment, exiting /" + boardCode + "/" + threadNo);
             return;
         }
+        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+        if (thread == null || thread.isDead) {
+            if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() dead thread, exiting /" + boardCode + "/" + threadNo);
+            return;
+        }
         if (handler != null)
             handler.removeCallbacks(autoUpdateRunnable); // deschedule any current updates
         if (handler != null)
@@ -583,9 +588,35 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public void setPullToRefreshAttacher(PullToRefreshAttacher mPullToRefreshAttacher) {
         this.mPullToRefreshAttacher = mPullToRefreshAttacher;
-        if (mPullToRefreshAttacher != null && absListView != null)
+        if (mPullToRefreshAttacher == null)
+            return;
+        if (absListView != null)
             mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+        new Thread(setPullToRefreshEnabledAsync).start();
     }
+
+    private Runnable setPullToRefreshEnabledAsync = new Runnable() {
+        @Override
+        public void run() {
+            Context context = getActivityContext();
+            if (context == null)
+                return;
+            ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+            boolean enabled;
+            if (thread != null && thread.isDead)
+                enabled = false;
+            else
+                enabled = true;
+            final boolean isEnabled = enabled;
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPullToRefreshAttacher.setEnabled(isEnabled);
+                    }
+                });
+        }
+    };
 
     private String replyText(long postNos[]) {
         String replyText = "";
@@ -645,8 +676,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             if (menu == null)
                                 return;
                             MenuItem item;
-                            if ((item = menu.findItem(R.id.refresh_menu)) != null)
-                                item.setVisible(undead);
+                            //if ((item = menu.findItem(R.id.refresh_menu)) != null)
+                            //    item.setVisible(undead);
+                            if (mPullToRefreshAttacher != null)
+                                mPullToRefreshAttacher.setEnabled(undead);
                             if ((item = menu.findItem(R.id.post_reply_all_menu)) != null)
                                 item.setVisible(undead);
                             //if ((item = menu.findItem(R.id.web_menu)) != null)
