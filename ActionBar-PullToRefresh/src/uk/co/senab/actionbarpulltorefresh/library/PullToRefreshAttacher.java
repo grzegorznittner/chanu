@@ -51,7 +51,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     private static final int DEFAULT_ANIM_HEADER_OUT = R.anim.fade_out;
     private static final float DEFAULT_REFRESH_SCROLL_DISTANCE = 0.5f;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String LOG_TAG = "PullToRefreshAttacher";
 
     private final EnvironmentDelegate mEnvironmentDelegate;

@@ -1,7 +1,10 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,6 +18,11 @@ import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.BillingComponent;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.ipaulpro.afilechooser.utils.FileUtils;
+
+import java.io.File;
 
 
 /**
@@ -31,6 +39,8 @@ public class SettingsFragment
 
     protected static final boolean DEBUG = false;
     protected static final String TAG = SettingsFragment.class.getSimpleName();
+
+    protected Preference downloadLocationButton;
 
     public Handler handler;
 
@@ -103,6 +113,19 @@ public class SettingsFragment
                 return true;
             }
         });
+
+        downloadLocationButton = findPreference(SettingsActivity.PREF_DOWNLOAD_LOCATION);
+        downloadLocationButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null);
+                DialogChooseDirectory d = new DialogChooseDirectory(getActivity(), chooseDirectoryHandler,
+                        downloadFolder.getAbsolutePath());
+                return true;
+            }
+        });
+        File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null);
+        downloadLocationButton.setSummary(downloadFolder.getAbsolutePath());
 
         Preference.OnPreferenceClickListener namesListener = new Preference.OnPreferenceClickListener() {
             @Override
@@ -207,5 +230,29 @@ public class SettingsFragment
     public void onDetach() {
         super.onDetach();
     }
+
+    protected DialogChooseDirectory.Result chooseDirectoryHandler = new DialogChooseDirectory.Result() {
+        @Override
+        public void onChooseDirectory(String dir) {
+            try {
+                File file = new File(dir);
+                if (file.exists() && file.isDirectory() && file.canWrite()) {
+                    String msg = String.format(getString(R.string.pref_download_location_set), file.getAbsolutePath());
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                    getPreferenceManager()
+                            .getSharedPreferences()
+                            .edit()
+                            .putString(SettingsActivity.PREF_DOWNLOAD_LOCATION, file.getAbsolutePath())
+                            .commit();
+                    downloadLocationButton.setSummary(file.getAbsolutePath());
+                }
+                else {
+                    Toast.makeText(getActivity(), R.string.pref_download_location_error, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(getActivity(), R.string.pref_download_location_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
 }

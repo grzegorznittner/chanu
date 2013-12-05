@@ -50,7 +50,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
     public static final String UPDATE_BOARD_ACTION = "updateBoardAction";
 
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;

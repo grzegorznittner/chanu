@@ -451,6 +451,7 @@ public class FileUtils {
         }
 
         // List file in this directory with the file filter
+        /*
         final File[] files = pathDir.listFiles(mFileFilter);
         if (files != null) {
             // Sort the files alphabetically
@@ -458,7 +459,7 @@ public class FileUtils {
             // Add each file to the File list for the list adapter
             for (File file : files) list.add(file);
         }
-
+        */
         return list;
     }
 

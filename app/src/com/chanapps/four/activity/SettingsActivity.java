@@ -54,6 +54,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_RESET_TO_DEFAULTS = "pref_reset_to_defaults";
     public static final String PREF_BLOCKLIST_BUTTON = "pref_blocklist_button";
     public static final String PREF_ABOUT = "pref_about";
+    public static final String PREF_DOWNLOAD_LOCATION = "pref_download_location";
     public static final String PREF_PASS_TOKEN = "pref_pass_token";
     public static final String PREF_PASS_PIN = "pref_pass_pin";
     public static final String PREF_PASS_ENABLED = "pref_pass_enabled";

@@ -5,6 +5,7 @@ import java.nio.channels.FileChannel;
 import java.util.*;
 
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.component.NotificationComponent;
 import com.chanapps.four.service.BoardParserService;
@@ -677,8 +678,29 @@ public class ChanFileStorage {
         return Uri.parse("file://" + getHiddenBoardCacheDirectory(context, boardCode) + FILE_SEP + postNo + ext);
     }
 
-    public static Uri getMediaVisibleLocalImageUri(Context context, ChanPost post) {
-        return Uri.parse("file://" + getBoardCacheDirectory(context, post.board) + FILE_SEP + post.imageName());
+    public static Uri getDefaultDownloadFolder(Context context) {
+        //getBoardCacheDirectory(context, post.board);
+        return null;
+    }
+
+    public static File getDownloadFolder(Context context, ChanPost post) {
+        String configuredPath = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(SettingsActivity.PREF_DOWNLOAD_LOCATION, null);
+        File boardDir;
+        if (configuredPath != null) {
+            boardDir = new File(configuredPath);
+        }
+        else { // default
+            String cacheDir = getRootCacheDirectory(context);
+            if (post != null && post.board != null && !post.board.isEmpty())
+                cacheDir += FILE_SEP + post.board;
+            boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        }
+        return boardDir;
+    }
+
+    public static Uri getDownloadImagePath(Context context, ChanPost post) {
+        return Uri.parse("file://" + getDownloadFolder(context, post) + FILE_SEP + post.imageName());
     }
 
     public static File createWallpaperFile(Context context) {

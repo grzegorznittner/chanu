@@ -249,6 +249,12 @@
                 android:defaultValue="false" />
         -->
 
+        <Preference
+                android:key="pref_download_location"
+                android:title="@string/pref_download_location"
+                android:summary="@string/pref_download_location_summ"
+                />
+
         <ListPreference
                 android:key="pref_download_images"
                 android:title="@string/pref_download_images_title"
