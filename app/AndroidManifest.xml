@@ -373,24 +373,7 @@
         <uses-library android:name="com.google.android.media.effects"
                       android:required="false"/>
 
-        <activity
-            android:name="com.ipaulpro.afilechooser.FileChooserActivity"
-            android:exported="false"
-            android:icon="@drawable/ic_chooser"
-            android:label="@string/pref_download_location"
-            android:theme="@style/AppTheme"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.OPENABLE" />
-
-                <data android:mimeType="*/*" />
-            </intent-filter>
-        </activity>
-
-        <!--
+       <!--
         <activity android:name="com.android.gallery3d.app.SlideshowDream"
                   android:label="@string/slideshow_dream_name"
                   android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"

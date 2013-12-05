@@ -20,7 +20,6 @@ import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
-import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import java.io.File;
 
