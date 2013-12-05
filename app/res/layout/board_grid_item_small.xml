@@ -6,8 +6,9 @@
              android:foreground="@drawable/board_grid_selector_bg"
         >
 
-    <RelativeLayout android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             >
 
         <com.chanapps.four.component.LetterSpacingTextView
@@ -107,6 +108,7 @@
         </FrameLayout>
 
         <RelativeLayout
+                android:id="@+id/grid_item_bottom_frame"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/BoardGridItemSmallHeight"
                 android:orientation="vertical"

@@ -15,6 +15,7 @@ import com.chanapps.four.activity.R;
 public class BoardGridViewHolder {
 
     public ViewGroup grid_item;
+    public ViewGroup grid_item_bottom_frame;
     public ImageView grid_item_thread_thumb;
     public ImageView grid_item_country_flag;
     public TextView grid_item_board_code;
@@ -40,6 +41,7 @@ public class BoardGridViewHolder {
 
     public BoardGridViewHolder(View item) {
         grid_item = (ViewGroup)item;
+        grid_item_bottom_frame = (ViewGroup)item.findViewById(R.id.grid_item_bottom_frame);
         grid_item_thread_thumb = (ImageView)item.findViewById(R.id.grid_item_thread_thumb);
         grid_item_country_flag = (ImageView)item.findViewById(R.id.grid_item_country_flag);
         grid_item_board_code = (TextView)item.findViewById(R.id.grid_item_board_code);

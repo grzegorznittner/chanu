@@ -1,12 +1,10 @@
 package com.chanapps.four.viewer;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.preference.PreferenceManager;
 import android.text.*;
 import android.text.style.CharacterStyle;
 import android.util.Log;
@@ -37,6 +35,7 @@ import org.xml.sax.XMLReader;
 public class BoardGridViewer {
 
     public static final int SMALL_GRID = 0x01;
+    public static final int ABBREV_ALL_BOARDS = 0x02;
 
     private static String TAG = BoardGridViewer.class.getSimpleName();
     private static boolean DEBUG = false;
@@ -76,7 +75,7 @@ public class BoardGridViewer {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         boolean isDark = ThemeSelector.instance(view.getContext()).isDark();
         BoardGridViewHolder viewHolder = (BoardGridViewHolder)view.getTag(R.id.VIEW_HOLDER);
-        setItem(viewHolder, overlayListener, overflowListener, flags);
+        setItem(viewHolder, overlayListener, overflowListener, flags, options);
         setSubject(viewHolder, cursor, flags);
         setSubjectLarge(viewHolder, cursor, flags, subjectTypeface);
         setInfo(viewHolder, cursor, groupBoardCode, flags, options);
@@ -90,7 +89,8 @@ public class BoardGridViewer {
     protected static boolean setItem(BoardGridViewHolder viewHolder,
                                      View.OnClickListener overlayListener,
                                      View.OnClickListener overflowListener,
-                                     int flags) {
+                                     int flags,
+                                     int options) {
         boolean isHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0;
         if (viewHolder.grid_item_line_1 != null)
             viewHolder.grid_item_line_1.setVisibility(isHeader ? View.GONE : View.VISIBLE);
@@ -99,12 +99,15 @@ public class BoardGridViewer {
 
         View overflow = viewHolder.grid_item_overflow_icon;
         if (overflow != null) {
-            if (overflowListener != null) {
-                overflow.setOnClickListener(overflowListener);
-                overflow.setVisibility(View.VISIBLE);
+            if ((options & ABBREV_ALL_BOARDS) > 0) {
+                overflow.setVisibility(View.GONE);
+            }
+            else if (overflowListener == null) {
+                overflow.setVisibility(View.GONE);
             }
             else {
-                overflow.setVisibility(View.GONE);
+                overflow.setOnClickListener(overflowListener);
+                overflow.setVisibility(View.VISIBLE);
             }
         }
 
@@ -193,16 +196,26 @@ public class BoardGridViewer {
         ImageView iv = viewHolder.grid_item_thread_thumb;
         if (iv == null)
             return false;
-        if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & SMALL_GRID) == 0) {
+        boolean isWideHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & SMALL_GRID) == 0;
+        if (isWideHeader) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
+            return true;
+        }
+
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+        boolean hasAbbreviatedAllBoards = ChanBoard.ALL_BOARDS_BOARD_CODE.equals(groupBoardCode)
+                && (options & ABBREV_ALL_BOARDS) > 0;
+        if (hasAbbreviatedAllBoards) {
+            iv.setImageBitmap(null);
+            iv.setVisibility(View.GONE);
+            displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
             return true;
         }
         View item = viewHolder.grid_item;
         iv.setVisibility(View.VISIBLE);
         sizeImage(iv, item, columnWidth, columnHeight, options);
 
-        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
         String url = imageUrl(iv, boardCode, groupBoardCode, cursor, flags, options);
         if (url != null && !url.isEmpty())
@@ -218,25 +231,50 @@ public class BoardGridViewer {
                                            Typeface titleTypeface,
                                            int flags,
                                            int options) {
-        TextView tv = viewHolder.grid_item_board_code;
-        if (tv == null)
-            return;
-        if (groupBoardCode != null
+        if ((options & ABBREV_ALL_BOARDS) > 0) {
+            if (viewHolder.grid_item_board_code != null) {
+                viewHolder.grid_item_board_code.setText("");
+                viewHolder.grid_item_board_code.setVisibility(View.GONE);
+            }
+            if (viewHolder.grid_item_bottom_frame != null)
+                viewHolder.grid_item_bottom_frame.setVisibility(View.GONE);
+            displayNicelyFormattedBoardCode(titleTypeface, boardCode, viewHolder.grid_item_thread_subject_header_abbr);
+        }
+        else if (groupBoardCode != null
                 && !ChanBoard.isVirtualBoard(groupBoardCode)
                 && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
                 && (options & SMALL_GRID) > 0
                 && viewHolder.grid_item_thread_subject_header_abbr != null) { // grid header
-            tv.setText("");
-            tv = viewHolder.grid_item_thread_subject_header_abbr;
+            if (viewHolder.grid_item_board_code != null) {
+                viewHolder.grid_item_board_code.setText("");
+                viewHolder.grid_item_board_code.setVisibility(View.VISIBLE);
+            }
+            if (viewHolder.grid_item_bottom_frame != null)
+                viewHolder.grid_item_bottom_frame.setVisibility(View.VISIBLE);
+            displayNicelyFormattedBoardCode(titleTypeface, boardCode, viewHolder.grid_item_thread_subject_header_abbr);
+        }
+        else if (boardCode == null || boardCode.equals(groupBoardCode)) {
+            if (viewHolder.grid_item_thread_subject_header_abbr != null)
+                viewHolder.grid_item_thread_subject_header_abbr.setText("");
+            if (viewHolder.grid_item_board_code != null) {
+                viewHolder.grid_item_board_code.setText("");
+                viewHolder.grid_item_board_code.setVisibility(View.VISIBLE);
+            }
+            if (viewHolder.grid_item_bottom_frame != null)
+                viewHolder.grid_item_bottom_frame.setVisibility(View.VISIBLE);
         }
         else {
             if (viewHolder.grid_item_thread_subject_header_abbr != null)
                 viewHolder.grid_item_thread_subject_header_abbr.setText("");
-            if (boardCode == null || boardCode.equals(groupBoardCode)) {
-                tv.setText("");
-                return;
-            }
+            if (viewHolder.grid_item_board_code != null)
+                viewHolder.grid_item_board_code.setVisibility(View.VISIBLE);
+            displayNicelyFormattedBoardCode(titleTypeface, boardCode, viewHolder.grid_item_board_code);
+            if (viewHolder.grid_item_bottom_frame != null)
+                viewHolder.grid_item_bottom_frame.setVisibility(View.VISIBLE);
         }
+    }
+
+    protected static void displayNicelyFormattedBoardCode(Typeface titleTypeface, String boardCode, TextView tv) {
         String boardCodeTitle = "/" + boardCode + "/";
         if (DEBUG) Log.i(TAG, "displayBoardCode() boardCodeTitle=" + boardCodeTitle);
         if (titleTypeface != null)
@@ -432,7 +470,9 @@ public class BoardGridViewer {
         ImageView numImagesImg = viewHolder.grid_item_num_images_img;
 
         if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0
-                || (ChanBoard.isVirtualBoard(groupBoardCode) && !ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))) {
+                || (ChanBoard.isVirtualBoard(groupBoardCode) && !ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
+                || ((options & ABBREV_ALL_BOARDS) > 0)
+            ) {
             if (numReplies != null)
                 numReplies.setVisibility(View.GONE);
             if (numImages != null)

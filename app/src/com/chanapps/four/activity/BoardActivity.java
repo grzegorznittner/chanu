@@ -1,11 +1,9 @@
 package com.chanapps.four.activity;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -32,7 +30,6 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardGridSmallCursorAdapter;
 import com.chanapps.four.component.*;
-import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
@@ -249,9 +246,20 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void initGridViewOptions() {
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
             gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+            gridViewOptions &= ~BoardGridViewer.ABBREV_ALL_BOARDS;
+        }
+        else if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode)) {
+            gridViewOptions |= BoardGridViewer.SMALL_GRID;
+            boolean useAbbrevAllBoards = PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(SettingsActivity.PREF_USE_ABBREVIATED_ALL_BOARDS, false);
+            if (useAbbrevAllBoards)
+                gridViewOptions |= BoardGridViewer.ABBREV_ALL_BOARDS;
+            else
+                gridViewOptions &= ~BoardGridViewer.ABBREV_ALL_BOARDS;
         }
         else if (ChanBoard.isVirtualBoard(boardCode)) {
             gridViewOptions |= BoardGridViewer.SMALL_GRID;
+            gridViewOptions &= ~BoardGridViewer.ABBREV_ALL_BOARDS;
         }
         else { // check for user pref
             boolean useCatalog = PreferenceManager.getDefaultSharedPreferences(this)
@@ -260,6 +268,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 gridViewOptions |= BoardGridViewer.SMALL_GRID;
             else
                 gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+            gridViewOptions &= ~BoardGridViewer.ABBREV_ALL_BOARDS;
         }
     }
 
@@ -379,19 +388,20 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/ q=" + query);
     }
-
+    /*
     protected void forceGridViewOptions() {
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
             gridViewOptions &= ~BoardGridViewer.SMALL_GRID; // force watchlist to full size
         else  if (ChanBoard.isVirtualBoard(boardCode))
             gridViewOptions |= BoardGridViewer.SMALL_GRID; // force meta boards to small
     }
-
+    */
     protected void createAbsListView() {
         FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
         if (contentFrame.getChildCount() > 0)
             contentFrame.removeAllViews();
-        forceGridViewOptions();
+        initGridViewOptions();
+        //forceGridViewOptions();
         int layoutId;
         if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0)
             layoutId = R.layout.board_grid_layout_small;
@@ -568,11 +578,16 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         if (handler == null)
             handler = new Handler();
-        forceGridViewOptions();
+        int oldGridViewOptions = gridViewOptions;
+        initGridViewOptions();
+        if (gridViewOptions != oldGridViewOptions) {
+            Cursor c = adapter.getCursor();
+            createAbsListView();
+            setupBoardTitle();
+            adapter.swapCursor(c);
+        }
         startLoaderAsync();
-        //invalidateOptionsMenu();
         activityChangeAsync();
-        //selectActionBarNavigationItem();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
     }
 

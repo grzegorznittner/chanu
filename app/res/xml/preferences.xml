@@ -37,6 +37,11 @@
                 android:title="@string/pref_use_volume_scroll"
                 android:defaultValue="false" />
 
+        <CheckBoxPreference
+                android:key="pref_use_abbreviated_all_boards"
+                android:title="@string/pref_use_abbreviated_all_boards"
+                android:defaultValue="false" />
+
         <ListPreference
                 android:key="pref_theme"
                 android:title="@string/pref_theme_title"
