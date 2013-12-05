@@ -40,4 +40,17 @@ public class AbsListViewDelegate
         }
         return false;
     }
+
+    @Override
+    public boolean isScrolledToBottom(View view) {
+        AbsListView absListView = (AbsListView) view;
+        if (absListView.getCount() == 0) {
+            return true;
+        } else if (absListView.getLastVisiblePosition() == absListView.getCount() - 1) {
+            final View lastVisibleChild = absListView.getChildAt(absListView.getChildCount() - 1);
+            return lastVisibleChild != null && lastVisibleChild.getBottom() <= absListView.getMeasuredHeight();
+        }
+        return false;
+    }
+
 }

@@ -51,7 +51,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     private static final int DEFAULT_ANIM_HEADER_OUT = R.anim.fade_out;
     private static final float DEFAULT_REFRESH_SCROLL_DISTANCE = 0.5f;
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final String LOG_TAG = "PullToRefreshAttacher";
 
     private final EnvironmentDelegate mEnvironmentDelegate;
@@ -72,6 +72,12 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     private OnRefreshListener mRefreshListener;
 
     private boolean mEnabled = true;
+
+    private static enum PullDirection {
+        UP,
+        DOWN
+    }
+    private PullDirection mDirection;
 
     /**
      * FIXME
@@ -279,6 +285,12 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
                     if (canRefresh(true) && mViewDelegate.isScrolledToTop(mRefreshableView)) {
                         mIsHandlingTouchEvent = true;
                         mInitialMotionY = y;
+                        mDirection = PullDirection.DOWN;
+                    } else if (canRefresh(true) && mViewDelegate.isScrolledToBottom(mRefreshableView)) {
+                        mIsHandlingTouchEvent = true;
+                        mInitialMotionY = y;
+                        mDirection = PullDirection.UP;
+                        mLastMotionY = mRefreshableView.getMeasuredHeight();
                     } else {
                         // We're still not handling the event, so fail-fast
                         return false;
@@ -286,21 +298,31 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
                 }
 
                 // We're not currently being dragged so check to see if the user has scrolled enough
-                if (!mIsBeingDragged && (y - mInitialMotionY) > mTouchSlop) {
+                if (!mIsBeingDragged && mDirection == PullDirection.DOWN && (y - mInitialMotionY) > mTouchSlop) {
+                    mIsBeingDragged = true;
+                    onPullStarted(y);
+                }
+                else if (!mIsBeingDragged && mDirection == PullDirection.UP && (mInitialMotionY - y) > mTouchSlop) {
                     mIsBeingDragged = true;
                     onPullStarted(y);
                 }
 
                 if (mIsBeingDragged) {
-                    final float yDx = y - mLastMotionY;
-
+                    float yDxRaw;
+                    if (mDirection == PullDirection.DOWN)
+                        yDxRaw = y - mLastMotionY;
+                    else
+                        yDxRaw = mLastMotionY - y;
+                    final float yDx = yDxRaw;
+                    if (DEBUG) Log.d(LOG_TAG, "onTouch dir=" + mDirection + " lastY=" + mLastMotionY + " y=" + y + " yDx=" + yDx);
                     /**
-                     * Check to see if the user is scrolling the right direction (down).
-                     * We allow a small scroll up which is the check against negative touch slop.
+                     * Check to see if the user is scrolling the right direction.
+                     * We allow a small scroll in the opposite direction which is the check against negative touch slop.
                      */
                     if (yDx >= -mTouchSlop) {
+                        if (DEBUG) Log.d(LOG_TAG, "onTouch dir=" + mDirection + " lastY=" + mLastMotionY + " y=" + y + " yDx=" + yDx + " slop=" + mTouchSlop);
                         onPull(y);
-                        // Only record the y motion if the user has scrolled down.
+                        // Only record the y motion if the user has scrolled in the right direction.
                         if (yDx > 0f) {
                             mLastMotionY = y;
                         }
@@ -332,6 +354,9 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     }
 
     private void resetTouch() {
+        if (DEBUG) {
+            Log.d(LOG_TAG, "resetTouch");
+        }
         if (mIsBeingDragged) {
             // We were being dragged, but not any more.
             mIsBeingDragged = false;
@@ -359,7 +384,12 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
         }
 
         final float pxScrollForRefresh = mRefreshableView.getHeight() * mRefreshScrollDistance;
-        final float scrollLength = y - mPullBeginY;
+        float scrollLengthRaw;
+        if (mDirection == PullDirection.DOWN)
+            scrollLengthRaw = y - mPullBeginY;
+        else
+            scrollLengthRaw = mPullBeginY - y;
+        final float scrollLength = scrollLengthRaw;
 
         if (scrollLength < pxScrollForRefresh) {
             mHeaderTransformer.onPulled(scrollLength / pxScrollForRefresh);
@@ -503,6 +533,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
          * @return true if <code>view</code> is scrolled to the top.
          */
         public abstract boolean isScrolledToTop(View view);
+        public abstract boolean isScrolledToBottom(View view);
     }
 
     /**
