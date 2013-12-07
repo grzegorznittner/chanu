@@ -630,7 +630,7 @@ public class ThreadActivity
     @Override
     public Handler getChanHandler() {
         ThreadFragment fragment = getCurrentFragment();
-        return handler;
+        return fragment == null ? handler : fragment.getHandler();
     }
 
     @Override

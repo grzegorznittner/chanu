@@ -528,9 +528,6 @@
     <string name="pref_use_https">Security</string>
     <string name="pref_use_https_summ_on">Use HTTPS for all connections</string>
     <string name="pref_use_https_summ_off">Don\'t use HTTPS for all connections</string>
-    <string name="pref_background_data">Background Data</string>
-    <string name="pref_background_data_summ_on">Background data enabled when on mobile data plan</string>
-    <string name="pref_background_data_summ_off">Background data disabled when on mobile data plan</string>
     <string name="pref_autoupdate_threads">Auto-Update Threads</string>
     <string name="pref_autoupdate_threads_summ_on">Refresh threads every 30 seconds</string>
     <string name="pref_autoupdate_threads_summ_off">Don\'t automatically refresh threads</string>
@@ -1768,13 +1765,16 @@
     <string name="font_size_huge">Huge</string>
 
     <!-- new strings -->
+    <string name="refresh_favorites">Refreshing all favorite boards in the background...</string>
+    <string name="refresh_watchlist">Refreshing all watchlist threads in the background...</string>
     <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
     <string name="pref_use_abbrev_boards">Abbreviated Boards</string>
     <string name="pref_background_data">Background Data</string>
     <string name="pref_background_data_summ_on">Background data enabled when on mobile data plan</string>
     <string name="pref_background_data_summ_off">Background data disabled when on mobile data plan</string>
-    <string name="refresh_favorites">Refreshing all favorite boards in the background...</string>
-    <string name="refresh_watchlist">Refreshing all watchlist threads in the background...</string>
+    <string name="pref_download_nomedia">Hide Downloads</string>
+    <string name="pref_download_nomedia_summ_on">Downloaded images are hidden from the gallery</string>
+    <string name="pref_download_nomedia_summ_off">Downloaded images are visible in the gallery</string>
     <string name="pref_download_location">Download Location</string>
     <string name="pref_download_location_summ">Click to change</string>
     <string name="pref_download_location_set">Set download directory to %1$s</string>

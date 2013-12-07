@@ -62,7 +62,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     private static final String NOTIFICATION_ID = "ThreadImageDownloadService.notificationId";
     
     private static final String CHANU_FOLDER = "chanu" + File.separator;
-    
+    private static final String NOMEDIA_FILENAME = ".nomedia";
+
 	private static final int MAX_RESTARTS = 3;
 	
 	private static ArrayList<Integer> stoppedDownloads = new ArrayList<Integer>();
@@ -195,7 +196,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		
 		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), board, threadNo);
 		targetFolder = determineDownloadFolder(thread);
-		
+        createNomediaIfConfigured();
+
 		try {
 			if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
 	        		+ " handling all image download service for thread (" + notificationId + ") " + board + "/" + threadNo
@@ -237,6 +239,29 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			stoppedDownloads.remove(Integer.valueOf(notificationId));
 		}
 	}
+
+    private void createNomediaIfConfigured() {
+        boolean downloadNomedia = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_DOWNLOAD_NOMEDIA, false);
+        if (!downloadNomedia)
+            return;
+        if (targetFolder == null || targetFolder.isEmpty())
+            return;
+        File d = new File(targetFolder);
+        if (!d.exists() && !d.isDirectory())
+            return;
+        File f = new File(d, NOMEDIA_FILENAME);
+        try {
+            if (f.createNewFile()) {
+                if (DEBUG) Log.i(TAG, "created new nomedia file path=" + f.getAbsolutePath());
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "nomedia file alread exists path=" + f.getAbsolutePath());
+            }
+        }
+        catch (IOException e) {
+            Log.e(TAG, "exception creating nomedia file in path=" + f.getAbsolutePath(), e);
+        }
+    }
 
 	public static synchronized boolean checkIfStopped(int notificationId) {
 		if (stoppedDownloads.contains(notificationId)) {

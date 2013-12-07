@@ -36,6 +36,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_USE_GOOGLE_ANALYTICS = "pref_use_google_analytics";
     public static final String PREF_USE_HTTPS = "pref_use_https";
     public static final String PREF_BACKGROUND_DATA_ON_MOBILE = "pref_background_data_on_mobile";
+    public static final String PREF_DOWNLOAD_NOMEDIA = "pref_download_nomedia";
     public static final String PREF_USE_CATALOG = "pref_use_catalog";
     public static final String PREF_USE_VOLUME_SCROLL = "pref_use_volume_scroll";
     public static final String PREF_USE_ABBREV_BOARDS = "pref_use_abbrev_boards";

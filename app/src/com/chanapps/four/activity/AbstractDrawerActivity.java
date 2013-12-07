@@ -95,9 +95,9 @@ abstract public class
         loadFavorites(drawer);
         loadWatchlist(drawer);
         mDrawerArray = drawer.toArray(new String[drawer.size()]);
-        Handler handler = getChanHandler();
-        if (handler != null)
-            handler.post(setAdaptersCallback);
+        Handler callbackHandler = getChanHandler();
+        if (callbackHandler != null)
+            callbackHandler.post(setAdaptersCallback);
     }
 
     protected void loadFavorites(List<String> drawer) {

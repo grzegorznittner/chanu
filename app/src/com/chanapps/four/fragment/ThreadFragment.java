@@ -612,7 +612,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mPullToRefreshAttacher.setEnabled(isEnabled);
+                        if (mPullToRefreshAttacher != null)
+                            mPullToRefreshAttacher.setEnabled(isEnabled);
                     }
                 });
         }
