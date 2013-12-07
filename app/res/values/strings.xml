@@ -1769,7 +1769,7 @@
 
     <!-- new strings -->
     <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
-    <string name="pref_use_abbreviated_all_boards">Abbreviated All Boards</string>
+    <string name="pref_use_abbrev_boards">Abbreviated Boards</string>
     <string name="pref_background_data">Background Data</string>
     <string name="pref_background_data_summ_on">Background data enabled when on mobile data plan</string>
     <string name="pref_background_data_summ_off">Background data disabled when on mobile data plan</string>

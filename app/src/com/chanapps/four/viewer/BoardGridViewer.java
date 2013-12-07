@@ -34,8 +34,8 @@ import org.xml.sax.XMLReader;
  */
 public class BoardGridViewer {
 
-    public static final int SMALL_GRID = 0x01;
-    public static final int ABBREV_ALL_BOARDS = 0x02;
+    public static final int CATALOG_GRID = 0x01;
+    public static final int ABBREV_BOARDS = 0x02;
 
     private static String TAG = BoardGridViewer.class.getSimpleName();
     private static boolean DEBUG = false;
@@ -99,7 +99,7 @@ public class BoardGridViewer {
 
         View overflow = viewHolder.grid_item_overflow_icon;
         if (overflow != null) {
-            if ((options & ABBREV_ALL_BOARDS) > 0) {
+            if ((options & ABBREV_BOARDS) > 0) {
                 overflow.setVisibility(View.GONE);
             }
             else if (overflowListener == null) {
@@ -196,7 +196,7 @@ public class BoardGridViewer {
         ImageView iv = viewHolder.grid_item_thread_thumb;
         if (iv == null)
             return false;
-        boolean isWideHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & SMALL_GRID) == 0;
+        boolean isWideHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & CATALOG_GRID) == 0;
         if (isWideHeader) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
@@ -204,9 +204,7 @@ public class BoardGridViewer {
         }
 
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-        boolean hasAbbreviatedAllBoards = ChanBoard.ALL_BOARDS_BOARD_CODE.equals(groupBoardCode)
-                && (options & ABBREV_ALL_BOARDS) > 0;
-        if (hasAbbreviatedAllBoards) {
+        if ((options & ABBREV_BOARDS) > 0) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
             displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
@@ -231,7 +229,7 @@ public class BoardGridViewer {
                                            Typeface titleTypeface,
                                            int flags,
                                            int options) {
-        if ((options & ABBREV_ALL_BOARDS) > 0) {
+        if ((options & ABBREV_BOARDS) > 0) {
             if (viewHolder.grid_item_board_code != null) {
                 viewHolder.grid_item_board_code.setText("");
                 viewHolder.grid_item_board_code.setVisibility(View.GONE);
@@ -243,7 +241,7 @@ public class BoardGridViewer {
         else if (groupBoardCode != null
                 && !ChanBoard.isVirtualBoard(groupBoardCode)
                 && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
-                && (options & SMALL_GRID) > 0
+                && (options & CATALOG_GRID) > 0
                 && viewHolder.grid_item_thread_subject_header_abbr != null) { // grid header
             if (viewHolder.grid_item_board_code != null) {
                 viewHolder.grid_item_board_code.setText("");
@@ -292,7 +290,7 @@ public class BoardGridViewer {
         if (groupBoardCode != null
                 && !ChanBoard.isVirtualBoard(groupBoardCode)
                 && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
-                && (options & SMALL_GRID) > 0) { // grid header
+                && (options & CATALOG_GRID) > 0) { // grid header
             //url = "drawable://" + R.drawable.transparent;
             int drawableId = ThemeSelector.instance(iv.getContext()).isDark()
                     ? R.drawable.bg_222
@@ -324,7 +322,7 @@ public class BoardGridViewer {
 
     protected static void sizeImage(ImageView iv, View item, int columnWidth, int columnHeight, int options) {
         iv.setVisibility(View.VISIBLE);
-        if ((options & SMALL_GRID) > 0) {
+        if ((options & CATALOG_GRID) > 0) {
             /*
             ViewParent parent = iv.getParent();
             if (parent != null && parent instanceof View) {
@@ -471,7 +469,7 @@ public class BoardGridViewer {
 
         if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0
                 || (ChanBoard.isVirtualBoard(groupBoardCode) && !ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
-                || ((options & ABBREV_ALL_BOARDS) > 0)
+                || ((options & ABBREV_BOARDS) > 0)
             ) {
             if (numReplies != null)
                 numReplies.setVisibility(View.GONE);

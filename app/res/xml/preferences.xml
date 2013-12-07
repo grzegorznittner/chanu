@@ -38,8 +38,8 @@
                 android:defaultValue="false" />
 
         <CheckBoxPreference
-                android:key="pref_use_abbreviated_all_boards"
-                android:title="@string/pref_use_abbreviated_all_boards"
+                android:key="pref_use_abbrev_boards"
+                android:title="@string/pref_use_abbrev_boards"
                 android:defaultValue="false" />
 
         <ListPreference

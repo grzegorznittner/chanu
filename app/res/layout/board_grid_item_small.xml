@@ -103,6 +103,8 @@
                     android:textStyle="bold"
                     android:textColor="?themedCardSubjectTextColor"
                     android:textSize="@dimen/BoardGridSubjectHeaderAbbr"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="8dp"
                     />
 
         </FrameLayout>

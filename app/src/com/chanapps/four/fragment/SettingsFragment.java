@@ -18,6 +18,7 @@ import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.BillingComponent;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 
@@ -139,6 +140,31 @@ public class SettingsFragment
         name.setOnPreferenceClickListener(namesListener);
         email.setOnPreferenceClickListener(namesListener);
         password.setOnPreferenceClickListener(namesListener);
+
+        Preference.OnPreferenceChangeListener abbrevBoardsListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if (DEBUG) Log.i(TAG, "onPrefrenceChange pref=" + preference.getKey() + " newVal=" + newValue);
+                Boolean b = newValue instanceof Boolean ? (Boolean) newValue : null;
+                BoardActivity.updateAbbrev(getActivity(), b != null ? b : false);
+                return true;
+            }
+        };
+        Preference abbrevBoards = findPreference(SettingsActivity.PREF_USE_ABBREV_BOARDS);
+        abbrevBoards.setOnPreferenceChangeListener(abbrevBoardsListener);
+
+        Preference.OnPreferenceChangeListener catalogListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if (DEBUG) Log.i(TAG, "onPrefrenceChange pref=" + preference.getKey() + " newVal=" + newValue);
+                Boolean b = newValue instanceof Boolean ? (Boolean) newValue : null;
+                BoardActivity.updateCatalog(getActivity(), b != null ? b : false);
+                return true;
+            }
+        };
+        Preference catalog = findPreference(SettingsActivity.PREF_USE_CATALOG);
+        catalog.setOnPreferenceChangeListener(catalogListener);
+
         /*
         Preference.OnPreferenceChangeListener nsfwListener = new Preference.OnPreferenceChangeListener() {
             @Override

@@ -48,7 +48,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = false;
-    public static final String UPDATE_BOARD_ACTION = "updateBoardAction";
+
+    protected static final String UPDATE_BOARD_ACTION = "updateBoardAction";
+    protected static final String UPDATE_ABBREV_ACTION = "updateAbbrevAction";
+    protected static final String UPDATE_CATALOG_ACTION = "updateCatalogAction";
+    protected static final String OPTION_ENABLE = "optionEnable";
 
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
@@ -239,37 +243,47 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         initBoardSortTypeOptions();
         createAbsListView();
         setupBoardTitle();
-        IntentFilter intentFilter = new IntentFilter(UPDATE_BOARD_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(onNotice, intentFilter);
+        setupReceivers();
+    }
+
+    protected void setupReceivers() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateBoardReceived, new IntentFilter(UPDATE_BOARD_ACTION));
+        LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateAbbrevReceived, new IntentFilter(UPDATE_ABBREV_ACTION));
+        LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateCatalogReceived, new IntentFilter(UPDATE_CATALOG_ACTION));
     }
 
     protected void initGridViewOptions() {
-        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
-            gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
-            gridViewOptions &= ~BoardGridViewer.ABBREV_ALL_BOARDS;
-        }
-        else if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode)) {
-            gridViewOptions |= BoardGridViewer.SMALL_GRID;
-            boolean useAbbrevAllBoards = PreferenceManager.getDefaultSharedPreferences(this)
-                    .getBoolean(SettingsActivity.PREF_USE_ABBREVIATED_ALL_BOARDS, false);
-            if (useAbbrevAllBoards)
-                gridViewOptions |= BoardGridViewer.ABBREV_ALL_BOARDS;
-            else
-                gridViewOptions &= ~BoardGridViewer.ABBREV_ALL_BOARDS;
-        }
-        else if (ChanBoard.isVirtualBoard(boardCode)) {
-            gridViewOptions |= BoardGridViewer.SMALL_GRID;
-            gridViewOptions &= ~BoardGridViewer.ABBREV_ALL_BOARDS;
-        }
-        else { // check for user pref
-            boolean useCatalog = PreferenceManager.getDefaultSharedPreferences(this)
-                    .getBoolean(SettingsActivity.PREF_USE_CATALOG, false);
-            if (useCatalog)
-                gridViewOptions |= BoardGridViewer.SMALL_GRID;
-            else
-                gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
-            gridViewOptions &= ~BoardGridViewer.ABBREV_ALL_BOARDS;
-        }
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+            setSmallGridEnabled(false);
+        else if (ChanBoard.isVirtualBoard(boardCode))
+            setSmallGridEnabled(true);
+        else
+            setSmallGridEnabled(getBoolPref(SettingsActivity.PREF_USE_CATALOG));
+
+        if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode)
+                || ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
+            setAbbrevBoardsEnabled(getBoolPref(SettingsActivity.PREF_USE_ABBREV_BOARDS));
+        else
+            setAbbrevBoardsEnabled(false);
+    }
+
+    protected void setSmallGridEnabled(boolean enabled) {
+        if (enabled)
+            gridViewOptions |= BoardGridViewer.CATALOG_GRID;
+        else
+            gridViewOptions &= ~BoardGridViewer.CATALOG_GRID;
+    }
+
+    protected void setAbbrevBoardsEnabled(boolean enabled) {
+        if (enabled)
+            gridViewOptions |= BoardGridViewer.ABBREV_BOARDS;
+        else
+            gridViewOptions &= ~BoardGridViewer.ABBREV_BOARDS;
+    }
+
+    protected boolean getBoolPref(String preference) {
+        return PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(preference, false);
     }
 
     protected void initBoardSortTypeOptions() {
@@ -391,9 +405,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     /*
     protected void forceGridViewOptions() {
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
-            gridViewOptions &= ~BoardGridViewer.SMALL_GRID; // force watchlist to full size
+            gridViewOptions &= ~BoardGridViewer.CATALOG_GRID; // force watchlist to full size
         else  if (ChanBoard.isVirtualBoard(boardCode))
-            gridViewOptions |= BoardGridViewer.SMALL_GRID; // force meta boards to small
+            gridViewOptions |= BoardGridViewer.CATALOG_GRID; // force meta boards to small
     }
     */
     protected void createAbsListView() {
@@ -403,7 +417,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         initGridViewOptions();
         //forceGridViewOptions();
         int layoutId;
-        if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0)
+        if ((gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0)
             layoutId = R.layout.board_grid_layout_small;
         else if (query != null && !query.isEmpty())
             layoutId = R.layout.board_grid_layout_search;
@@ -413,7 +427,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             layoutId = R.layout.board_grid_layout_no_title;
         layout = getLayoutInflater().inflate(layoutId, null);
         contentFrame.addView(layout);
-        //int numColumns = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
+        //int numColumns = (gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0
         //        ? R.integer.BoardGridViewSmall_numColumns
         //        : R.integer.BoardGridViewSmall_numColumns;
 //                : R.integer.BoardGridView_numColumns;
@@ -421,7 +435,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 getResources().getInteger(R.integer.BoardGridViewSmall_numColumns),
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
-        adapter = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
+        adapter = (gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0
                 ? new BoardGridSmallCursorAdapter(this, viewBinder)
                 : new BoardGridCursorAdapter(this, viewBinder);
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
@@ -452,7 +466,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             mPullToRefreshAttacher = new PullToRefreshAttacher(this, options);
         }
         mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
-        //if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0) {
+        //if ((gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0) {
         //    mPullToRefreshAttacher = null; // doesn't work well with grids
         //}
         //else
@@ -578,6 +592,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         if (handler == null)
             handler = new Handler();
+        /*
         int oldGridViewOptions = gridViewOptions;
         initGridViewOptions();
         if (gridViewOptions != oldGridViewOptions) {
@@ -586,6 +601,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setupBoardTitle();
             adapter.swapCursor(c);
         }
+        */
         startLoaderAsync();
         activityChangeAsync();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
@@ -652,7 +668,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             getLoaderManager().destroyLoader(0);
 		handler = null;
         IntentFilter intentFilter = new IntentFilter(UPDATE_BOARD_ACTION);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(onNotice);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateBoardReceived);
 	}
 
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
@@ -815,7 +831,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return true;
             case R.id.view_as_grid_menu:
                 Cursor c = adapter.getCursor();
-                gridViewOptions |= BoardGridViewer.SMALL_GRID;
+                setSmallGridEnabled(true);
                 setUseCatalogPref(true);
                 createAbsListView();
                 setupBoardTitle();
@@ -823,7 +839,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return true;
             case R.id.view_as_list_menu:
                 c = adapter.getCursor();
-                gridViewOptions &= ~BoardGridViewer.SMALL_GRID;
+                setSmallGridEnabled(false);
                 setUseCatalogPref(false);
                 createAbsListView();
                 setupBoardTitle();
@@ -938,8 +954,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
-            menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardGridViewer.SMALL_GRID) == 0);
-            menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0);
+            menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardGridViewer.CATALOG_GRID) == 0);
+            menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0);
             //setFavoritesMenuAsync();
         }
         menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
@@ -1478,17 +1494,16 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             return super.dispatchKeyEvent(event);
     }
 
-    protected BroadcastReceiver onNotice = new BroadcastReceiver() {
+    protected BroadcastReceiver onUpdateBoardReceived = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent == null || !UPDATE_BOARD_ACTION.equals(intent.getAction()) || !intent.hasExtra(ChanBoard.BOARD_CODE))
-                return;
-            String receivedBoardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+            String receivedBoardCode = intent != null && intent.getAction().equals(UPDATE_BOARD_ACTION) && intent.hasExtra(ChanBoard.BOARD_CODE)
+                    ? intent.getStringExtra(ChanBoard.BOARD_CODE)
+                    : null;
+            if (DEBUG) Log.i(TAG, "onUpdateBoardReceived /" + boardCode + "/ received=/" + receivedBoardCode + "/");
             if (receivedBoardCode == null)
                 return;
-            if (receivedBoardCode.equals(ChanBoard.FAVORITES_BOARD_CODE)
-                    || receivedBoardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE))
-                setAdapters();
+            setAdapters();
             if (!receivedBoardCode.equals(boardCode))
                 return;
             if (handler != null)
@@ -1498,10 +1513,67 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
+    protected BroadcastReceiver onUpdateAbbrevReceived = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean receivedAbbrevEnable = intent != null && intent.getAction().equals(UPDATE_ABBREV_ACTION) && intent.hasExtra(OPTION_ENABLE)
+                    ? intent.getBooleanExtra(OPTION_ENABLE, false)
+                    : false;
+            if (DEBUG) Log.i(TAG, "onUpdateAbbrevReceived /" + boardCode + "/ received=/" + receivedAbbrevEnable + "/");
+            if (receivedAbbrevEnable)
+                gridViewOptions |= BoardGridViewer.ABBREV_BOARDS;
+            else
+                gridViewOptions &= ~BoardGridViewer.ABBREV_BOARDS;
+            final Handler gridHandler = handler != null ? handler : new Handler();
+            if (gridHandler != null)
+                gridHandler.post(refreshAbsListView);
+        }
+    };
+
+    protected BroadcastReceiver onUpdateCatalogReceived = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean receivedcatalogEnable = intent != null && intent.getAction().equals(UPDATE_CATALOG_ACTION) && intent.hasExtra(OPTION_ENABLE)
+                    ? intent.getBooleanExtra(OPTION_ENABLE, false)
+                    : false;
+            if (DEBUG) Log.i(TAG, "onUpdatecatalogReceived /" + boardCode + "/ received=/" + receivedcatalogEnable + "/");
+            if (receivedcatalogEnable)
+                gridViewOptions |= BoardGridViewer.CATALOG_GRID;
+            else
+                gridViewOptions &= ~BoardGridViewer.CATALOG_GRID;
+            final Handler gridHandler = handler != null ? handler : new Handler();
+            if (gridHandler != null)
+                gridHandler.post(refreshAbsListView);
+        }
+    };
+
+    public static void updateAbbrev(Context context, boolean enabled) {
+        Intent intent = new Intent(BoardActivity.UPDATE_ABBREV_ACTION);
+        intent.putExtra(OPTION_ENABLE, enabled);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public static void updateCatalog(Context context, boolean enabled) {
+        Intent intent = new Intent(BoardActivity.UPDATE_CATALOG_ACTION);
+        intent.putExtra(OPTION_ENABLE, enabled);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
     public static void updateBoard(Context context, String boardCode) {
         Intent intent = new Intent(BoardActivity.UPDATE_BOARD_ACTION);
         intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
+
+    protected Runnable refreshAbsListView = new Runnable() {
+        @Override
+        public void run() {
+            Cursor c = adapter.getCursor();
+            createAbsListView();
+            setupBoardTitle();
+            adapter.swapCursor(c);
+            startLoaderAsync();
+        }
+    };
 
 }

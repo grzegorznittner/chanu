@@ -921,7 +921,7 @@ public class ThreadActivity
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            int options = (wideTablet || narrowTablet) ? 0 : BoardGridViewer.SMALL_GRID;
+            int options = (wideTablet || narrowTablet) ? 0 : BoardGridViewer.CATALOG_GRID;
             return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, options, null);
         }
     };
