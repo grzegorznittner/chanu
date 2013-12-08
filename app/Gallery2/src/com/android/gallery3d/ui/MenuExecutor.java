@@ -32,10 +32,8 @@ import com.android.gallery3d.util.ThreadPool.JobContext;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
@@ -191,7 +189,7 @@ public class MenuExecutor {
         } else if (action == R.id.action_download) {
         	ArrayList<Path> ids = mSelectionManager.getSelected(true);
         	if (ids != null && ids.size() > 0) {
-        		ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), ids.get(0), ids);
+        		ThreadImageDownloadService.startDownloadViaGalleryView(mActivity.getAndroidContext(), ids.get(0), ids);
         	}
             return true;
         } else if (action == R.id.action_crop) {

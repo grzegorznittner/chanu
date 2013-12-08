@@ -554,7 +554,7 @@ public class PhotoPage extends ActivityState
         } else if (action == R.id.action_download) {
             mSelectionManager.toggle(path);
             ArrayList<Path> ids = mSelectionManager.getSelected(true);
-            ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), mMediaSet.getPath(), ids);
+            ThreadImageDownloadService.startDownloadViaGalleryView(mActivity.getAndroidContext(), mMediaSet.getPath(), ids);
             mSelectionManager.toggle(path);
             Toast.makeText(mActivity.getAndroidContext(),
                     R.string.download_all_images_notice,

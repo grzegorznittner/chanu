@@ -62,8 +62,6 @@ import com.android.gallery3d.util.GalleryUtils;
 import java.util.ArrayList;
 import java.util.Random;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
 public class AlbumPage extends ActivityState implements GalleryActionBar.ClusterRunner,
         SelectionManager.SelectionListener, MediaSet.SyncListener {
     @SuppressWarnings("unused")
@@ -504,7 +502,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             return true;
         } else if (item.getItemId() == R.id.action_download) {
         	ArrayList<Path> ids = mSelectionManager.getSelected(true);
-        	ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), mMediaSetPath, ids);
+        	ThreadImageDownloadService.startDownloadViaGalleryView(mActivity.getAndroidContext(), mMediaSetPath, ids);
             Toast.makeText(mActivity.getAndroidContext(),
                     R.string.download_all_images_notice,
                     Toast.LENGTH_SHORT)

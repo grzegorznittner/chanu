@@ -114,6 +114,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         return true;
     }
 
+    /*
     private static void optionallyDownloadAllImages(Context context, String boardCode, long threadNo) {
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
         if (thread == null)
@@ -129,6 +130,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         if (DEBUG) Log.i(TAG, "scheduleThreadFetch /" + boardCode + "/" + threadNo + " good Wifi, downloading images");
         ThreadImageDownloadService.startDownloadToBoardFolder(context, boardCode, threadNo);
     }
+    */
 
     public static void clearServiceQueue(Context context) {
         if (DEBUG) Log.i(TAG, "Clearing chan fetch service queue");

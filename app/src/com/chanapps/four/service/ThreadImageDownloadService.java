@@ -61,52 +61,53 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     private static final String FILE_NAMES = "ThreadImageDownloadService.fileNames";
     private static final String NOTIFICATION_ID = "ThreadImageDownloadService.notificationId";
     
-    private static final String CHANU_FOLDER = "chanu" + File.separator;
     private static final String NOMEDIA_FILENAME = ".nomedia";
 
 	private static final int MAX_RESTARTS = 3;
 	
 	private static ArrayList<Integer> stoppedDownloads = new ArrayList<Integer>();
 
+    /*
     public static void startDownloadToBoardFolder(Context context, String board, long threadNo) {
         //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.PRELOAD_ALL_IMAGES);
         startDownload(context, board, threadNo, DownloadImageTargetType.TO_BOARD, 0, 0, new long[] {}, null);
     }
-    
-    public static void startDownloadToGalleryFolder(Context context, String board, long threadNo) {
+
+    public static void startDownloadViaThreadMenu(Context context, String board, long threadNo) {
         //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY);
         startDownload(context, board, threadNo, DownloadImageTargetType.TO_GALLERY, 0, 0, new long[] {}, null);
     }
+    */
 
-    public static void startDownloadToGalleryFolder(Context context, String board, long threadNo, long[] postNos) {
+    public static void startDownloadViaThreadMenu(Context context, String board, long threadNo, long[] postNos) {
         startDownload(context, board, threadNo, DownloadImageTargetType.TO_GALLERY, 0, 0, postNos, null);
     }
     
-    public static void startCopyCacheToGalleryFolder(Context context, String board, String[] fileNames) {
-        startDownload(context, board, 0, DownloadImageTargetType.TO_GALLERY, 0, 0, null, fileNames);
-    }
-    
-    public static void startDownloadImagesFromGallery(Context context, Path mMediaSetPath, ArrayList<Path> ids) {
+    public static void startDownloadViaGalleryView(Context context, Path mMediaSetPath, ArrayList<Path> ids) {
 		String[] mMediaSet = mMediaSetPath.split();
 		if (mMediaSet[0].equals(ChanOffLineSource.SOURCE_PREFIX)) {
+            Log.e(TAG, "Download from offline source not supported");
+            /*
+            String board = mMediaSet[1];
 			if (ids == null || ids.size() == 0) {
-				if (DEBUG) Log.w(TAG, "Download images from gallery " + mMediaSetPath + ", all images");
-				ThreadImageDownloadService.startCopyCacheToGalleryFolder(context, mMediaSet[1], null);
-			} else {
+				if (DEBUG) Log.w(TAG, "Download images from cache " + mMediaSetPath + ", all images");
+                startDownload(context, board, 0, DownloadImageTargetType.TO_GALLERY, 0, 0, null, null);
+            } else {
 				String[] fileNames = new String[ids.size()];
 				int i = 0;
 				for (Path path : ids) {
 					fileNames[i++] = path.split()[2];
 					if (DEBUG) Log.w(TAG, "   filename: " + fileNames[i-1] + ", path: " + ids);
 				}
-				if (DEBUG) Log.w(TAG, "Download images from gallery " + mMediaSetPath + ", num images: " + fileNames.length);
-				ThreadImageDownloadService.startCopyCacheToGalleryFolder(context, mMediaSet[1], fileNames);
+				if (DEBUG) Log.w(TAG, "Download images from cache " + mMediaSetPath + ", num images: " + fileNames.length);
+                startDownload(context, board, 0, DownloadImageTargetType.TO_GALLERY, 0, 0, null, fileNames);
 			}
+			*/
 		} else {
 			long threadId = NumberUtils.toLong(mMediaSet[2], 0);
 			if (ids == null || ids.size() == 0) {
 				if (DEBUG) Log.w(TAG, "Download images from gallery " + mMediaSetPath + ", all images");
-				ThreadImageDownloadService.startDownloadToGalleryFolder(context, mMediaSet[1], threadId);
+				ThreadImageDownloadService.startDownloadViaThreadMenu(context, mMediaSet[1], threadId, new long[]{});
 			} else {
 				long[] fileNames = new long[ids.size()];
 				int i = 0;
@@ -114,7 +115,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 					fileNames[i++] = NumberUtils.toLong(path.split()[3], 0);
 				}
 				if (DEBUG) Log.w(TAG, "Download images from gallery " + mMediaSetPath + ", num images: " + fileNames.length);
-				ThreadImageDownloadService.startDownloadToGalleryFolder(context, mMediaSet[1], threadId, fileNames);
+				ThreadImageDownloadService.startDownloadViaThreadMenu(context, mMediaSet[1], threadId, fileNames);
 			}
 		}
 	}
@@ -124,6 +125,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
         		+ " all image download service for thread " + board + "/" + threadNo
         		+ (startPostNo == 0 ? "" : " from post " + startPostNo) + " " + downloadImageTargetType);
+
         int notificationId = 0;
         if (threadNo == 0) {
         	// copy cache to gallery
@@ -185,77 +187,101 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		scheduleTime = intent.getLongExtra(SCHEDULE_TIME, 0);
 		postNos = intent.getLongArrayExtra(POST_NOS);
 		fileNames = intent.getStringArrayExtra(FILE_NAMES);
-		
-		if (checkIfStopped(notificationId)) {
-			return;
+
+        if (threadNo <= 0) {
+            Log.e(TAG, "non-thread image download not supported, exiting");
+            return;
+        }
+        else if (checkIfStopped(notificationId)) {
+			if (DEBUG) Log.i(TAG, "download manually stopped by user, exiting");
+            return;
 		}
 
 		if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
-			startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo, restartCounter, postNos, fileNames);
+			if (DEBUG) Log.i(TAG, "no connection, re-scheduling download and exiting");
+            startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo, restartCounter + 1, postNos, fileNames);
+            return;
 		}
 		
 		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), board, threadNo);
-		targetFolder = determineDownloadFolder(thread);
-        createNomediaIfConfigured();
+        if (thread == null) {
+            Log.e(TAG, "thread could not be loaded for download, exiting");
+            return;
+        }
 
-		try {
-			if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
-	        		+ " handling all image download service for thread (" + notificationId + ") " + board + "/" + threadNo
-	        		+ ((postNos != null && postNos.length == 0) ? "" : " for posts " + Arrays.toString(postNos))
-	        		+ ((fileNames != null && fileNames.length == 0) ? "" : " for filenames " + Arrays.toString(fileNames))
-	        		+ (startPostNo == 0 ? "" : " from post " + startPostNo)
-	        		+ (restartCounter > 0 ? ", restarted " + restartCounter + " time(s)." : ""));
+        if (restartCounter > MAX_RESTARTS) {
+            Log.e(TAG, "image download restarts exceeded max, exiting");
+            NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
+            NotificationComponent.notifyDownloadError(this, notificationId, thread);
+            return;
+        }
 
-			if (threadNo != 0) {
-				downloadImages(thread);
-			} else {
-				downloadImagesFromCache(board);
-			}
-			
-			if (checkIfStopped(notificationId)) {
-				return;
+        prepareTargetFolder();
+        prepareNomedia();
+
+        if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start")
+                + " handling all image download service type=" + downloadImageTargetType
+                + " for nid=(" + notificationId + ") thread=/" + board + "/" + threadNo
+                + ((postNos != null && postNos.length == 0) ? "" : " for posts " + Arrays.toString(postNos))
+                + ((fileNames != null && fileNames.length == 0) ? "" : " for filenames " + Arrays.toString(fileNames))
+                + (startPostNo == 0 ? "" : " from post " + startPostNo)
+                + " destination folder=" + targetFolder
+                + (restartCounter > 0 ? ", restarted " + restartCounter + " time(s)." : ""));
+
+        try {
+	        downloadImages(thread);
+
+            if (checkIfStopped(notificationId)) {
+				if (DEBUG) Log.i(TAG, "download stopped by user, exiting");
+                return;
 			}
 
 			if (startPostNo != 0 || threadNo == 0) {
-				if (downloadImageTargetType == DownloadImageTargetType.TO_GALLERY) {
-					new MultipleFileMediaScanner(getApplicationContext(), notificationId, downloadImageTargetType, thread, board, threadNo, fileNames, targetFolder);
-				} else {
+                boolean downloadNomedia = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_DOWNLOAD_NOMEDIA, false);
+				if (downloadImageTargetType == DownloadImageTargetType.TO_GALLERY && !downloadNomedia) {
+                    if (DEBUG) Log.i(TAG, "onHandleIntent starting media scanner to display images in gallery");
+                    new MultipleFileMediaScanner(getApplicationContext(), notificationId, downloadImageTargetType, thread, board, threadNo, fileNames, targetFolder);
+                } else if (downloadImageTargetType == DownloadImageTargetType.TO_GALLERY && !downloadNomedia) {
+                    if (DEBUG) Log.i(TAG, "onHandleIntent nomedia configured, skipping media file scanner");
+                } else {
 					NotificationComponent.notifyDownloadFinished(getApplicationContext(), notificationId, downloadImageTargetType, thread, board, threadNo, targetFolder);
 				}
 			}
 		} catch (Exception e) {
-			if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
-				startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo, restartCounter, postNos, fileNames);
-			} else {
-	            Log.e(TAG, "Error in image download service", e);
-	            if (restartCounter > MAX_RESTARTS) {
-	            	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
-	            	NotificationComponent.notifyDownloadError(getBaseContext(), notificationId, thread);
-	            } else {
-	            	startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo, restartCounter + 1, postNos, fileNames);
-	            }
-			}
+            Log.e(TAG, "Error in image download service", e);
+            startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo, restartCounter + 1, postNos, fileNames);
 		} finally {
 			stoppedDownloads.remove(Integer.valueOf(notificationId));
 		}
 	}
 
-    private void createNomediaIfConfigured() {
+    private void prepareNomedia() {
         boolean downloadNomedia = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_DOWNLOAD_NOMEDIA, false);
-        if (!downloadNomedia)
-            return;
-        if (targetFolder == null || targetFolder.isEmpty())
-            return;
+        if (DEBUG) Log.i(TAG, "createNomediaIfConfigured downloadNomedia=" + downloadNomedia + " targetFolder=" + targetFolder);
         File d = new File(targetFolder);
-        if (!d.exists() && !d.isDirectory())
+        if (DEBUG) Log.i(TAG, "createNomediaIfConfigured downloadFolder=" + d);
+        if (d == null || !d.exists() || !d.isDirectory())
             return;
         File f = new File(d, NOMEDIA_FILENAME);
         try {
-            if (f.createNewFile()) {
-                if (DEBUG) Log.i(TAG, "created new nomedia file path=" + f.getAbsolutePath());
+            if (downloadNomedia) {
+                if (f.createNewFile()) {
+                    if (DEBUG) Log.i(TAG, "created new nomedia file path=" + f.getAbsolutePath());
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "nomedia file already exists path=" + f.getAbsolutePath());
+                }
             }
-            else {
-                if (DEBUG) Log.i(TAG, "nomedia file alread exists path=" + f.getAbsolutePath());
+            else if (!downloadNomedia) {
+                if (!f.exists()) {
+                    if (DEBUG) Log.i(TAG, "nomedia file correctly not present path=" + f.getAbsolutePath());
+                }
+                else if (f.delete()) {
+                    if (DEBUG) Log.i(TAG, "nomedia file deleted path=" + f.getAbsolutePath());
+                }
+                else {
+                    Log.e(TAG, "unabled to remove nomedia file path=" + f.getAbsolutePath());
+                }
             }
         }
         catch (IOException e) {
@@ -282,8 +308,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         int totalNumImages = postNos.length != 0 ? postNoSet.size() : thread.posts.length;
 		lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo,
                 totalNumImages, 0, lastUpdateTime);
+        boolean downloadNomedia = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_DOWNLOAD_NOMEDIA, false);
 
-		boolean startPointFound = startPostNo == 0;
+        boolean startPointFound = startPostNo == 0;
 		int index = 0;
 		int fileLength = 0;
 		for (ChanPost post : thread.posts) {
@@ -293,11 +320,13 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				startPointFound = true;
 				if (post.tim != 0) {
 					fileLength = downloadImage(post);
-					if (fileLength > 0 && downloadImageTargetType == DownloadImageTargetType.TO_GALLERY) {
+					/*
+                    if (!downloadNomedia && fileLength > 0 && downloadImageTargetType == DownloadImageTargetType.TO_GALLERY) {
 						Uri uri = ChanFileStorage.getDownloadImagePath(getBaseContext(), post);
 						File imageFile = new File(URI.create(uri.toString()));
-						storeImageInGallery(imageFile, post.imageName());
+                        storeImageInGallery(imageFile, post.imageName());
 					}
+					*/
 					lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo,
                             totalNumImages, index + 1, lastUpdateTime);
 				}
@@ -311,6 +340,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		}
 	}
 
+    /*
 	private void downloadImagesFromCache(String board) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
 		File boardCacheFolder = ChanFileStorage.getBoardCacheDirectory(getBaseContext(), board);
 		if (fileNames == null || fileNames.length == 0) {
@@ -339,7 +369,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
                     fileNames.length, ++index, lastUpdateTime);
 		}
 	}
+    */
 
+    /*
 	private String determineDownloadFolder(ChanThread thread) {
 		if (downloadImageTargetType == DownloadImageTargetType.TO_GALLERY) {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -364,11 +396,12 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		}
 		return "board_" + board;
 	}
+    */
 
 	private int downloadImage(ChanPost post) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
 		long startTime = Calendar.getInstance().getTimeInMillis();
-		
-		Uri uri = ChanFileStorage.getDownloadImagePath(getBaseContext(), post);
+
+        Uri uri = Uri.parse("file://" + targetFolder + "/" + post.imageName());
 		File targetFile = new File(URI.create(uri.toString()));
 		if (targetFile.exists()) {
 			return (int)targetFile.length();
@@ -398,7 +431,17 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			closeConnection(conn);
 		}
 	}
-	
+
+    private void prepareTargetFolder() {
+        boolean isSingleImage = (postNos != null && postNos.length > 0) || (fileNames != null && fileNames.length > 0);
+        File galleryFolder = ChanFileStorage.getDownloadFolder(this, board, threadNo, isSingleImage);
+        if (!galleryFolder.exists() || !galleryFolder.isDirectory()) {
+            galleryFolder.mkdirs();
+        }
+        targetFolder = galleryFolder.getAbsolutePath();
+    }
+
+    /*
 	private void storeImageInGallery(File imageFile, String galleryImageName) throws IOException {
 		InputStream in = null;
 		OutputStream out = null;
@@ -423,6 +466,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			IOUtils.closeQuietly(out);
 		}
 	}
+    */
 
 	private void addImageToGallery(File image) {
 	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -437,7 +481,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		return new ChanActivityId(null, board, threadNo);
 	}
 	
-	public static class MultipleFileMediaScanner implements MediaScannerConnectionClient {
+	private static class MultipleFileMediaScanner implements MediaScannerConnectionClient {
 		private int notificationId;
 		private Context context;
 		private MediaScannerConnection scannerConn;
@@ -467,12 +511,10 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		
 		@Override
 		public void onMediaScannerConnected() {
-			File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
-					CHANU_FOLDER + targetFolder);
 			if (threadNo > 0) {
 				for (ChanPost post : thread.posts) {
 					if (post.tim != 0) {
-						File image = new File(galleryFolder, post.imageName());
+						File image = new File(targetFolder, post.imageName());
 						if (image.exists()) {
 							scansScheduled++;
 	                        if (DEBUG) Log.w(TAG, "Schedulling scan: " + image.getAbsolutePath() + " counter=" + scansScheduled);
@@ -485,7 +527,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				}
 			} else {
 				for (String filename : filenames) {
-					File image = new File(galleryFolder, filename);
+					File image = new File(targetFolder, filename);
 					if (image.exists()) {
 						scansScheduled++;
                         if (DEBUG) Log.w(TAG, "Schedulling scan: " + image.getAbsolutePath() + " counter=" + scansScheduled);
@@ -503,8 +545,6 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			scansScheduled--;
             if (DEBUG) Log.i(TAG, "Finished scan: " + path + " counter=" + scansScheduled);
 			if (scansScheduled <= 0) {
-				File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
-						CHANU_FOLDER + targetFolder);
 				if (threadNo > 0) {
 					NotificationComponent.notifyDownloadFinished(context, notificationId, downloadImageTargetType, thread, board, threadNo, firstImage);
 				}

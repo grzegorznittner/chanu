@@ -678,29 +678,17 @@ public class ChanFileStorage {
         return Uri.parse("file://" + getHiddenBoardCacheDirectory(context, boardCode) + FILE_SEP + postNo + ext);
     }
 
-    public static Uri getDefaultDownloadFolder(Context context) {
-        //getBoardCacheDirectory(context, post.board);
-        return null;
-    }
+    private static final String CHANU_FOLDER = "Chanu";
 
-    public static File getDownloadFolder(Context context, ChanPost post) {
+    public static File getDownloadFolder(Context context, String boardCode, long threadNo, boolean isSingleImage) {
         String configuredPath = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString(SettingsActivity.PREF_DOWNLOAD_LOCATION, null);
-        File boardDir;
-        if (configuredPath != null) {
-            boardDir = new File(configuredPath);
-        }
-        else { // default
-            String cacheDir = getRootCacheDirectory(context);
-            if (post != null && post.board != null && !post.board.isEmpty())
-                cacheDir += FILE_SEP + post.board;
-            boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
-        }
-        return boardDir;
-    }
-
-    public static Uri getDownloadImagePath(Context context, ChanPost post) {
-        return Uri.parse("file://" + getDownloadFolder(context, post) + FILE_SEP + post.imageName());
+        String defaultPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + FILE_SEP + CHANU_FOLDER;
+        String suffix =  (!isSingleImage && boardCode != null && !boardCode.isEmpty() && threadNo > 0)
+                ? FILE_SEP + boardCode + "_" + threadNo
+                : "";
+        String downloadPath = configuredPath != null ? configuredPath + suffix : defaultPath + suffix;
+        return new File(downloadPath);
     }
 
     public static File createWallpaperFile(Context context) {

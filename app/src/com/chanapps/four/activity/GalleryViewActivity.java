@@ -1,8 +1,6 @@
 package com.chanapps.four.activity;
 
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.ComponentName;
 
 import android.util.Pair;
 import com.android.gallery3d.app.*;
@@ -24,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -39,10 +36,6 @@ import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
-
-import javax.security.auth.login.LoginException;
-
-import java.util.List;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
 
@@ -461,6 +454,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
+        menu.findItem(R.id.download_all_images_to_gallery_menu).setVisible(threadNo > 0);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -480,7 +474,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             	//}
                 return true;
             case R.id.download_all_images_to_gallery_menu:
-                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
+                ThreadImageDownloadService.startDownloadViaThreadMenu(getBaseContext(), boardCode, threadNo, new long[]{});
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 return true;
             //case R.id.view_image_gallery_menu:

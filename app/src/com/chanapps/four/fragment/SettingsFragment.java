@@ -118,13 +118,13 @@ public class SettingsFragment
         downloadLocationButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null);
+                File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
                 DialogChooseDirectory d = new DialogChooseDirectory(getActivity(), chooseDirectoryHandler,
                         downloadFolder.getAbsolutePath());
                 return true;
             }
         });
-        File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null);
+        File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
         downloadLocationButton.setSummary(downloadFolder.getAbsolutePath());
 
         Preference.OnPreferenceClickListener namesListener = new Preference.OnPreferenceClickListener() {
