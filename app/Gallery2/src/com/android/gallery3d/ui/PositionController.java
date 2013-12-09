@@ -386,14 +386,28 @@ class PositionController {
 
         // Horizontal direction: we show the edge effect when the scrolling
         // tries to go left of the first image or go right of the last image.
-        if (!hasPrev && x < mBoundLeft) {
-            int pixels = Math.round((mBoundLeft - x) * mCurrentScale);
-            mEdgeView.onPull(pixels, EdgeView.LEFT);
-            x = mBoundLeft;
-        } else if (!hasNext && x > mBoundRight) {
-            int pixels = Math.round((x - mBoundRight) * mCurrentScale);
-            mEdgeView.onPull(pixels, EdgeView.RIGHT);
-            x = mBoundRight;
+        boolean zoomedOut = getCurrentScale() <= 1.0f || isAtMinimalScale();
+        if (!zoomedOut) {
+            if (x < mBoundLeft) {
+                int pixels = Math.round((mBoundLeft - x) * mCurrentScale);
+                mEdgeView.onPull(pixels, EdgeView.LEFT);
+                x = mBoundLeft;
+            } else if (x > mBoundRight) {
+                int pixels = Math.round((x - mBoundRight) * mCurrentScale);
+                mEdgeView.onPull(pixels, EdgeView.RIGHT);
+                x = mBoundRight;
+            }
+        }
+        else {
+            if (!hasPrev && x < mBoundLeft) {
+                int pixels = Math.round((mBoundLeft - x) * mCurrentScale);
+                mEdgeView.onPull(pixels, EdgeView.LEFT);
+                x = mBoundLeft;
+            } else if (!hasNext && x > mBoundRight) {
+                int pixels = Math.round((x - mBoundRight) * mCurrentScale);
+                mEdgeView.onPull(pixels, EdgeView.RIGHT);
+                x = mBoundRight;
+            }
         }
 
         startAnimation(x, y, mCurrentScale, ANIM_KIND_SCROLL);

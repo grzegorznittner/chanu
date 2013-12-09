@@ -505,10 +505,11 @@ public class PhotoView extends GLView {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
                 float velocityY) {
+            if (mTransitionMode != TRANS_NONE) return true;
+            boolean zoomedOut = mPositionController == null || mPositionController.getCurrentScale() <= 1.0f || mPositionController.isAtMinimalScale();
+            if (!zoomedOut) return true;
             if (swipeImages(velocityX)) {
                 mIgnoreUpEvent = true;
-            } else if (mTransitionMode != TRANS_NONE) {
-                // do nothing
             } else if (mPositionController.fling(velocityX, velocityY)) {
                 mIgnoreUpEvent = true;
             }
