@@ -128,16 +128,7 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
 
     private void setImage(RemoteViews views, ChanPost thread, int position) {
         String url = thread.thumbnailUrl(context);
-        File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-        if (f != null && f.canRead() && f.length() > 0) {
-            views.setImageViewUri(R.id.widget_coverflowcard_image, Uri.parse(f.getAbsolutePath()));
-            if (DEBUG) Log.i(TAG, "getViewAt() url=" + url + " set image to file=" + f.getAbsolutePath());
-        }
-        else {
-            int defaultImageId = ChanBoard.getRandomImageResourceId(widgetConf.boardCode, position);
-            views.setImageViewResource(R.id.widget_coverflowcard_image, defaultImageId);
-            if (DEBUG) Log.i(TAG, "getViewAt() url=" + url + " no file, set image to default resource");
-        }
+        WidgetProviderUtils.safeSetRemoteViewThumbnail(context, widgetConf, views, R.id.widget_coverflowcard_image, url, position);
     }
 
     private void setSubCom(RemoteViews views, ChanPost thread) {
@@ -157,13 +148,8 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
         String url = thread.countryFlagUrl(context);
         if (url == null)
             return;
-        File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-        if (f != null && f.canRead() && f.length() > 0) {
-            views.setImageViewUri(R.id.widget_coverflowcard_flag, Uri.parse(f.getAbsolutePath()));
-            views.setViewVisibility(R.id.widget_coverflowcard_flag, View.VISIBLE);
-            if (DEBUG) Log.i(TAG, "getViewAt() url=" + url + " set country flag to file=" + f.getAbsolutePath());
-        }
-        else {
+        boolean isCached = WidgetProviderUtils.safeSetRemoteViewThumbnail(context, widgetConf, views, R.id.widget_coverflowcard_flag, url, -1);
+        if (!isCached) {
             WidgetProviderUtils.asyncDownloadAndCacheUrl(context, url, urlDownloadCallback);
             if (DEBUG) Log.i(TAG, "getViewAt() url=" + url + " no file, downloading country flag");
         }

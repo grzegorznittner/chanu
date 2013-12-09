@@ -1439,6 +1439,7 @@ public class PostReplyActivity
             }
 
             // auto-add to watchlist
+            /*
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -1459,6 +1460,7 @@ public class PostReplyActivity
                     //ChanPostlist.addPost(context, boardCode, newThreadNo, postNo, password);
                 }
             }).start();
+            */
 
             imageUri = null; // now we've processed so don't use it again
             return 0;

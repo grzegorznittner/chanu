@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.http.AndroidHttpClient;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.RemoteViews;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.ChanBoard;
@@ -445,4 +446,25 @@ public final class WidgetProviderUtils {
         return null;
     }
 
+    static protected boolean safeSetRemoteViewThumbnail(Context context, WidgetConf widgetConf, RemoteViews views, int imageId, String url, int i) {
+        File f = url == null || url.isEmpty() ? null : ChanImageLoader.getInstance(context).getDiscCache().get(url);
+        boolean isCached = false;
+        if (f != null && f.canRead() && f.length() > 0) {
+            try {
+                Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath());
+                views.setImageViewBitmap(imageId, b);
+                isCached = true;
+                if (DEBUG) Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " set image to file=" + f.getAbsolutePath());
+            }
+            catch (Exception e) {
+                Log.e(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " exception setting image to file=" + f.getAbsolutePath(), e);
+            }
+        }
+        if (!isCached && i > 0) {
+            int defaultImageId = ChanBoard.getRandomImageResourceId(widgetConf.boardCode, i);
+            views.setImageViewResource(imageId, defaultImageId);
+            if (DEBUG) Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " no file, set image to default resource");
+        }
+        return isCached;
+    }
 }

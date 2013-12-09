@@ -73,16 +73,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         if (i >= 0 && i< threads.size() && threads.get(i) != null) {
             ChanPost thread = threads.get(i);
             String url = thread.thumbnailUrl(context);
-            File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-            if (f != null && f.canRead() && f.length() > 0) {
-                views.setImageViewUri(R.id.image_coverflow_item, Uri.parse(f.getAbsolutePath()));
-                if (DEBUG) Log.i(TAG, "getViewAt() url=" + url + " set image to file=" + f.getAbsolutePath());
-            }
-            else {
-                int defaultImageId = ChanBoard.getRandomImageResourceId(widgetConf.boardCode, position);
-                views.setImageViewResource(R.id.image_coverflow_item, defaultImageId);
-                if (DEBUG) Log.i(TAG, "getViewAt() url=" + url + " no file, set image to default resource");
-            }
+            WidgetProviderUtils.safeSetRemoteViewThumbnail(context, widgetConf, views, R.id.image_coverflow_item, url, position);
             Bundle extras = new Bundle();
             extras.putLong(ThreadActivity.THREAD_NO, thread.no);
             Intent intent = new Intent();

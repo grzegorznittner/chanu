@@ -15,14 +15,12 @@ import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.BaseChanService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -304,28 +302,17 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         List<ChanPost> threads = WidgetProviderUtils.viableThreads(context, widgetConf.boardCode, imageIds.length);
         if (DEBUG) Log.i(TAG, "updateAppWidgetImages() found " + threads.size() + " viable threads for "
                 + " id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
-
         int j = 0;
         for (int i = 0; i < imageIds.length; i++) {
             int imageId = imageIds[i];
             ChanPost thread = j >= threads.size() ? null : threads.get(j++);
             String url = thread == null ? null : thread.thumbnailUrl(context);
-            File f = thread == null ? null : ChanImageLoader.getInstance(context).getDiscCache().get(url);
-            if (f != null && f.canRead() && f.length() > 0) {
-                views.setImageViewUri(imageId, Uri.parse(f.getAbsolutePath()));
-                if (DEBUG) Log.i(TAG, "updateAppWidgetImages() i=" + i + " url=" + url + " set image to file=" + f.getAbsolutePath());
-            }
-            else {
-                int defaultImageId = ChanBoard.getRandomImageResourceId(widgetConf.boardCode, i);
-                views.setImageViewResource(imageId, defaultImageId);
-                if (DEBUG) Log.i(TAG, "updateAppWidgetImages() i=" + i + " url=" + url + " no file, set image to default resource");
-            }
+            WidgetProviderUtils.safeSetRemoteViewThumbnail(context, widgetConf, views, imageId, url, i);
             if (thread != null) {
                 PendingIntent pendingIntent = makeThreadIntent(thread, i);
                 views.setOnClickPendingIntent(imageId, pendingIntent);
             }
         }
-
         AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, views);
     }
 
