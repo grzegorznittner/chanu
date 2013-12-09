@@ -891,7 +891,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
-            menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
+            //menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
             menu.findItem(R.id.view_as_grid_menu).setVisible(false);
@@ -906,7 +906,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
-            menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
+            //menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
             menu.findItem(R.id.view_as_grid_menu).setVisible(false);
@@ -921,7 +921,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
-            menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
+            //menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
             menu.findItem(R.id.web_menu).setVisible(true);
             menu.findItem(R.id.view_as_grid_menu).setVisible(false);
@@ -936,7 +936,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
-            menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
+            //menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
             menu.findItem(R.id.web_menu).setVisible(false);
             menu.findItem(R.id.view_as_grid_menu).setVisible(false);
@@ -951,7 +951,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.search_menu).setVisible(true);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(true);
             //menu.findItem(R.id.board_rules_menu).setVisible(true);
-            menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
+            //menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             menu.findItem(R.id.web_menu).setVisible(false);
             menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardGridViewer.CATALOG_GRID) == 0);

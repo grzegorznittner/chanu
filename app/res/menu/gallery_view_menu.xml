@@ -6,11 +6,6 @@
           android:icon="@drawable/collections_view_as_grid"
           android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/download_all_images_to_gallery_menu"
-          android:title="@string/download_all_images_to_gallery_menu"
-          android:icon="@drawable/av_download"
-          android:showAsAction="ifRoom"
-            />
     <item android:id="@+id/download_image_menu"
           android:title="@string/download_image_menu"
           android:icon="@drawable/content_save"

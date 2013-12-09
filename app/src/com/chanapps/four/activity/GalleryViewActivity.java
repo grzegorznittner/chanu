@@ -453,8 +453,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
-        menu.findItem(R.id.download_all_images_to_gallery_menu).setVisible(threadNo > 0);
+        if (menu == null)
+            return super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.purchase_menu);
+        if (item != null)
+            item.setVisible(!BillingComponent.getInstance(this).hasProkey());
         return super.onPrepareOptionsMenu(menu);
     }
 
