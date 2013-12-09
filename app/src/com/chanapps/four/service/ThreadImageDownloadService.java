@@ -51,7 +51,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class ThreadImageDownloadService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = ThreadImageDownloadService.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final String TARGET_TYPE = "ThreadImageDownloadService.downloadImageTargetType";
     private static final String START_POST_NO = "ThreadImageDownloadService.startPostNo";
@@ -298,14 +298,19 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	}
 
 	private void downloadImages(ChanThread thread) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
-        // be efficient
+        if (thread == null)
+            return;
         Set<Long> postNoSet = new HashSet<Long>(postNos.length);
         for (int i = 0; i < postNos.length; i++) {
         	if (postNos[i] != 0) {
         		postNoSet.add(postNos[i]);
         	}
         }
-        int totalNumImages = postNos.length != 0 ? postNoSet.size() : thread.posts.length;
+        int totalNumPosts = postNos.length != 0 ? postNoSet.size() : thread.posts.length;
+        int totalNumImages = thread.posts != null && thread.posts.length > 0 && thread.posts[0] != null && thread.posts[0].images > 0
+                ? thread.posts[0].images
+                : totalNumPosts;
+        if (DEBUG) Log.i(TAG, "downloadImages() numPosts:" + totalNumPosts + " numImages:" + totalNumImages);
 		lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo,
                 totalNumImages, 0, lastUpdateTime);
         boolean downloadNomedia = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_DOWNLOAD_NOMEDIA, false);
@@ -328,15 +333,13 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 					}
 					*/
 					lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo,
-                            totalNumImages, index + 1, lastUpdateTime);
+                            totalNumImages, index++, lastUpdateTime);
 				}
 				startPostNo = post.no;  // setting last fetched image no
 			}
 			if (checkIfStopped(notificationId)) {
 				return;
 			}
-
-			index++;
 		}
 	}
 
