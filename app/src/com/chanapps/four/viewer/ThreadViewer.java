@@ -628,7 +628,19 @@ public class ThreadViewer {
         if (DEBUG) Log.i(TAG, "setHeaderImage()");
         if (viewHolder.list_item_image_collapse != null)
             viewHolder.list_item_image_collapse.setVisibility(View.GONE);
-        if (hideNoImage(iv, null, flags))
+        if (!shouldLoadThumbs(iv.getContext())) {
+            if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
+                if (viewHolder.list_item_image_nothumbs_expand != null)
+                    viewHolder.list_item_image_nothumbs_expand.setVisibility(View.VISIBLE);
+                bindThumbnailExpandTarget(viewHolder.list_item_image_expansion_target, thumbOnClickListener);
+            }
+            return hideImage(viewHolder, iv, null);
+        }
+        if (viewHolder.list_item_image_wrapper != null)
+            viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+        if (viewHolder.list_item_image_nothumbs_expand != null)
+            viewHolder.list_item_image_nothumbs_expand.setVisibility(View.GONE);
+        if (hideNoImage(viewHolder, iv, null, flags))
             return true;
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
@@ -636,6 +648,13 @@ public class ThreadViewer {
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         return displayHeaderImage(viewHolder, cursor, flags, thumbOnClickListener);
+    }
+
+    static private boolean shouldLoadThumbs(Context context) {
+        String autoloadType = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
+                        context.getString(R.string.pref_autoload_images_default_value));
+        return !(context.getString(R.string.pref_autoload_images_nothumbs_value).equals(autoloadType));
     }
 
     static private boolean setImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
@@ -647,7 +666,17 @@ public class ThreadViewer {
             return false;
         if (viewHolder.list_item_image_collapse != null)
             viewHolder.list_item_image_collapse.setVisibility(View.GONE);
-        if (hideNoImage(iv, spinner, flags))
+        if (!shouldLoadThumbs(iv.getContext())) {
+            if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
+                if (viewHolder.list_item_image_nothumbs_expand != null)
+                    viewHolder.list_item_image_nothumbs_expand.setVisibility(View.VISIBLE);
+                bindThumbnailExpandTarget(viewHolder.list_item_image_expansion_target, thumbOnClickListener);
+            }
+            return hideImage(viewHolder, iv, spinner);
+        }
+        if (viewHolder.list_item_image_nothumbs_expand != null)
+            viewHolder.list_item_image_nothumbs_expand.setVisibility(View.GONE);
+        if (hideNoImage(viewHolder, iv, spinner, flags))
             return true;
         //if (isListLink(flags))
         //    return displayNonHeaderImage(iv, null, cursor, null);
@@ -720,14 +749,9 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean hideNoImage(ImageView iv, ImageView spinner, int flags) {
+    static private boolean hideNoImage(ThreadViewHolder viewHolder, ImageView iv, ImageView spinner, int flags) {
         if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
-            if (DEBUG) Log.i(TAG, "hideNoImage()");
-            iv.setImageBitmap(null);
-            iv.setVisibility(View.GONE);
-            if (spinner != null)
-                spinner.setVisibility(View.GONE);
-            return true;
+            return hideImage(viewHolder, iv, spinner);
         }
         else {
             iv.setVisibility(View.VISIBLE);
@@ -735,6 +759,15 @@ public class ThreadViewer {
                 spinner.setVisibility(View.VISIBLE);
             return false;
         }
+    }
+
+    static private boolean hideImage(ThreadViewHolder viewHolder, ImageView iv, ImageView spinner) {
+        if (DEBUG) Log.i(TAG, "hideImage()");
+        iv.setImageBitmap(null);
+        iv.setVisibility(View.GONE);
+        if (spinner != null)
+            spinner.setVisibility(View.GONE);
+        return hideExpandedImage(viewHolder);
     }
 
     static private boolean prefetchExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
@@ -755,7 +788,9 @@ public class ThreadViewer {
         String autoloadType = prefs.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
                 context.getString(R.string.pref_autoload_images_default_value));
         long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
-        if (resto == 0)
+        if (context.getString(R.string.pref_autoload_images_nothumbs_value).equals(autoloadType))
+            return false;
+        else if (resto == 0)
             return shouldAutoloadBySizeAndNetwork(cursor);
         else if (context.getString(R.string.pref_autoload_images_never_value).equals(autoloadType))
             return false;
@@ -777,19 +812,7 @@ public class ThreadViewer {
                                                       final View.OnClickListener expandedImageListener) {
         File file = fullSizeImageFile(viewHolder.list_item.getContext(), cursor); // try for full size first
         if (file == null) {
-            View itemExpandedImage = viewHolder.list_item_image_expanded;
-            View itemExpandedImageClickEffect = viewHolder.list_item_image_expanded_click_effect;
-            View itemExpandedProgressBar = viewHolder.list_item_expanded_progress_bar;
-            View itemExpandedImageWrapper = viewHolder.list_item_image_expanded_wrapper;
-            if (itemExpandedImage != null)
-                itemExpandedImage.setVisibility(View.GONE);
-            if (itemExpandedImageClickEffect != null)
-                itemExpandedImageClickEffect.setVisibility(View.GONE);
-            if (itemExpandedProgressBar != null)
-                itemExpandedProgressBar.setVisibility(View.GONE);
-            if (itemExpandedImageWrapper != null)
-                itemExpandedImageWrapper.setVisibility(View.GONE);
-            return false;
+            return !hideExpandedImage(viewHolder);
         }
 
         if (DEBUG) Log.i(TAG, "displayCachedExpandedImage() expanded file=" + file.getAbsolutePath());
@@ -799,21 +822,41 @@ public class ThreadViewer {
         return true;
     }
 
+    static private boolean hideExpandedImage(ThreadViewHolder viewHolder) {
+        View itemExpandedImage = viewHolder.list_item_image_expanded;
+        View itemExpandedImageClickEffect = viewHolder.list_item_image_expanded_click_effect;
+        View itemExpandedProgressBar = viewHolder.list_item_expanded_progress_bar;
+        View itemExpandedImageWrapper = viewHolder.list_item_image_expanded_wrapper;
+        if (itemExpandedImage != null)
+            itemExpandedImage.setVisibility(View.GONE);
+        if (itemExpandedImageClickEffect != null)
+            itemExpandedImageClickEffect.setVisibility(View.GONE);
+        if (itemExpandedProgressBar != null)
+            itemExpandedProgressBar.setVisibility(View.GONE);
+        if (itemExpandedImageWrapper != null)
+            itemExpandedImageWrapper.setVisibility(View.GONE);
+        return true;
+    }
+
+    static private void bindThumbnailExpandTarget(final FrameLayout wrapper, View.OnClickListener thumbOnClickListener) {
+        if (wrapper == null)
+            return;
+        if (thumbOnClickListener != null) {
+            wrapper.setOnClickListener(thumbOnClickListener);
+            wrapper.setForeground(wrapper.getResources().getDrawable(R.drawable.thread_list_selector_bg));
+        }
+        else {
+            wrapper.setOnClickListener(null);
+            wrapper.setForeground(wrapper.getResources().getDrawable(R.drawable.null_selector_bg));
+        }
+    }
+
     static private boolean displayNonHeaderImage(final ImageView iv, final FrameLayout wrapper, final Cursor cursor,
                                                  View.OnClickListener thumbOnClickListener) {
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (url != null && !url.isEmpty()) {
             if (DEBUG) Log.i(TAG, "setImage url=" + url);
-            if (wrapper != null) {
-                if (thumbOnClickListener != null) {
-                    wrapper.setOnClickListener(thumbOnClickListener);
-                    wrapper.setForeground(wrapper.getResources().getDrawable(R.drawable.thread_list_selector_bg));
-                }
-                else {
-                    wrapper.setOnClickListener(null);
-                    wrapper.setForeground(wrapper.getResources().getDrawable(R.drawable.null_selector_bg));
-                }
-            }
+            bindThumbnailExpandTarget(wrapper, thumbOnClickListener);
             iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(url, iv, thumbDisplayImageOptions);
         }

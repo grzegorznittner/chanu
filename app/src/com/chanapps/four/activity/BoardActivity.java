@@ -762,8 +762,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) && handler != null)
-                    handler.post(new ToastRunnable(BoardActivity.this, R.string.refresh_favorites));
+                //if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) && handler != null)
+                 //   handler.post(new ToastRunnable(BoardActivity.this, R.string.refresh_favorites));
                 //else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode) && handler != null)
                 //    handler.post(new ToastRunnable(BoardActivity.this, R.string.refresh_watchlist));
                 NetworkProfileManager.instance().manualRefresh(activity);

@@ -37,6 +37,7 @@
                     clickable: android:foreground="@drawable/thread_list_selector_bg"
                     -->
                     <FrameLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
+                        <ImageView style="@style/ThreadListItemImageNothumbsExpand" android:id="@+id/list_item_image_nothumbs_expand"/>
                         <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
                         <ImageView style="@style/ThreadListItemImageCollapse" android:id="@+id/list_item_image_collapse"/>
                     </FrameLayout>

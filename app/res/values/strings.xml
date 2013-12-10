@@ -602,6 +602,7 @@
     <string name="pref_theme_default">@string/pref_theme_light</string>
     <string name="pref_autoload_images_title">Autoload Thread Images</string>
     <string name="pref_autoload_images_summary">Never, always, or auto based on connection speed</string>
+    <string name="pref_autoload_images_nothumbs">No thumbnails</string>
     <string name="pref_autoload_images_never">Never</string>
     <string name="pref_autoload_images_always">Always</string>
     <string name="pref_autoload_images_auto">Auto</string>
@@ -1769,6 +1770,7 @@
     <string name="refresh_watchlist">Refreshing all watchlist threads in the background...</string>
     <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
     <string name="pref_use_abbrev_boards">Abbreviated Boards</string>
+    <string name="pref_autoload_images_nothumbs">No thumbnails</string>
     <string name="pref_background_data">Background Data</string>
     <string name="pref_background_data_summ_on">Background data enabled when on mobile data plan</string>
     <string name="pref_background_data_summ_off">Background data disabled when on mobile data plan</string>

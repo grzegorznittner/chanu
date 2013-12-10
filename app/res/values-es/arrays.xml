@@ -19,12 +19,14 @@
     </string-array>
 
     <string-array name="pref_autoload_images_entries">
+        <item>@string/pref_autoload_images_nothumbs</item>
         <item>@string/pref_autoload_images_never</item>
         <item>@string/pref_autoload_images_always</item>
         <item>@string/pref_autoload_images_auto</item>
     </string-array>
 
     <string-array name="pref_autoload_images_entry_values">
+        <item>@string/pref_autoload_images_nothumbs_value</item>
         <item>@string/pref_autoload_images_never_value</item>
         <item>@string/pref_autoload_images_always_value</item>
         <item>@string/pref_autoload_images_auto_value</item>

@@ -123,7 +123,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public void onRefreshStarted(View view) {
             if (DEBUG) Log.i(TAG, "pullToRefreshListener.onRefreshStarted()");
-            onRefresh();
+            manualRefresh();
         }
     };
 
