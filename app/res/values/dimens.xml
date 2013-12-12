@@ -423,6 +423,7 @@
     <string name="pref_about_developer_milas">Dimitris Milas</string>
     <string name="pref_about_developer_milas_sum">dimitris.leonida.milas@gmail.com</string>
     <string name="pref_about_translations_de_sum">le_avx</string>
+    <string name="pref_about_contact_email">admin@chanapps.com</string>
 
     <integer name="BoardGridSubject_maxLines">4</integer>
 

@@ -310,7 +310,7 @@
         <item>@string/sort_order_image_count</item>
         <item>@string/sort_order_creation_date</item>
     </string-array>
-    
+
     <string-array name="font_sizes">
         <item>@string/font_size_tiny</item>
         <item>@string/font_size_small</item>

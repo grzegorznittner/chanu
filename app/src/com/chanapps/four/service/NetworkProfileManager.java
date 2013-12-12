@@ -104,9 +104,10 @@ public class NetworkProfileManager {
 
     private static boolean initialized = false;
 
-    public void ensureInitialized(ChanIdentifiedActivity newActivity) {
+    synchronized public void ensureInitialized(ChanIdentifiedActivity newActivity) {
         if (!initialized) {
             initialized = true;
+            if (DEBUG) Log.i(TAG, "ensureInitialized not initialized, initializing newActivity=" + newActivity.getChanActivityId());
 
             forceMenuKey(newActivity.getBaseContext()); // i think it's nicer
 
@@ -121,13 +122,14 @@ public class NetworkProfileManager {
             NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 
             activeProfile.onApplicationStart(newActivity.getBaseContext());
-            if (DEBUG) Log.i(TAG, "ensureInitialized initializing dispatching newActivity=" + newActivity.getChanActivityId());
+            if (DEBUG) Log.i(TAG, "ensureInitialized complete newActivity=" + newActivity.getChanActivityId());
+            //if (DEBUG) Log.i(TAG, "ensureInitialized initializing dispatching newActivity=" + newActivity.getChanActivityId());
             //ActivityDispatcher.dispatch(newActivity);
         }
     }
 
     public void activityChange(final ChanIdentifiedActivity newActivity) {
-		if (DEBUG) Log.i(TAG, "activityChange to " + newActivity.getChanActivityId() + " receiver=" + receiver
+		if (DEBUG) Log.i(TAG, "activityChange to newActivityId=" + newActivity.getChanActivityId() + " receiver=" + receiver
                 + " lastActivity=" + currentActivity);
 
         ensureInitialized(newActivity);
@@ -176,6 +178,7 @@ public class NetworkProfileManager {
                 Log.e(TAG, "Not handled activity type: " + currentActivityId.activity, new Exception("Check stack trace!"));
                 activeProfile.onApplicationStart(newActivity.getBaseContext());
         }
+        if (DEBUG) Log.i(TAG, "activityChange finished currentActivityId=" + currentActivityId);
     }
 	
 	public void manualRefresh(ChanIdentifiedActivity newActivity) {

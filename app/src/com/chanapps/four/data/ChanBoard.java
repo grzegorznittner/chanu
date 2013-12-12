@@ -30,7 +30,7 @@ public class ChanBoard {
     public static final String LATEST_IMAGES_BOARD_CODE = BoardType.LATEST_IMAGES.boardCode();
     public static final String WATCHLIST_BOARD_CODE = BoardType.WATCHLIST.boardCode();
     public static final String FAVORITES_BOARD_CODE = BoardType.FAVORITES.boardCode();
-    public static final String META_BOARD_CODE = BoardType.META.boardCode();
+    //public static final String META_BOARD_CODE = BoardType.META.boardCode();
     public static final String META_JAPANESE_CULTURE_BOARD_CODE = BoardType.JAPANESE_CULTURE.boardCode();
     public static final String META_INTERESTS_BOARD_CODE = BoardType.INTERESTS.boardCode();
     public static final String META_CREATIVE_BOARD_CODE = BoardType.CREATIVE.boardCode();
@@ -40,10 +40,12 @@ public class ChanBoard {
 
     public static final String[] VIRTUAL_BOARDS = { ALL_BOARDS_BOARD_CODE, POPULAR_BOARD_CODE, LATEST_BOARD_CODE,
             LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE, FAVORITES_BOARD_CODE,
-            META_BOARD_CODE, META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
+            //META_BOARD_CODE,
+            META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
             META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
-    public static final String[] META_BOARDS = { ALL_BOARDS_BOARD_CODE, META_BOARD_CODE,
+    public static final String[] META_BOARDS = { ALL_BOARDS_BOARD_CODE,
+            //META_BOARD_CODE,
             META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
             META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
@@ -408,10 +410,10 @@ public class ChanBoard {
                 {   BoardType.LATEST_IMAGES.toString(),
                         LATEST_IMAGES_BOARD_CODE, ctx.getString(R.string.board_latest_images)
                 },
-                {
-                        BoardType.META.toString(),
-                        META_BOARD_CODE, ctx.getString(R.string.board_meta),
-                },
+                //{
+                //        BoardType.META.toString(),
+                //        META_BOARD_CODE, ctx.getString(R.string.board_meta),
+                //},
                 {   BoardType.JAPANESE_CULTURE.toString(),
                         META_JAPANESE_CULTURE_BOARD_CODE, ctx.getString(R.string.board_type_japanese_culture),
                         "a", ctx.getString(R.string.board_a),

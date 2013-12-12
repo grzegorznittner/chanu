@@ -230,7 +230,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     protected void createViews(Bundle bundle) {
-        if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
+        if (DEBUG) Log.i(TAG, "createViews init class=" + this.getClass());
         if (bundle != null)
             onRestoreInstanceState(bundle);
         else
@@ -602,7 +602,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             adapter.swapCursor(c);
         }
         */
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting loader");
         startLoaderAsync();
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting activity change");
         activityChangeAsync();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
     }
@@ -626,22 +628,25 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void activityChangeAsync() {
+        if (DEBUG) Log.i(TAG, "activityChangeAsync() /" + boardCode + "/ starting thread...");
         final ChanIdentifiedActivity activity = this;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if (NetworkProfileManager.instance().getActivity() != activity) {
-                    if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
+                    if (DEBUG) Log.i(TAG, "onResume() async activityChange to /" + boardCode + "/");
                     NetworkProfileManager.instance().activityChange(activity);
                 }
             }
         }).start();
     }
 
+    /*
     @Override
 	public void onWindowFocusChanged (boolean hasFocus) {
 		if (DEBUG) Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
     }
+    */
 
     @Override
 	protected void onPause() {
@@ -674,7 +679,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            OnClickListener overflow = ChanBoard.META_BOARD_CODE.equals(boardCode) ? null : overflowListener;
+            //OnClickListener overflow = ChanBoard.META_BOARD_CODE.equals(boardCode) ? null : overflowListener;
+            OnClickListener overflow = overflowListener;
             return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
                     overlayListener, overflow, gridViewOptions, null);
         }

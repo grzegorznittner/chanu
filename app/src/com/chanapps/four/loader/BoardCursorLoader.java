@@ -72,9 +72,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     public Cursor loadInBackground() {
         if (DEBUG) Log.i(TAG, "loadInBackground /" + boardName + "/");
         Cursor cursor;
-        if (ChanBoard.META_BOARD_CODE.equals(boardName))
-            cursor = loadMetaBoard();
-        else if (ChanBoard.isMetaBoard(boardName))
+        //if (ChanBoard.META_BOARD_CODE.equals(boardName))
+        //    cursor = loadMetaBoard();
+        //else
+        if (ChanBoard.isMetaBoard(boardName))
             cursor = loadMetaTypeBoard();
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardName))
             cursor = loadFavoritesBoard();
@@ -84,6 +85,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         return cursor;
     }
 
+    /*
     protected Cursor loadMetaBoard() {
         if (DEBUG) Log.i(TAG, "loadMetaBoard");
         boolean showNSFWBoards = PreferenceManager
@@ -118,6 +120,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         if (DEBUG) Log.i(TAG, "Loading meta board complete");
         return matrixCursor;
     }
+    */
 
     protected Cursor loadMetaTypeBoard() {
         boolean showNSFWBoards = ChanBoard.showNSFW(context);

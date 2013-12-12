@@ -158,9 +158,9 @@ abstract public class
                 public boolean isEnabled(int position) {
                     String drawerText = mDrawerArray[position];
                     BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
-                    if (type == BoardType.META)
-                        return false;
-                    else
+                    //if (type == BoardType.META)
+                    //    return false;
+                    //else
                         return true;
                 }
             };
@@ -208,7 +208,7 @@ abstract public class
                         title.setVisibility(View.VISIBLE);
                         divider.setVisibility(View.GONE);
                     }
-                    else if (type == BoardType.META ||
+                    else if (//type == BoardType.META ||
                             (type == BoardType.FAVORITES && hasFavorites) ||
                             (type == BoardType.WATCHLIST && hasWatchlist)) {
                         title.setText(drawerText);

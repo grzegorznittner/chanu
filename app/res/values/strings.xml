@@ -53,8 +53,7 @@
     <string name="blocklist_select_view_type">Select Block Type</string>
     <string name="blocklist_select_type">Select Block Type</string>
     <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
-    <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block
-    </string>
+    <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block</string>
 
     <!-- delete post -->
     <string name="delete_button">Delete Post</string>
@@ -517,11 +516,6 @@
     <string name="pref_use_friendly_ids">Use Friendly Ids</string>
     <string name="pref_use_friendly_ids_summ_on">Post Ids have readable names</string>
     <string name="pref_use_friendly_ids_summ_off">Post Ids are left unchanged</string>
-    <!--
-    <string name="pref_start_with_favorites">Start Behavior</string>
-    <string name="pref_start_with_favorites_summ_on">Start with favorites board, or all boards if no favorites</string>
-    <string name="pref_start_with_favorites_summ_off">Start with last visited location</string>
-    -->
     <string name="pref_use_google_analytics">Google Analytics</string>
     <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
     <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
@@ -633,7 +627,6 @@
     <string name="pref_about_store_chanapps">Chanapps Store</string>
     <string name="pref_about_store_chanapps_sum">Buy a Chanu T-shirt</string>
     <string name="pref_about_contact_us">Contact Us</string>
-    <string name="pref_about_contact_email">admin@chanapps.com</string>
     <string name="pref_about_send_email">Send email</string>
     <string name="pref_about_translations_category">Translations</string>
     <string name="pref_about_translations_de">German</string>
@@ -877,7 +870,7 @@
     <string name="board_desc_wsg">Loops of humor</string>
     <string name="board_desc_x">Aliens and spirits</string>
     <string name="board_desc_y">Homosexual anime</string>
-    <string name="categories" value="Categories"/>
+    <string name="categories">Categories</string>
 
     <!-- rules dialog strings -->
 
@@ -1765,10 +1758,11 @@
     <string name="font_size_large">Large</string>
     <string name="font_size_huge">Huge</string>
 
+    <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
+
     <!-- new strings -->
     <string name="refresh_favorites">Refreshing boards in the background...</string>
     <string name="refresh_watchlist">Refreshing threads in the background...</string>
-    <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
     <string name="pref_use_abbrev_boards">Abbreviated Boards</string>
     <string name="pref_autoload_images_nothumbs">No thumbnails</string>
     <string name="pref_background_data">Background Data</string>

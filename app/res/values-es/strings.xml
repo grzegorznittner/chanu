@@ -568,7 +568,6 @@
   <string name="pref_about_store_chanapps">Tienda Chanapps</string>
   <string name="pref_about_store_chanapps_sum">Comprar una camiseta Chanu</string>
   <string name="pref_about_contact_us">Contacte con nosotros</string>
-  <string name="pref_about_contact_email">admin@chanapps.com</string>
   <string name="pref_about_send_email">Enviar correo electrónico</string>
   <string name="pref_about_translations_category">Traducciones</string>
   <string name="pref_about_translations_de">Alemán</string>
@@ -794,7 +793,7 @@
   <string name="board_desc_wsg">Bucles del humor</string>
   <string name="board_desc_x">Aliens y espíritus</string>
   <string name="board_desc_y">Anime homosexual</string>
-  <string name="categories" value="Categories"></string>
+  <string name="categories">Categories</string>
   <string name="board_rules_header">Reglas del tablón</string>
   <string name="global_rules_header">Reglas Generales</string>
   <string name="global_rules_detail"><![CDATA[<p>1. No se puede cargar, publicar, discutir, solicitar, o enlazar cualquier cosa que viole las leyes locales o las leyes de los Estados Unidos. El cumplimiento será estrictamente obligatorio y en caso de no cumplimiento será severamente castigado.</p>
@@ -1552,5 +1551,6 @@
     <string name="pref_download_location_set">Descargar al %1$s</string>
     <string name="pref_download_location_error">No se pudo cambiar</string>
     <string name="dialog_choose">Elegir</string>
+    <string name="catalog_menu">Catálogo</string>
 
 </resources>
