@@ -1560,4 +1560,21 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
     <!-- new strings -->
     <string name="pref_use_volume_scroll">Lautstärkeknopf rollen</string>
 
+    <!-- new strings -->
+    <string name="refresh_favorites">Aktualisieren im Hintergrund...</string>
+    <string name="refresh_watchlist">Aktualisieren im Hintergrund...</string>
+    <string name="pref_use_abbrev_boards">Gekürzte Boards</string>
+    <string name="pref_autoload_images_nothumbs">Keine Vorschaubilder</string>
+    <string name="pref_background_data">Hintergrundsdaten</string>
+    <string name="pref_background_data_summ_on">Hintergrundsdaten sind bei mobiler Datenverbindung verfügbar</string>
+    <string name="pref_background_data_summ_off">Hintergrundsdaten sind bei mobiler Datenverbindung nicht verfügbar</string>
+    <string name="pref_download_nomedia">Verstecken Downloads</string>
+    <string name="pref_download_nomedia_summ_on">Bilder sind nich sichbar in der Galerie</string>
+    <string name="pref_download_nomedia_summ_off">Bilder sind sichbar in der Galerie</string>
+    <string name="pref_download_location">Speicherstelle des Downloads</string>
+    <string name="pref_download_location_summ">Verändern</string>
+    <string name="pref_download_location_set">Herunterladenverzeichnis wird gesetzt als %1$s</string>
+    <string name="pref_download_location_error">Herunterladenverzeichnis konnte nicht gesetzt werden</string>
+    <string name="dialog_choose">Auswählen</string>
+
 </resources>
