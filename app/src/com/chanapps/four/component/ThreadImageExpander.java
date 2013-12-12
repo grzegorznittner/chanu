@@ -73,12 +73,12 @@ public class ThreadImageExpander {
 
     private void hideThumbnail() {
         if (DEBUG) Log.i(TAG, "hiding thumbnail...");
-        if (viewHolder.list_item_image == null) {
-            if (DEBUG) Log.i(TAG, "Couldn't hide thumbnail, null thumbnail image");
-            return;
-        }
+        if (viewHolder.list_item_image != null)
+            viewHolder.list_item_image.setVisibility(View.INVISIBLE);
+        if (viewHolder.list_item_image_header != null)
+            viewHolder.list_item_image_header.setVisibility(View.INVISIBLE);
+
         //viewHolder.list_item_image.setImageDrawable(null);
-        viewHolder.list_item_image.setVisibility(View.INVISIBLE);
         if (viewHolder.list_item_image_collapse != null)
             viewHolder.list_item_image_collapse.setVisibility(View.VISIBLE);
         if (viewHolder.list_item_image_wrapper == null) {
@@ -91,6 +91,10 @@ public class ThreadImageExpander {
     }
 
     private void setImageDimensions(Point targetSize) {
+        setImageDimensions(viewHolder, targetSize);
+    }
+
+    static public void setImageDimensions(ThreadViewHolder viewHolder, Point targetSize) {
         ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded.getLayoutParams();
         if (params == null) {
             if (DEBUG) Log.i(TAG, "setImageDimensions() null params, exiting");

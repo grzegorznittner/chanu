@@ -548,6 +548,7 @@
         <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
         <item name="android:background">@color/PaletteThreadHeaderImageBg</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="ThreadListHeaderImageExpandedClickEffect" parent="AppTheme">
@@ -904,7 +905,7 @@
     <!-- THREAD LIST ITEM -->
 
     <style name="ThreadListItemImageWrapper" parent="AppTheme">
-        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_marginRight">@dimen/ThreadListHeader_padding</item>
         <item name="android:gravity">center</item>

@@ -168,6 +168,8 @@ public class ThreadListener {
                     viewHolder.list_item_image_collapse.setVisibility(View.GONE);
                 if (viewHolder.list_item_image != null)
                     viewHolder.list_item_image.setVisibility(View.VISIBLE);
+                if (viewHolder.list_item_image_header != null)
+                    viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
                 if (viewHolder.list_item_image_nothumbs_expand != null)
                     viewHolder.list_item_image_nothumbs_expand.setVisibility(View.VISIBLE);
                 if (viewHolder.list_item != null)
