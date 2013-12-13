@@ -1434,6 +1434,7 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
 
 <string name="pref_download_images_title">Organisiere heruntergeladene Bilder</string>
 <string name="pref_download_images_summary">Definiert, wie die Bilder in der Galerie organisiert werden</string>
+<string name="pref_download_images_standard">Einzeln in \'Chanu\', Spiegeln per Thread</string>
 <string name="pref_download_images_all_in_chanu_folder">Alle im \'Chanu\'-Ordner</string>
 <string name="pref_download_images_per_board">Per Board (z.B. board_a)</string>
 <string name="pref_download_images_per_thread">Per Thread (z.B. board_a_1234567)</string>

@@ -291,12 +291,14 @@
     </string-array>
 
     <string-array name="pref_download_images_entries">
+        <item>@string/pref_download_images_standard</item>
         <item>@string/pref_download_images_all_in_chanu_folder</item>
         <item>@string/pref_download_images_per_board</item>
         <item>@string/pref_download_images_per_thread</item>
     </string-array>
 
     <string-array name="pref_download_images_entry_values">
+        <item>@string/pref_download_images_standard_value</item>
         <item>@string/pref_download_images_all_in_chanu_folder_value</item>
         <item>@string/pref_download_images_per_board_value</item>
         <item>@string/pref_download_images_per_thread_value</item>

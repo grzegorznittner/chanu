@@ -1634,9 +1634,10 @@
 
     <string name="pref_download_images_title">Organize Downloaded Images</string>
     <string name="pref_download_images_summary">Defines how images are organized in the Gallery</string>
+    <string name="pref_download_images_standard">Single in \'Chanu\', mirror per thread</string>
     <string name="pref_download_images_all_in_chanu_folder">All in \'Chanu\' folder</string>
     <string name="pref_download_images_per_board">Per board (eg. board_a)</string>
-    <string name="pref_download_images_per_thread">Per thread (eg. board_a_1234567)</string>
+    <string name="pref_download_images_per_thread">Per thread (eg. a_1234567)</string>
     <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
 
 <!-- MOVED FROM ARRAYS.XML -->

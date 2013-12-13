@@ -374,33 +374,6 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	}
     */
 
-    /*
-	private String determineDownloadFolder(ChanThread thread) {
-		if (downloadImageTargetType == DownloadImageTargetType.TO_GALLERY) {
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-			DownloadImages downloadType = DownloadImages.valueOf(prefs.getString(
-					SettingsActivity.PREF_DOWNLOAD_IMAGES, DownloadImages.ALL_IN_ONE.toString()));
-
-			switch(downloadType) {
-			case ALL_IN_ONE:
-				return "";
-			case PER_BOARD:
-				return "board_" + board;
-			case PER_THREAD:
-//				Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-//				String now = formatter.format(scheduleTime);
-				if (thread != null) {
-					return "board_" + thread.board + "_" + thread.no;
-				} else {
-					// offline mode doesn't provide thread info so download defaults to PER_BOARD
-					return "board_" + board;
-				}
-			}
-		}
-		return "board_" + board;
-	}
-    */
-
 	private int downloadImage(ChanPost post) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
 		long startTime = Calendar.getInstance().getTimeInMillis();
 

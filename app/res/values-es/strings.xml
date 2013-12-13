@@ -1416,9 +1416,10 @@
 </string>
   <string name="pref_download_images_title">Organizar imágenes descargadas</string>
   <string name="pref_download_images_summary">Definir cómo organizar las imágenes en la galería</string>
+  <string name="pref_download_images_standard">Sencillo en \'Chanu\', otros por hilo</string>
   <string name="pref_download_images_all_in_chanu_folder">Todo en la carpeta \'Chanu\'</string>
-  <string name="pref_download_images_per_board">Por tablón (ej. Tablón_a)</string>
-  <string name="pref_download_images_per_thread">Por hilo (ej. tablón_a_1234567)</string>
+  <string name="pref_download_images_per_board">Por tablón (ej. tablón_a)</string>
+  <string name="pref_download_images_per_thread">Por hilo (ej. a_1234567)</string>
   <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
   <string name="board_3_with_abbrev">/3/ 3DCG</string>
   <string name="board_a_with_abbrev">/a/ Anime y Manga</string>

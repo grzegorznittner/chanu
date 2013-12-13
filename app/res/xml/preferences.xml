@@ -283,7 +283,6 @@
                 android:summary="@string/pref_download_location_summ"
                 />
 
-        <!--
         <ListPreference
                 android:key="pref_download_images"
                 android:title="@string/pref_download_images_title"
@@ -292,7 +291,6 @@
                 android:entryValues="@array/pref_download_images_entry_values"
                 android:defaultValue="@string/pref_download_images_default_value"
                 />
-        -->
 
         <Preference
                 android:key="pref_blocklist_button"

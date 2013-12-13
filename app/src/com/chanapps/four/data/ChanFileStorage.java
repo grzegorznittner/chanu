@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import com.chanapps.four.activity.*;
@@ -684,12 +685,36 @@ public class ChanFileStorage {
         String configuredPath = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString(SettingsActivity.PREF_DOWNLOAD_LOCATION, null);
         String defaultPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + FILE_SEP + CHANU_FOLDER;
-        String suffix =  (!isSingleImage && boardCode != null && !boardCode.isEmpty() && threadNo > 0)
-                ? FILE_SEP + boardCode + "_" + threadNo
-                : "";
+        String suffix = getDownloadSubfolder(context, boardCode, threadNo, isSingleImage);
         String downloadPath = configuredPath != null ? configuredPath + suffix : defaultPath + suffix;
         return new File(downloadPath);
     }
+
+    private static String getDownloadSubfolder(Context context, String boardCode, long threadNo, boolean isSingleImage) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SettingsActivity.DownloadImages downloadType = SettingsActivity.DownloadImages.valueOf(prefs.getString(
+                SettingsActivity.PREF_DOWNLOAD_IMAGES, SettingsActivity.DownloadImages.STANDARD.toString()));
+        switch(downloadType) {
+            case ALL_IN_ONE:
+                return "";
+            case PER_BOARD:
+                return FILE_SEP + "board_" + boardCode;
+            case PER_THREAD:
+//				Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+//				String now = formatter.format(scheduleTime);
+                if (threadNo > 0) {
+                    return FILE_SEP + boardCode + "_" + threadNo;
+                } else {
+                    // offline mode doesn't provide thread info so download defaults to PER_BOARD
+                    return FILE_SEP + "board_" + boardCode;
+                }
+            case STANDARD:
+            default:
+                return (!isSingleImage && boardCode != null && !boardCode.isEmpty() && threadNo > 0)
+                        ? FILE_SEP + boardCode + "_" + threadNo
+                        : "";
+        }
+	}
 
     public static File createWallpaperFile(Context context) {
         File dir = getWallpaperCacheDirectory(context);
