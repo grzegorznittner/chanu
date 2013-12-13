@@ -150,6 +150,18 @@ public class SettingsFragment
         Preference abbrevBoards = findPreference(SettingsActivity.PREF_USE_ABBREV_BOARDS);
         abbrevBoards.setOnPreferenceChangeListener(abbrevBoardsListener);
 
+        Preference.OnPreferenceChangeListener fastScrollBoardsListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if (DEBUG) Log.i(TAG, "onPrefrenceChange pref=" + preference.getKey() + " newVal=" + newValue);
+                Boolean b = newValue instanceof Boolean ? (Boolean) newValue : null;
+                BoardActivity.updateFastScroll(getActivity(), b != null ? b : false);
+                return true;
+            }
+        };
+        Preference fastScrollBoards = findPreference(SettingsActivity.PREF_USE_FAST_SCROLL);
+        fastScrollBoards.setOnPreferenceChangeListener(fastScrollBoardsListener);
+
         Preference.OnPreferenceChangeListener catalogListener = new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {

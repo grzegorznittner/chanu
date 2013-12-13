@@ -42,6 +42,14 @@
                 android:title="@string/pref_use_abbrev_boards"
                 android:defaultValue="false" />
 
+        <CheckBoxPreference
+                android:key="pref_use_fast_scroll"
+                android:title="@string/pref_use_fast_scroll"
+                android:defaultValue="false" />
+<!--
+                android:summaryOn="@string/pref_use_fast_scroll_summ_on"
+                android:summaryOff="@string/pref_use_fast_scroll_summ_off"
+-->
         <ListPreference
                 android:key="pref_theme"
                 android:title="@string/pref_theme_title"
@@ -221,6 +229,13 @@
                 android:title="@string/pref_use_google_analytics"
                 android:summaryOn="@string/pref_use_google_analytics_summ_on"
                 android:summaryOff="@string/pref_use_google_analytics_summ_off"
+                android:defaultValue="true" />
+
+        <CheckBoxPreference
+                android:key="pref_automatically_manage_watchlist"
+                android:title="@string/pref_automatically_manage_watchlist"
+                android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"
+                android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
                 android:defaultValue="true" />
 
         <CheckBoxPreference

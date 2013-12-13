@@ -545,7 +545,7 @@
     <string name="pref_watchlist_retention">Watchlist Retention</string>
     <string name="pref_watchlist_retention_summ">Clear dead threads after</string>
     <string name="pref_watchlist_retention_units">days</string>
-    <string name="pref_clean_watchlist">Clean Watchlist</string>
+    <string name="pref_clean_watchlist">Remove dead threads</string>
     <string name="pref_clean_watchlist_summ">Remove dead threads from watchlist</string>
     <string name="pref_clear_watchlist">Clear Watchlist</string>
     <string name="pref_clear_watchlist_summ">Empty all threads from watchlist</string>
@@ -1760,7 +1760,6 @@
 
     <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
 
-    <!-- new strings -->
     <string name="refresh_favorites">Refreshing boards in the background...</string>
     <string name="refresh_watchlist">Refreshing threads in the background...</string>
     <string name="pref_use_abbrev_boards">Abbreviated Boards</string>
@@ -1776,5 +1775,11 @@
     <string name="pref_download_location_set">Set download directory to %1$s</string>
     <string name="pref_download_location_error">Couldn\'t set download directory</string>
     <string name="dialog_choose">Choose</string>
+
+    <string name="pref_use_fast_scroll">Fast Scroll</string>
+    <string name="pref_use_fast_scroll_summ_on">Enabled</string>
+    <string name="pref_use_fast_scroll_summ_off">Disabled</string>
+
+    <!-- new strings -->
 
 </resources>

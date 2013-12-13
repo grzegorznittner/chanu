@@ -1439,28 +1439,27 @@ public class PostReplyActivity
             }
 
             // auto-add to watchlist
-            /*
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ChanThread thread = new ChanThread();
-                    thread.no = newThreadNo;
-                    thread.board = boardCode;
-                    thread.tn_w = 250;
-                    thread.tn_h = 250;
-                    thread.sub = getSubject().trim();
-                    thread.com = getMessage().trim();
-                    try {
-                        ChanFileStorage.addWatchedThread(context, thread);
-                        BoardActivity.refreshWatchlist(context);
+            if (PreferenceManager.getDefaultSharedPreferences(PostReplyActivity.this).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ChanThread thread = new ChanThread();
+                        thread.no = newThreadNo;
+                        thread.board = boardCode;
+                        thread.tn_w = 250;
+                        thread.tn_h = 250;
+                        thread.sub = getSubject().trim();
+                        thread.com = getMessage().trim();
+                        try {
+                            ChanFileStorage.addWatchedThread(context, thread);
+                            BoardActivity.refreshWatchlist(context);
+                        }
+                        catch (IOException e) {
+                            Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);
+                        }
+                        //ChanPostlist.addPost(context, boardCode, newThreadNo, postNo, password);
                     }
-                    catch (IOException e) {
-                        Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);
-                    }
-                    //ChanPostlist.addPost(context, boardCode, newThreadNo, postNo, password);
-                }
-            }).start();
-            */
+                }).start();
 
             imageUri = null; // now we've processed so don't use it again
             return 0;

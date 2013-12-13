@@ -8,8 +8,10 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.*;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.*;
@@ -47,6 +50,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
  * Time: 12:26 PM
  * To change this template use File | Settings | File Templates.
  */
+
 public class ThreadActivity
         //extends AbstractBoardSpinnerActivity
         extends AbstractDrawerActivity
@@ -63,6 +67,8 @@ public class ThreadActivity
     protected static final int LOADER_ID = 1;
     protected static final String FIRST_VISIBLE_BOARD_POSITION = "firstVisibleBoardPosition";
     protected static final String FIRST_VISIBLE_BOARD_POSITION_OFFSET = "firstVisibleBoardPositionOffset";
+    protected static final String UPDATE_FAST_SCROLL_ACTION = "updateFastScrollAction";
+    protected static final String OPTION_ENABLE = "optionEnable";
 
     protected ThreadPagerAdapter mAdapter;
     protected ControllableViewPager mPager;
@@ -158,6 +164,11 @@ public class ThreadActivity
 
         wideTablet = getResources().getBoolean(R.bool.wide_tablet);
         narrowTablet = getResources().getBoolean(R.bool.narrow_tablet);
+        setupReceivers();
+    }
+
+    protected void setupReceivers() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateFastScrollReceived, new IntentFilter(UPDATE_FAST_SCROLL_ACTION));
     }
 
     protected void createPager(final ChanBoard board) { // must be called on UI thread
@@ -800,13 +811,19 @@ public class ThreadActivity
             return;
         if (data.threadNo != threadNo)
             return;
-        //setProgress(on);
+        setProgress(on);
+    }
+
+    @Override
+    public void setProgress(boolean on) {
+        if (DEBUG) Log.i(TAG, "setProgress(" + on + ")");
+        //if (handler != null)
+        //    setProgressBarIndeterminateVisibility(on);
         if (mPullToRefreshAttacher != null) {
             if (DEBUG) Log.i(TAG, "mPullToRefreshAttacher.setRefreshing(" + on + ")");
             mPullToRefreshAttacher.setRefreshing(on);
         }
     }
-
 
     protected void initTablet() {
         if (!tabletTestDone) {
@@ -840,6 +857,7 @@ public class ThreadActivity
         boardGrid.setAdapter(adapterBoardsTablet);
         boardGrid.setOnItemClickListener(boardGridListener);
         boardGrid.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        boardGrid.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
     }
 
     protected void onBoardsTabletLoadFinished(Cursor data) {
@@ -1059,6 +1077,34 @@ public class ThreadActivity
 
     public ActionBarDrawerToggle getDrawerToggle() {
         return mDrawerToggle;
+    }
+
+    protected BroadcastReceiver onUpdateFastScrollReceived = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final boolean receivedEnable = intent != null && intent.getAction().equals(UPDATE_FAST_SCROLL_ACTION) && intent.hasExtra(OPTION_ENABLE)
+                    ? intent.getBooleanExtra(OPTION_ENABLE, false)
+                    : false;
+            if (DEBUG) Log.i(TAG, "onUpdateFastScrollReceived /" + boardCode + "/ received=/" + receivedEnable + "/");
+            final Handler gridHandler = handler != null ? handler : new Handler();
+            if (gridHandler != null)
+                gridHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (boardGrid != null)
+                            boardGrid.setFastScrollEnabled(receivedEnable);
+                        ThreadFragment fragment = getPrimaryItem();
+                        if (fragment != null)
+                            fragment.onUpdateFastScroll(receivedEnable);
+                    }
+                });
+        }
+    };
+
+    public static void updateFastScroll(Context context, boolean enabled) {
+        Intent intent = new Intent(BoardActivity.UPDATE_FAST_SCROLL_ACTION);
+        intent.putExtra(OPTION_ENABLE, enabled);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
 }

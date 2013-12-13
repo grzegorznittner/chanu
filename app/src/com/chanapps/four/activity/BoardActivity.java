@@ -51,6 +51,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected static final String UPDATE_BOARD_ACTION = "updateBoardAction";
     protected static final String UPDATE_ABBREV_ACTION = "updateAbbrevAction";
+    protected static final String UPDATE_FAST_SCROLL_ACTION = "updateFastScrollAction";
     protected static final String UPDATE_CATALOG_ACTION = "updateCatalogAction";
     protected static final String OPTION_ENABLE = "optionEnable";
 
@@ -250,6 +251,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateBoardReceived, new IntentFilter(UPDATE_BOARD_ACTION));
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateAbbrevReceived, new IntentFilter(UPDATE_ABBREV_ACTION));
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateCatalogReceived, new IntentFilter(UPDATE_CATALOG_ACTION));
+        LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateFastScrollReceived, new IntentFilter(UPDATE_FAST_SCROLL_ACTION));
     }
 
     protected void initGridViewOptions() {
@@ -455,6 +457,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
         emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         bindPullToRefresh();
     }
@@ -818,6 +821,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 String url = ChanBoard.boardUrl(this, boardCode);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
                 return true;
+            case R.id.clean_watchlist_menu:
+                (new WatchlistCleanDialogFragment()).show(getFragmentManager(), WatchlistCleanDialogFragment.TAG);
+                return true;
             case R.id.clear_watchlist_menu:
                 (new WatchlistClearDialogFragment()).show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
                 return true;
@@ -889,6 +895,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             ; // ignore
         }
         else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+            menu.findItem(R.id.clean_watchlist_menu).setVisible(true);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(true);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
@@ -904,6 +911,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
+            menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(true);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
@@ -919,6 +927,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
         }
         else if (board.isPopularBoard()) {
+            menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
@@ -934,6 +943,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
         }
         else if (board.isVirtualBoard()) {
+            menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
@@ -949,6 +959,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
         }
         else {
+            menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
@@ -1536,6 +1547,25 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
+    protected BroadcastReceiver onUpdateFastScrollReceived = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final boolean receivedEnable = intent != null && intent.getAction().equals(UPDATE_FAST_SCROLL_ACTION) && intent.hasExtra(OPTION_ENABLE)
+                    ? intent.getBooleanExtra(OPTION_ENABLE, false)
+                    : false;
+            if (DEBUG) Log.i(TAG, "onUpdateFastScrollReceived /" + boardCode + "/ received=/" + receivedEnable + "/");
+            final Handler gridHandler = handler != null ? handler : new Handler();
+            if (gridHandler != null)
+                gridHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (absListView != null)
+                            absListView.setFastScrollEnabled(receivedEnable);
+                    }
+                });
+        }
+    };
+
     protected BroadcastReceiver onUpdateCatalogReceived = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -1555,6 +1585,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     public static void updateAbbrev(Context context, boolean enabled) {
         Intent intent = new Intent(BoardActivity.UPDATE_ABBREV_ACTION);
+        intent.putExtra(OPTION_ENABLE, enabled);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public static void updateFastScroll(Context context, boolean enabled) {
+        Intent intent = new Intent(BoardActivity.UPDATE_FAST_SCROLL_ACTION);
         intent.putExtra(OPTION_ENABLE, enabled);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }

@@ -27,7 +27,7 @@ public enum FontSize {
         for (FontSize fontSize : FontSize.values())
             if (context.getString(fontSize.displayStringId).equals(displayString))
                 return fontSize;
-        return null;
+        return MEDIUM;
     }
 
     public static void sizeTextView(TextView tv) {

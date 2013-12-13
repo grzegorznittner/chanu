@@ -275,6 +275,8 @@ public class BoardGridViewer {
     protected static void displayNicelyFormattedBoardCode(Typeface titleTypeface, String boardCode, TextView tv) {
         String boardCodeTitle = "/" + boardCode + "/";
         if (DEBUG) Log.i(TAG, "displayBoardCode() boardCodeTitle=" + boardCodeTitle);
+        if (tv == null)
+            return;
         if (titleTypeface != null)
             tv.setTypeface(titleTypeface);
         if (tv instanceof LetterSpacingTextView)

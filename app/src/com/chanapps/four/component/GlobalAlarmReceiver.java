@@ -18,6 +18,8 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.widget.WidgetProviderUtils;
 
+import java.io.IOException;
+
 /**
  * Created with IntelliJ IDEA.
  * User: johnarleyburns
@@ -84,6 +86,15 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
             fetchWatchlistThreads(context);
             WidgetProviderUtils.fetchAllWidgets(context);
         }
+        /*
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+            try {
+                ChanFileStorage.cleanDeadWatchedThreads(context);
+            }
+            catch (IOException e) {
+                Log.e(TAG, "Exception clearing watchlist", e);
+            }
+        */
     }
 
     public static void fetchWatchlistThreads(Context context) {

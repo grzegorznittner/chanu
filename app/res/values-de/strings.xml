@@ -498,7 +498,7 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="pref_watchlist_retention">Aufbewahrungszeitraum für die Watchlist</string>
   <string name="pref_watchlist_retention_summ">Tote Threads bereinigen nach</string>
   <string name="pref_watchlist_retention_units">Tage</string>
-  <string name="pref_clean_watchlist">Watchlist säubern</string>
+  <string name="pref_clean_watchlist">Entfernen tote Threads</string>
   <string name="pref_clean_watchlist_summ">Entfernen tote Threads aus der Watchlist</string>
   <string name="pref_clear_watchlist">Watchlist säubern</string>
   <string name="pref_clear_watchlist_summ">Alle Threads aus der Watchlist entfernen</string>
@@ -1557,10 +1557,8 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
     <string name="plurals_board_activity_udpdated_one">Neuer Thread bei /%1$s/</string>
     <string name="plurals_board_actviity_updated_other">Neuere Threads bei /%1$s/</string>
 
-    <!-- new strings -->
     <string name="pref_use_volume_scroll">Lautstärkeknopf rollen</string>
 
-    <!-- new strings -->
     <string name="refresh_favorites">Aktualisieren im Hintergrund...</string>
     <string name="refresh_watchlist">Aktualisieren im Hintergrund...</string>
     <string name="pref_use_abbrev_boards">Gekürzte Boards</string>
@@ -1577,5 +1575,10 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
     <string name="pref_download_location_error">Herunterladenverzeichnis konnte nicht gesetzt werden</string>
     <string name="dialog_choose">Auswählen</string>
     <string name="catalog_menu">Katalog</string>
+
+    <!-- new strings -->
+    <string name="pref_use_fast_scroll">Schnell rollen</string>
+    <string name="pref_use_fast_scroll_summ_on">Aktiviert</string>
+    <string name="pref_use_fast_scroll_summ_off">Deaktiviert</string>
 
 </resources>

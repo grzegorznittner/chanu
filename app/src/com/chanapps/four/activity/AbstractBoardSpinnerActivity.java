@@ -201,6 +201,7 @@ abstract public class
 
     @Override
     public void setProgress(final boolean on) {
+        /*
         Handler handler = getChanHandler();
         if (handler != null)
             handler.post(new Runnable() {
@@ -209,6 +210,7 @@ abstract public class
                     setProgressBarIndeterminateVisibility(on);
                 }
             });
+            */
     }
 
     abstract public boolean isSelfDrawerMenu(String boardAsMenu);

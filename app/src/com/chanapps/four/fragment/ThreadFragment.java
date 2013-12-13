@@ -584,6 +584,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         absListView.setOnCreateContextMenuListener(this);
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
     }
 
     public void setPullToRefreshAttacher(PullToRefreshAttacher mPullToRefreshAttacher) {
@@ -1591,6 +1592,18 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public String getQuery() {
         return query;
+    }
+
+    public void onUpdateFastScroll(final boolean enabled) {
+        final Handler gridHandler = handler != null ? handler : new Handler();
+        if (gridHandler != null)
+            gridHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (absListView != null)
+                        absListView.setFastScrollEnabled(enabled);
+                }
+            });
     }
 
 }

@@ -823,6 +823,18 @@ public class ChanFileStorage {
         WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
     }
 
+    public static void cleanDeadWatchedThreads(Context context) throws IOException {
+        ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        List<ChanThread> cleanedThreads = new ArrayList<ChanThread>();
+        for (ChanThread thread : board.threads) {
+            if (!thread.isDead)
+                cleanedThreads.add(thread);
+        }
+        board.threads = cleanedThreads.size() == 0 ? new ChanThread[]{} : cleanedThreads.toArray(new ChanThread[cleanedThreads.size()]);
+        storeBoardData(context, board);
+        WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    }
+
     public static void clearFavorites(Context context) throws IOException {
         ChanBoard board = loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
         board.threads = new ChanThread[]{};

@@ -65,7 +65,9 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_BLOCKLIST_NAME = "prefBlocklistName";
     public static final String PREF_BLOCKLIST_EMAIL = "prefBlocklistEmail";
     public static final String PREF_BLOCKLIST_ID = "prefBlocklistId";
-    
+    public static final String PREF_AUTOMATICALLY_MANAGE_WATCHLIST = "pref_automatically_manage_watchlist";
+    public static final String PREF_USE_FAST_SCROLL = "pref_use_fast_scroll";
+
     public static enum DownloadImages {ALL_IN_ONE, PER_BOARD, PER_THREAD};
 
     protected int themeId;

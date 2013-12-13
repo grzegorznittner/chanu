@@ -491,7 +491,7 @@
   <string name="pref_watchlist_retention">Retención de Watchlist</string>
   <string name="pref_watchlist_retention_summ">Despejar después los hilos muertos</string>
   <string name="pref_watchlist_retention_units">días</string>
-  <string name="pref_clean_watchlist">Limpiar Watchlist</string>
+  <string name="pref_clean_watchlist">Eliminar los hilos muertos</string>
   <string name="pref_clean_watchlist_summ">Eliminar los hilos muertos desde la watchlist</string>
   <string name="pref_clear_watchlist">Despejar Watchlist</string>
   <string name="pref_clear_watchlist_summ">Vacíe todos los hilos desde la watchlist</string>
@@ -1532,10 +1532,8 @@
     <string name="plurals_board_activity_udpdated_one">Nuevo hilo en /%1$s/</string>
     <string name="plurals_board_actviity_updated_other">New threads en /%1$s/</string>
 
-    <!-- new strings -->
     <string name="pref_use_volume_scroll">Tecla de volumen recorrer</string>
 
-    <!-- new strings -->
     <string name="refresh_favorites">Actualizando tableros...</string>
     <string name="refresh_watchlist">Actualizando hilos...</string>
     <string name="pref_use_abbrev_boards">Abreviados Tableros</string>
@@ -1552,5 +1550,9 @@
     <string name="pref_download_location_error">No se pudo cambiar</string>
     <string name="dialog_choose">Elegir</string>
     <string name="catalog_menu">Catálogo</string>
+
+    <string name="pref_use_fast_scroll">Rápido recorrer</string>
+    <string name="pref_use_fast_scroll_summ_on">Habilitando</string>
+    <string name="pref_use_fast_scroll_summ_off">Discapacitado</string>
 
 </resources>
