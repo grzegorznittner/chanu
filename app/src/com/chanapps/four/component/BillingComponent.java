@@ -37,6 +37,8 @@ public class BillingComponent {
     protected static final String STORAGE_SECRET_KEY = "MsouCDI0ZDRbvse4SFm3vEhAl2wVvCRPvL1yjf6LnBUb7yYLfnzfDbHGl7HIstoa";
 
     protected static final String NO_ADS_NONCONS_PRODUCT_ID = "prokey.basic";
+    //protected static final String NO_ADS_NONCONS_PRODUCT_ID_GOLD = "prokey.gold";
+    //protected static final String NO_ADS_NONCONS_PRODUCT_ID_PLATINUM = "prokey.platinum";
     //protected static final String NO_ADS_NONCONS_PRODUCT_ID = "android.test.purchased"; // test mode
     protected static final String PREF_PURCHASES = "purchasedProductIds";
     protected static final String LAST_PURCHASE_TOKEN = "lastPurchaseToken";

@@ -1783,4 +1783,7 @@
 
     <!-- new strings -->
 
+    <string name="ad_upgrade">Upgrade to Pro</string>
+    <string name="ad_upgrade_sum">Support development and new features</string>
+
 </resources>

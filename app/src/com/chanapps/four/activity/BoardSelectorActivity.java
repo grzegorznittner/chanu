@@ -50,7 +50,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         createAbsListView();
         setupBoardTitle();
         startLoaderAsync();
-        (new AdComponent(getApplicationContext(), findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
+        (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         checkNSFW();
         mDrawerAdapter.notifyDataSetInvalidated();
         if (DEBUG) Log.i(TAG, "switchBoard end /" + boardCode + "/ q=" + query);

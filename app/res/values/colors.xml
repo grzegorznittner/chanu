@@ -90,7 +90,9 @@
     <color name="DarkPaletteActionBarBg">#222</color>
     <color name="DarkPaletteBoardGridBoardCodeBg">#282828</color>
 
-    <color name="ad_background">#121212</color>
+    <!-- <color name="ad_background">#121212</color> -->
+    <color name="ad_background">#ffec964a</color>
+    <color name="ad_text_color">#fff2f2f2</color>
 
     <color name="PaletteBoardCodeText">#eeeeee</color>
 

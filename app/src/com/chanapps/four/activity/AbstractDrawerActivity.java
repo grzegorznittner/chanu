@@ -181,9 +181,9 @@ abstract public class
 
                     // set checked state
                     int selector;
-                    if (type != null && type.boardCode() != null && type.boardCode().equals(boardCode))
+                    if (type != null && type.boardCode() != null && boardCode != null && type.boardCode().equals(boardCode))
                         selector = R.drawable.drawer_list_selector_checked_bg;
-                    else if (ThemeSelector.instance(getApplicationContext()).isDark())
+                    else if (getApplicationContext() != null && ThemeSelector.instance(getApplicationContext()).isDark())
                         selector = R.drawable.drawer_list_selector_inverse_bg_dark;
                     else
                         selector = R.drawable.drawer_list_selector_inverse_bg;

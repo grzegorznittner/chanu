@@ -150,7 +150,7 @@ abstract public class
     @Override
     protected void onStart() {
         super.onStart();
-        (new AdComponent(getApplicationContext(), findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
+        (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         checkNSFW();
     }
 

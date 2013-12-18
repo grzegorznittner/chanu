@@ -31,7 +31,6 @@
         -->
 
     <include layout="@layout/ad_section"
-             android:layout_above="@+id/board_grid_advert"
-            />
+             />
 
 </RelativeLayout>
