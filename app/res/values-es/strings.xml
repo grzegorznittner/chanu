@@ -1556,4 +1556,7 @@
     <string name="pref_use_fast_scroll_summ_on">Habilitando</string>
     <string name="pref_use_fast_scroll_summ_off">Discapacitado</string>
 
+    <string name="ad_upgrade">Actualizar a Pro</string>
+    <string name="ad_upgrade_sum">Apoyar desarrollo y características nuevas</string>
+
 </resources>

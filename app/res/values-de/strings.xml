@@ -1582,4 +1582,7 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
     <string name="pref_use_fast_scroll_summ_on">Aktiviert</string>
     <string name="pref_use_fast_scroll_summ_off">Deaktiviert</string>
 
+    <string name="ad_upgrade">Upgrade nach Profi</string>
+    <string name="ad_upgrade_sum">Fördern Entwicklung und neue Funktionalitäten</string>
+
 </resources>
