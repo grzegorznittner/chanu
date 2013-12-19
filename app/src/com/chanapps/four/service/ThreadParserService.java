@@ -129,20 +129,9 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
                 if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo + " with " + thread.posts.length + " posts"
                 		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             }
-            /*
-            int delta = thread.posts.length - previousPostNum;
-            if (delta == 0)
-                threadUpdateMessage = getString(R.string.thread_activity_nochange);
-            else if (delta > 0)
-                threadUpdateMessage = String.format(
-                        getResources().getQuantityString(R.plurals.thread_activity_updated, delta),
-                        delta);
-            else
-            */
-                threadUpdateMessage = null;
+            threadUpdateMessage = null;
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
-            //toastUI(R.string.board_service_couldnt_load);
 			Log.e(TAG, "Error parsing thread json. " + e.getMessage(), e);
         	NetworkProfileManager.instance().failedParsingData(this, Failure.WRONG_DATA);
 		}

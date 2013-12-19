@@ -123,7 +123,6 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         if (DEBUG) Log.i(TAG, "creating dialog");
         Dialog dialog = builder
                 .setView(layout)
-                //.setNegativeButton(R.string.dialog_close, null)
                 .create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;

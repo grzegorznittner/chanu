@@ -51,14 +51,6 @@
             android:persistent="true"
             >
 
-        <!--
-        <Preference
-                android:key="pref_about_developer_chanapps"
-                android:title="@string/pref_about_developer_chanapps"
-                android:summary="@string/pref_about_developer_chanapps_sum"
-                />
-        -->
-
         <Preference
                 android:key="pref_purchase_prokey"
                 android:title="@string/pref_purchase_prokey"
@@ -70,36 +62,6 @@
                 android:summary="@string/pref_about_store_chanapps_sum"
                 />
 
-        <!--
-        <Preference
-                android:key="pref_consume_prokey"
-                android:title="@string/pref_consume_prokey"
-                android:summary="@string/pref_consume_prokey_summ" />
-
-        <Preference
-                android:key="pref_about_developer_burns"
-                android:title="@string/pref_about_developer_burns"
-                android:summary="@string/pref_about_developer_burns_sum"
-                />
-
-        <Preference
-                android:key="pref_about_developer_nittner"
-                android:title="@string/pref_about_developer_nittner"
-                android:summary="@string/pref_about_developer_nittner_sum"
-                />
-
-        <Preference
-                android:key="pref_about_developer_pop"
-                android:title="@string/pref_about_developer_pop"
-                android:summary="@string/pref_about_developer_pop_sum"
-                />
-
-        <Preference
-                android:key="pref_about_developer_milas"
-                android:title="@string/pref_about_developer_milas"
-                android:summary="@string/pref_about_developer_milas_sum"
-                />
-        -->
     </PreferenceCategory>
 
     <PreferenceCategory

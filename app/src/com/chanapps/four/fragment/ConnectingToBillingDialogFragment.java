@@ -29,7 +29,7 @@ public class ConnectingToBillingDialogFragment extends DialogFragment {
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
         TextView title = (TextView)layout.findViewById(R.id.title);
         TextView message = (TextView)layout.findViewById(R.id.message);
-        title.setText(R.string.connect_to_billing_title);
+        title.setText(R.string.purchase_menu);
         message.setText(R.string.connect_to_billing_msg);
         setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))

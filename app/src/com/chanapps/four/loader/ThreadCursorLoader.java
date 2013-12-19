@@ -40,21 +40,11 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         this.boardName = boardName;
         this.threadNo = threadNo;
         this.query = query == null ? "" : query.toLowerCase().trim();
-        //this.showRelatedBoards = showRelatedBoards;
         this.showRelatedBoards = false; // not so nice design
-        //initRandomGenerator();
         if (threadNo <= 0)
             throw new ExceptionInInitializerError("Can't have zero threadNo in a thread cursor loader");
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
-
-    /*
-    @Override
-    protected void initRandomGenerator() { // to allow repeatable positions for ads
-        generatorSeed = threadNo;
-        generator = new Random(generatorSeed);
-    }
-    */
 
     /* Runs on a worker thread */
     @Override
@@ -100,12 +90,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         Map<Long, HashSet<Long>> repliesMap = thread.repliesMap(backlinksMap);
         Map<String, HashSet<Long>> sameIdsMap = thread.sameIdsMap();
 
-        //int adSpace = MINIMUM_AD_SPACING;
-
-
         int i = 0;
         int numQueryMatches = 0;
-        //int numPosts = thread.posts.length;
         for (ChanPost post : thread.posts) {
             if (ChanBlocklist.isBlocked(context, post))
                 continue;
@@ -122,64 +108,14 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             HashSet<Long> sameIds = sameIdsMap.get(post.id);
             byte[] sameIdsBlob = (sameIds != null && sameIds.size() > 1) ? ChanPost.blobify(sameIds) : null;
             matrixCursor.addRow(post.makeRow(context, query, i, backlinksBlob, repliesBlob, sameIdsBlob));
-            // randomly distribute ads
-            /*
-            if (generator.nextDouble() < AD_PROBABILITY
-                    && !(adSpace > 0)
-                    && i < (numPosts - MINIMUM_AD_SPACING)) {
-                matrixCursor.addRow(board.makePostAdRow(getContext(), i));
-                adSpace = MINIMUM_AD_SPACING;
-            }
-            else {
-                adSpace--;
-            }
-            */
             i++;
         }
-
-        /*
-        if (!thread.isDead)
-            matrixCursor.addRow(ChanPost.makeButtonRow(boardName, context.getString(R.string.reply_short).toUpperCase()));
-        else
-            matrixCursor.addRow(ChanPost.makeTitleRow(boardName, context.getString(R.string.dead_thread_reply).toUpperCase()));
-        */
 
         if (thread.defData)
             return;
 
         if (!thread.isDead && (thread.posts != null && thread.replies > thread.posts.length))
             return;
-
-        // put related threads at the bottom
-        /*
-        List<Object[]> rows = board.makePostRelatedThreadsRows(threadNo);
-        if (rows.size() > 0) {
-            matrixCursor.addRow(board.makePostRelatedThreadsHeaderRow(context));
-            for (Object[] row : rows)
-                matrixCursor.addRow(row);
-        }
-        */
-        // put related boards at the bottom
-        boolean showRelated;
-        if (query != null && !query.isEmpty())
-            showRelated = false;
-        else if (thread.posts == null || thread.posts.length <= 0 || thread.posts[0] == null
-                || (thread.posts[0].replies > 0 && thread.posts.length == 1))
-            showRelated = false;
-        else
-            showRelated = showRelatedBoards;
-        if (showRelated) {
-            List<ChanBoard> boardRows = board.relatedBoards(context, threadNo);
-            if (boardRows.size() > 0) {
-                matrixCursor.addRow(board.makePostRelatedBoardsHeaderRow(context));
-                for (ChanBoard relatedBoard : boardRows)
-                    matrixCursor.addRow(relatedBoard.makePostBoardLinkRow(context, threadNo));
-            }
-        }
-
-        // always put an ad at the bottom after done loading
-        //if (i > 1 || thread.replies == 0)
-        //    matrixCursor.addRow(board.makePostAdRow(getContext(), i));
 
     }
 

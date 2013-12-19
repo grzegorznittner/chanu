@@ -160,34 +160,6 @@ public class ChanThread extends ChanPost {
         };
     }
 
-    public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
-        List<ChanBoard> sourceBoards = ChanBoard.getBoardsByType(context, boardType);
-        if (DEBUG) Log.i(TAG, "makeBoardTypeRow boardType=" + boardType.boardCode() + " size=" + sourceBoards.size());
-        List<ChanBoard> boards = new ArrayList<ChanBoard>(sourceBoards);
-        if (boards.get(0).isMetaBoard() && boards.size() > 1)
-            boards.remove(0);
-        Collections.shuffle(boards);
-        ChanBoard board = boards.get(0);
-        int boardImageResourceId = ChanBoard.getRandomImageResourceId(board.link, 0);
-        return new Object[] {
-                boardType.hashCode(),
-                boardType.boardCode(),
-                0,
-                context.getString(boardType.displayStringId()),
-                context.getString(boardType.descStringId()),
-                "",
-                "drawable://" + boardImageResourceId,
-                "",
-                "",
-                0,
-                0,
-                0,
-                0,
-                0,
-                THREAD_FLAG_BOARD | THREAD_FLAG_BOARD_TYPE
-        };
-    }
-
     public static Object[] makeTitleRow(String boardCode, String title) {
         return makeTitleRow(boardCode, title, "");
     }

@@ -46,19 +46,13 @@
                 android:key="pref_use_fast_scroll"
                 android:title="@string/pref_use_fast_scroll"
                 android:defaultValue="false" />
-<!--
-                android:summaryOn="@string/pref_use_fast_scroll_summ_on"
-                android:summaryOff="@string/pref_use_fast_scroll_summ_off"
--->
+
         <ListPreference
                 android:key="pref_theme"
                 android:title="@string/pref_theme_title"
                 android:entries="@array/pref_theme_entries"
                 android:entryValues="@array/pref_theme_entry_values"
                 android:defaultValue="@string/pref_theme_default_value" />
-        <!--
-                         android:summary="@string/pref_theme_summary"
-        -->
 
         <ListPreference
                 android:key="pref_font_size"
@@ -79,7 +73,7 @@
                 android:title="@string/pref_autoload_images_title"
                 android:entries="@array/pref_autoload_images_entries"
                 android:entryValues="@array/pref_autoload_images_entry_values"
-                android:defaultValue="@string/pref_autoload_images_default_value" />
+                android:defaultValue="@string/pref_autoload_images_never_value" />
         <!--
                         android:summary="@string/pref_autoload_images_summary"
         -->
@@ -105,25 +99,14 @@
                 android:key="pref_clear_cache"
                 android:title="@string/pref_clear_cache"
                 android:summary="@string/pref_clear_cache_summ" />
-        <!--
-        <Preference
-                android:key="pref_clear_favorites"
-                android:title="@string/pref_clear_favorites"
-                android:summary="@string/pref_clear_favorites_summ" />
 
-        <Preference
-                android:key="pref_clear_watchlist"
-                android:title="@string/pref_clear_watchlist"
-                android:summary="@string/pref_clear_watchlist_summ" />
-        -->
     </PreferenceScreen>
 
     <PreferenceScreen
             android:key="pref_user_category"
             android:title="@string/pref_user_category"
             android:persistent="true">
-<!--             android:summary="@string/pref_user_category_summ"
--->
+
         <EditTextPreference
                 android:key="pref_user_name"
                 android:title="@string/pref_user_name"
@@ -294,7 +277,7 @@
 
         <Preference
                 android:key="pref_blocklist_button"
-                android:title="@string/pref_blocklist_button"
+                android:title="@string/blocklist_title"
                 android:summary="@string/pref_blocklist_button_summ" />
 
         <Preference
@@ -305,20 +288,9 @@
 
     </PreferenceScreen>
 
-    <!--
-    </PreferenceCategory>
-    -->
-<!--
-    <PreferenceCategory
-            android:key="pref_about_category"
-            android:title="@string/pref_about_category">
-    -->
-        <Preference
-                android:key="pref_about"
-                android:title="@string/pref_about"
-              />
-       <!--
-                android:summary="@string/pref_about_summ" />
-    </PreferenceCategory>
-           -->
+    <Preference
+            android:key="pref_about"
+            android:title="@string/about_activity"
+            />
+
 </PreferenceScreen>

@@ -107,7 +107,6 @@ public class MobileProfile extends AbstractNetworkProfile {
     }
 
     private void prefetchDefaultBoards(Context context) {
-        // makeToast(R.string.mobile_profile_preloading_defaults);
         //FetchPopularThreadsService.schedulePopularFetchService(context);
         //FetchChanDataService.scheduleBoardFetch(context, "a", false, true);
         /*

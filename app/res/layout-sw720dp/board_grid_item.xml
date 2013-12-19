@@ -171,6 +171,7 @@
             android:paddingLeft="@dimen/BoardGridView.spacing"
             android:paddingRight="@dimen/BoardGridView.rightSpacing"
             android:paddingTop="@dimen/BoardGridView.topSpacing"
+            android:gravity="center_horizontal"
             android:textColor="?themedCardSubjectTextColor"
             android:textSize="@dimen/BoardGridSubjectHeader"
             android:visibility="gone"

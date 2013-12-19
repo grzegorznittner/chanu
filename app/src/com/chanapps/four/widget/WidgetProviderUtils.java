@@ -437,6 +437,9 @@ public final class WidgetProviderUtils {
             }
         } catch (Exception e) {
             getRequest.abort();
+            if (DEBUG) Log.i(TAG, "Exception while retrieving bitmap from " + url, e);
+        } catch (Error e) {
+            getRequest.abort();
             if (DEBUG) Log.i(TAG, "Error while retrieving bitmap from " + url, e);
         } finally {
             if (client != null) {

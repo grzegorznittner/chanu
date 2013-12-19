@@ -1,23 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<!--
-    <item android:id="@+id/view_image_gallery_menu"
-          android:title="@string/view_image_gallery_menu"
-          android:icon="@drawable/collections_view_as_grid"
-          android:showAsAction="ifRoom"
-            />
-    <item android:id="@+id/download_image_menu"
-          android:title="@string/download_image_menu"
-          android:icon="@drawable/content_save"
-          android:showAsAction="ifRoom"
-            />
-    <item android:id="@+id/offline_board_view_menu"
-          android:title="@string/offline_board_view_menu"
-            />
-    <item android:id="@+id/offline_chan_view_menu"
-          android:title="@string/offline_chan_view_menu"
-            />
--->
     <item android:id="@+id/web_menu"
           android:title="@string/direct_web_menu"
           android:icon="@drawable/location_web_site"
@@ -36,7 +18,7 @@
           android:icon="@drawable/device_access_new_account"
             />
     <item android:id="@+id/about_menu"
-          android:title="@string/about_menu"
+          android:title="@string/about_activity"
           android:icon="@drawable/action_about"
           android:visible="false"
             />

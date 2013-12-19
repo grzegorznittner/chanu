@@ -46,7 +46,7 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
         TextView title = (TextView)layout.findViewById(R.id.title);
         TextView message = (TextView)layout.findViewById(R.id.message);
-        title.setText(R.string.dialog_watchlist);
+        title.setText(R.string.board_watch);
         message.setText(R.string.dialog_delete_watchlist_thread);
         setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))

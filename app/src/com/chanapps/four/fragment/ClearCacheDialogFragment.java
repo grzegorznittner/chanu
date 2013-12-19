@@ -46,7 +46,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
         TextView title = (TextView)layout.findViewById(R.id.title);
         TextView message = (TextView)layout.findViewById(R.id.message);
-        title.setText(R.string.dialog_cache);
+        title.setText(R.string.pref_cache_category);
         message.setText(R.string.dialog_clear_cache_confirm);
         setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))

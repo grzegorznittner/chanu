@@ -29,7 +29,7 @@ public class PasswordInfoDialogFragment extends DialogFragment {
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
         TextView title = (TextView)layout.findViewById(R.id.title);
         TextView message = (TextView)layout.findViewById(R.id.message);
-        title.setText(R.string.post_reply_password_text);
+        title.setText(R.string.pref_user_password);
         message.setText(R.string.post_reply_password_info_detail);
         setStyle(STYLE_NO_TITLE, 0);
         Dialog dialog = (new AlertDialog.Builder(getActivity()))

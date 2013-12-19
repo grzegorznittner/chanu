@@ -47,6 +47,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         this.boardCode = boardCode;
         this.query = query;
         //setupStaticBoards();
+        loadDrawerArray();
         createAbsListView();
         setupBoardTitle();
         startLoaderAsync();

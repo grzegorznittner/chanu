@@ -783,7 +783,7 @@ public class PostReplyActivity
                 break;
             default:
                 Log.e(TAG, "invalid request code for image");
-                Toast.makeText(this, R.string.post_reply_no_load_image, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.post_reply_no_image, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -906,7 +906,6 @@ public class PostReplyActivity
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             previewProgress.setVisibility(View.GONE);
             deleteImage();
-            //Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
@@ -919,7 +918,6 @@ public class PostReplyActivity
         public void onLoadingCancelled(String imageUri, View view) {
             previewProgress.setVisibility(View.GONE);
             deleteImage();
-            //Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -1133,7 +1131,7 @@ public class PostReplyActivity
     protected void setActionBarTitle() {
         String replyTitle = threadNo > 0
                 ? getString(R.string.post_reply_title)
-                : getString(R.string.post_reply_thread_title);
+                : getString(R.string.new_thread_menu);
         String title = "/" + boardCode + "/ " + replyTitle;
         getActionBar().setTitle(title);
         getActionBar().setDisplayShowHomeEnabled(true);

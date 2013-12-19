@@ -24,16 +24,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:entries="@array/widget_board_array_worksafe"
-                />
-
-        <Spinner
-                android:id="@+id/board_spinner_adult"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:entries="@array/widget_board_array"
-                android:visibility="gone"
                 />
 
         <EditText

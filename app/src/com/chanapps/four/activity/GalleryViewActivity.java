@@ -598,8 +598,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 getActionBar().setTitle(R.string.offline_chan_view_menu);
                 break;
             case OFFLINE_ALBUM_VIEW:
-                getActionBar().setTitle(String.format(getString(R.string.offline_board_view_title), title));
-                break;
             case PHOTO_VIEW:
             case ALBUM_VIEW:
             default:

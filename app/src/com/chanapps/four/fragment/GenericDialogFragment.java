@@ -38,7 +38,7 @@ public class GenericDialogFragment extends DialogFragment {
         setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))
                 .setView(layout)
-                .setNegativeButton(R.string.dialog_close,
+                .setNegativeButton(R.string.dismiss,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

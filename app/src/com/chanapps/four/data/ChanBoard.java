@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.AlphanumComparator;
 import com.chanapps.four.component.NotificationComponent;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.FetchChanDataService;
@@ -21,7 +22,6 @@ public class ChanBoard {
 
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
-    //private static final int NUM_RELATED_THREADS = 3;
 
     public static final String BOARD_CODE = "boardCode";
     public static final String ALL_BOARDS_BOARD_CODE = BoardType.ALL_BOARDS.boardCode();
@@ -30,7 +30,6 @@ public class ChanBoard {
     public static final String LATEST_IMAGES_BOARD_CODE = BoardType.LATEST_IMAGES.boardCode();
     public static final String WATCHLIST_BOARD_CODE = BoardType.WATCHLIST.boardCode();
     public static final String FAVORITES_BOARD_CODE = BoardType.FAVORITES.boardCode();
-    //public static final String META_BOARD_CODE = BoardType.META.boardCode();
     public static final String META_JAPANESE_CULTURE_BOARD_CODE = BoardType.JAPANESE_CULTURE.boardCode();
     public static final String META_INTERESTS_BOARD_CODE = BoardType.INTERESTS.boardCode();
     public static final String META_CREATIVE_BOARD_CODE = BoardType.CREATIVE.boardCode();
@@ -231,16 +230,17 @@ public class ChanBoard {
             boardsByType.put(boardType, boardsForType);
             if (DEBUG) Log.i(TAG, "Put boardsByType(" + boardType.boardCode() + ") as " + Arrays.toString(boardsForType.toArray()));
         }
+        final AlphanumComparator comparator = new AlphanumComparator();
         Collections.sort(boards, new Comparator<ChanBoard>() {
             @Override
             public int compare(ChanBoard lhs, ChanBoard rhs) {
-                return lhs.link.compareToIgnoreCase(rhs.link);
+                return comparator.compare(lhs.link, rhs.link);
             }
         });
         Collections.sort(safeBoards, new Comparator<ChanBoard>() {
             @Override
             public int compare(ChanBoard lhs, ChanBoard rhs) {
-                return lhs.link.compareToIgnoreCase(rhs.link);
+                return comparator.compare(lhs.link, rhs.link);
             }
         });
         String[][] relatedBoardCodes = initRelatedBoards();
@@ -410,10 +410,6 @@ public class ChanBoard {
                 {   BoardType.LATEST_IMAGES.toString(),
                         LATEST_IMAGES_BOARD_CODE, ctx.getString(R.string.board_latest_images)
                 },
-                //{
-                //        BoardType.META.toString(),
-                //        META_BOARD_CODE, ctx.getString(R.string.board_meta),
-                //},
                 {   BoardType.JAPANESE_CULTURE.toString(),
                         META_JAPANESE_CULTURE_BOARD_CODE, ctx.getString(R.string.board_type_japanese_culture),
                         "a", ctx.getString(R.string.board_a),
@@ -667,85 +663,6 @@ public class ChanBoard {
         return ChanThread.makeHeaderRow(context, this);
     }
 
-    /*
-    public Object[] makeThreadAdRow(Context context, int pos) {
-        ChanAd ad = ChanAd.randomAd(workSafe);
-        return ChanThread.makeAdRow(context, link, ad);
-    }
-
-    public Object[] makePostAdRow(Context context, int pos) {
-        ChanAd ad = ChanAd.randomAd(workSafe);
-        return ChanPost.makeAdRow(context, link, ad);
-    }
-    */
-    public Object[] makePostRelatedBoardsHeaderRow(Context context) {
-        return ChanPost.makeTitleRow(link, context.getString(R.string.board_related_boards_title),
-                String.format(context.getString(R.string.board_related_boards_desc), link));
-    }
-
-    /*
-    public Object[] makePostRelatedThreadsHeaderRow(Context context) {
-        return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title),
-                String.format(context.getString(R.string.thread_related_threads_desc), link));
-    }
-
-    public List<Object[]> makePostRelatedThreadsRows(long threadNo) {
-        List<Object[]> rows = new ArrayList<Object[]>();
-        if (threadNo == 0 || threads == null)
-            return rows;
-        synchronized (threads) {
-            if (threads.length == 0)
-                return rows;
-            rows = makePostRelatedThreadRows(threadNo, NUM_RELATED_THREADS);
-            if (rows.size() == 0)
-                rows = makePostNextThreadRows(threadNo, NUM_RELATED_THREADS);
-            return rows;
-        }
-    }
-
-    private List<Object[]> makePostRelatedThreadRows(long threadNo, int numThreads) {
-        final List<Object[]> rows = new ArrayList<Object[]>();
-
-        // first find the thread
-        int threadPos = findThreadPos(threadNo);
-        if (threadPos == -1)
-            return rows;
-        final ChanPost thread = threads[threadPos];
-
-        // count thread relevance, relevance = number of keywords in common
-        final List<ChanPost> relatedList = new ArrayList<ChanPost>();
-        final Map<ChanPost, Integer> relatedMap = new HashMap<ChanPost, Integer>();
-        final Set<String> keywords = thread.keywords();
-        for (int i = 0; i < threads.length; i++) {
-            ChanPost relatedThread = threads[i];
-            if (thread.no == relatedThread.no)
-                continue; // it's me!
-            if (relatedThread.sticky > 0)
-                continue;
-            if (relatedThread.isDead)
-                continue;
-            int relatedCount = relatedThread.keywordRelevance(keywords);
-            if (relatedCount > 0) {
-                relatedList.add(relatedThread);
-                relatedMap.put(relatedThread, relatedCount);
-            }
-        }
-
-        // order by relevance, most relevant first
-        Collections.sort(relatedList, new Comparator<ChanPost>() {
-            @Override
-            public int compare(ChanPost lhs, ChanPost rhs) {
-                return relatedMap.get(rhs) - relatedMap.get(lhs);
-            }
-        });
-
-        // finally make the thread-cursor-usable list
-        for (int i = 0; i < relatedList.size() && i < numThreads; i++) {
-            rows.add(relatedList.get(i).makeThreadLinkRow());
-        }
-        return rows;
-    }
-    */
     private int findThreadPos(long threadNo) {
         // find position of thread in list
         int threadPos = -1;
@@ -758,24 +675,7 @@ public class ChanBoard {
         }
         return threadPos;
     }
-    /*
-    private List<Object[]> makePostNextThreadRows(long threadNo, int numThreads) {
-        List<Object[]> rows = new ArrayList<Object[]>();
-        int threadPos = findThreadPos(threadNo);
-        if (threadPos == -1) { // didn't find it, default to first item
-            threadPos = 0;
-        }
-        int threadsLeft = numThreads;
-        for (int i = threadPos + 1; i < threads.length && threadsLeft > 0; i++) {
-            ChanPost thread = threads[i];
-            if (thread.isDead || thread.defData)
-                continue;
-            rows.add(thread.makeThreadLinkRow());
-            threadsLeft--;
-        }
-        return rows;
-    }
-     */
+
     public Object[] makePostBoardLinkRow(Context context, long threadNo) {
         return ChanPost.makeBoardLinkRow(context, this, threadNo);
     }

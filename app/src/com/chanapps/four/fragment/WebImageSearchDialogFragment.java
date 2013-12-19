@@ -47,7 +47,7 @@ public class WebImageSearchDialogFragment extends DialogFragment {
         });
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setPositiveButton(R.string.web_image_button_search, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.search_title, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         startWebSearch();

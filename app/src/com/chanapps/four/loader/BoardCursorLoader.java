@@ -85,43 +85,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         return cursor;
     }
 
-    /*
-    protected Cursor loadMetaBoard() {
-        if (DEBUG) Log.i(TAG, "loadMetaBoard");
-        boolean showNSFWBoards = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
-        List<BoardType> sorted = new ArrayList<BoardType>();
-        for (BoardType boardType : BoardType.values()) {
-            //if (!boardType.isCategory())
-            //    continue;
-            if (!boardType.isSFW() && !showNSFWBoards)
-                continue;
-            if (boardName.equals(boardType.boardCode()))
-                continue;
-            sorted.add(boardType);
-        }
-
-        final AlphanumComparator comparator = new AlphanumComparator();
-        Collections.sort(sorted, new Comparator<BoardType>() {
-            @Override
-            public int compare(BoardType lhs, BoardType rhs) {
-                return comparator.compare(lhs.boardCode(), rhs.boardCode());
-            }
-        });
-
-        int capacity = ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardName) ? 70 : 15;
-        MatrixCursor matrixCursor = ChanThread.buildMatrixCursor(capacity);
-        for (BoardType type : sorted) {
-            Object[] row = ChanThread.makeBoardTypeRow(context, type);
-            matrixCursor.addRow(row);
-            if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
-        }
-        if (DEBUG) Log.i(TAG, "Loading meta board complete");
-        return matrixCursor;
-    }
-    */
-
     protected Cursor loadMetaTypeBoard() {
         boolean showNSFWBoards = ChanBoard.showNSFW(context);
         if (DEBUG) Log.i(TAG, "loadMetaTypeBoard showNSFWBoards=" + showNSFWBoards);

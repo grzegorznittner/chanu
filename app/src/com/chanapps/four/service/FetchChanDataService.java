@@ -280,11 +280,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 NetworkProfileManager.instance().finishedFetchingData(this, (int)fetchTime, (int)fileSize);
             }
         } catch (IOException e) {
-            //toastUI(R.string.board_service_couldnt_read);
             Log.e(TAG, "IO Error fetching Chan board json", e);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
         } catch (Exception e) {
-            //toastUI(R.string.board_service_couldnt_load);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.WRONG_DATA);
 			Log.e(TAG, "Error fetching Chan board json", e);
 		} finally {
@@ -386,11 +384,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             }
 
         } catch (IOException e) {
-            //toastUI(R.string.board_service_couldnt_read);
         	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
             Log.e(TAG, "IO Error reading Chan thread json. " + e.getMessage(), e);
 		} catch (Exception e) {
-            //toastUI(R.string.board_service_couldnt_load);
 			NetworkProfileManager.instance().failedFetchingData(this, Failure.WRONG_DATA);
 			Log.e(TAG, "Error parsing Chan thread json. " + e.getMessage(), e);
 		} finally {

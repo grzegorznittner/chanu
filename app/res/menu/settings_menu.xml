@@ -19,7 +19,7 @@
           android:icon="@drawable/device_access_new_account"
             />
     <item android:id="@+id/about_menu"
-          android:title="@string/about_menu"
+          android:title="@string/about_activity"
           android:icon="@drawable/action_about"
             />
 </menu>

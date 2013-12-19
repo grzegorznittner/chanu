@@ -52,13 +52,6 @@ public class AboutFragment extends PreferenceFragment
         linkPreference("pref_about_data_color", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_CODE_COLOR_PICKER_URL));
         linkPreference("pref_about_store_chanapps", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.SKREENED_CHANU_STORE_URL));
         linkPreference("pref_about_translations_de", URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GERMAN_TRANSLATOR_URL));
-
-        /*
-        emailPreference("pref_about_developer_burns", getString(R.string.pref_about_developer_burns_sum));
-        emailPreference("pref_about_developer_nittner", getString(R.string.pref_about_developer_nittner_sum));
-        emailPreference("pref_about_developer_pop", getString(R.string.pref_about_developer_pop_sum));
-        emailPreference("pref_about_developer_milas", getString(R.string.pref_about_developer_milas_sum));
-        */
     }
 
     protected void versionPreference(final String pref) {
@@ -90,22 +83,6 @@ public class AboutFragment extends PreferenceFragment
                     }
                 });
     }
-    /*
-    protected void emailPreference(final String pref, final String email) {
-        findPreference(pref).setOnPreferenceClickListener(
-                new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        Uri uri = Uri.fromParts("mailto", email, null);
-                        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.application_name));
-                        getActivity().startActivity(
-                                Intent.createChooser(intent, getString(R.string.pref_about_send_email)));
-                        return true;
-                    }
-                });
-    }
-    */
 
     protected void addPurchasePreferences() {
         boolean hasProkey = BillingComponent.getInstance(getActivity().getApplicationContext()).hasProkey();

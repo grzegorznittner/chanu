@@ -166,23 +166,8 @@ public class ThreadImageExpander {
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                //collapseImageView();
                 String reason = failReason.toString();
-                /*
-                Context context = viewHolder.list_item_image_expanded.getContext();
-                NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
-                String msg;
-                if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD)
-                    msg = context.getString(R.string.thread_couldnt_download_image_down);
-                else if (failReason.getType() == FailReason.FailType.NETWORK_DENIED
-                        || failReason.getType() == FailReason.FailType.IO_ERROR
-                        || reason.equalsIgnoreCase("io_error"))
-                    msg = context.getString(R.string.thread_couldnt_download_image);
-                else
-                    msg = String.format(context.getString(R.string.thread_couldnt_load_image), failReason.getType().toString().toLowerCase().replaceAll("_", " "));
-                */
                 if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
-                //Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
                 if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
                     viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
                 if (viewHolder.list_item_image_expanded_click_effect != null) {
@@ -228,9 +213,6 @@ public class ThreadImageExpander {
             public void onLoadingCancelled(String imageUri, View view) {
                 if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
                     viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-                //collapseImageView();
-                //Context context = viewHolder.list_item_image_expanded.getContext();
-                //Toast.makeText(context, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
             }
         }); // load async
     }

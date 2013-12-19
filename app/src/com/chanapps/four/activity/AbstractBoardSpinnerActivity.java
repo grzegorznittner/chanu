@@ -20,6 +20,7 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.viewer.BoardGridViewer;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +49,6 @@ abstract public class
     protected boolean mShowNSFW = false;
 
     protected ActionBar actionBar;
-    protected int mSpinnerArrayId;
     protected String[] mSpinnerArray;
     protected ArrayAdapter<String> mSpinnerAdapter;
 
@@ -126,10 +126,7 @@ abstract public class
 
     protected void setSpinnerAdapter() {
         if (DEBUG) Log.i(TAG, "setSpinnerAdapter()");
-        mSpinnerArrayId = mShowNSFW
-                ? R.array.long_board_array
-                : R.array.long_board_array_worksafe;
-        mSpinnerArray = getResources().getStringArray(mSpinnerArrayId);
+        initSpinnerArray();
         mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -137,6 +134,16 @@ abstract public class
         bindSpinnerListener();
         if (DEBUG) Log.i(TAG, "setSpinnerAdapter() after bind listener");
         selectActionBarNavigationItem();
+    }
+
+    protected void initSpinnerArray() {
+        List<ChanBoard> boards = ChanBoard.getNewThreadBoardsRespectingNSFW(this);
+        String[] boardsArray = new String[boards.size() + 1];
+        int i = 0;
+        boardsArray[i++] = getString(R.string.board_select);
+        for (ChanBoard board : boards)
+            boardsArray[i++] = "/" + board.link + "/ " + board.name;
+        mSpinnerArray = boardsArray;
     }
 
     protected void bindSpinnerListener() {
@@ -248,7 +255,7 @@ abstract public class
             return SendFeedback.email(this);
         if (getString(R.string.purchase_menu).equals(boardAsMenu))
             return PurchaseActivity.startActivity(this);
-        if (getString(R.string.about_menu).equals(boardAsMenu))
+        if (getString(R.string.about_activity).equals(boardAsMenu))
             return AboutActivity.startActivity(this);
         return false;
     }

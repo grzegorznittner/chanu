@@ -313,6 +313,7 @@ public class ThreadActivity
         if (onTablet())
             createAbsListView();
         createPagerAsync();
+        loadDrawerArray();
         AnalyticsComponent.onStart(this);
     }
 

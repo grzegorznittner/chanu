@@ -478,9 +478,6 @@ public class ThreadViewer {
         return true;
     }
 
-    static private final String SHOW_EXIF_TEXT = "Show EXIF Data";
-    static private final String SHOW_EXIF_HTML = "<b>" + SHOW_EXIF_TEXT + "</b>";
-
     static private boolean setText(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
                                    final SpannableOnClickListener backlinkOnClickListener,
                                    final View.OnClickListener exifOnClickListener) {
@@ -500,8 +497,9 @@ public class ThreadViewer {
         }
 
         String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+        String exifText = tv.getContext().getResources().getString(R.string.exif);
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
-            text += (text.isEmpty() ? "" : " ") + SHOW_EXIF_HTML;
+            text += (text.isEmpty() ? "" : " ") + "<b>" + exifText + "</b>";
 
         String html = markupHtml(text);
         //if (DEBUG) Log.i(TAG, "text before replace:" + text);
@@ -530,13 +528,16 @@ public class ThreadViewer {
     static private void addExifSpan(TextView tv, Spannable spannable, final View.OnClickListener listener) {
         if (listener == null)
             return;
+        if (tv == null)
+            return;
         ClickableSpan exif = new ClickableSpan() {
             @Override
             public void onClick(View widget) {
                 listener.onClick(widget);
             }
         };
-        spannable.setSpan(exif, spannable.length() - SHOW_EXIF_TEXT.length(), spannable.length(),
+        String exifText = tv.getContext().getResources().getString(R.string.exif);
+        spannable.setSpan(exif, spannable.length() - exifText.length(), spannable.length(),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 

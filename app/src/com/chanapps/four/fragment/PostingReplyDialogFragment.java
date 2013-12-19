@@ -45,7 +45,7 @@ public class PostingReplyDialogFragment extends DialogFragment {
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
         TextView title = (TextView)layout.findViewById(R.id.title);
         TextView message = (TextView)layout.findViewById(R.id.message);
-        int titleId = threadNo <= 0 ? R.string.dialog_new_thread : R.string.dialog_post;
+        int titleId = threadNo <= 0 ? R.string.new_thread_menu : R.string.post_reply_title;
         title.setText(titleId);
         message.setText(R.string.dialog_posting_reply);
         setStyle(STYLE_NO_TITLE, 0);

@@ -27,14 +27,14 @@
             android:name="com.chanapps.four.FourChannerApp"
             android:icon="@drawable/launcher_icon"
             android:logo="@drawable/app_icon_actionbar"
-            android:label="@string/application_name"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme"
             android:hardwareAccelerated="true"
             >
 
         <activity
                 android:name=".PostReplyActivity"
-                android:label="@string/post_reply_activity"
+                android:label="@string/post_reply_title"
                 android:configChanges="orientation"
                 android:exported="false"
                 android:launchMode="standard">
@@ -47,7 +47,7 @@
 
         <activity
                 android:name=".PostReplyShareActivity"
-                android:label="@string/post_reply_share_activity"
+                android:label="@string/app_name"
                 android:configChanges="orientation"
                 android:exported="true"
                 android:launchMode="standard">
@@ -72,7 +72,7 @@
                     />
         </activity>
 
-        <activity android:name=".BoardSelectorActivity" android:label="@string/application_name" android:launchMode="singleTask"
+        <activity android:name=".BoardSelectorActivity" android:label="@string/app_name" android:launchMode="singleTask"
                 >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -125,7 +125,7 @@
                     />
         </activity>
 
-        <activity android:name=".SettingsActivity" android:label="@string/settings_activity"
+        <activity android:name=".SettingsActivity" android:label="@string/settings_menu"
                   android:launchMode="standard"
                 >
             <intent-filter>
@@ -134,7 +134,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PurchaseActivity" android:label="@string/purchase_activity"
+        <activity android:name=".PurchaseActivity" android:label="@string/purchase_menu"
                   android:launchMode="standard"
                 >
             <intent-filter>
@@ -324,17 +324,6 @@
                   android:theme="@style/android:Theme.Translucent.NoTitleBar"
                   android:launchMode="standard"
                   android:exported="false">
-            <!--
-            <intent-filter android:label="@string/camera_setas_wallpaper">
-                <action android:name="android.intent.action.ATTACH_DATA"/>
-                <data android:mimeType="image/*"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-            <intent-filter android:label="@string/application_name">
-                <action android:name="android.intent.action.SET_WALLPAPER"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-            -->
             <meta-data android:name="android.wallpaper.preview"
                        android:resource="@xml/wallpaper_picker_preview"/>
         </activity>

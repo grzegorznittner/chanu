@@ -45,8 +45,8 @@ public class BlocklistSelectToViewDialogFragment extends ListDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Log.e(TAG, "blocktypes = " + Arrays.toString(displayBlockTypes));
-        return createListDialog(R.string.blocklist_select_view_type,
-                R.string.dialog_blocklist, R.string.blocklist_empty,
+        return createListDialog(R.string.blocklist_select_type,
+                R.string.blocklist_title, R.string.blocklist_empty,
                 displayBlockTypes, new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

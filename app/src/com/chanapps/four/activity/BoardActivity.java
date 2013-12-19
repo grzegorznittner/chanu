@@ -512,6 +512,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         forceGridViewOptions();
         startLoaderAsync();
         */
+        loadDrawerArray();
         AnalyticsComponent.onStart(this);
     }
 
@@ -807,7 +808,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             case R.id.global_rules_menu:
                 (new StringResourceDialog(this,
                         R.layout.board_rules_dialog,
-                        R.string.global_rules_header,
+                        R.string.global_rules_menu,
                         R.string.global_rules_detail))
                         .show();
                 return true;
@@ -900,7 +901,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            //menu.findItem(R.id.refresh_menu).setVisible(true);
+            menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -916,7 +917,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(true);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            //menu.findItem(R.id.refresh_menu).setVisible(false);
+            menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -932,7 +933,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            //menu.findItem(R.id.refresh_menu).setVisible(true);
+            menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -948,7 +949,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            //menu.findItem(R.id.refresh_menu).setVisible(false);
+            menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -964,7 +965,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
             //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
             //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            //menu.findItem(R.id.refresh_menu).setVisible(true);
+            menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(true);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(true);
             //menu.findItem(R.id.board_rules_menu).setVisible(true);

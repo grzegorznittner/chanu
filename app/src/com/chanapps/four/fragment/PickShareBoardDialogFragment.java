@@ -58,7 +58,7 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initBoards(getActivity());
-        return createListDialog(R.string.post_reply_share_pick_board, R.string.post_reply_share_pick_board,
+        return createListDialog(R.string.new_thread_menu, R.string.new_thread_menu,
                 R.string.post_reply_share_error,
                 boards, new ListView.OnItemClickListener() {
                     @Override

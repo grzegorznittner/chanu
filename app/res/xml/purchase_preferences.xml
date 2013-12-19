@@ -26,14 +26,6 @@
                 android:summary="@string/pref_about_contact_email"
                 />
 
-        <!--
-        <Preference
-                android:key="pref_consume_prokey"
-                android:title="@string/pref_consume_prokey"
-                android:summary="@string/pref_consume_prokey_summ" />
-
-        -->
-
     </PreferenceCategory>
     
 </PreferenceScreen>

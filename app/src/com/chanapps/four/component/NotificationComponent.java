@@ -67,7 +67,7 @@ public class NotificationComponent {
             return;
         int notificationId = board.hashCode() + (int)threadNo;
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String title = context.getString(R.string.app_name_title);
+        String title = context.getString(R.string.app_name);
         String postText;
         if (loadedThread.isDead) {
             postText = context.getString(R.string.mobile_profile_fetch_dead_thread);
@@ -82,17 +82,18 @@ public class NotificationComponent {
         //String text = String.format("%s and %s for %s/%d", postText, imageText, board, threadNo);
         String text = (postText + " " + threadId).trim();
 
-        Bitmap largeIcon = loadLargeIcon(context, loadedThread.posts[0]);
         Intent threadActivityIntent = ThreadActivity.createIntent(context, board, threadNo, "");
         PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)System.currentTimeMillis(),
                 threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
         Notification.Builder notifBuilder = new Notification.Builder(context)
-                .setLargeIcon(largeIcon)
                 .setSmallIcon(R.drawable.app_icon_notification)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
+        Bitmap largeIcon = loadLargeIcon(context, loadedThread.posts[0]);
+        if (largeIcon != null)
+            notifBuilder.setLargeIcon(largeIcon);
         if (numNewReplies > 0)
             notifBuilder.setNumber(numNewReplies);
         Notification noti = notifBuilder.getNotification();
@@ -137,7 +138,7 @@ public class NotificationComponent {
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
-                .setContentTitle(context.getString(R.string.app_name_title))
+                .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(text)
                 .setSmallIcon(R.drawable.app_icon_notification);
 
@@ -190,21 +191,33 @@ public class NotificationComponent {
     private static Bitmap loadLargeIcon(Context context, ChanPost loadedThread) {
         Bitmap largeIcon = null;
         try {
-            largeIcon = loadIconBitmap(context, loadedThread);
-            if (DEBUG) Log.i(TAG, "loadLargeIcon() loaded notification large icon=" + largeIcon);
+            try {
+                largeIcon = loadIconBitmap(context, loadedThread);
+                if (DEBUG) Log.i(TAG, "loadLargeIcon() loaded notification large icon=" + largeIcon);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "loadLargeIcon() exception loading thumbnail for notification for thread=" + loadedThread.no, e);
+                if (DEBUG) Log.i(TAG, "using default notification large icon");
+            }
+            catch (Error e) {
+                Log.e(TAG, "loadLargeIcon() error loading thumbnail for notification for thread=" + loadedThread.no, e);
+                if (DEBUG) Log.i(TAG, "using default notification large icon");
+            }
+            if (largeIcon == null) {
+                if (DEBUG) Log.i(TAG, "loadLargeIcon() null bitmap, loading board default");
+                int drawableId = ChanBoard.getRandomImageResourceId(loadedThread.board, loadedThread.no);
+                largeIcon = BitmapFactory.decodeResource(context.getResources(), drawableId);
+            }
+            if (largeIcon == null) {
+                if (DEBUG) Log.i(TAG, "loadLargeIcon() null bitmap, loading app-wide resource");
+                largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.app_icon_notification_large);
+            }
         }
         catch (Exception e) {
-            Log.e(TAG, "loadLargeIcon() exception loading thumbnail for notification for thread=" + loadedThread.no, e);
-            if (DEBUG) Log.i(TAG, "using default notification large icon");
+            Log.e(TAG, "loadLargeIcon() exception loading default thumbnail for notification for thread=" + loadedThread.no, e);
         }
-        if (largeIcon == null) {
-            if (DEBUG) Log.i(TAG, "loadLargeIcon() null bitmap, loading board default");
-            int drawableId = ChanBoard.getRandomImageResourceId(loadedThread.board, loadedThread.no);
-            largeIcon = BitmapFactory.decodeResource(context.getResources(), drawableId);
-        }
-        if (largeIcon == null) {
-            if (DEBUG) Log.i(TAG, "loadLargeIcon() null bitmap, loading app-wide resource");
-            largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.app_icon_notification_large);
+        catch (Error e) {
+            Log.e(TAG, "loadLargeIcon() error loading default thumbnail for notification for thread=" + loadedThread.no, e);
         }
         return largeIcon;
     }
@@ -248,7 +261,7 @@ public class NotificationComponent {
         String text = titleText + " " + threadText + " " + downloadText;
 
         NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
-                .setContentTitle(context.getString(R.string.app_name_title))
+                .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(text)
                 .setProgress(totalNumImages, downloadedImages, false)
                 .setSmallIcon(R.drawable.app_icon_notification);
@@ -314,7 +327,7 @@ public class NotificationComponent {
 
         int notificationId = boardCode.hashCode() + FAVORITES_NOTIFICATION_TOKEN;
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String title = context.getString(R.string.app_name_title);
+        String title = context.getString(R.string.app_name);
         String postPlurals = context.getResources().getQuantityString(R.plurals.board_activity_updated, numNewThreads);
         String text = String.format(postPlurals, boardCode);
 

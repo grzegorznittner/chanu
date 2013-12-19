@@ -658,34 +658,6 @@ public class ChanPost {
         if (sticky > 0 && replies == 0)
             return context.getString(R.string.thread_is_sticky) + (closed > 0 ? " " + context.getString(R.string.thread_is_closed) : "");
         String text = "";
-        /*
-        if (showNumReplies) {
-            if (replies > 0) {
-                String repliesStr =
-                        String.format(context.getResources().getQuantityString(
-                                abbrev ? R.plurals.thread_num_replies : R.plurals.thread_num_replies,
-                                replies
-                            ),
-                            replies);
-                String imagesStr = images <= 0
-                        ? context.getString(abbrev ? R.string.thread_has_no_imgs : R.string.thread_has_no_images)
-                        : String.format(context.getResources().getQuantityString(
-                                abbrev ? R.plurals.thread_num_imgs : R.plurals.thread_num_images,
-                                images
-                            ),
-                            images);
-                text = repliesStr
-                        + (boardLevel ? HEADLINE_BOARDLEVEL_DELIMITER : HEADLINE_THREADLEVEL_DELIMITER)
-                        + imagesStr;
-            }
-            else {
-                text = context.getString(R.string.thread_has_no_posts);
-            }
-        }
-        else {
-            text = "";
-        }
-        */
         if (!boardLevel && resto == 0) {
             if (imagelimit == 1)
                 text += " " + context.getString(R.string.thread_has_imagelimit);

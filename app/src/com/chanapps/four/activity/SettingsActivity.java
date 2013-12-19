@@ -177,7 +177,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
             case R.id.global_rules_menu:
                 (new StringResourceDialog(this,
                         R.layout.board_rules_dialog,
-                        R.string.global_rules_header,
+                        R.string.global_rules_menu,
                         R.string.global_rules_detail))
                         .show();
                 return true;

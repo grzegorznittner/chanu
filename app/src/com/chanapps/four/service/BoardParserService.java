@@ -150,7 +150,6 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
             }
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
-            //toastUI(R.string.board_service_couldnt_read);
         	NetworkProfileManager.instance().failedParsingData(this, Failure.WRONG_DATA);
             Log.e(TAG, "IO Error reading Chan board json", e);
 		}

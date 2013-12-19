@@ -20,6 +20,7 @@ import com.chanapps.four.mColorPicker.ColorPickerDialog;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,19 +78,31 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
         super.onPause();
     }
 
+    protected String[] spinnerArray() {
+        List<ChanBoard> boards = ChanBoard.getNewThreadBoardsRespectingNSFW(this);
+        String[] boardsArray = new String[boards.size() + 1];
+        int i = 0;
+        for (ChanBoard board : boards)
+            boardsArray[i++] = "/" + board.link + "/ " + board.name;
+        boardsArray[i++] = getString(R.string.board_watch);
+        return boardsArray;
+    }
+
+    protected ArrayAdapter<String> createSpinnerAdapter() {
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, android.R.id.text1, spinnerArray());
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return spinnerAdapter;
+    }
+
     protected void setupSpinner() {
-        boolean adultMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
-        int spinnerId = adultMode ? R.id.board_spinner_adult : R.id.board_spinner;
-        int otherSpinnerId = adultMode ? R.id.board_spinner : R.id.board_spinner_adult;
-        Spinner spinner = (Spinner) findViewById(spinnerId);
-        Spinner otherSpinner = (Spinner) findViewById(otherSpinnerId);
-        spinner.setVisibility(View.VISIBLE);
-        otherSpinner.setVisibility(View.GONE);
+        Spinner spinner = (Spinner) findViewById(R.id.board_spinner);
+        ArrayAdapter<String> spinnerAdapter = createSpinnerAdapter();
+        spinner.setAdapter(spinnerAdapter);
         int position = 0;
         if (widgetConf.boardCode == null || widgetConf.boardCode.isEmpty()) {
             position = 0;
         } else {
-            SpinnerAdapter spinnerAdapter = spinner.getAdapter();
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
                 String boardText = (String) spinnerAdapter.getItem(i);
                 if (ChanBoard.isVirtualBoard(widgetConf.boardCode)

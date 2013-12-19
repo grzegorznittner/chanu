@@ -33,7 +33,6 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     public static final String PREF_PURCHASE_CATEGORY = "pref_about_developer_category";
     public static final String PREF_PURCHASE_PROKEY = "pref_purchase_prokey";
     public static final String PREF_INSTALLED_PROKEY = "pref_installed_prokey";
-    public static final String PREF_CONSUME_PROKEY = "pref_consume_prokey"; // TEST ONLY
     public static final int PURCHASE_REQUEST_CODE = 1987;
 
     protected int themeId;
@@ -141,7 +140,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
             case R.id.global_rules_menu:
                 (new StringResourceDialog(this,
                         R.layout.board_rules_dialog,
-                        R.string.global_rules_header,
+                        R.string.global_rules_menu,
                         R.string.global_rules_detail))
                         .show();
                 return true;

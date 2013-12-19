@@ -2,10 +2,6 @@
 
     <!-- titles -->
     <string name="app_name">Chanu</string>
-    <string name="app_name_title">Chanu</string>
-    <string name="app_name_home">Go to Chanu</string>
-    <string name="application_name">Chanu</string>
-    <string name="application_tagname">4chan Reloaded</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
     <string name="fragment_layout">2 Pane Layout</string>
@@ -13,23 +9,14 @@
     <string name="board_activity">Board</string>
     <string name="title_photogrid_activity">PhotoGrid</string>
     <string name="full_screen_image_activity">View Image</string>
-    <string name="post_reply_activity">Post Reply</string>
-    <string name="post_reply_share_activity">Chanu</string>
-    <string name="settings_activity">Settings</string>
-    <string name="purchase_activity">Purchase</string>
     <string name="about_activity">About</string>
     <string name="board_image">Board Image</string>
     <string name="thread_post_image">Thread Image</string>
     <string name="thread_post_image_expanded">Expanded Thread Image</string>
-    <string name="thread_post_reply_button">Reply</string>
     <string name="thread_post_expand_button">Expand</string>
     <string name="thread_post_collapse_button">Collapse</string>
     <string name="thread_country_flag">Country Flag</string>
     <string name="not_implemented">Not yet implemented</string>
-    <string name="thread_related_threads_title">Related Threads</string>
-    <string name="thread_related_threads_desc">Threads on /%1$s/ covering a similar topic</string>
-    <string name="board_search">Search</string>
-    <string name="thread_search">Search</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Enter text</string>
     <string name="search_results_title">Search Results</string>
@@ -37,26 +24,15 @@
     <string name="board_search_no_results">No threads matching \"%1$s\"</string>
     <string name="thread_search_results">Posts matching \"%1$s\"</string>
     <string name="thread_search_no_results">No posts matching \"%1$s\"</string>
-    <string name="board_related_boards_title">Related Boards</string>
-    <string name="board_related_boards_desc">Boards having similar topics to /%1$s/</string>
 
-    <!-- blocklist -->
-    <string name="blocklist_button">Block Posts With Id</string>
     <string name="blocklist_title">Blocklist</string>
     <string name="blocklist_title_with_type">%1$s Blocklist</string>
-    <string name="blocklist_title_remove">Select to remove from blocklist</string>
-    <string name="blocklist_message">Select to remove from blocklist</string>
-    <string name="blocklist_message_empty">Your blocklist is empty</string>
-    <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
     <string name="blocklist_add_id_confirm">Add %1$s%2$s %3$s to blocklist?</string>
-    <string name="blocklist_remove_id_confirm">Remove %1$s%2$s %3$s from blocklist?</string>
-    <string name="blocklist_select_view_type">Select Block Type</string>
     <string name="blocklist_select_type">Select Block Type</string>
     <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
     <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block</string>
 
     <!-- delete post -->
-    <string name="delete_button">Delete Post</string>
     <string name="delete_post_title">Delete Post</string>
     <string name="delete_post_title_confirm">Password for Delete</string>
     <string name="delete_post_password_hint">Password for Post</string>
@@ -72,22 +48,12 @@
     <string name="delete_post_only_image">Delete Only Image?</string>
 
     <!-- billing -->
-    <string name="connect_to_billing_title">Purchase</string>
     <string name="connect_to_billing_msg">Connecting to Google Play...</string>
     <string name="purchase_error">Couldn\'t purchase, try again later</string>
     <string name="purchase_success">Ads are now disabled</string>
-    <string name="consume_success">Consume success!</string>
-
-    <!-- thread popup -->
-    <string name="thread_popup_title">Post %1$d</string>
-    <string name="thread_popup_reply">Reply</string>
-    <string name="thread_popup_goto">Goto</string>
-
     <string name="dialog_color_picker_title">Pick a Color</string>
 
     <!-- report post -->
-    <string name="report_button">Report Post</string>
-    <string name="report_post_title">Report Post</string>
     <string name="report_post_title_type">Reason for report</string>
     <string name="report_post">Report</string>
     <string name="report_post_select_type">Select a report type</string>
@@ -112,15 +78,12 @@
     <string name="web_image_url_text_hint">Image Url</string>
     <string name="web_image_search_text_hint">search text</string>
     <string name="web_image_key_download">Load</string>
-    <string name="web_image_key_search">Search</string>
     <string name="web_image_button_download">Download</string>
     <string name="web_image_button_browse">Browse for image</string>
-    <string name="web_image_button_search">Search</string>
     <string name="web_image_button_attach">Attach</string>
     <string name="web_image_input_url_first">Enter url to download image</string>
     <string name="web_image_download_first">Download image before attaching</string>
     <string name="web_image_download_hint">Download image</string>
-    <string name="web_image_download_failed">Couldn\'t download image</string>
 
     <!-- menus -->
     <string name="web_menu">4chan.org</string>
@@ -128,18 +91,12 @@
     <string name="settings_menu">Settings</string>
     <string name="global_rules_menu">Global rules</string>
     <string name="board_rules_menu">Board rules</string>
-    <string name="go_to_top_position_menu">Go to top</string>
     <string name="play_thread_menu">Play thread</string>
     <string name="play_thread_stop_menu">Stop thread</string>
-    <string name="go_to_end_position_menu">Go to end</string>
     <string name="refresh_board_menu">Refresh</string>
     <string name="refresh_thread_menu">Refresh</string>
     <string name="scroll_to_bottom_menu">Jump to bottom</string>
     <string name="new_thread_menu">New thread</string>
-    <string name="new_thread_short">New thread</string>
-    <string name="prefetch_board_menu">Preload threads</string>
-    <string name="board_thread_info_menu">Info</string>
-    <string name="board_thread_view_menu">View</string>
     <string name="board_thread_gallery_menu">Gallery</string>
     <string name="board_thread_watch_menu">Add to watchlist</string>
     <string name="board_add_to_favorites_menu">Add to favorites</string>
@@ -151,136 +108,47 @@
     <string name="catalog_menu">Catalog</string>
     <string name="view_as_grid_menu">View as grid</string>
     <string name="view_as_list_menu">View as list</string>
-    <string name="thread_image_popup_menu">Thread images</string>
-    <string name="thread_navigate_popup_menu">Thread navigation</string>
-    <string name="thread_reply_menu">Reply to thread</string>
-    <string name="post_reply_menu">Reply to thread</string>
-    <string name="post_reply_quote_menu">Post quoted reply</string>
     <string name="post_reply_all_menu">Reply</string>
     <string name="post_reply_all_quote_menu">Quoted reply</string>
-    <string name="go_to_link_menu">Go to link</string>
-    <string name="go_to_link_not_found">No links found in posts</string>
-    <string name="select_text_menu">Select text</string>
-    <string name="select_text_hint">Select text</string>
     <string name="copy_text_menu">Copy post text</string>
-    <string name="delete_report_posts_menu">Delete/report posts</string>
     <string name="delete_posts_menu">Delete post</string>
-    <string name="delete_blocks_menu">Delete block</string>
     <string name="report_posts_menu">Report post</string>
     <string name="block_posts_menu">Block post</string>
-    <string name="translate_posts_menu">Translate post</string>
     <string name="translate_no_text">No text found to translate</string>
     <string name="share_image">Share</string>
-    <string name="share_thread">Share</string>
-    <string name="share_text">Share</string>
-    <string name="share_text_default">Thread /</string>
-    <string name="share_text_empty">No text found to share</string>
-    <string name="toggle_image_only_menu">Toggle image only</string>
-    <string name="prev_image_menu">Prev image</string>
-    <string name="next_image_menu">Next image</string>
-    <string name="download_all_images_menu">Prefetch images</string>
     <string name="download_all_images_to_gallery_menu">Download images</string>
     <string name="download_images_to_gallery_menu">Download image</string>
-    <string name="download_image_menu">Save to gallery</string>
-    <string name="set_as_wallpaper_menu">Set as wallpaper</string>
     <string name="view_image_gallery_menu">Thread gallery</string>
     <string name="image_search_menu">Tineye image search</string>
     <string name="anime_image_search_menu">IQDB image search</string>
-    <string name="share_image_menu">Share image</string>
-    <string name="share_text_menu">Share text</string>
-    <string name="post_reply_send_menu">Send</string>
     <string name="offline_board_view_menu">Board gallery</string>
-    <string name="offline_board_view_title">%1$s</string>
     <string name="offline_chan_view_menu">All boards gallery</string>
-
-    <!-- board types tab -->
-    <string name="japanese_culture">Japanese Culture</string>
-    <string name="interests">Interests</string>
-    <string name="creative">Creative</string>
-    <string name="adult">Adult</string>
-    <string name="other">Other</string>
-    <string name="misc">Misc.</string>
-
-    <!-- Board selector activity -->
-    <string name="board_selector_all_boards_title">All Boards</string>
-    <string name="board_selector_all_boards_desc">All boards on Chanu</string>
-    <string name="board_selector_watchlist_title">Thread Watchlist</string>
-    <string name="board_selector_recent_title">Popular Threads</string>
-    <string name="board_selector_popular_title">Popular Threads</string>
-    <string name="board_selector_popular_desc">The current top ten threads</string>
-    <string name="board_selector_latest_title">Latest Posts</string>
-    <string name="board_selector_latest_desc">The ten latest posts</string>
-    <string name="board_selector_latest_images_title">Recent Images</string>
-    <string name="board_selector_latest_images_desc">The three latest uploaded images</string>
-    <string name="board_selector_boardlist_title">Categories</string>
-
-    <!-- board activity -->
-    <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
-    <string name="board_end_of_board">End of Board</string>
-    <string name="board_click_for_more">(click for more)</string>
-    <string name="board_just_now">just now</string>
     <string name="board_last_updated">Last updated %s</string>
-    <string name="board_wait_to_refresh">Min 10 sec between refresh</string>
     <string name="board_offline_refresh">Cannot refresh, network offline</string>
-    <string name="board_refresh_button_text">Refresh</string>
-    <string name="board_ignore_button_text">Ignore</string>
 
     <!-- thread activity -->
-    <string name="thread_activity_refresh">Refreshing thread...</string>
-    <string name="thread_activity_fresh">Thread is current</string>
-    <string name="thread_activity_nochange">No new comments</string>
     <string name="thread_dead">Can\'t refresh, thread is dead</string>
-    <string name="thread_is_dead">DEAD THREAD</string>
     <string name="thread_closed">Can\'t refresh, thread is closed</string>
     <string name="thread_is_closed">CLOSED</string>
     <string name="thread_is_sticky">STICKY</string>
-    <string name="thread_has_no_posts">no posts</string>
-    <string name="thread_has_no_images">no images</string>
-    <string name="thread_has_no_imgs">no imgs</string>
-    <string name="thread_has_bumplimit">(BL)</string>
-    <string name="thread_has_imagelimit">(IL)</string>
-    <string name="thread_wait_to_refresh">Min 10 sec between refresh</string>
-    <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_context_select">Done</string>
     <string name="board_no_threads_selected">No threads selected</string>
     <string name="thread_no_posts_selected">No posts selected</string>
-    <string name="thread_couldnt_load">Couldn\'t load thread</string>
-    <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
-    <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
-    <string name="thread_couldnt_download_image_down">Network issue, can\'t download image</string>
     <string name="thread_couldnt_download_image">Couldn\'t download image</string>
     <string name="thread_couldnt_create_pager">Couldn\'t create pager</string>
-    <string name="thread_no_prev_posts_found">No referenced posts found</string>
-    <string name="thread_no_replies">NO REPLIES</string>
-    <string name="thread_no_replies_found">No replies found</string>
-    <string name="thread_no_same_poster_found">No posts found with same poster</string>
-    <string name="thread_prev_replies_found">Found %1$d references</string>
-    <string name="thread_next_replies_found">Found %1$d replies</string>
-    <string name="thread_no_id_found">No other posts found for %1$s</string>
-    <string name="thread_invalid_id">No thread found</string>
-    <string name="thread_id_found">Found %1$d other posts for same posters</string>
     <string name="thread_no_text_subject"></string>
     <string name="thread_not_found">Thread not found, showing first thread</string>
-    <string name="thread_go_to_link">Go To Link</string>
     <string name="thread_image_download_error">Error downloading thread images</string>
     <string name="thread_no_start_play">Can\'t start play, already at end</string>
-    <string name="thread_post_title">Post</string>
-    <string name="board_grid_item_no_replies">No replies</string>
-    <string name="board_grid_item_no_threads">View threads</string>
-    <string name="board_grid_item_no_images">No images</string>
 
    <!-- watchlist -->
     <string name="board_empty_all_boards">Unable to load boards</string>
-    <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="board_empty_watchlist">Thread watchlist empty\n\nWatch a thread to add it here</string>
     <string name="board_empty_favorites">Favorite boards empty\n\nStar a board to add it here</string>
-    <string name="board_empty_recent">Unable to load latest images</string>
     <string name="board_empty_popular">Unable to load popular threads</string>
     <string name="board_empty_latest">Unable to load latest posts</string>
-    <string name="board_empty_meta">Unable to load boards</string>
     <string name="board_empty_images">Unable to load latest images</string>
     <string name="board_empty_default">Unable to load board</string>
-    <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_not_added_to_watchlist">Couldn\'t add thread to watchlist</string>
     <string name="board_not_added_to_favorites">Couldn\'t add board to favorites</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
@@ -295,90 +163,32 @@
     <string name="favorites_not_deleted_board">Couldn\'t delete board from favorites</string>
     <string name="thread_watchlist_default_name">Watched Thread</string>
 
-
-    <!-- board service -->
-    <string name="board_service_couldnt_fetch">Couldn\'t get board</string>
-    <string name="board_service_couldnt_read">Couldn\'t read board</string>
-    <string name="board_service_couldnt_load">Couldn\'t load board</string>
-    <string name="board_service_couldnt_read_db">Couldn\'t read board data</string>
-
-    <!-- thread service -->
-    <string name="thread_service_no_thread">Couldn\'t find thread</string>
-    <string name="thread_service_not_found">Thread no longer exists</string>
-    <string name="thread_service_couldnt_read">Couldn\'t read thread</string>
-    <string name="thread_service_couldnt_load">Couldn\'t load thread</string>
-    <string name="thread_service_couldnt_read_db">Couldn\'t read thread data</string>
-
-    <!-- full screen image activity -->
-    <string name="full_screen_saving_image">Saving image...</string>
-    <string name="full_screen_setting_wallpaper">Setting wallpaper...</string>
-    <string name="full_screen_save_image_error">Couldn\'t save image to gallery</string>
-    <string name="full_screen_view_image_error">Couldn\'t load image</string>
-    <string name="full_screen_view_gallery_error">Couldn\'t view image in gallery</string>
-    <string name="full_screen_download_description">Downloaded from 4chan URL:</string>
-    <string name="full_screen_image_saved">Image saved</string>
-    <string name="full_screen_wallpaper_set">Wallpaper set</string>
-    <string name="full_screen_wallpaper_error">Couldn\'t set wallpaper</string>
-    <string name="full_screen_share_image_intent">Share Image</string>
-    <string name="full_screen_image_shared">Image shared</string>
-    <string name="full_screen_sharing_error">Couldn\'t share image</string>
-    <string name="full_screen_saved_to_gallery">Saved image to gallery</string>
-    <string name="full_screen_wait_until_downloaded">Wait until downloaded</string>
     <string name="full_screen_image_search_not_found">Couldn\'t find image for search</string>
     <string name="full_screen_image_search_error">Couldn\'t search for image</string>
-    <string name="fullscreen_image_progress_upper">Loading an Image</string>
-    <string name="fullscreen_image_offline_upper">Offline mode</string>
-    <string name="full_screen_cancel_button">Cancel Download</string>
-    <string name="full_screen_close_button">Close</string>
-    <string name="download_all_images_notice_prefetch">You will be notified when preload finishes</string>
+
     <string name="download_all_images_notice">You will be notified when download finishes</string>
     <string name="download_all_images_complete">Download complete</string>
     <string name="download_all_images_complete_detail">/%1$s/%2$d saved to gallery</string>
-    <string name="download_all_images_info">Download complete</string>
 
     <!-- popup text -->
-    <string name="spoiler">Show Spoilers</string>
-    <string name="spoiler_show">Show Spoilers</string>
-    <string name="spoiler_title">Spoiler</string>
     <string name="exif">EXIF Data</string>
-    <string name="exif_show">EXIF Data</string>
-    <string name="exif_title">EXIF Data</string>
     <string name="copy_text">Copy</string>
     <string name="copy_text_complete">Copied text</string>
     <string name="translate">Translate post</string>
-    <string name="report">Report Post</string>
-    <string name="reply">Post Reply</string>
-    <string name="reply_short">Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
-    <string name="dead_thread_reply">Dead Thread No Reply</string>
-    <string name="closed_thread_reply">Closed Thread No Reply</string>
-    <string name="dead_thread_abbrev">D</string>
-    <string name="closed_thread_abbrev">C</string>
-    <string name="sticky_thread_abbrev">S</string>
     <string name="thread_backlinks">References</string>
     <string name="thread_replies">Replies</string>
     <string name="thread_same_id">Same Id</string>
     <string name="thread_post">Post</string>
-    <string name="thread_info">Thread Info</string>
-    <string name="highlight_replies">Highlight Replies</string>
-    <string name="highlight_previous">Highlight References</string>
-    <string name="highlight_ids">Highlight Poster</string>
     <string name="popup_country_flag">Country Flag</string>
-    <string name="popup_show_image">Show Image</string>
-    <string name="popup_show_text">Show Text</string>
-    <string name="popup_header_text_format">Post %1$d</string>
     <string name="popup_go_to_thread">Go To Thread</string>
 
     <!-- dialog text -->
-    <string name="dialog_cache">Cache</string>
-    <string name="dialog_blocklist">Blocklist</string>
     <string name="dialog_pass">4chan Pass</string>
     <string name="dialog_logout_pass">Logging out Pass...</string>
     <string name="dialog_authorizing_pass">Authorizing Pass...</string>
     <string name="dialog_report_post">Report Post</string>
-    <string name="dialog_post">Post Reply</string>
-    <string name="dialog_new_thread">New Thread</string>
     <string name="dialog_posting_reply">Posting...</string>
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
     <string name="dialog_delete_favorites_board">Remove board from favorites?</string>
@@ -389,7 +199,6 @@
     <string name="dialog_clear_cache_confirm">Clear all cached data? This may take several minutes.</string>
     <string name="dialog_reset_preferences_confirm">Reset all preferences to default?</string>
     <string name="dialog_authorize">Authorize</string>
-    <string name="dialog_close">Close</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_remove">Remove</string>
@@ -398,45 +207,30 @@
     <string name="dialog_set">Set</string>
     <string name="dialog_reset">Reset</string>
     <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_watchlist">Thread Watchlist</string>
-    <string name="dialog_favorites">Favorite Boards</string>
     <string name="dialog_added_to_watchlist">Added to watchlist</string>
     <string name="dialog_deleted_from_watchlist">Removed from watchlist</string>
     <string name="dialog_cleared_watchlist">Watchlist cleared</string>
     <string name="dialog_cleaning_watchlist">Cleaning watchlist...</string>
     <string name="dialog_cleaned_watchlist">Watchlist cleaned</string>
-    <string name="dialog_watchlist_cleaning_error">Couldn\'t clean watchlist</string>
     <string name="dialog_reset_title">Reset Preferences</string>
     <string name="dialog_reset_preferences">Preferences reset to defaults</string>
 
     <!-- post reply activity -->
     <string name="post_reply_title">Post Reply</string>
-    <string name="post_reply_thread_title">New Thread</string>
     <string name="post_reply_text_hint">Comment (Optional)</string>
     <string name="post_reply_text_hint_required">Comment (Required)</string>
-
     <string name="post_reply_web_menu">Add web image</string>
     <string name="post_reply_picture_menu">Add gallery image</string>
-    <string name="post_reply_camera_menu">Add camera image</string>
     <string name="post_reply_pass_enable_menu">Authorize 4chan pass</string>
     <string name="post_reply_pass_disable_menu">Logout 4chan pass</string>
-
-    <string name="post_reply_camera_hint">Camera</string>
-    <string name="post_reply_web_hint">Download Image</string>
     <string name="post_reply_search_hint">Search for Image</string>
-    <string name="post_reply_picture_hint">Gallery</string>
     <string name="post_reply_delete_hint">Delete Image</string>
-    <string name="post_reply_rotate_left_hint">Rotate Left</string>
-    <string name="post_reply_rotate_right_hint">Rotate Right</string>
-    <string name="post_reply_bump_hint">Bump</string>
     <string name="post_reply_sage_hint">Sage</string>
     <string name="post_reply_pass_enabled_text">Bypassing captcha with 4chan Pass</string>
     <string name="post_reply_pass_enable_text">Bypass captcha with 4chan Pass</string>
     <string name="post_reply_pass_disabled_text">4chan Pass logged out</string>
     <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile data</string>
     <string name="post_reply_pass_no_connection_text">Cannot post while connection is down</string>
-    <string name="post_reply_pass_enable_hint">Authorize 4chan Pass</string>
-    <string name="post_reply_pass_disable_hint">Logout 4chan Pass</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>
     <string name="post_reply_name_hint">Name (Optional)</string>
@@ -447,18 +241,12 @@
     <string name="post_reply_password_info_hint">Password usage info</string>
     <string name="post_reply_password_info_detail">The password is a random number which lets you delete your post later.
         This number has been generated for you, but you may change it if you wish.</string>
-    <string name="post_reply_password_text">Password</string>
     <string name="post_reply_spoiler">Spoiler Image</string>
     <string name="post_reply_no_board">Can\'t post, unknown board</string>
     <string name="post_reply_added_image">Added image to post</string>
-    <string name="post_reply_no_load_camera_image">Couldn\'t load camera image</string>
     <string name="post_reply_no_load_gallery_image">Couldn\'t load gallery image</string>
-    <string name="post_reply_no_load_image">Couldn\'t load image</string>
     <string name="post_reply_no_image">Couldn\'t load image</string>
     <string name="post_reply_no_image_rotate">Couldn\'t rotate image</string>
-    <string name="post_reply_no_camera">Couldn\'t load camera</string>
-    <string name="post_reply_camera_capture">Camera image</string>
-    <string name="post_reply_posting">Posting</string>
     <string name="post_reply_captcha_error">Couldn\'t load captcha</string>
     <string name="post_reply_enter_captcha">Enter captcha</string>
     <string name="post_reply_add_image">Add image for a new thread</string>
@@ -473,21 +261,10 @@
     <string name="post_reply_send">Send</string>
     <string name="post_reply_share_error">Couldn\'t share image to Chanu</string>
     <string name="post_reply_new_thread_error">Couldn\'t post new thread</string>
-    <string name="post_reply_share_pick_board">New Thread - Pick Board</string>
-    <string name="post_reply_new_thread_pick_board">New Thread - Pick Board</string>
     <string name="favorites_pick_board">Pick Favorites Board</string>
-    <string name="favorites_pick_board_error">Couldn\'t pick favorites board</string>
-
-    <!-- cover page -->
-    <string name="popular_title_popular">Popular Threads</string>
-    <string name="popular_title_latest">Latest Posts</string>
-    <string name="popular_title_recent">Recent Images</string>
-    <string name="popular_title_recommended">RECOMMENDED</string>
 
     <!-- preferences -->
-    <string name="pref_about_category">About</string>
     <string name="pref_advanced_category">Advanced</string>
-    <string name="pref_watchlist_category">Thread Watchlist</string>
     <string name="pref_custom_category">Customize</string>
     <string name="pref_custom_category_summ">Customize appearance and behavior</string>
     <string name="pref_show_nsfw_boards">NSFW Boards</string>
@@ -528,7 +305,6 @@
     <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
-    <string name="pref_blocklist_button">Blocklist</string>
     <string name="pref_blocklist_button_summ">Filter threads and posts</string>
     <string name="pref_cache_category">Cache</string>
     <string name="pref_cache_category_summ">Space to use for storing threads and images</string>
@@ -538,35 +314,23 @@
     <string name="pref_purchase_prokey_summ">Go ad-free, purchase only once, enables all devices</string>
     <string name="pref_installed_prokey">Prokey Installed</string>
     <string name="pref_installed_prokey_summ">No ads are shown, enabled for all devices</string>
-    <string name="pref_consume_prokey">Consume Prokey</string>
-    <string name="pref_consume_prokey_summ">Remove all record of prokey</string>
     <string name="pref_cache_size">Cache size</string>
     <string name="pref_cache_size_summ">Adjust cache size</string>
     <string name="pref_watchlist_retention">Watchlist Retention</string>
-    <string name="pref_watchlist_retention_summ">Clear dead threads after</string>
     <string name="pref_watchlist_retention_units">days</string>
     <string name="pref_clean_watchlist">Remove dead threads</string>
-    <string name="pref_clean_watchlist_summ">Remove dead threads from watchlist</string>
     <string name="pref_clear_watchlist">Clear Watchlist</string>
-    <string name="pref_clear_watchlist_summ">Empty all threads from watchlist</string>
     <string name="pref_clear_favorites">Clear favorites</string>
-    <string name="pref_clear_favorites_summ">Remove all boards from favorites</string>
     <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>
-    <string name="pref_clear_cache_pre_execute_no_notify">Clearing cache, you will receive a popup message when
-        complete
-    </string>
+    <string name="pref_clear_cache_pre_execute_no_notify">Clearing cache, you will receive a popup message when complete</string>
     <string name="pref_clear_cache_already_running">Already clearing cache, you will be notified when complete</string>
     <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
     <string name="pref_clear_cache_success">Cleared cache successfully</string>
     <string name="pref_clear_cache_notification_title">Chanu Cache Status</string>
-    <string name="pref_about">About</string>
-    <string name="pref_about_summ">Authorship and ad-free prokey information</string>
     <string name="pref_reset_to_defaults">Reset</string>
     <string name="pref_reset_to_defaults_summ">Restore all settings to their factory default</string>
     <string name="pref_prokey_category">Prokey</string>
-    <string name="pref_prokey_category_summ">Purchase Pro-Key</string>
     <string name="pref_user_category">User Info</string>
-    <string name="pref_user_category_summ">Name, email and password for posting</string>
     <string name="pref_user_name">Name</string>
     <string name="pref_user_name_summ">Use as name for posting</string>
     <string name="pref_user_email">Email</string>
@@ -586,21 +350,18 @@
     <string name="pref_pass_enabled">Enabled</string>
     <string name="pref_pass_enabled_summ_on">Use pass to bypass captcha</string>
     <string name="pref_pass_enabled_summ_off">Pass logged out</string>
-    <string name="pref_pass_purchase">Purchase</string>
     <string name="pref_pass_purchase_hint">Don\'t have a pass? Get one.</string>
     <string name="pref_theme_title">Theme</string>
     <string name="pref_theme_summary">Light, dark, or auto for ambient light selection</string>
     <string name="pref_theme_light">Light</string>
     <string name="pref_theme_dark">Dark</string>
-    <string name="pref_theme_auto">Auto</string>
+    <string name="pref_theme_auto">Automatic</string>
     <string name="pref_theme_default">@string/pref_theme_light</string>
     <string name="pref_autoload_images_title">Autoload Thread Images</string>
     <string name="pref_autoload_images_summary">Never, always, or auto based on connection speed</string>
     <string name="pref_autoload_images_nothumbs">No thumbnails</string>
     <string name="pref_autoload_images_never">Never</string>
     <string name="pref_autoload_images_always">Always</string>
-    <string name="pref_autoload_images_auto">Auto</string>
-    <string name="pref_autoload_images_default">@string/pref_autoload_images_auto</string>
 
     <!-- about preference -->
     <string name="pref_about_title">Chanu</string>
@@ -648,24 +409,7 @@
     <!-- Help and about_dialog -->
     <string name="send_feedback_menu">Send Feedback</string>
     <string name="purchase_menu">Purchase</string>
-    <string name="about_menu">About</string>
     <string name="test_menu">Test</string>
-
-    <!-- camera -->
-    <string name="camera_capture">Capture picture</string>
-    <string name="camera_open_error">Couldn\'t open camera</string>
-    <string name="camera_capture_error">Couldn\'t take picture</string>
-    <string name="camera_folder_name">Chanu Camera</string>
-
-    <!-- ads -->
-    <string name="board_advert_subject">Advert</string>
-    <string name="board_advert_info">Go To J-List</string>
-    <string name="board_advert_full">Advert&lt;br/&gt;Go To J-List</string>
-    <string name="advert_header">Advert</string>
-    <string name="advert_content_description">Advert: Go To J-List</string>
-    <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
-    <string name="jlist_ad_message_compact">Advert</string>
-    <string name="ad_default_text">Chanu is 4chan Reloaded</string>
 
     <!-- fetch and network services -->
     <string name="mark_dead_thread">Thread marked as dead</string>
@@ -673,7 +417,6 @@
     <string name="mobile_profile_loading_board">Loading board</string>
     <string name="mobile_profile_loading_thread">Loading thread</string>
     <string name="mobile_profile_loading_image">Loading image</string>
-    <string name="mobile_profile_preloading_defaults">Preloading boards /a/, /b/, /v/, /vg/ and /s/</string>
     <string name="mobile_profile_health_status">Network %1$s couldn\'t load</string>
     <string name="mobile_profile_no_auto_refresh">Auto refresh disabled</string>
     <string name="mobile_profile_loaded_board">Loaded /%1$s/</string>
@@ -692,21 +435,7 @@
     <string name="board_grid_item_view_images_desc">View images</string>
     <string name="board_grid_item_view_board_desc">View board</string>
 
-    <!-- tutorial -->
-    <string name="tutorial_overlay_button">Next</string>
-    <string name="tutorial_overlay_dismiss">Dismiss</string>
-    <string name="tutorial_overlay_finished">Done</string>
-
     <string name="tutorial_intro_desc">Welcome</string>
-    <string name="tutorial_intro_desc_detail">Chanu is an anonymous forum backed with content from 4chan.</string>
-    <string name="tutorial_board_desc">Boards</string>
-    <string name="tutorial_board_desc_detail">Each board has its own theme where anyone can start new threads.</string>
-    <string name="tutorial_thread_desc">Threads</string>
-    <string name="tutorial_thread_desc_detail">Each discussion starts with an image and text topic.</string>
-    <string name="tutorial_post_desc">Posts</string>
-    <string name="tutorial_post_desc_detail">Anyone can post comments and images until the thread expires.</string>
-    <string name="tutorial_finished_desc">Finished</string>
-    <string name="tutorial_finished_desc_detail">Click a board to start browsing content.</string>
     <string name="tutorial_all">Chanu is a browser for 4chan, a forum of people from all over the world who post and discuss images.\n\nClick a board to start!</string>
 
     <!-- board names -->
@@ -787,25 +516,13 @@
     <string name="board_soc">Cams &amp; Meetups</string>
     <string name="board_watch">Thread Watchlist</string>
     <string name="board_watch_desc">Keep track of interesting discussions</string>
-    <string name="board_watch_abbrev">Watch</string>
     <string name="board_favorites">Favorite Boards</string>
     <string name="board_favorites_desc">Shortcut to your most loved topics</string>
-    <string name="board_favorites_abbrev">Fav</string>
-    <string name="board_type_recent">Popular Threads</string>
-    <string name="board_type_recent_abbrev">Popular Threads</string>
     <string name="board_popular">Popular Threads</string>
-    <string name="board_popular_abbrev">Popular Threads</string>
     <string name="board_latest">Latest Posts</string>
-    <string name="board_latest_abbrev">Latest Posts</string>
     <string name="board_latest_images">Latest Images</string>
-    <string name="board_latest_images_abbrev">Latest Imgs</string>
     <string name="board_select">Select Board</string>
-    <string name="board_select_abbrev">Select Board</string>
-    <string name="board_meta">Board Groups</string>
-    <string name="board_meta_desc">Board Groups</string>
     <string name="board_all_boards">All Boards</string>
-    <string name="board_all_boards_desc">All boards on Chanu</string>
-    <string name="board_vg_abbrev">/vg/</string>
 
     <!-- board descriptions -->
     <string name="board_desc_3">Modeling and imagery</string>
@@ -876,7 +593,6 @@
 
     <string name="board_rules_header">Board Rules</string>
 
-    <string name="global_rules_header">Global Rules</string>
     <string name="global_rules_detail">
         <![CDATA[
         <p>1. Do not upload, post, discuss, request, or link to, anything that violates local or United States law. This will be severely punished and strictly enforced.</p>
@@ -1640,71 +1356,6 @@
     <string name="pref_download_images_per_thread">Per thread (eg. a_1234567)</string>
     <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
 
-<!-- MOVED FROM ARRAYS.XML -->
-
-<string name="board_3_with_abbrev">/3/ 3DCG</string>
-<string name="board_a_with_abbrev">/a/ Anime &amp; Manga</string>
-<string name="board_adv_with_abbrev">/adv/ Advice</string>
-<string name="board_an_with_abbrev">/an/ Animals &amp; Nature</string>
-<string name="board_asp_with_abbrev">/asp/ Alternative Sports</string>
-<string name="board_b_with_abbrev">/b/ Random</string>
-<string name="board_c_with_abbrev">/c/ Anime/Cute</string>
-<string name="board_cgl_with_abbrev">/cgl/ Cosplay &amp; EGL</string>
-<string name="board_ck_with_abbrev">/ck/ Food &amp; Cooking</string>
-<string name="board_cm_with_abbrev">/cm/ Cute/Male</string>
-<string name="board_co_with_abbrev">/co/ Comics &amp; Cartoons</string>
-<string name="board_d_with_abbrev">/d/ Hentai/Alternative</string>
-<string name="board_diy_with_abbrev">/diy/ Do-It-Yourself</string>
-<string name="board_e_with_abbrev">/e/ Ecchi</string>
-<string name="board_fa_with_abbrev">/fa/ Fashion</string>
-<string name="board_fit_with_abbrev">/fit/ Fitness</string>
-<string name="board_g_with_abbrev">/g/ Technology</string>
-<string name="board_gd_with_abbrev">/gd/ Graphic Design</string>
-<string name="board_gif_with_abbrev">/gif/ Animated GIF</string>
-<string name="board_h_with_abbrev">/h/ Hentai</string>
-<string name="board_hc_with_abbrev">/hc/ Hardcore</string>
-<string name="board_hm_with_abbrev">/hm/ Handsome Men</string>
-<string name="board_hr_with_abbrev">/hr/ High Resolution</string>
-<string name="board_i_with_abbrev">/i/ Oekaki</string>
-<string name="board_ic_with_abbrev">/ic/ Artwork/Critique</string>
-<string name="board_int_with_abbrev">/int/ International</string>
-<string name="board_jp_with_abbrev">/jp/ Otaku Culture</string>
-<string name="board_k_with_abbrev">/k/ Weapons</string>
-<string name="board_lgbt_with_abbrev">/lgbt/ LGBT</string>
-<string name="board_lit_with_abbrev">/lit/ Literature</string>
-<string name="board_m_with_abbrev">/m/ Mecha</string>
-<string name="board_mlp_with_abbrev">/mlp/ Pony</string>
-<string name="board_mu_with_abbrev">/mu/ Music</string>
-<string name="board_n_with_abbrev">/n/ Transport</string>
-<string name="board_o_with_abbrev">/o/ Auto</string>
-<string name="board_out_with_abbrev">/out/ Outdoors</string>
-<string name="board_p_with_abbrev">/p/ Photography</string>
-<string name="board_po_with_abbrev">/po/ Papercraft &amp; Origami</string>
-<string name="board_pol_with_abbrev">/pol/ Politically Incorrect</string>
-<string name="board_q_with_abbrev">/q/ 4chan Feedback</string>
-<string name="board_r_with_abbrev">/r/ Request</string>
-<string name="board_r9k_with_abbrev">/r9k/ ROBOT9001</string>
-<string name="board_s_with_abbrev">/s/ Sexy Beautiful Women</string>
-<string name="board_s4s_with_abbrev">/s4s/ Shit 4chan Says</string>
-<string name="board_sci_with_abbrev">/sci/ Science &amp; Math</string>
-<string name="board_soc_with_abbrev">/soc/ Cams &amp; Meetups</string>
-<string name="board_sp_with_abbrev">/sp/ Sports</string>
-<string name="board_t_with_abbrev">/t/ Torrents</string>
-<string name="board_tg_with_abbrev">/tg/ Traditional Games</string>
-<string name="board_toy_with_abbrev">/toy/ Toys</string>
-<string name="board_trv_with_abbrev">/trv/ Travel</string>
-<string name="board_tv_with_abbrev">/tv/ Television &amp; Film</string>
-<string name="board_u_with_abbrev">/u/ Yuri</string>
-<string name="board_v_with_abbrev">/v/ Video Games</string>
-<string name="board_vg_with_abbrev">/vg/ Video Game Generals</string>
-<string name="board_vp_with_abbrev">/vp/ Pokemon</string>
-<string name="board_vr_with_abbrev">/vr/ Retro Games</string>
-<string name="board_w_with_abbrev">/w/ Anime/Wallpapers</string>
-<string name="board_wg_with_abbrev">/wg/ Wallpapers/General</string>
-<string name="board_wsg_with_abbrev">/wsg/ Worksafe GIF</string>
-<string name="board_x_with_abbrev">/x/ Paranormal</string>
-<string name="board_y_with_abbrev">/y/ Yaoi</string>
-
 <string name="report_post_type_rule">Rule violation</string>
 <string name="report_post_type_illegal">Illegal content</string>
 <string name="report_post_type_spam">Commercial spam/advertising</string>
@@ -1776,13 +1427,7 @@
     <string name="pref_download_location_set">Set download directory to %1$s</string>
     <string name="pref_download_location_error">Couldn\'t set download directory</string>
     <string name="dialog_choose">Choose</string>
-
     <string name="pref_use_fast_scroll">Fast Scroll</string>
-    <string name="pref_use_fast_scroll_summ_on">Enabled</string>
-    <string name="pref_use_fast_scroll_summ_off">Disabled</string>
-
-    <!-- new strings -->
-
     <string name="ad_upgrade">Upgrade to Pro</string>
     <string name="ad_upgrade_sum">Support development and new features</string>
 

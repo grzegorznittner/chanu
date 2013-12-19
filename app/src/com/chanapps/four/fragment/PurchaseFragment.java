@@ -64,7 +64,7 @@ public class PurchaseFragment extends PreferenceFragment
                     public boolean onPreferenceClick(Preference preference) {
                         Uri uri = Uri.fromParts("mailto", email, null);
                         Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.application_name));
+                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
                         getActivity().startActivity(
                                 Intent.createChooser(intent, getString(R.string.pref_about_send_email)));
                         return true;

@@ -137,7 +137,7 @@
                             android:layout_marginBottom="0dp"
                             android:layout_marginRight="0dp"
                             android:layout_alignParentLeft="true"
-                            android:text="@string/post_reply_password_text"
+                            android:text="@string/pref_user_password"
                             />
                     <EditText
                             android:id="@+id/post_reply_password"

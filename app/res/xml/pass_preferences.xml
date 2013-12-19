@@ -37,7 +37,7 @@
 
         <Preference
                 android:key="pref_pass_purchase_button"
-                android:title="@string/pref_pass_purchase"
+                android:title="@string/purchase_menu"
                 android:hint="@string/pref_pass_purchase_hint"
                 />
 

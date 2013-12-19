@@ -137,7 +137,7 @@ public class WebImageDialogFragment extends DialogFragment {
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             webProgress.setVisibility(View.GONE);
-            Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(view.getContext(), R.string.thread_couldnt_download_image, Toast.LENGTH_SHORT).show();
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
@@ -147,7 +147,7 @@ public class WebImageDialogFragment extends DialogFragment {
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
             webProgress.setVisibility(View.GONE);
-            Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(view.getContext(), R.string.thread_couldnt_download_image, Toast.LENGTH_SHORT).show();
         }
     };
 

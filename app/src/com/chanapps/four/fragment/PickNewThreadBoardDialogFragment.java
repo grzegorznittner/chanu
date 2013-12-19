@@ -54,7 +54,7 @@ public class PickNewThreadBoardDialogFragment extends ListDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initBoards(getActivity());
-        return createListDialog(R.string.post_reply_new_thread_pick_board, R.string.post_reply_new_thread_pick_board,
+        return createListDialog(R.string.new_thread_menu, R.string.new_thread_menu,
                 R.string.post_reply_new_thread_error,
                 boards, new ListView.OnItemClickListener() {
                     @Override

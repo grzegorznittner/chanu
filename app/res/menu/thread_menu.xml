@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/search_menu"
-          android:title="@string/thread_search"
+          android:title="@string/search_title"
           android:icon="@drawable/action_search"
           android:showAsAction="collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
     <item android:id="@+id/thread_share_menu"
           android:icon="@drawable/ic_menu_share_holo_light"
-          android:title="@string/share_thread"
+          android:title="@string/share_image"
           android:enabled="true"
           android:actionProviderClass="android.widget.ShareActionProvider"
             />
     <item android:id="@+id/refresh_menu"
           android:title="@string/refresh_thread_menu"
           android:icon="@drawable/navigation_refresh"
-          android:visible="false"
             />
     <item android:id="@+id/view_image_gallery_menu"
           android:title="@string/view_image_gallery_menu"
@@ -39,14 +38,6 @@
           android:icon="@drawable/av_next"
           android:visible="false"
             />
-
-    <!--
-    <item android:id="@+id/download_all_images_menu"
-          android:title="@string/download_all_images_menu"
-          android:icon="@drawable/av_add_to_queue"
-          android:visible="false"
-            />
-            -->
     <item android:id="@+id/download_all_images_to_gallery_menu"
           android:title="@string/download_all_images_to_gallery_menu"
           android:icon="@drawable/av_download"
@@ -73,7 +64,7 @@
           android:icon="@drawable/device_access_new_account"
             />
     <item android:id="@+id/about_menu"
-          android:title="@string/about_menu"
+          android:title="@string/about_activity"
           android:icon="@drawable/action_about"
           android:visible="false"
             />
