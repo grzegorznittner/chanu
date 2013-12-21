@@ -135,7 +135,8 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                BoardActivity.startDefaultActivity(this);
+                finish();
+                // BoardSelectorActivity.startDefaultActivity(this);
                 return true;
             case R.id.global_rules_menu:
                 (new StringResourceDialog(this,
@@ -203,5 +204,8 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
         startActivity(intent);
         finish();
     }
+
+    @Override
+    public void switchBoard(String boardCode, String query) {}
 
 }

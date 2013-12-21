@@ -53,25 +53,25 @@ public class ActivityDispatcher {
     }
     */
 
+    /*
     public static void dispatch(final ChanIdentifiedActivity activity) {
         if (activity == null || !(activity instanceof Activity)) {
             Log.e(TAG, "dispatch() prematurely terminating since called with invalid activity=" + activity);
             return;
         }
-        /*
-        boolean startWithFavorites = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext())
-                .getBoolean(SettingsActivity.PREF_START_WITH_FAVORITES, true);
-        if (startWithFavorites) {
-        */
+
+        //boolean startWithFavorites = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext())
+        //        .getBoolean(SettingsActivity.PREF_START_WITH_FAVORITES, true);
+        //if (startWithFavorites) {
+
         if (DEBUG) Log.i(TAG, "dispatch() startWithFavorites=true, starting async dispatch");
             asyncDispatch((Activity)activity);
-    /*
-    }
-        else {
-            if (DEBUG) Log.i(TAG, "dispatch() startWithFavorites=false, starting dispatch process immediately");
-            syncDispatch(activity);
-        }
-        */
+
+        //}
+        //else {
+        //    if (DEBUG) Log.i(TAG, "dispatch() startWithFavorites=false, starting dispatch process immediately");
+        //    syncDispatch(activity);
+        //}
     }
 
     protected static void asyncDispatch(final Activity activity) { // assume only called if startWithFavorites is true
@@ -90,7 +90,7 @@ public class ActivityDispatcher {
             }
         }).start();
     }
-
+    */
     /*
     protected static boolean syncDispatch(final ChanIdentifiedActivity activity) {
         Intent intent = ((Activity)activity).getIntent();
@@ -121,7 +121,6 @@ public class ActivityDispatcher {
         ((Activity)activity).finish();
         return true;
     }
-    */
 
     protected static void dispatchToBoard(Activity activity, String boardCode) {
         Intent newIntent = BoardActivity.createIntent(activity, boardCode, "");
@@ -130,6 +129,7 @@ public class ActivityDispatcher {
         activity.startActivity(newIntent);
         activity.finish();
     }
+    */
 
     public static void launchUrlInBrowser(Context context, String url) {
         Intent i = new Intent(Intent.ACTION_VIEW);

@@ -1108,4 +1108,11 @@ public class ThreadActivity
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
+    @Override
+    public void switchBoard(String boardCode, String query) {
+        Intent intent = BoardActivity.createIntent(this, boardCode, query);
+        finish();
+        startActivity(intent);
+    }
+
 }

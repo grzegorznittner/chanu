@@ -108,10 +108,8 @@ public class ThreadViewer {
                                        View.OnClickListener repliesOnClickListener,
                                        View.OnClickListener sameIdOnClickListener,
                                        View.OnClickListener exifOnClickListener,
-                                       //View.OnClickListener postReplyListener,
                                        View.OnClickListener overflowListener,
                                        View.OnClickListener expandedImageListener,
-                                       View.OnClickListener itemBoardLinkListener,
                                        View.OnLongClickListener startActionModeListener,
                                        View.OnClickListener goToThreadUrlListener
                                        ) {
@@ -121,16 +119,8 @@ public class ThreadViewer {
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) // we are on board list
             return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, null, null, 0, null);
-        //else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
-        //    return setUrlLinkView(view, cursor);
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             return setTitleView(view, cursor);
-        //else if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
-        //    return setButtonView(view, cursor);
-        //else if ((flags & ChanPost.FLAG_IS_AD) > 0)
-        //    return setBannerAdView(view, cursor, isTablet);
-        else if (isListLink(flags))
-            return setListLinkView(view, cursor, flags, itemBoardLinkListener);
         else
             return setListItemView(view, cursor, flags,
                     showContextMenu,
@@ -149,17 +139,6 @@ public class ThreadViewer {
             );
     }
 
-    protected static boolean setListLinkView(final View view, final Cursor cursor, int flags, View.OnClickListener itemBoardLinkListener) {
-        ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
-        setItem(viewHolder, cursor, flags, false, null, null, null, null, itemBoardLinkListener);
-        setImageWrapper(viewHolder, flags);
-        setImage(viewHolder, cursor, flags, null, null);
-        setCountryFlag(viewHolder, cursor, flags);
-        setHeaderValue(viewHolder, cursor, null);
-        setSubject(viewHolder, cursor, flags, null);
-        return true;
-    }
-
     protected static boolean setListItemView(final View view, final Cursor cursor, int flags,
                                           boolean showContextMenu,
                                           View.OnClickListener thumbOnClickListener,
@@ -175,17 +154,12 @@ public class ThreadViewer {
                                           final View.OnLongClickListener startActionModeListener,
                                           View.OnClickListener goToThreadUrlListener
                                           ) {
-        //if (startActionModeListener != null)
-        //    view.setOnLongClickListener(startActionModeListener);
         ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
         setItem(viewHolder, cursor, flags, showContextMenu,
-                //backlinkOnClickListener,
                 commentsOnClickListener,
                 imagesOnClickListener,
                 repliesOnClickListener,
-                //postReplyListener,
-                overflowListener,
-                null);
+                overflowListener);
         setImageWrapper(viewHolder, flags);
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
             setHeaderImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
@@ -208,13 +182,11 @@ public class ThreadViewer {
                                      View.OnClickListener commentsOnClickListener,
                                      View.OnClickListener imagesOnClickListener,
                                      View.OnClickListener repliesOnClickListener,
-                                     //View.OnClickListener postReplyListener,
-                                     View.OnClickListener overflowListener,
-                                     View.OnClickListener itemBoardLinkListener)
+                                     View.OnClickListener overflowListener)
     {
         ViewGroup item = viewHolder.list_item;
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-        item.setTag((flags & ChanPost.FLAG_IS_AD) > 0 ? null : postId);
+        item.setTag(postId);
         item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
         item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
 
@@ -223,14 +195,8 @@ public class ThreadViewer {
                     commentsOnClickListener, imagesOnClickListener, repliesOnClickListener);
         else
             displayItemCountFields(viewHolder, cursor, showContextMenu, repliesOnClickListener);
-
-        if (isListLink(flags)) {
-            viewHolder.list_item.setOnClickListener(itemBoardLinkListener);
-        }
-        else {
-            viewHolder.list_item.setOnClickListener(null);
-            viewHolder.list_item.setClickable(false);
-        }
+        viewHolder.list_item.setOnClickListener(null);
+        viewHolder.list_item.setClickable(false);
 
         View listItemLeftSpacer = viewHolder.list_item_left_spacer;
         if (listItemLeftSpacer != null)
@@ -428,7 +394,7 @@ public class ThreadViewer {
         TextView tv = viewHolder.list_item_subject;
         if (tv == null)
             return false;
-        if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
+        if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
             tv.setText("");
             tv.setVisibility(View.GONE);
             return true;
@@ -484,12 +450,6 @@ public class ThreadViewer {
         TextView tv = viewHolder.list_item_text;
         if (tv == null)
             return false;
-        if ((flags & ChanPost.FLAG_IS_AD) > 0) {
-            tv.setVisibility(View.GONE);
-            tv.setText("");
-            return true;
-        }
-
         if ((flags & (ChanPost.FLAG_HAS_TEXT | ChanPost.FLAG_HAS_EXIF)) == 0) {
             tv.setVisibility(View.GONE);
             tv.setText("");
@@ -696,10 +656,6 @@ public class ThreadViewer {
             return;
         spinner.setOnClickListener(expandedImageListener);
         spinner.setVisibility(View.VISIBLE);
-    }
-
-    static private boolean isListLink(int flags) {
-        return (flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0; // skip for unexpandables
     }
 
     static private void sizeImageView(ImageView imageView, Point imageSize) {

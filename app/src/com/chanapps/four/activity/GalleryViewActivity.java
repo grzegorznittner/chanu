@@ -710,4 +710,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     public void setProgress(boolean on) {}
 
+    @Override
+    public void switchBoard(String boardCode, String query) {}
+
 }

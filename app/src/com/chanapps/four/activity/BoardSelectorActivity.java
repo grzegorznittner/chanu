@@ -22,6 +22,17 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
     public static final boolean DEBUG = false;
 
     @Override
+    public void switchBoard(String boardCode, String query) {
+        if (ChanBoard.isTopBoard(boardCode)) {
+            switchBoardInternal(boardCode, query);
+        }
+        else {
+            Intent intent = BoardActivity.createIntent(this, boardCode, query);
+            startActivity(intent);
+        }
+    }
+    /*
+    @Override
     protected void onNewIntent(Intent intent) { // for when we coming from a different class
         if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE)
                 + "/ q=" + intent.getStringExtra(SearchManager.QUERY));
@@ -34,7 +45,6 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         }
         setIntent(intent);
         setFromIntent(intent);
-        //setupStaticBoards();
         createAbsListView();
         setupBoardTitle();
         if (mDrawerAdapter != null)
@@ -56,7 +66,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         mDrawerAdapter.notifyDataSetInvalidated();
         if (DEBUG) Log.i(TAG, "switchBoard end /" + boardCode + "/ q=" + query);
     }
-
+    */
     @Override
     protected void activityChangeAsync() {
         final ChanIdentifiedActivity activity = this;

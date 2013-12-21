@@ -1533,10 +1533,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     threadListener.repliesOnClickListener,
                     threadListener.sameIdOnClickListener,
                     threadListener.exifOnClickListener,
-                    //postReplyListener,
                     overflowListener,
                     threadListener.expandedImageListener,
-                    threadListener.itemBoardLinkListener,
                     startActionModeListener,
                     goToThreadUrlListener
             );

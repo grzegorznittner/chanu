@@ -1577,4 +1577,7 @@ public class PostReplyActivity
         }
     }
 
+    @Override
+    public void switchBoard(String boardCode, String query) {}
+
 }

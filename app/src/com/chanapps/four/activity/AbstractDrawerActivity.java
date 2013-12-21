@@ -402,4 +402,7 @@ abstract public class
         if (DEBUG) Log.i(TAG, "onResume() drawerEnabled set to=" + drawerEnabled);
     }
 
+    @Override
+    public void switchBoard(String boardCode, String query) {}
+
 }

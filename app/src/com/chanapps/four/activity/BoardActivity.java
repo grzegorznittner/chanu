@@ -82,18 +82,48 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected int checkedPos = -1;
     protected BoardSortType boardSortType;
 
+    /*
     public static void startDefaultActivity(Context from) {
         startActivity(from, ChanBoard.defaultBoardCode(from), "");
     }
+    */
 
     public static void startActivity(Context from, String boardCode, String query) {
-        if (from.getClass() == BoardSelectorActivity.class && ChanBoard.isTopBoard(boardCode)) {
-            ((BoardSelectorActivity)from).switchBoard(boardCode, query);
+        if (from instanceof ChanIdentifiedActivity) {
+            ((ChanIdentifiedActivity)from).switchBoard(boardCode, query);
         }
         else {
             Intent intent = createIntent(from, boardCode, query);
             from.startActivity(intent);
         }
+    }
+
+    @Override
+    public void switchBoard(String boardCode, String query) { // for when we are already in this class
+        if (ChanBoard.isTopBoard(boardCode)) {
+            if (DEBUG) Log.i(TAG, "board to board selector, finishing board activity");
+            Intent intent = BoardActivity.createIntent(this, boardCode, query);
+            finish();
+            startActivity(intent);
+        }
+        else {
+            switchBoardInternal(boardCode, query);
+        }
+    }
+
+    protected void switchBoardInternal(String boardCode, String query) { // for when we are already in this class
+        if (DEBUG) Log.i(TAG, "switchBoardInternal begin /" + boardCode + "/ q=" + query);
+        this.boardCode = boardCode;
+        this.query = query;
+        //setupStaticBoards();
+        loadDrawerArray();
+        createAbsListView();
+        setupBoardTitle();
+        startLoaderAsync();
+        (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
+        checkNSFW();
+        mDrawerAdapter.notifyDataSetInvalidated();
+        if (DEBUG) Log.i(TAG, "switchBoard end /" + boardCode + "/ q=" + query);
     }
 
     public static Intent createIntent(Context context, String boardCode, String query) {
@@ -500,6 +530,26 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             //To change body of implemented methods use File | Settings | File Templates.
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) { // for when we coming from a different class
+        if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE)
+                + "/ q=" + intent.getStringExtra(SearchManager.QUERY));
+        if (!intent.hasExtra(ChanBoard.BOARD_CODE)
+                || intent.getStringExtra(ChanBoard.BOARD_CODE) == null
+                || intent.getStringExtra(ChanBoard.BOARD_CODE).isEmpty()
+                ) {
+            if (DEBUG) Log.i(TAG, "onNewIntent empty board code, ignoring intent");
+            return;
+        }
+        setIntent(intent);
+        setFromIntent(intent);
+        createAbsListView();
+        setupBoardTitle();
+        if (mDrawerAdapter != null)
+            mDrawerAdapter.notifyDataSetInvalidated();
+        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/ q=" + query);
     }
 
     @Override

@@ -30,4 +30,6 @@ public interface ChanIdentifiedActivity {
     // tell activity we are starting fetch
     void setProgress(boolean on);
 
+    public void switchBoard(String boardCode, String query); // for when we are already in this class
+
 }

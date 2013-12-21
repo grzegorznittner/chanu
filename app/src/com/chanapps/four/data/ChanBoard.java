@@ -676,10 +676,6 @@ public class ChanBoard {
         return threadPos;
     }
 
-    public Object[] makePostBoardLinkRow(Context context, long threadNo) {
-        return ChanPost.makeBoardLinkRow(context, this, threadNo);
-    }
-
     public void updateCountersAfterLoad(Context context) {
     	if (loadedThreads.length == 0) {
     		return;

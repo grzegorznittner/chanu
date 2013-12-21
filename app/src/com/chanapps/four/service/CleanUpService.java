@@ -128,7 +128,11 @@ public class CleanUpService extends BaseChanService {
         cleanUp(ONE_HOUR_MS, DeleteType.BY_DATE_INCL_WATCHED);
         cleanUp(ONE_MIN_MS, DeleteType.BY_DATE_INCL_WATCHED);
         */
-        cleanUp(0, DeleteType.BY_DATE);
+        cleanUp(ONE_DAY_MS, DeleteType.BY_DATE);
+        cleanUp(ONE_DAY_KEEP_SIZE_BYTES, DeleteType.BY_SIZE);
+        cleanUp(ONE_HOUR_MS, DeleteType.BY_DATE);
+        cleanUp(ONE_HOUR_KEEP_SIZE_BYTES, DeleteType.BY_SIZE);
+        cleanUp(ONE_HOUR_MS, DeleteType.BY_DATE_INCL_WATCHED);
         cleanUp(0, DeleteType.BY_DATE_INCL_WATCHED);
 
         endTime = Calendar.getInstance().getTimeInMillis();

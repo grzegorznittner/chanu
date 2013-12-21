@@ -85,8 +85,6 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             tag = TYPE_HEADER;
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             tag = TYPE_TITLE;
-        else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
-            tag = TYPE_LINK;
         else if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
             tag = TYPE_IMAGE_ITEM;
         else

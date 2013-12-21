@@ -74,13 +74,8 @@ public class ChanPost {
     public static final int FLAG_HAS_COUNTRY = 0x020;
     public static final int FLAG_IS_DEAD = 0x040;
     public static final int FLAG_IS_CLOSED = 0x080;
-    public static final int FLAG_IS_AD = 0x100;
     public static final int FLAG_IS_TITLE = 0x200;
-    public static final int FLAG_IS_BUTTON = 0x400;
-    public static final int FLAG_IS_THREADLINK = 0x800;
-    public static final int FLAG_IS_BOARDLINK = 0x1000;
     public static final int FLAG_IS_HEADER = 0x2000;
-    public static final int FLAG_IS_URLLINK = 0x4000;
     public static final int FLAG_NO_EXPAND = 0x8000;
     public static final int FLAG_HAS_HEAD  = 0x10000;
     public static final int FLAG_IS_STICKY = 0x20000;
@@ -114,7 +109,7 @@ public class ChanPost {
         return i;
     }
 
-    private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText, String headline) {
+    private int postFlags(String subject, String text, String exifText, String headline) {
         int flags = 0;
         if (tim > 0)
             flags |= FLAG_HAS_IMAGE;
@@ -122,9 +117,9 @@ public class ChanPost {
             flags |= FLAG_HAS_SUBJECT;
         if (text != null && !text.isEmpty())
             flags |= FLAG_HAS_TEXT;
-        if (!isThreadLink && spoiler > 0)
+        if (spoiler > 0)
             flags |= FLAG_HAS_SPOILER;
-        if (!isThreadLink && exifText != null && !exifText.isEmpty())
+        if (exifText != null && !exifText.isEmpty())
             flags |= FLAG_HAS_EXIF;
         if (country != null && !country.isEmpty())
             flags |= FLAG_HAS_COUNTRY;
@@ -134,10 +129,6 @@ public class ChanPost {
             flags |= FLAG_IS_CLOSED;
         if (sticky > 0)
             flags |= FLAG_IS_STICKY;
-        if (isAd)
-            flags |= FLAG_IS_AD;
-        if (isThreadLink)
-            flags |= FLAG_IS_THREADLINK;
         if (headline != null && !headline.isEmpty())
             flags |= FLAG_HAS_HEAD;
         return flags;
@@ -1030,7 +1021,7 @@ public class ChanPost {
         String[] textComponents = textComponents(query);
         String exifText = exifText();
         String headline = headline(context, query, false, repliesBlob, false, false);
-        int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText, headline);
+        int flags = postFlags(textComponents[0], textComponents[1], exifText, headline);
         if (resto == 0)
             flags |= FLAG_IS_HEADER;
         return new Object[] {
@@ -1068,79 +1059,6 @@ public class ChanPost {
         };
     }
 
-    public static Object[] makeBoardLinkRow(Context context, ChanBoard board, long threadNo) {
-        int drawableId = board.getRandomImageResourceId(board.link, threadNo);
-        return new Object[] {
-                board.link.hashCode(),
-                board.link,
-                0,
-                "drawable://" + drawableId,
-                "",
-                "",
-                board.getDescription(context),
-                0,
-                0,
-                board.getName(context),
-                "",
-                "",
-                250,
-                250,
-                -1,
-                -1,
-                0,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                drawableId,
-                "",
-                null,
-                null,
-                null,
-                0,
-                FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_BOARDLINK
-        };
-    }
-    /*
-    public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
-        return new Object[] {
-                ad.hashCode(),
-                boardCode,
-                0,
-                ad.bannerImageUrl(),
-                "",
-                "",
-                "",
-                0,
-                0,
-                "",
-                ad.bannerClickUrl(),
-                "",
-                ad.tn_w_banner(),
-                ad.tn_h_banner(),
-                -1,
-                -1,
-                0,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                null,
-                null,
-                null,
-                0,
-                FLAG_HAS_IMAGE | FLAG_IS_AD
-        };
-    }
-    */
     public static Object[] makeTitleRow(String boardCode, String title) {
         return makeTitleRow(boardCode, title, "");
     }

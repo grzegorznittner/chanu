@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,7 +35,7 @@ abstract public class
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
     protected static final boolean DEBUG = false;
-    protected static final boolean DEVELOPER_MODE = false;
+    protected static final boolean DEVELOPER_MODE = true;
 
     protected static final String THREAD_PATTERN = "/([a-z0-9]+)/([0-9]+).*";
     protected static final String BOARD_PATTERN = "/([a-z0-9]+)/.*";
@@ -329,11 +330,24 @@ abstract public class
             if (DEBUG) Log.i(TAG, "matched same board code, no jump done");
             return false;
         }
-        Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
-        if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/, starting");
+        /*
+        if (!startActivityIfNeeded(intent, -1)) {
+            if (DEBUG) Log.i(TAG, "startActivityIfNeeded /" + boardCodeForJump + "/ returned true, finishing current activity");
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "startActivityIfNeeded /" + boardCodeForJump + "/ returned false, switching board activity");
+            switchBoard(boardCode, "");
+        }
+        */
+        if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/ this=" + this + " switching board");
+        switchBoard(boardCodeForJump, "");
+
+        /*
         startActivity(intent);
-        if (!(this instanceof BoardSelectorActivity)) // don't finish single task activity
-            finish();
+        if ((this instanceof BoardSelectorActivity) || (this instanceof BoardActivity)) // don't finish single task actv
+            return true;
+        finish();
+        */
         return true;
     }
 
@@ -377,5 +391,8 @@ abstract public class
         bindSpinnerListener();
         if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ pos=" + pos + " end");
     }
+
+    @Override
+    public void switchBoard(String boardCode, String query) {}
 
 }
