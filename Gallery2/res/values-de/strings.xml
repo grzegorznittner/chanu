@@ -164,6 +164,4 @@
     <string name="add_account" msgid="4271217504968243974">"Konto hinzufügen"</string>
     <string name="download">Herunterladen</string>
     <string name="download_all_images_notice">Du wirst benachrichtigt, wenn der Download abgeschlossen wurde</string>
-  <string name="image_search_menu">Bildsuche mit Tineye</string>
-  <string name="anime_image_search_menu">IQDB-Bildsuche</string>
 </resources>

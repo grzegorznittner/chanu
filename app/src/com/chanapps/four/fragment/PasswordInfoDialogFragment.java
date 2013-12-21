@@ -34,7 +34,7 @@ public class PasswordInfoDialogFragment extends DialogFragment {
         setStyle(STYLE_NO_TITLE, 0);
         Dialog dialog = (new AlertDialog.Builder(getActivity()))
                 .setView(layout)
-                .setNeutralButton(R.string.done,
+                .setNeutralButton(R.string.thread_context_select,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

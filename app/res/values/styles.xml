@@ -1225,7 +1225,7 @@
         <item name="android:textSize">@dimen/WidgetConfigureOkButton</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteBoardCodeText</item>
-        <item name="android:text">@string/done</item>
+        <item name="android:text">@string/thread_context_select</item>
     </style>
 
     <!-- Drawer -->

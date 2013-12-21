@@ -227,7 +227,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
                         widgetConf.boardTitleColor);
                 d.setAlphaSliderVisible(true);
                 d.setButton(DialogInterface.BUTTON_POSITIVE,
-                        getString(R.string.done),
+                        getString(R.string.thread_context_select),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

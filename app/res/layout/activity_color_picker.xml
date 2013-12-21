@@ -86,7 +86,7 @@
 
 		<Button
 			android:id="@+id/ok_button"
-			android:text="@string/done"
+			android:text="@string/thread_context_select"
 			android:layout_width="0px"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.50"

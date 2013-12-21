@@ -164,6 +164,4 @@
     <string name="add_account" msgid="4271217504968243974">"Adăugaţi un cont"</string>
     <string name="download">Descarcă</string>
     <string name="download_all_images_notice">Du wirst benachrichtigt, wenn der Download abgeschlossen wurde</string>
-    <string name="image_search_menu">Tineye căutare imagine</string>
-    <string name="anime_image_search_menu">IQDB căutare imagine</string>
 </resources>

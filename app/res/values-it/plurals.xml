@@ -1,0 +1,56 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+
+    <plurals name="board_activity_updated">
+        <item quantity="one">@string/plurals_board_activity_udpdated_one</item>
+        <item quantity="other">@string/plurals_board_actviity_updated_other</item>
+    </plurals>
+    <plurals name="thread_activity_updated">
+        <item quantity="one">@string/plurals_thread_activity_udpdated_one</item>
+        <item quantity="other">@string/plurals_thread_actviity_updated_other</item>
+    </plurals>
+    <plurals name="board_grid_item_num_replies">
+        <item quantity="one">@string/plurals_board_grid_item_num_replies_one</item>
+        <item quantity="other">@string/plurals_board_grid_item_num_replies_other</item>
+    </plurals>
+    <plurals name="board_grid_item_num_imgs">
+        <item quantity="one">@string/plurals_board_grid_item_num_imgs_one</item>
+        <item quantity="other">@string/plurals_board_grid_item_num_imgs_other</item>
+    </plurals>
+    <plurals name="board_grid_item_num_threads">
+        <item quantity="one">@string/plurals_board_grid_item_num_threads_one</item>
+        <item quantity="other">@string/plurals_board_grid_item_num_threads_other</item>
+    </plurals>
+    <plurals name="thread_num_replies">
+        <item quantity="one">@string/plurals_thread_num_replies_one</item>
+        <item quantity="other">@string/plurals_thread_num_replies_other</item>
+    </plurals>
+    <plurals name="thread_num_images">
+        <item quantity="one">@string/plurals_thread_num_images_one</item>
+        <item quantity="other">@string/plurals_thread_num_images_other</item>
+    </plurals>
+    <plurals name="thread_num_imgs">
+        <item quantity="one">@string/plurals_thread_num_imgs_one</item>
+        <item quantity="other">@string/plurals_thread_num_imgs_other</item>
+    </plurals>
+    <plurals name="thread_num_backlinks">
+        <item quantity="one">@string/plurals_thread_num_backlinks_one</item>
+        <item quantity="other">@string/plurals_thread_num_backlinks_other</item>
+    </plurals>
+    <plurals name="thread_num_links">
+        <item quantity="one">@string/plurals_thread_num_links_one</item>
+        <item quantity="other">@string/plurals_thread_num_links_other</item>
+    </plurals>
+    <plurals name="thread_num_replies_label">
+        <item quantity="one">@string/plurals_thread_num_replies_label_one</item>
+        <item quantity="other">@string/plurals_thread_num_replies_label_other</item>
+    </plurals>
+    <plurals name="thread_num_images_label">
+        <item quantity="one">@string/plurals_thread_num_images_label_one</item>
+        <item quantity="other">@string/plurals_thread_num_images_label_other</item>
+    </plurals>
+    <plurals name="thread_num_direct_replies_label">
+        <item quantity="one">@string/plurals_thread_num_direct_replies_label_one</item>
+        <item quantity="other">@string/plurals_thread_num_direct_replies_label_other</item>
+    </plurals>
+
+</resources>

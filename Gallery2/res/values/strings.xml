@@ -75,7 +75,6 @@
   <string name="make_available_offline">Make available offline</string>
   <string name="sync_picasa_albums">Refresh</string>
   <string name="done">Done</string>
-  <string name="send">Send</string>
   <string name="sequence_in_set">%1$d of %2$d items:</string>
   <string name="title">Title</string>
   <string name="description">Description</string>
@@ -130,15 +129,12 @@
   <string name="group_by">Group by</string>
   <string name="settings">Settings</string>
   <string name="add_account">Add account</string>
-  <string name="download">Download</string>
-  <string name="download_all_images_notice">You will be notified when download finishes</string>
 
     <plurals name="number_of_items_selected">
         <item quantity="zero">%1$d item selected</item>
         <item quantity="one">%1$d item selected</item>
         <item quantity="other">%1$d items selected</item>
     </plurals>
-
     <!-- String indicating how many media album(s) is(are) selected
             eg. 1 album selected [CHAR LIMIT=30] -->
     <plurals name="number_of_albums_selected">
@@ -154,8 +150,12 @@
         <item quantity="one">%1$d group selected</item>
         <item quantity="other">%1$d groups selected</item>
     </plurals>
+    <string name="image_search_menu">Tineye</string> <!-- Tineye image search -->
+    <string name="anime_image_search_menu">IQDB</string> <!-- IQDB image search -->
 
-    <string name="image_search_menu">Tineye image search</string>
-    <string name="anime_image_search_menu">IQDB image search</string>
+  <string name="download">Download</string>
+  <string name="download_all_images_notice">You will be notified when download finishes</string>
+
+
 
 </resources>

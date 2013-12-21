@@ -117,7 +117,7 @@ public class PostReplyActivity
     private EditText recaptchaText;
     private LoadCaptchaTask loadCaptchaTask;
     private View infoButton;
-    private Button doneButton;
+    //private Button doneButton;
 
     private EditText messageText;
     private TextView passStatusText;
@@ -207,7 +207,7 @@ public class PostReplyActivity
         bumpButton = (ImageView)findViewById(R.id.post_reply_bump_button);
         */
         infoButton = findViewById(R.id.password_help_icon);
-        doneButton = (Button)findViewById(R.id.done);
+        //doneButton = (Button)findViewById(R.id.done);
         deleteButtonBg = findViewById(R.id.post_reply_delete_button_bg);
         deleteButton = (ImageView)findViewById(R.id.post_reply_delete_button);
         sageButton = findViewById(R.id.post_reply_sage);
@@ -230,12 +230,14 @@ public class PostReplyActivity
         recaptchaFrame = (FrameLayout)findViewById(R.id.post_reply_recaptcha_frame);
         recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
         recaptchaText.setOnEditorActionListener(fastSend);
+        /*
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 validateAndSendReply();
             }
         });
+        */
         infoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

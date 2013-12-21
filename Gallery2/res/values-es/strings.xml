@@ -104,7 +104,6 @@
     <string name="picasa_posts" msgid="1497721615718760613">"Publicaciones"</string>
     <string name="make_available_offline" msgid="5157950985488297112">"Disponible sin conexión"</string>
     <string name="sync_picasa_albums" msgid="8522572542111169872">"Actualizar"</string>
-    <string name="done" msgid="217672440064436595">"Listo"</string>
     <string name="sequence_in_set" msgid="7235465319919457488">"Elemento: %1$d de %2$d"</string>
     <string name="title" msgid="7622928349908052569">"Título"</string>
     <string name="description" msgid="3016729318096557520">"Descripción"</string>
@@ -164,7 +163,5 @@
     <string name="add_account" msgid="4271217504968243974">"Añadir cuenta"</string>
   <string name="download">Descargar</string>
   <string name="download_all_images_notice">Se le notificará la finalización de la descarga</string>
-  <string name="image_search_menu">Búsqueda de imágenes TinEye</string>
-  <string name="anime_image_search_menu">Búsqueda de imágenes IQDB</string>
 
 </resources>
