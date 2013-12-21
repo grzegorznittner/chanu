@@ -270,11 +270,8 @@ abstract public class
             if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
             return false;
         }
-        if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
-        Intent intent = BoardActivity.createIntent(this, boardTypeCode, "");
-        startActivity(intent);
-        if (!(this instanceof BoardSelectorActivity)) // don't finish single task activity
-            finish();
+        if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/ this=" + this + " switching board");
+        switchBoard(boardTypeCode, "");
         return true;
     }
 
