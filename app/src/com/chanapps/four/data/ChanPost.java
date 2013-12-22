@@ -414,6 +414,7 @@ public class ChanPost {
             suffix = comText.substring(0, Math.min(comText.length(), MAX_THREAD_SUBJECT_LEN)); // always shorter than this since only one line
         else
             suffix = "";
+        suffix = suffix.replaceAll("<[^>]*>", "");
         return prefix + (suffix.length() > 0 ? " " : "") + suffix;
     }
 

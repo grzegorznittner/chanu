@@ -162,8 +162,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onStart() {
         super.onStart();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
-        //if (getActivity() != null)
-        //    (new AdComponent(getActivity().getApplicationContext(), layout.findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         if (handler == null)
             handler = new Handler();
         threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
@@ -246,8 +244,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onStop() {
         super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/" + threadNo);
-        //if (absListView != null)
-        //    getLoaderManager().destroyLoader(LOADER_ID);
         handler = null;
     }
 
@@ -359,20 +355,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
-        // retry load if maybe data wasn't there yet
         setupShareActionProviderOPMenu(menu);
         selectCurrentThreadAsync();
-        /*
-        if (query == null || query.isEmpty())
-            selectCurrentThreadAsync();
-        else
-            adapter.getFilter().filter(query, new Filter.FilterListener() {
-                @Override
-                public void onFilterComplete(int count) {
-                    selectCurrentThreadAsync();
-                }
-            });
-        */
     }
 
     protected void selectCurrentThreadAsync() {
@@ -1250,7 +1234,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");
                             if (getActivity() != null && getActivity().getLoaderManager() != null) {
                                 getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
-                                if (message != null)
+                                if (message != null && !message.isEmpty())
                                     Toast.makeText(getActivityContext(), message, Toast.LENGTH_SHORT).show();
                             }
                         }

@@ -565,18 +565,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         startLoaderAsync();
         */
 
-        // moved from onResume
-        loadDrawerArray();
-        if (isAlreadyLoaded()) {
-            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " already loaded");
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting loader");
-            startLoaderAsync();
-        }
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting activity change");
-        //activityChangeAsync();
-
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
         AnalyticsComponent.onStart(this);
     }
@@ -672,7 +660,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         */
 
-        /* moved to onStart()
         if (isAlreadyLoaded()) {
             if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " already loaded");
         }
@@ -681,9 +668,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             startLoaderAsync();
         }
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting activity change");
-        //activityChangeAsync();
+        activityChangeAsync();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
-        */
     }
 
     protected boolean isAlreadyLoaded() {

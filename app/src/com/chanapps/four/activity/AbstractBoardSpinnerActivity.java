@@ -303,11 +303,8 @@ abstract public class
             if (DEBUG) Log.i(TAG, "matched same thread, no jump done");
             return false;
         }
-        Intent intent = ThreadActivity.createIntent(this, boardCodeForJump, threadNoForJump, "");
         if (DEBUG) Log.i(TAG, "matched thread /" + boardCodeForJump + "/" + threadNoForJump + ", starting");
-        startActivity(intent);
-        if (!(this instanceof BoardSelectorActivity)) // don't finish single task activity
-            finish();
+        ThreadActivity.startActivity(this, boardCodeForJump, threadNoForJump, "");
         return true;
     }
 
