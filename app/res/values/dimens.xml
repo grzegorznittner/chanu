@@ -436,5 +436,6 @@
     <string name="thread_has_bumplimit">(BL)</string>
     <string name="thread_has_imagelimit">(IL)</string>
     <string name="board_vg_abbrev">/vg/</string>
+    <string name="app_name">Chanu</string>
 
 </resources>

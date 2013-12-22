@@ -1,7 +1,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
 
     <!-- titles -->
-    <string name="app_name">Chanu</string>
     <string name="thread_activity">Fir de discuție</string>
     <string name="board_activity">Planșă</string>
     <string name="about_activity">Despre</string>
