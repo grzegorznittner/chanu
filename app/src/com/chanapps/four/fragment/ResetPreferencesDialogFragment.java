@@ -48,7 +48,7 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
         setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))
                 .setView(layout)
-                .setPositiveButton(R.string.dialog_reset,
+                .setPositiveButton(R.string.pref_reset_to_defaults,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

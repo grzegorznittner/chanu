@@ -162,6 +162,4 @@
     <string name="group_by" msgid="4308299657902209357">"グループ化"</string>
     <string name="settings" msgid="1534847740615665736">"設定"</string>
     <string name="add_account" msgid="4271217504968243974">"アカウントを追加"</string>
-  <string name="download">ダウンロード</string>
-  <string name="download_all_images_notice">ダウンロード完了時に通知します</string>
 </resources>

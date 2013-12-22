@@ -28,7 +28,7 @@
             >
     </item>
     <item android:id="@+id/action_download"
-          android:title="@string/download"
+          android:title="@string/web_image_button_download"
           android:showAsAction="never"/>
     <item android:id="@+id/action_delete"
             android:icon="@drawable/ic_menu_trash_holo_light"

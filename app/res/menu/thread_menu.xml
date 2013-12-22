@@ -12,7 +12,7 @@
           android:actionProviderClass="android.widget.ShareActionProvider"
             />
     <item android:id="@+id/refresh_menu"
-          android:title="@string/refresh_thread_menu"
+          android:title="@string/refresh_board_menu"
           android:icon="@drawable/navigation_refresh"
             />
     <item android:id="@+id/view_image_gallery_menu"

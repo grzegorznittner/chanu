@@ -399,7 +399,7 @@ public class ChanPost {
             return name;
         if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage"))
             return email;
-        return context.getResources().getString(R.string.thread_no_text_subject);
+        return "";
     }
 
     public String drawerSubject(Context context) {

@@ -163,7 +163,4 @@
     <string name="settings" msgid="1534847740615665736">"Impostazioni"</string>
     <string name="add_account" msgid="4271217504968243974">"Aggiungi account"</string>
 
-  <string name="download">Scarica</string>
-  <string name="download_all_images_notice">Verrai avvisato quando lo scaricamento si concluderà</string>
-
 </resources>

@@ -150,12 +150,10 @@
         <item quantity="one">%1$d group selected</item>
         <item quantity="other">%1$d groups selected</item>
     </plurals>
-    <string name="image_search_menu">Tineye</string> <!-- Tineye image search -->
-    <string name="anime_image_search_menu">IQDB</string> <!-- IQDB image search -->
 
-  <string name="download">Download</string>
+  <string name="image_search_menu">Tineye</string>
+  <string name="anime_image_search_menu">IQDB</string>
+  <string name="web_image_button_download">Download</string>
   <string name="download_all_images_notice">You will be notified when download finishes</string>
-
-
 
 </resources>

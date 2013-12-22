@@ -563,7 +563,7 @@
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:gravity">top|right</item>
         <item name="android:scaleType">fitXY</item>
-        <item name="android:contentDescription">@string/popup_country_flag</item>
+        <item name="android:contentDescription">@string/thread_country_flag</item>
     </style>
 
     <style name="ThreadListHeaderHead" parent="AppTheme">
@@ -1009,7 +1009,7 @@
         <item name="android:layout_height">@dimen/ThreadListItemCountryFlag_layout_height</item>
         <item name="android:layout_marginTop">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:scaleType">fitXY</item>
-        <item name="android:contentDescription">@string/popup_country_flag</item>
+        <item name="android:contentDescription">@string/thread_country_flag</item>
     </style>
 
     <!-- FOO -->

@@ -2,21 +2,14 @@
 
     <!-- titles -->
     <string name="app_name">Chanu</string>
-    <string name="title_item_detail">Detaliu articol</string>
-    <string name="title_item_list">Articole</string>
-    <string name="fragment_layout">Amplasare 2 panouri</string>
     <string name="thread_activity">Fir de discuție</string>
     <string name="board_activity">Planșă</string>
-    <string name="title_photogrid_activity">Grilă de poze</string>
-    <string name="full_screen_image_activity">Vizualizare imagine</string>
     <string name="about_activity">Despre</string>
-    <string name="board_image">Imagine planșă</string>
     <string name="thread_post_image">Fir de imagini</string>
     <string name="thread_post_image_expanded">Expandează fir de imagini</string>
     <string name="thread_post_expand_button">Extinde</string>
     <string name="thread_post_collapse_button">Minimizează fir mesaje</string>
     <string name="thread_country_flag">Steag tară</string>
-    <string name="not_implemented">Înca nu este implementată</string>
     <string name="search_title">Caută</string>
     <string name="search_hint">Introdu text</string>
     <string name="search_results_title">Rezultate căutare</string>
@@ -80,28 +73,21 @@
     <string name="web_image_search_text_hint">caută text</string>
     <string name="web_image_key_download">Încarcă</string>
     <string name="web_image_button_download">Descarcă</string>
-    <string name="web_image_button_browse">Navigează imagine</string>
     <string name="web_image_button_attach">Atașează</string>
     <string name="web_image_input_url_first">Introdu url pentru descărcare imagine</string>
     <string name="web_image_download_first">Descarcă imaginea înainte de a o atașa</string>
-    <string name="web_image_download_hint">Descarcă imagine</string>
 
     <!-- menus -->
-    <string name="web_menu">4chan.org</string>
-    <string name="direct_web_menu">Afișează in 4chan.org</string>
     <string name="settings_menu">Setări</string>
     <string name="global_rules_menu">Reguli generale</string>
     <string name="board_rules_menu">Reguli planșe</string>
     <string name="play_thread_menu">Afișează fir de discuții</string>
     <string name="play_thread_stop_menu">Oprește fir de discuții</string>
     <string name="refresh_board_menu">Reîncarcă</string>
-    <string name="refresh_thread_menu">Reîncarcă</string>
     <string name="scroll_to_bottom_menu">Sari la final</string>
     <string name="new_thread_menu">Fir nou de discuții</string>
     <string name="board_thread_gallery_menu">Galerie</string>
-    <string name="board_thread_watch_menu">Adaugă la lista de urmărit</string>
     <string name="board_add_to_favorites_menu">Adaugă la lista de favoriți</string>
-    <string name="board_thread_remove_menu">Scoate din lista de urmărit</string>
     <string name="favorites_remove_board_menu">Scoate din lista de favoriți</string>
     <string name="watch_thread_menu">Adaugă la lista de urmărit</string>
     <string name="watch_remove_thread_menu">Scoate din lista de urmărit</string>
@@ -136,7 +122,6 @@
     <string name="thread_no_posts_selected">Nici o postare selectată</string>
     <string name="thread_couldnt_download_image">Nu se poate încărca imaginea</string>
     <string name="thread_couldnt_create_pager">Nu se poate crea pager</string>
-    <string name="thread_no_text_subject"></string>
     <string name="thread_not_found">Nu s-a găsit fir de discuții, afișare primul fir de discuții</string>
     <string name="thread_image_download_error">Eroare descărcare imagini fir de discuții</string>
     <string name="thread_no_start_play">Eroare pornire film</string>
@@ -154,14 +139,12 @@
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
     <string name="thread_deleted_from_watchlist">Thread deleted from watchlist</string>
     <string name="board_added_to_favorites">Board added to favorites</string>
-    <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
     <string name="favorites_cleared">Cleared favorites</string>
     <string name="thread_watchlist_not_cleared">Couldn\'t clear watchlist</string>
     <string name="favorites_not_cleared">Couldn\'t clear favorites</string>
     <string name="thread_watchlist_not_deleted_thread">Couldn\'t delete thread from watchlist</string>
     <string name="favorites_not_deleted_board">Couldn\'t delete board from favorites</string>
-    <string name="thread_watchlist_default_name">Watched Thread</string>
 
     <!-- full screen image activity -->
     <string name="full_screen_image_search_not_found">Couldn\'t find image for search</string>
@@ -182,11 +165,8 @@
     <string name="thread_replies">Replies</string>
     <string name="thread_same_id">Same Id</string>
     <string name="thread_post">Post</string>
-    <string name="popup_country_flag">Country Flag</string>
-    <string name="popup_go_to_thread">Go To Thread</string>
 
     <!-- dialog text -->
-    <string name="dialog_pass">4chan Pass</string>
     <string name="dialog_logout_pass">Logging out Pass...</string>
     <string name="dialog_authorizing_pass">Authorizing Pass...</string>
     <string name="dialog_report_post">Report Post</string>
@@ -206,7 +186,6 @@
     <string name="dialog_clear">Clear</string>
     <string name="dialog_clean">Clean</string>
     <string name="dialog_set">Set</string>
-    <string name="dialog_reset">Reset</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_added_to_watchlist">Added to watchlist</string>
     <string name="dialog_deleted_from_watchlist">Removed from watchlist</string>
@@ -268,8 +247,6 @@
 
     <!-- preferences -->
     <string name="pref_advanced_category">Advanced</string>
-    <string name="pref_custom_category">Customize</string>
-    <string name="pref_custom_category_summ">Customize appearance and behavior</string>
     <string name="pref_show_nsfw_boards">NSFW Boards</string>
     <string name="pref_show_nsfw_boards_summ_pos">Enable</string>
     <string name="pref_show_nsfw_boards_summ_neg">Disable (default)</string>
@@ -319,8 +296,6 @@
     <string name="pref_installed_prokey_summ">No ads are shown, enabled for all devices</string>
     <string name="pref_cache_size">Cache size</string>
     <string name="pref_cache_size_summ">Adjust cache size</string>
-    <string name="pref_watchlist_retention">Watchlist Retention</string>
-    <string name="pref_watchlist_retention_units">days</string>
     <string name="pref_clean_watchlist">Clean Watchlist</string>
     <string name="pref_clear_watchlist">Clear Watchlist</string>
     <string name="pref_clear_favorites">Clear Favorites</string>
@@ -361,7 +336,6 @@
     <string name="pref_theme_light">Light</string>
     <string name="pref_theme_dark">Dark</string>
     <string name="pref_theme_auto">Auto</string>
-    <string name="pref_theme_default">@string/pref_theme_light</string>
     <string name="pref_theme_light_value">0</string>
     <string name="pref_theme_dark_value">1</string>
     <string name="pref_theme_auto_value">2</string>
@@ -373,8 +347,6 @@
     <string name="pref_autoload_images_auto">Auto</string>
 
     <!-- about preference -->
-    <string name="pref_about_title">Chanu</string>
-    <string name="pref_about_title_sum">4chan Reloaded</string>
     <string name="pref_about_application_category">Application</string>
     <string name="pref_about_application_version">Version %1$s</string>
     <string name="pref_about_application_version_sum">Released %1$s</string>
@@ -383,14 +355,7 @@
     <string name="pref_about_application_gplus">Google Plus</string>
     <string name="pref_about_application_gplus_sum">Visit Chanu on Google Plus</string>
     <string name="pref_about_data_category">Uses</string>
-    <string name="pref_about_data_4chan">4chan API</string>
     <string name="pref_about_data_4chan_sum">Data sourced live via the 4chan API</string>
-    <string name="pref_about_data_uil">Universal Image Loader</string>
-    <string name="pref_about_data_uil_sum">Courtesy of Sergey Tarasevich</string>
-    <string name="pref_about_data_pulltorefresh">ActionBar-PullToRefresh</string>
-    <string name="pref_about_data_pulltorefresh_sum">Courtesy of Chris Banes</string>
-    <string name="pref_about_data_color">mColorPicker</string>
-    <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
     <string name="pref_about_developer_category">Purchase Info</string>
     <string name="pref_about_developer_chanapps">Chanapps Software</string>
     <string name="pref_about_developer_chanapps_sum">See our other offerings</string>
@@ -402,11 +367,6 @@
     <string name="pref_about_translations_de">German</string>
 
     <!-- widgets -->
-    <string name="widget_board">Pick Board</string>
-    <string name="widget_board_summ">Board for widget images</string>
-    <string name="widget_board_add_error">Couldn\'t add widget</string>
-    <string name="widget_refresh">Refresh</string>
-    <string name="widget_configure">Configure</string>
     <string name="widget_configure_title">Chanu Widget Configuration</string>
     <string name="widget_configure_board_title_color">Board Title Color</string>
     <string name="widget_configure_corners">Show Border</string>
@@ -418,39 +378,20 @@
     <!-- Help and about_dialog -->
     <string name="send_feedback_menu">Send Feedback</string>
     <string name="purchase_menu">Purchase</string>
-    <string name="test_menu">Test</string>
 
     <!-- fetch and network services -->
-    <string name="mark_dead_thread">Thread marked as dead</string>
     <string name="network_profile_health_bad">Internet connection slow</string>
-    <string name="mobile_profile_loading_board">Loading board</string>
-    <string name="mobile_profile_loading_thread">Loading thread</string>
-    <string name="mobile_profile_loading_image">Loading image</string>
     <string name="mobile_profile_health_status">Network %1$s couldn\'t load</string>
-    <string name="mobile_profile_no_auto_refresh">Auto refresh disabled</string>
-    <string name="mobile_profile_loaded_board">Loaded /%1$s/</string>
-    <string name="mobile_profile_loaded_thread">Loaded /%1$s/%2$d</string>
-    <string name="mobile_profile_fetch_failure">Couldn\'t load data</string>
-    <string name="mobile_profile_fetch_unmodified">Data unchanged</string>
-    <string name="mobile_profile_fetch_thread_fail">Couldn\'t load /%1$s/%2$d</string>
     <string name="mobile_profile_fetch_dead_thread">Thread is dead</string>
-    <string name="mobile_profile_parse_board_fail">Couldn\'t parse /%1$s/</string>
-    <string name="mobile_profile_parse_thread_fail">Couldn\'t parse /%1$s/%2$d</string>
     <string name="no_connection_profile">Offline mode</string>
     <string name="board_no_connection_load">Can\'t load board, no connection</string>
 
-    <string name="board_grid_item_view_thread_desc">View thread</string>
-    <string name="board_grid_item_view_posts_desc">View posts</string>
-    <string name="board_grid_item_view_images_desc">View images</string>
-    <string name="board_grid_item_view_board_desc">View board</string>
 
     <string name="tutorial_intro_desc">Welcome</string>
     <string name="tutorial_all">Chanu is a browser for 4chan, a forum of people from all over the world who post and discuss images.\n\nClick a board to start!</string>
 
     <!-- board names -->
-    <string name="board_type_worksafe">Worksafe</string>
     <string name="board_type_japanese_culture">Japanese Culture</string>
-    <string name="board_type_japanese_culture_desc">Anime, cosplay and Japan</string>
     <string name="board_a">Anime &amp; Manga</string>
     <string name="board_c">Anime/Cute</string>
     <string name="board_w">Anime/Wallpapers</string>
@@ -461,7 +402,6 @@
     <string name="board_jp">Otaku Culture</string>
     <string name="board_vp">Pokemon</string>
     <string name="board_type_interests">Interests</string>
-    <string name="board_type_interests_desc">Video games, media, sports and culture</string>
     <string name="board_v">Video Games</string>
     <string name="board_vg">Video Game Generals</string>
     <string name="board_vr">Retro Games</string>
@@ -478,7 +418,6 @@
     <string name="board_int">International</string>
     <string name="board_out">Outdoors</string>
     <string name="board_type_creative">Creative</string>
-    <string name="board_type_creative_desc">Art, photography, cooking and projects</string>
     <string name="board_i">Oekaki</string>
     <string name="board_po">Papercraft &amp; Origami</string>
     <string name="board_p">Photography</string>
@@ -493,7 +432,6 @@
     <string name="board_diy">Do-It-Yourself</string>
     <string name="board_wsg">Worksafe GIF</string>
     <string name="board_type_adult">Adult</string>
-    <string name="board_type_adult_desc">Not-safe-for-work images and content</string>
     <string name="board_s">Sexy Beautiful Women</string>
     <string name="board_hc">Hardcore</string>
     <string name="board_hm">Handsome Men</string>
@@ -506,7 +444,6 @@
     <string name="board_hr">High Resolution</string>
     <string name="board_gif">Animated GIF</string>
     <string name="board_type_other">Other</string>
-    <string name="board_type_other_desc">Books, travel, fitness and discussion</string>
     <string name="board_q">4chan Feedback</string>
     <string name="board_trv">Travel</string>
     <string name="board_fit">Fitness</string>
@@ -516,7 +453,6 @@
     <string name="board_lgbt">LGBT</string>
     <string name="board_mlp">Pony</string>
     <string name="board_type_misc">Misc</string>
-    <string name="board_type_misc_desc">Politics, camwhores, and /b/</string>
     <string name="board_b">Random</string>
     <string name="board_r">Request</string>
     <string name="board_r9k">ROBOT9001</string>
@@ -524,9 +460,7 @@
     <string name="board_s4s">Shit 4chan Says</string>
     <string name="board_soc">Cams &amp; Meetups</string>
     <string name="board_watch">Thread Watchlist</string>
-    <string name="board_watch_desc">Keep track of interesting discussions</string>
     <string name="board_favorites">Favorite Boards</string>
-    <string name="board_favorites_desc">Shortcut to your most loved topics</string>
     <string name="board_popular">Popular Threads</string>
     <string name="board_latest">Latest Posts</string>
     <string name="board_latest_images">Latest Images</string>
@@ -596,7 +530,6 @@
     <string name="board_desc_wsg">Loops of humor</string>
     <string name="board_desc_x">Aliens and spirits</string>
     <string name="board_desc_y">Homosexual anime</string>
-    <string name="categories" value="Categories"/>
 
     <!-- rules dialog strings -->
 
@@ -1363,7 +1296,6 @@
     <string name="pref_download_images_all_in_chanu_folder">All in \'Chanu\' folder</string>
     <string name="pref_download_images_per_board">Per board (eg. board_a)</string>
     <string name="pref_download_images_per_thread">Per thread (eg. a_1234567)</string>
-    <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
 
 <string name="report_post_type_rule">Violare regulă</string>
 <string name="report_post_type_illegal">Conținut ilegal</string>
@@ -1373,28 +1305,10 @@
 
 <string name="plurals_thread_activity_udpdated_one">%1$d comentariu nou</string>
 <string name="plurals_thread_actviity_updated_other">%1$d comentarii noi</string>
-<string name="plurals_board_grid_item_num_replies_one">Vizualizare 1 postare</string>
-<string name="plurals_board_grid_item_num_replies_other">Vizualizare %1$d postări</string>
-<string name="plurals_board_grid_item_num_imgs_one">Vizualizare 1 img</string>
-<string name="plurals_board_grid_item_num_imgs_other">Vizualizare %1$d imgs</string>
-<string name="plurals_board_grid_item_num_threads_one">Vizualizare 1 un fir de discuții</string>
-<string name="plurals_board_grid_item_num_threads_other">Vizualizare %1$d fire de discuții</string>
-<string name="plurals_thread_num_replies_one">1 postare</string>
-<string name="plurals_thread_num_replies_other">%1$d postări</string>
-<string name="plurals_thread_num_images_one">1 imagine</string>
-<string name="plurals_thread_num_images_other">%1$d imagini</string>
-<string name="plurals_thread_num_imgs_one">1 img</string>
-<string name="plurals_thread_num_imgs_other">%1$d imgs</string>
-<string name="plurals_thread_num_backlinks_one">1 legătură anterioară</string>
-<string name="plurals_thread_num_backlinks_other">%1$d legături anterioare</string>
-<string name="plurals_thread_num_links_one">1 legătură</string>
-<string name="plurals_thread_num_links_other">%1$d legături</string>
 <string name="plurals_thread_num_replies_label_one">COMENTARIU</string>
 <string name="plurals_thread_num_replies_label_other">COMENTARII</string>
 <string name="plurals_thread_num_images_label_one">IMAGINE</string>
 <string name="plurals_thread_num_images_label_other">IMAGINI</string>
-<string name="plurals_thread_num_direct_replies_label_one">RĂSPUNS</string>
-<string name="plurals_thread_num_direct_replies_label_other">RĂSPUNSURI</string>
 
     <!-- CHANGES AFTER TRANSLATION -->
     <!--

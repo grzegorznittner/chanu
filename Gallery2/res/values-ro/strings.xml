@@ -162,6 +162,4 @@
     <string name="group_by" msgid="4308299657902209357">"Grupaţi după"</string>
     <string name="settings" msgid="1534847740615665736">"Setări"</string>
     <string name="add_account" msgid="4271217504968243974">"Adăugaţi un cont"</string>
-    <string name="download">Descarcă</string>
-    <string name="download_all_images_notice">Du wirst benachrichtigt, wenn der Download abgeschlossen wurde</string>
 </resources>

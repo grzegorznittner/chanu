@@ -7,7 +7,7 @@
           android:visible="false"
             />
     <item android:id="@+id/web_menu"
-          android:title="@string/web_menu"
+          android:title="@string/direct_web_menu"
           android:icon="@drawable/location_web_site"
             />
     <item android:id="@+id/settings_menu"

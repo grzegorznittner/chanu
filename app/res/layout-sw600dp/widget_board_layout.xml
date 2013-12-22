@@ -124,7 +124,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/widget_refresh_button_selector"
             android:background="@drawable/widget_refresh_btn_gradient_bg"
-            android:contentDescription="@string/widget_refresh"
+            android:contentDescription="@string/refresh_board_menu"
             />
 
     <ImageButton
@@ -138,7 +138,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/widget_configure_button_selector"
             android:background="@drawable/widget_configure_gradient_bg"
-            android:contentDescription="@string/widget_configure"
+            android:contentDescription="@string/settings_menu"
             />
 
 </RelativeLayout>
