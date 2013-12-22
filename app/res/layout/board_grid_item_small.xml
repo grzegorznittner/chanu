@@ -92,7 +92,6 @@
                     android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
                     android:scaleType="fitXY"
                     android:contentDescription="@string/thread_country_flag"
-                    android:visibility="gone"
                     />
 
             <com.chanapps.four.component.LetterSpacingTextView
@@ -147,7 +146,7 @@
                     android:layout_marginBottom="@dimen/BoardGridItemIconSmallMarginBottom"
                     android:scaleType="fitCenter"
                     android:src="?themedDeadIcon"
-                    android:visibility="visible"/>
+                    />
 
             <ImageView
                     android:id="@+id/grid_item_sticky_icon"
@@ -161,7 +160,7 @@
                     android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
                     android:scaleType="fitCenter"
                     android:src="?themedStickyIcon"
-                    android:visibility="visible"/>
+                    />
 
             <ImageView
                     android:id="@+id/grid_item_closed_icon"
@@ -175,7 +174,7 @@
                     android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
                     android:scaleType="fitCenter"
                     android:src="?themedClosedIcon"
-                    android:visibility="visible"/>
+                    />
 
         </RelativeLayout>
 

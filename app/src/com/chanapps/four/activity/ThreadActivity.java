@@ -864,7 +864,8 @@ public class ThreadActivity
     protected void onBoardsTabletLoadFinished(Cursor data) {
         if (boardGrid == null)
             createAbsListView();
-        this.adapterBoardsTablet.swapCursor(data);
+        //this.adapterBoardsTablet.swapCursor(data);
+        this.adapterBoardsTablet.changeCursor(data);
         // retry load if maybe data wasn't there yet
         if (data != null && data.getCount() < 1 && handler != null) {
             if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " data count=0");
@@ -933,7 +934,8 @@ public class ThreadActivity
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ id=" + loader.getId());
-            adapterBoardsTablet.swapCursor(null);
+            //adapterBoardsTablet.swapCursor(null);
+            adapterBoardsTablet.changeCursor(null);
         }
     };
 

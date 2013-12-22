@@ -17,7 +17,6 @@
                 android:layout_height="@dimen/BoardGridImageSize"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
-                android:visibility="gone"
                 android:background="@drawable/board_grid_selector_bg"
                 />
 
@@ -31,7 +30,6 @@
                 android:paddingTop="@dimen/BoardGridView.topSpacing"
                 android:textColor="?themedCardSubjectTextColor"
                 android:textSize="@dimen/BoardGridLargeSubject"
-                android:visibility="gone"
                 android:maxLines="@integer/BoardGridView.maxLines"
                 />
 
@@ -45,7 +43,6 @@
                 android:gravity="center_horizontal"
                 android:textColor="?themedCardSubjectTextColor"
                 android:textSize="@dimen/BoardGridSubjectHeader"
-                android:visibility="gone"
                 />
 
         <ImageView
@@ -58,7 +55,6 @@
                 android:layout_toRightOf="@+id/grid_item_thread_thumb"
                 android:layout_alignParentBottom="true"
                 android:contentDescription="@string/thread_country_flag"
-                android:visibility="gone"
                 />
 
         <TextView
@@ -119,8 +115,7 @@
                 android:layout_alignParentBottom="true"
                 android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
                 android:scaleType="fitCenter"
-                android:src="?themedDeadIcon"
-                android:visibility="visible"/>
+                android:src="?themedDeadIcon"/>
 
         <ImageView
                 android:id="@+id/grid_item_sticky_icon"
@@ -132,8 +127,7 @@
                 android:layout_alignParentBottom="true"
                 android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
                 android:scaleType="fitCenter"
-                android:src="?themedStickyIcon"
-                android:visibility="visible"/>
+                android:src="?themedStickyIcon"/>
 
         <ImageView
                 android:id="@+id/grid_item_closed_icon"
@@ -145,8 +139,7 @@
                 android:layout_alignParentBottom="true"
                 android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
                 android:scaleType="fitCenter"
-                android:src="?themedClosedIcon"
-                android:visibility="visible"/>
+                android:src="?themedClosedIcon"/>
 
         <TextView
                 android:id="@+id/grid_item_thread_info"

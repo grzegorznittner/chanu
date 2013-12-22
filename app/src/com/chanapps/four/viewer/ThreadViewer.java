@@ -31,6 +31,8 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import org.xml.sax.XMLReader;
@@ -61,7 +63,7 @@ public class ThreadViewer {
     private static Typeface subjectTypeface = null;
     private static int cardPaddingPx = 0;
     private static ImageLoader imageLoader = null;
-    private static DisplayImageOptions displayImageOptions = null;
+    private static DisplayImageOptions expandedDisplayImageOptions = null;
     private static DisplayImageOptions thumbDisplayImageOptions = null;
     private static int stub;
     private static int boardTabletViewWidthPx = 0;
@@ -76,17 +78,17 @@ public class ThreadViewer {
         boardTabletViewWidthPx = res.getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width);
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
-        displayImageOptions = createDisplayImageOptions(null);
+        expandedDisplayImageOptions = createExpandedDisplayImageOptions(null);
         thumbDisplayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
                 //.cacheInMemory()
                 .imageScaleType(ImageScaleType.NONE)
-                .resetViewBeforeLoading()
-                .showStubImage(stub)
+                //.resetViewBeforeLoading()
+                //.showStubImage(stub)
                 .build();
     }
 
-    private static DisplayImageOptions createDisplayImageOptions(ImageSize imageSize) {
+    private static DisplayImageOptions createExpandedDisplayImageOptions(ImageSize imageSize) {
         return new DisplayImageOptions.Builder()
                 .cacheOnDisc()
                 //.cacheInMemory()
@@ -693,7 +695,7 @@ public class ThreadViewer {
         //    }
         //}
         ImageSize displayImageSize = new ImageSize(imageSize.x, imageSize.y);
-        DisplayImageOptions options = createDisplayImageOptions(displayImageSize);
+        DisplayImageOptions options = createExpandedDisplayImageOptions(displayImageSize);
 
         // display image
         if (thumbOnClickListener != null)
@@ -819,11 +821,15 @@ public class ThreadViewer {
     static private boolean displayNonHeaderImage(final ImageView iv, final ViewGroup wrapper, final Cursor cursor,
                                                  View.OnClickListener thumbOnClickListener) {
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
-        if (url != null && !url.isEmpty()) {
+        if (url != null && url.equals(iv.getTag(R.id.IMG_URL))) {
+            iv.setVisibility(View.VISIBLE);
+        }
+        else if (url != null && !url.isEmpty()) {
             if (DEBUG) Log.i(TAG, "setImage url=" + url);
             bindThumbnailExpandTarget(wrapper, thumbOnClickListener);
+            iv.setImageDrawable(null);
             iv.setVisibility(View.VISIBLE);
-            imageLoader.displayImage(url, iv, thumbDisplayImageOptions);
+            imageLoader.displayImage(url, iv, thumbDisplayImageOptions, thumbLoadingListener);
         }
         else {
             if (DEBUG) Log.i(TAG, "setImage null image");
@@ -837,6 +843,28 @@ public class ThreadViewer {
         }
         return true;
     }
+
+    static private ImageLoadingListener thumbLoadingListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+        }
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            if (view != null)
+                view.setTag(R.id.IMG_URL, null);
+        }
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            if (view != null)
+                view.setTag(R.id.IMG_URL, imageUri);
+        }
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            if (view != null)
+                view.setTag(R.id.IMG_URL, null);
+        }
+    };
+
     /*
     static private boolean displayHeaderImageAtDefaultSize(final ImageView iv, String url) {
         ViewGroup.LayoutParams params = iv.getLayoutParams();
@@ -846,7 +874,7 @@ public class ThreadViewer {
         }
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
         iv.setVisibility(View.VISIBLE);
-        imageLoader.displayImage(url, iv, displayImageOptions);
+        imageLoader.displayImage(url, iv, expandedDisplayImageOptions);
         return true;
     }
     */
@@ -937,7 +965,7 @@ public class ThreadViewer {
             iv.setImageBitmap(null);
             iv.setVisibility(View.VISIBLE);
             String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_COUNTRY_URL));
-            imageLoader.displayImage(url, iv, displayImageOptions);
+            imageLoader.displayImage(url, iv, expandedDisplayImageOptions);
         } else {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);

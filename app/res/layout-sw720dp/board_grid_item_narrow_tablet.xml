@@ -18,7 +18,6 @@
             android:layout_height="@dimen/BoardGridImageSize"
             android:scaleType="centerCrop"
             android:contentDescription="@string/thread_post_image"
-            android:visibility="gone"
             android:background="@drawable/board_grid_selector_bg"
             />
 
@@ -75,7 +74,6 @@
             android:layout_below="@+id/grid_item_num_images_img"
             android:layout_alignParentRight="true"
             android:contentDescription="@string/thread_country_flag"
-            android:visibility="gone"
             />
 
     <TextView
@@ -89,7 +87,6 @@
             android:paddingBottom="@dimen/BoardGridView.spacing"
             android:textColor="?themedCardSubjectTextColor"
             android:textSize="@dimen/BoardGridSubject"
-            android:visibility="gone"
             android:ellipsize="none"
             android:lines="@integer/BoardGridViewNarrowTablet.maxLines"
             />
@@ -105,7 +102,6 @@
             android:textColor="@color/PaletteLightGray"
             android:textSize="@dimen/BoardGridInfo"
             android:maxLines="1"
-            android:visibility="gone"
             />
 
 </RelativeLayout>

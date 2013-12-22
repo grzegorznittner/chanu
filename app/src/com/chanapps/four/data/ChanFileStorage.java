@@ -182,6 +182,10 @@ public class ChanFileStorage {
     }
 
     public static void storeBoardData(Context context, ChanBoard board) throws IOException {
+        storeBoardData(context, board, -1);
+    }
+
+    public static void storeBoardData(Context context, ChanBoard board, long threadNo) throws IOException {
         if (board.defData) {
             Log.i(TAG, "Default data found, not storing board=" + board.link);
             // default data should never be stored
@@ -195,7 +199,8 @@ public class ChanFileStorage {
             if (!board.isVirtualBoard()) {
                 updateWatchedThread(context, board);
             }
-            BoardActivity.updateBoard(context, board.link);
+            if (DEBUG) Log.i(TAG, "updating board /" + board.link + "/" + (threadNo > -1 ? threadNo : ""));
+            BoardActivity.updateBoard(context, board.link, threadNo);
         } else {
             Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
         }
@@ -869,17 +874,20 @@ public class ChanFileStorage {
     private static void updateBoardThread(Context context, ChanThread loadedThread) throws IOException {
         // store updated status into board thread record
         ChanBoard board = loadBoardData(context, loadedThread.board);
-        if (board != null && board.threads != null) {
-            for (int i = 0; i < board.threads.length; i++) {
-                if (board.threads[i] != null && board.threads[i].no == loadedThread.no) {
-                    if (DEBUG) Log.i(TAG, "updateBoardThread found thread=" + board.threads[i] + " merging=" + loadedThread);
-                    board.threads[i].copyUpdatedInfoFields(loadedThread);
-                    storeBoardData(context, board);
-                    break;
-                }
+        if (board == null || board.threads == null)
+            return;
+        int found = -1;
+        for (int i = 0; i < board.threads.length; i++) {
+            if (board.threads[i] != null && board.threads[i].no == loadedThread.no) {
+                found = i;
+                break;
             }
         }
-
+        if (found >= 0) {
+            if (DEBUG) Log.i(TAG, "updateBoardThread found thread=[" + board.threads[found] + "] merging=[" + loadedThread + "]");
+            board.threads[found].copyUpdatedInfoFields(loadedThread);
+            storeBoardData(context, board, board.threads[found].no);
+        }
     }
 
     private static void updateWatchedThread(Context context, ChanThread loadedThread) throws IOException {

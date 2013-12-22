@@ -19,7 +19,6 @@
             android:layout_height="@dimen/BoardGridImageSize"
             android:scaleType="centerCrop"
             android:contentDescription="@string/thread_post_image"
-            android:visibility="gone"
             android:background="@drawable/board_grid_selector_bg"
             />
 
@@ -145,7 +144,6 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/thread_country_flag"
-            android:visibility="gone"
             />
 
     <TextView
@@ -159,7 +157,6 @@
             android:paddingBottom="@dimen/BoardGridView.spacing"
             android:textColor="?themedCardSubjectTextColor"
             android:textSize="@dimen/BoardGridSubject"
-            android:visibility="gone"
             android:ellipsize="none"
             android:lines="@integer/BoardGridViewNarrowTablet.maxLines"
             />
@@ -174,7 +171,6 @@
             android:gravity="center_horizontal"
             android:textColor="?themedCardSubjectTextColor"
             android:textSize="@dimen/BoardGridSubjectHeader"
-            android:visibility="gone"
             />
 
     <TextView
@@ -188,7 +184,6 @@
             android:textColor="@color/PaletteLightGray"
             android:textSize="@dimen/BoardGridInfo"
             android:maxLines="1"
-            android:visibility="gone"
             />
 
     <TextView

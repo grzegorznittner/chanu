@@ -57,9 +57,6 @@ public class BoardGridViewer {
         displayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.NONE)
                 .cacheOnDisc()
-                .cacheInMemory()
-                .resetViewBeforeLoading()
-                .showStubImage(stub)
                 .build();
     }
 
@@ -210,14 +207,19 @@ public class BoardGridViewer {
             displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
             return true;
         }
-        View item = viewHolder.grid_item;
-        iv.setVisibility(View.VISIBLE);
-        sizeImage(iv, item, columnWidth, columnHeight, options);
-
         displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
+
         String url = imageUrl(iv, boardCode, groupBoardCode, cursor, flags, options);
-        if (url != null && !url.isEmpty())
-            imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
+        if (url == null || url.isEmpty())
+            return true;
+        iv.setVisibility(View.VISIBLE);
+        if (url.equals(iv.getTag(R.id.IMG_URL)))
+            return true;
+
+        iv.setImageDrawable(null);
+        View item = viewHolder.grid_item;
+        sizeImage(iv, item, columnWidth, columnHeight, options);
+        imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         return true;
     }
 
@@ -395,13 +397,19 @@ public class BoardGridViewer {
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             if (DEBUG) Log.e(TAG, "Loading failed uri=" + imageUri + " reason=" + failReason.getType());
             //displayDefaultItem(imageUri, view);
+            if (view != null)
+                view.setTag(R.id.IMG_URL, null);
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            if (view != null)
+                view.setTag(R.id.IMG_URL, imageUri);
         }
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
             if (DEBUG) Log.e(TAG, "Loading cancelled uri=" + imageUri);
+            if (view != null)
+                view.setTag(R.id.IMG_URL, null);
         }
     };
 

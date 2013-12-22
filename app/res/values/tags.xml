@@ -9,4 +9,5 @@
     <item name="BOARD_GRID_IMAGE" type="id">9</item>
     <item name="VIEW_HOLDER" type="id">10</item>
     <item name="VIEW_TAG_TYPE" type="id">11</item>
+    <item name="IMG_URL" type="id">12</item>
 </resources>

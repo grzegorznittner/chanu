@@ -232,7 +232,8 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/" + threadNo + " id=" + loader.getId());
-            adapter.swapCursor(null);
+            //adapter.swapCursor(null);
+            adapter.changeCursor(null);
         }
     };
 

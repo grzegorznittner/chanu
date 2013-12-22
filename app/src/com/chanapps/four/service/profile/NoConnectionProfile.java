@@ -107,7 +107,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    ((BoardActivity)activity).refresh(refreshMessage);
+                    //((BoardActivity)activity).refresh(refreshMessage);
+                    ((BoardActivity)activity).refresh();
                 }
             });
     }

@@ -281,7 +281,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    ((BoardActivity)activity).refresh(null);
+                    ((BoardActivity)activity).refresh();
                 }
             });
         }
@@ -548,7 +548,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                     public void run() {
                         BoardActivity ba = (BoardActivity)activity;
                         if (refresh)
-                            ba.refresh(null);
+                            ba.refresh();
                         else
                             ba.setProgress(false);
                     }

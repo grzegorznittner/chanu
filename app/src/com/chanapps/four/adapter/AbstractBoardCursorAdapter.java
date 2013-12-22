@@ -147,7 +147,20 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         findColumns(c, mOriginalFrom);
         return res;
     }
-    
+
+    @Override
+    public void changeCursor(Cursor c) {
+        // super.swapCursor() will notify observers before we have
+        // a valid mapping, make sure we have a mapping before this
+        // happens
+        if (mFrom == null) {
+            findColumns(getCursor(), mOriginalFrom);
+        }
+        super.changeCursor(c);
+        // rescan columns in case cursor layout is different
+        findColumns(c, mOriginalFrom);
+    }
+
     /**
      * Change the cursor and change the column-to-view mappings at the same time.
      *  
