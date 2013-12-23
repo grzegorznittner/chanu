@@ -16,6 +16,7 @@
 
 package com.android.gallery3d.ui;
 
+import android.os.Build;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 
@@ -60,14 +61,30 @@ public class CacheStorageUsageInfo {
 
         String path = cacheDir.getAbsolutePath();
         StatFs stat = new StatFs(path);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+            deprecatedSetTotalUsedBytes(stat);
+        else
+            setTotalUsedBytes(stat);
+
+        mUsedCacheBytes = mActivity.getDataManager().getTotalUsedCacheSize();
+        mTargetCacheBytes = mActivity.getDataManager().getTotalTargetCacheSize();
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void deprecatedSetTotalUsedBytes(StatFs stat) {
         long blockSize = stat.getBlockSize();
         long availableBlocks = stat.getAvailableBlocks();
         long totalBlocks = stat.getBlockCount();
-
         mTotalBytes = blockSize * totalBlocks;
         mUsedBytes = blockSize * (totalBlocks - availableBlocks);
-        mUsedCacheBytes = mActivity.getDataManager().getTotalUsedCacheSize();
-        mTargetCacheBytes = mActivity.getDataManager().getTotalTargetCacheSize();
+    }
+
+    protected void setTotalUsedBytes(StatFs stat) {
+        long blockSize = stat.getBlockSizeLong();
+        long availableBlocks = stat.getAvailableBlocksLong();
+        long totalBlocks = stat.getBlockCountLong();
+        mTotalBytes = blockSize * totalBlocks;
+        mUsedBytes = blockSize * (totalBlocks - availableBlocks);
     }
 
     public long getTotalBytes() {

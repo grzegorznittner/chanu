@@ -16,6 +16,9 @@
 
 package com.android.gallery3d.ui;
 
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.widget.TextView;
 import com.android.gallery3d.anim.CanvasAnimation;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.util.GalleryUtils;
@@ -98,13 +101,21 @@ public class GLRootView extends GLSurfaceView
     public GLRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mFlags |= FLAG_INITIALIZED;
-        setBackgroundDrawable(null);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+            deprecatedSetBackground(null);
+        else
+            setBackground(null);
         setEGLConfigChooser(mEglConfigChooser);
         setRenderer(this);
         getHolder().setFormat(PixelFormat.RGB_565);
 
         // Uncomment this to enable gl error check.
         //setDebugFlags(DEBUG_CHECK_GL_ERROR);
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void deprecatedSetBackground(Drawable d) {
+        setBackgroundDrawable(d);
     }
 
     public GalleryEGLConfigChooser getEGLConfigChooser() {

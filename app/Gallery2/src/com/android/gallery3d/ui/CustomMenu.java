@@ -16,6 +16,8 @@
 
 package com.android.gallery3d.ui;
 
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import com.chanapps.four.gallery3d.R;
 
 import android.app.ActionBar;
@@ -42,8 +44,11 @@ public class CustomMenu implements OnMenuItemClickListener {
         public DropDownMenu(Context context, Button button, int menuId,
                 OnMenuItemClickListener listener) {
             mButton = button;
-            mButton.setBackgroundDrawable(context.getResources().getDrawable(
-                    R.drawable.dropdown_normal_holo_dark));
+            Drawable d = context.getResources().getDrawable(R.drawable.dropdown_normal_holo_dark);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                deprecatedSetBackground(mButton, d);
+            else
+                mButton.setBackground(d);
             mPopupMenu = new PopupMenu(context, mButton);
             mMenu = mPopupMenu.getMenu();
             mPopupMenu.getMenuInflater().inflate(menuId, mMenu);
@@ -53,6 +58,11 @@ public class CustomMenu implements OnMenuItemClickListener {
                     mPopupMenu.show();
                 }
             });
+        }
+
+        @SuppressWarnings("deprecation")
+        protected void deprecatedSetBackground(Button b, Drawable d) {
+            b.setBackgroundDrawable(d);
         }
 
         public MenuItem findItem(int id) {

@@ -419,7 +419,7 @@
     <string name="pref_autoload_images_auto_value">2</string>
     <string name="pref_autoload_images_default_value">@string/pref_autoload_images_never_value</string>
 
-    <string name="direct_web_menu">View on 4chan.org</string>
+    <string name="direct_web_menu">4chan.org</string>
     <string name="pref_about_data_4chan">4chan API</string>
     <string name="pref_about_data_uil">Universal Image Loader</string>
     <string name="pref_about_data_uil_sum">Sergey Tarasevich</string>

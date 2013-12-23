@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.text.*;
 import android.text.style.CharacterStyle;
 import android.util.Log;
@@ -32,6 +35,7 @@ import org.xml.sax.XMLReader;
  * Time: 11:20 AM
  * To change this template use File | Settings | File Templates.
  */
+@SuppressWarnings("unchecked")
 public class BoardGridViewer {
 
     public static final int CATALOG_GRID = 0x01;
@@ -45,15 +49,15 @@ public class BoardGridViewer {
     private static DisplayImageOptions displayImageOptions;
     private static Typeface subjectTypeface;
 
-    //protected static final int NUM_BOARD_CODE_COLORS = 5;
+    protected static final int NUM_BOARD_CODE_COLORS = 5;
 
     public static void initStatics(Context context, boolean isDark) {
         Resources res = context.getResources();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
         imageLoader = ChanImageLoader.getInstance(context);
-        int stub = isDark
-                ? R.drawable.stub_image_background_dark
-                : R.drawable.stub_image_background;
+        //int stub = isDark
+        //        ? R.drawable.stub_image_background_dark
+        //        : R.drawable.stub_image_background;
         displayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.NONE)
                 .cacheOnDisc()
@@ -153,7 +157,7 @@ public class BoardGridViewer {
                 + (s != null && t != null && !s.isEmpty() && !t.isEmpty() ? "<br/>" : "")
                 + (t != null && !t.isEmpty() ? t : "");
         if (DEBUG) Log.i(TAG, "setSubject tv=" + tv + " u=" + u);
-        if (u != null && !u.isEmpty()) {
+        if (!u.isEmpty()) {
             Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(u, null, spoilerTagHandler));
             tv.setText(spannable);
             tv.setVisibility(View.VISIBLE);
@@ -213,7 +217,7 @@ public class BoardGridViewer {
         if (url == null || url.isEmpty())
             return true;
         iv.setVisibility(View.VISIBLE);
-        if (url.equals(iv.getTag(R.id.IMG_URL)))
+        if (url.equals(iv.getTag(R.id.IMG_URL)) && iv.getDrawable() != null)
             return true;
 
         iv.setImageDrawable(null);
@@ -239,6 +243,7 @@ public class BoardGridViewer {
             if (viewHolder.grid_item_bottom_frame != null)
                 viewHolder.grid_item_bottom_frame.setVisibility(View.GONE);
             displayNicelyFormattedBoardCode(titleTypeface, boardCode, viewHolder.grid_item_thread_subject_header_abbr);
+            colorBoardFrame(boardCode, viewHolder.grid_item_thread_subject_header_abbr);
         }
         else if (groupBoardCode != null
                 && !ChanBoard.isVirtualBoard(groupBoardCode)
@@ -252,6 +257,7 @@ public class BoardGridViewer {
             if (viewHolder.grid_item_bottom_frame != null)
                 viewHolder.grid_item_bottom_frame.setVisibility(View.VISIBLE);
             displayNicelyFormattedBoardCode(titleTypeface, boardCode, viewHolder.grid_item_thread_subject_header_abbr);
+            //colorBoardFrame(boardCode, viewHolder.grid_item_thumb_frame);
         }
         else if (boardCode == null || boardCode.equals(groupBoardCode)) {
             if (viewHolder.grid_item_thread_subject_header_abbr != null)
@@ -300,13 +306,6 @@ public class BoardGridViewer {
                     ? R.drawable.bg_222
                     : R.drawable.bg_f4f4f4;
             url = "drawable://" + drawableId;
-        }
-        else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            url = null;
-        }
-        else if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
-            url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL))
-                    .split(ChanThread.AD_DELIMITER)[0];
         }
         //else if (threadNo <= 0) {
         //    if (DEBUG) Log.i(TAG, "setImage() /" + boardCode + "/" + threadNo + " displaying board code instead of image");
@@ -362,9 +361,9 @@ public class BoardGridViewer {
         */
     }
 
-    /*
-    protected static int colorIndex = -1;
 
+    protected static int colorIndex = -1;
+    /*
     protected static void displayBoardCode(ImageView iv, TextView tv, String boardCode) {
         int idx = (colorIndex = (colorIndex + 1) % NUM_BOARD_CODE_COLORS);
         int color;
@@ -389,6 +388,42 @@ public class BoardGridViewer {
             tv.setText("/" + boardCode + "/");
     }
     */
+    protected static void colorBoardFrame(String boardCode, TextView v) {
+        if (v == null)
+            return;
+        if (boardCode == null)
+            return;
+        //int colorIndex = boardCode.hashCode() % NUM_BOARD_CODE_COLORS;
+        colorIndex = (colorIndex + 1) % NUM_BOARD_CODE_COLORS;
+        int colorId = pickColor(colorIndex);
+        Log.e(TAG, "colorBoardFrame /" + boardCode + "/ idx=" + colorIndex + " id=" + colorId);
+        v.setTextColor(v.getResources().getColor(R.color.PaletteBoardTextColor));
+        v.setBackgroundColor(v.getResources().getColor(colorId));
+        //v.getBackground().setColorFilter(v.getResources().getColor(colorId), PorterDuff.Mode.DARKEN);
+        //frame.setBackgroundColor(colorId);
+        //frame.setBackgroundResource(colorId);
+    }
+
+    protected static int pickColor(int colorIndex) {
+        int color;
+        switch (colorIndex) {
+            default:
+            case 0: color = R.color.PaletteBoardColor0; break;
+            case 1: color = R.color.PaletteBoardColor1; break;
+            case 2: color = R.color.PaletteBoardColor2; break;
+            case 3: color = R.color.PaletteBoardColor3; break;
+            case 4: color = R.color.PaletteBoardColor4; break;
+
+            case 5: color = R.color.PaletteBoardColor5; break;
+            case 6: color = R.color.PaletteBoardColor6; break;
+            case 7: color = R.color.PaletteBoardColor7; break;
+            case 8: color = R.color.PaletteBoardColor8; break;
+            case 9: color = R.color.PaletteBoardColor9; break;
+            case 10: color = R.color.PaletteBoardColor10; break;
+        }
+        return color;
+    }
+
     protected static ImageLoadingListener thumbLoadingListener = new ImageLoadingListener() {
         @Override
         public void onLoadingStarted(String imageUri, View view) {
@@ -457,12 +492,10 @@ public class BoardGridViewer {
             t = "";
         //String u = s + (s.isEmpty() || t.isEmpty() ? "" : "<br/>") + t;
         String u = s + (s.isEmpty() || t.isEmpty() ? "" : " ") + t;
-        if ((flags & (ChanThread.THREAD_FLAG_AD | ChanThread.THREAD_FLAG_TITLE)) == 0 && !u.isEmpty()) {
+        if (!u.isEmpty())
             tv.setText(Html.fromHtml(u));
-        }
-        else {
+        else
             tv.setText("");
-        }
         return true;
     }
 
@@ -557,19 +590,31 @@ public class BoardGridViewer {
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xaa;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
+    protected static void setAlpha(ImageView iv, int alpha) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+            deprecatedSetAlpha(iv, alpha);
+        else
+            iv.setImageAlpha(alpha);
+    }
+
+    @SuppressWarnings("deprecation")
+    protected static void deprecatedSetAlpha(ImageView v, int a) {
+        v.setAlpha(a);
+    }
+
     protected static boolean setIcons(BoardGridViewHolder viewHolder, int flags, boolean isDark) {
         int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
         if (viewHolder.grid_item_dead_icon != null) {
             viewHolder.grid_item_dead_icon.setVisibility((flags & ChanThread.THREAD_FLAG_DEAD) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_dead_icon.setAlpha(alpha);
+            setAlpha(viewHolder.grid_item_dead_icon, alpha);
         }
         if (viewHolder.grid_item_closed_icon != null) {
             viewHolder.grid_item_closed_icon.setVisibility((flags & ChanThread.THREAD_FLAG_CLOSED) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_closed_icon.setAlpha(alpha);
+            setAlpha(viewHolder.grid_item_closed_icon, alpha);
         }
         if (viewHolder.grid_item_sticky_icon != null) {
             viewHolder.grid_item_sticky_icon.setVisibility((flags & ChanThread.THREAD_FLAG_STICKY) > 0 ? View.VISIBLE : View.GONE);
-            viewHolder.grid_item_sticky_icon.setAlpha(alpha);
+            setAlpha(viewHolder.grid_item_sticky_icon, alpha);
         }
         if (DEBUG)
             Log.i(TAG, "setSubjectIcons()"

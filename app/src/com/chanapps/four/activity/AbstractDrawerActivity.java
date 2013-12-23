@@ -105,8 +105,8 @@ abstract public class
         ChanBoard board = ChanFileStorage.loadBoardData(this, ChanBoard.FAVORITES_BOARD_CODE);
         if (board != null && board.hasData()) {
             for (ChanThread thread : board.threads) {
-                String threadText = thread.drawerSubject(this);
-                items.add(threadText);
+                String boardName = "/" + thread.board + "/ " + ChanBoard.getName(this, thread.board);
+                items.add(boardName);
             }
         }
         hasFavorites = items.size() > 0;

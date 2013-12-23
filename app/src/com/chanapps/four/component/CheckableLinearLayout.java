@@ -8,6 +8,9 @@ package com.chanapps.four.component;
  * To change this template use File | Settings | File Templates.
  */
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.StatFs;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Checkable;
@@ -56,7 +59,16 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
             ;
         }
         else {
-            setBackgroundDrawable(null);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                deprecatedSetBackgroundDrawable(null);
+            else
+                setBackground(null);
         }
     }
+
+    @SuppressWarnings("deprecation")
+    protected void deprecatedSetBackgroundDrawable(Drawable d) {
+        setBackgroundDrawable(d);
+    }
+
 }

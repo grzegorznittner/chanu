@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.database.MatrixCursor;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -1321,11 +1322,19 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
         if (drawableId > 0) {
             boardIcon.setImageResource(drawableId);
-            boardIcon.setAlpha(alpha);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                deprecatedSetAlpha(boardIcon, alpha);
+            else
+                boardIcon.setImageAlpha(alpha);
         }
 
         boardTitleBar.setVisibility(View.VISIBLE);
         if (DEBUG) Log.i(TAG, "displayBoardTitle /" + boardCode + "/ title=" + title + " set to visible");
+    }
+
+    @SuppressWarnings("deprecation")
+    protected static void deprecatedSetAlpha(ImageView v, int a) {
+        v.setAlpha(a);
     }
 
     protected void hideBoardTitle() {
@@ -1564,24 +1573,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
             final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
             final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
-            if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
-                String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
-                        .split(ChanThread.AD_DELIMITER);
-                String clickUrl = viewType == ViewType.AS_GRID ? clickUrls[0] : clickUrls[1];
-                ActivityDispatcher.launchUrlInBrowser(BoardActivity.this, clickUrl);
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
-                    && title != null && !title.isEmpty()
-                    && desc != null && !desc.isEmpty()) {
-                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
-                        .show(getSupportFragmentManager(), BoardActivity.TAG);
-                return;
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
-                PostReplyActivity.startActivity(BoardActivity.this, boardCode, 0, 0, "", "");
-                return;
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+            if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
                 String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 startActivity(BoardActivity.this, boardLink, "");
             }

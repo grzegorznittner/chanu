@@ -62,21 +62,21 @@ public class TutorialOverlay {
     protected boolean displayNextTipForPage(Page page) {
         NetworkProfileManager manager = NetworkProfileManager.instance();
         if (manager == null) {
-            Log.e(TAG, "no network manager found");
+            if (DEBUG) Log.i(TAG, "no network manager found");
             return false;
         }
         UserStatistics stats = manager.getUserStatistics();
         if (stats == null) {
-            Log.e(TAG, "no user statistics found");
+            if (DEBUG) Log.i(TAG, "no user statistics found");
             return false;
         }
         feature = stats.nextTipForPage(page);
         if (feature == null) {
-            Log.e(TAG, "no tutorial feature found");
+            if (DEBUG) Log.i(TAG, "no tutorial feature found");
             return false;
         }
         if (feature == UserStatistics.ChanFeature.NONE) {
-            Log.e(TAG, "NONE tutorial feature found");
+            if (DEBUG) Log.i(TAG, "NONE tutorial feature found");
             return false;
         }
         if (DEBUG) Log.i(TAG, "found feature=" + feature);

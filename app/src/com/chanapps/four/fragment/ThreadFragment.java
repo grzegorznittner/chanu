@@ -5,8 +5,10 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -1552,9 +1554,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
         if (drawableId > 0) {
             boardIcon.setImageResource(drawableId);
-            boardIcon.setAlpha(alpha);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                deprecatedSetAlpha(boardIcon, alpha);
+            else
+                boardIcon.setImageAlpha(alpha);
         }
         boardTitleBar.setVisibility(View.VISIBLE);
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void deprecatedSetAlpha(ImageView v, int a) {
+        v.setAlpha(a);
     }
 
     @Override

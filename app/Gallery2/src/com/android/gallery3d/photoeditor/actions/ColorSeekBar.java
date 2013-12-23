@@ -23,9 +23,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Region.Op;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
 
+import android.widget.TextView;
 import com.chanapps.four.gallery3d.R;
 
 /**
@@ -100,7 +103,17 @@ class ColorSeekBar extends AbstractSeekBar {
         paint.setColor(colors[colors.length - 1]);
         canvas.drawRect(left, 0, right, h, paint);
 
-        setBackgroundDrawable(new BitmapDrawable(getResources(), background));
+        Drawable d = new BitmapDrawable(getResources(), background);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+            deprecatedSetBackground(d);
+        else
+            setBackground(d);
+
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void deprecatedSetBackground(Drawable d) {
+        setBackgroundDrawable(d);
     }
 
     public void setOnColorChangeListener(final OnColorChangeListener listener) {

@@ -45,11 +45,8 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_DEAD = 0x001;
     public static final int THREAD_FLAG_CLOSED = 0x002;
     public static final int THREAD_FLAG_STICKY = 0x004;
-    public static final int THREAD_FLAG_AD = 0x008;
     public static final int THREAD_FLAG_BOARD = 0x010;
     public static final int THREAD_FLAG_BOARD_TYPE = 0x010;
-    public static final int THREAD_FLAG_TITLE = 0x020;
-    public static final int THREAD_FLAG_BUTTON = 0x040;
     public static final int THREAD_FLAG_POPULAR_THREAD = 0x080;
     public static final int THREAD_FLAG_LATEST_POST = 0x100;
     public static final int THREAD_FLAG_RECENT_IMAGE = 0x200;
@@ -159,32 +156,6 @@ public class ChanThread extends ChanPost {
                 THREAD_FLAG_BOARD | THREAD_FLAG_HEADER
         };
     }
-
-    public static Object[] makeTitleRow(String boardCode, String title) {
-        return makeTitleRow(boardCode, title, "");
-    }
-
-    public static Object[] makeTitleRow(String boardCode, String title, String desc) {
-        return new Object[] {
-                title.hashCode(),
-                boardCode,
-                0,
-                title,
-                desc,
-                "",
-                "",
-                "",
-                "",
-                0,
-                0,
-                0,
-                0,
-                0,
-                THREAD_FLAG_TITLE
-        };
-    }
-
-    public static final String AD_DELIMITER = "\t";
 
     public static boolean threadNeedsRefresh(Context context, String boardCode, long threadNo, boolean forceRefresh) {
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);

@@ -35,6 +35,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -644,11 +645,19 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
                     }
                 }
 
-                mHeaderTextView.setBackgroundDrawable(abBg);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                    deprecatedSetBackground(mHeaderTextView, abBg);
+                else
+                    mHeaderTextView.setBackground(abBg);
             }
 
             // Call onReset to make sure that the View is consistent
             onReset();
+        }
+
+        @SuppressWarnings("deprecation")
+        protected void deprecatedSetBackground(TextView iv, Drawable d) {
+            iv.setBackgroundDrawable(d);
         }
 
         @Override

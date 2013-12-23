@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.StatFs;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -96,9 +98,21 @@ public class NotificationComponent {
             notifBuilder.setLargeIcon(largeIcon);
         if (numNewReplies > 0)
             notifBuilder.setNumber(numNewReplies);
-        Notification noti = notifBuilder.getNotification();
+        Notification noti = buildNotification(notifBuilder);
         if (DEBUG) Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);
         notificationManager.notify(notificationId, noti);
+    }
+
+    protected static Notification buildNotification(Notification.Builder notifBuilder) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+            return deprecatedBuildNotification(notifBuilder);
+        else
+            return notifBuilder.build();
+    }
+
+    @SuppressWarnings("deprecation")
+    protected static Notification deprecatedBuildNotification(Notification.Builder notifBuilder) {
+        return notifBuilder.getNotification();
     }
 
     public static void notifyClearCacheCancelled(Context context) {
@@ -184,7 +198,8 @@ public class NotificationComponent {
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                     threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
             notifBuilder.setContentIntent(pendingIntent);
-            notificationManager.notify(notificationId, notifBuilder.getNotification());
+            Notification noti = buildNotification(notifBuilder);
+            notificationManager.notify(notificationId, noti);
         }
     }
 
@@ -299,7 +314,8 @@ public class NotificationComponent {
                 threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
         notifBuilder.setContentIntent(pendingIntent);
 
-        notificationManager.notify(notificationId, notifBuilder.getNotification());
+        Notification noti = buildNotification(notifBuilder);
+        notificationManager.notify(notificationId, noti);
     }
 
     private static final int FAVORITES_NOTIFICATION_TOKEN = 0x13;

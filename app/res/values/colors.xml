@@ -97,17 +97,17 @@
     <color name="PaletteBoardCodeText">#eeeeee</color>
 
     <!-- board code colors -->
-    <!--
-    <color name="PaletteBoardColor0">#33B5E5</color>
-    <color name="PaletteBoardColor1">#AA66CC</color>
-    <color name="PaletteBoardColor2">#99CC00</color>
-    <color name="PaletteBoardColor3">#FFBB33</color>
-    <color name="PaletteBoardColor4">#FF4444</color>
+    <color name="PaletteBoardTextColor">#fefefe</color>
+    <color name="PaletteBoardColor0">#4897B3</color>
+    <color name="PaletteBoardColor1">#8F48B3</color>
+    <color name="PaletteBoardColor2">#97B348</color>
+    <color name="PaletteBoardColor3">#B38F48</color>
+    <color name="PaletteBoardColor4">#B34848</color>
+
     <color name="PaletteBoardColor5">#0099CC</color>
     <color name="PaletteBoardColor6">#9933CC</color>
     <color name="PaletteBoardColor7">#669900</color>
     <color name="PaletteBoardColor8">#FF8800</color>
     <color name="PaletteBoardColor9">#CC0000</color>
     <color name="PaletteBoardColor10">#CC0000</color>
-    -->
 </resources>

@@ -20,8 +20,6 @@
     <string name="dialog_authorize">Authorise</string>
     <string name="post_reply_pass_enable_menu">Authorise 4chan pass</string>
     <string name="favorites_pick_board">Pick Favourites Board</string>
-    <string name="pref_custom_category">Customise</string>
-    <string name="pref_custom_category_summ">Customise appearance and behaviour</string>
     <string name="pref_clear_favorites">Clear favourites</string>
     <string name="board_favorites">Favourite Boards</string>
     <string name="board_desc_3">Modelling and imagery</string>

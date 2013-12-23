@@ -96,14 +96,15 @@
 
             <com.chanapps.four.component.LetterSpacingTextView
                     android:id="@+id/grid_item_thread_subject_header_abbr"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:gravity="center"
                     android:textStyle="bold"
                     android:textColor="?themedCardSubjectTextColor"
                     android:textSize="@dimen/BoardGridSubjectHeaderAbbr"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="8dp"
+                    android:paddingTop="32dp"
+                    android:paddingBottom="38dp"
                     />
 
         </FrameLayout>

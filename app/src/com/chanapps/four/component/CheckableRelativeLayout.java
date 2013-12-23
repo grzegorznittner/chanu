@@ -8,6 +8,8 @@ package com.chanapps.four.component;
  * To change this template use File | Settings | File Templates.
  */
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 import android.widget.LinearLayout;
@@ -50,7 +52,17 @@ public class CheckableRelativeLayout extends RelativeLayout implements Checkable
     protected void setBackground() {
         if (isChecked)
             setBackgroundResource(backgroundDrawable);
-        else
-            setBackgroundDrawable(null);
+        else {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                deprecatedSetBackgroundDrawable(null);
+            else
+                setBackground(null);
+        }
     }
+
+    @SuppressWarnings("deprecation")
+    protected void deprecatedSetBackgroundDrawable(Drawable d) {
+        setBackgroundDrawable(d);
+    }
+
 }

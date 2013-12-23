@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Parcel;
@@ -28,6 +29,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.Closeable;
 import java.io.InterruptedIOException;
@@ -298,11 +300,25 @@ public class Utils {
         String path = Environment.getExternalStorageDirectory().getPath();
         try {
             StatFs stat = new StatFs(path);
-            return stat.getAvailableBlocks() * (long) stat.getBlockSize() > size;
+            long availableSize;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                availableSize = deprecatedAvailableSize(stat);
+            else
+                availableSize = availableSize(stat);
+            return availableSize > size;
         } catch (Exception e) {
             Log.i(TAG, "Fail to access external storage", e);
         }
         return false;
+    }
+
+    @SuppressWarnings("deprecation")
+    protected static long deprecatedAvailableSize(StatFs stat) {
+        return stat.getAvailableBlocks() * (long) stat.getBlockSize();
+    }
+
+    protected static long availableSize(StatFs stat) {
+        return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
     }
 
     public static void waitWithoutInterrupt(Object object) {

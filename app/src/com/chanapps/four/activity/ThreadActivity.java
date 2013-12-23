@@ -955,17 +955,7 @@ public class ThreadActivity
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
             final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
             final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
-            if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
-                final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
-                ActivityDispatcher.launchUrlInBrowser(getActivityContext(), clickUrl);
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
-                    && title != null && !title.isEmpty()
-                    && desc != null && !desc.isEmpty()) {
-                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
-                        .show(getSupportFragmentManager(), ThreadFragment.TAG);
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+            if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 BoardActivity.startActivity(getActivityContext(), boardLink, "");
             }

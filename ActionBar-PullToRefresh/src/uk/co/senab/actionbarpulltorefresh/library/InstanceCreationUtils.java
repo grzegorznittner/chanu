@@ -29,6 +29,7 @@ import uk.co.senab.actionbarpulltorefresh.library.viewdelegates.AbsListViewDeleg
 import uk.co.senab.actionbarpulltorefresh.library.viewdelegates.ScrollViewDelegate;
 import uk.co.senab.actionbarpulltorefresh.library.viewdelegates.WebViewDelegate;
 
+@SuppressWarnings({"rawtypes", "MethodCanBeVariableArityMethod", "CollectionWithoutInitialCapacity", "ReturnOfNull", "unchecked"})
 class InstanceCreationUtils {
 
     private static final String LOG_TAG = "InstanceCreationUtils";

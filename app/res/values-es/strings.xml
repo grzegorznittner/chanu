@@ -299,7 +299,6 @@
   <string name="pref_autoload_images_summary">Nunca, siempre, o automático basado en la velocidad de conexión</string>
   <string name="pref_autoload_images_never">Nunca</string>
   <string name="pref_autoload_images_always">Siempre</string>
-  <string name="pref_autoload_images_auto">Auto</string>
   <string name="pref_about_application_category">Aplicación</string>
   <string name="pref_about_application_version">Versión %1$s</string>
   <string name="pref_about_application_version_sum">Fecha de publicación %1$s</string>
