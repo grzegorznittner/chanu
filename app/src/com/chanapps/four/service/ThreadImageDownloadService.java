@@ -20,9 +20,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.chanapps.four.component.NotificationComponent;
 import com.chanapps.four.data.*;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -34,6 +37,7 @@ import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -80,7 +84,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     */
 
     public static void startDownloadViaThreadMenu(Context context, String board, long threadNo, long[] postNos) {
-        startDownload(context, board, threadNo, DownloadImageTargetType.TO_GALLERY, 0, 0, postNos, null);
+        startDownload(context, board, threadNo, DownloadImageTargetType.TO_GALLERY, 0, 0, postNos, null, 0);
     }
     
     public static void startDownloadViaGalleryView(Context context, Path mMediaSetPath, ArrayList<Path> ids) {
@@ -121,13 +125,14 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	}
 
     private static void startDownload(Context context, String board, long threadNo, DownloadImageTargetType downloadImageTargetType,
-    		long startPostNo, int restartCounter, long[] postNos, String[] fileNames) {
+    		long startPostNo, int restartCounter, long[] postNos, String[] fileNames, int notificationId) {
         if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
         		+ " all image download service for thread " + board + "/" + threadNo
         		+ (startPostNo == 0 ? "" : " from post " + startPostNo) + " " + downloadImageTargetType);
 
-        int notificationId = 0;
-        if (threadNo == 0) {
+        if (notificationId != 0) {
+        	// notification id provided so task was restarted
+        } else if (threadNo == 0) {
         	// copy cache to gallery
         	notificationId = board.hashCode() + (int)new Date().getTime();
         } else {
@@ -199,7 +204,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 
 		if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
 			if (DEBUG) Log.i(TAG, "no connection, re-scheduling download and exiting");
-            startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo, restartCounter + 1, postNos, fileNames);
+			delayedStartDownload(false);
             return;
 		}
 		
@@ -249,10 +254,22 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			}
 		} catch (Exception e) {
             Log.e(TAG, "Error in image download service", e);
-            startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo, restartCounter + 1, postNos, fileNames);
+            delayedStartDownload(true);
 		} finally {
 			stoppedDownloads.remove(Integer.valueOf(notificationId));
 		}
+	}
+
+	private void delayedStartDownload(final boolean increaseCounter) {
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+		    @Override
+		    public void run() {
+		    	Log.i(TAG, "Delayed scheduling image download service");
+		        startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo,
+		        		restartCounter + (increaseCounter ? 1 : 0), postNos, fileNames, notificationId);
+		    }
+		}, 10000);
 	}
 
     private void prepareNomedia() {
