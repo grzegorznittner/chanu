@@ -396,7 +396,7 @@ public class BoardGridViewer {
         //int colorIndex = boardCode.hashCode() % NUM_BOARD_CODE_COLORS;
         colorIndex = (colorIndex + 1) % NUM_BOARD_CODE_COLORS;
         int colorId = pickColor(colorIndex);
-        Log.e(TAG, "colorBoardFrame /" + boardCode + "/ idx=" + colorIndex + " id=" + colorId);
+        if (DEBUG) Log.i(TAG, "colorBoardFrame /" + boardCode + "/ idx=" + colorIndex + " id=" + colorId);
         v.setTextColor(v.getResources().getColor(R.color.PaletteBoardTextColor));
         v.setBackgroundColor(v.getResources().getColor(colorId));
         //v.getBackground().setColorFilter(v.getResources().getColor(colorId), PorterDuff.Mode.DARKEN);

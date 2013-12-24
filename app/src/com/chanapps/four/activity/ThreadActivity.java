@@ -171,9 +171,17 @@ public class ThreadActivity
     }
 
     protected void createPager(final ChanBoard board) { // must be called on UI thread
+        if (DEBUG) Log.i(TAG, "createPager /" + (board == null ? null : board.link) + "/ q=" + query);
         if (onTablet())
             getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
-        if (mPager != null && mAdapter != null && mAdapter.getBoardCode() != null && mAdapter.getBoardCode().equals(board.link)) {
+        if (query != null && !query.isEmpty()) {
+            if (mPager != null)
+                mPager.removeAllViews();
+            mPager = null;
+            mAdapter = null;
+        }
+        else if (mPager != null && mAdapter != null && mAdapter.getBoardCode() != null
+                && mAdapter.getBoardCode().equals(board.link)) {
             if (DEBUG) Log.i(TAG, "createPager() pager already exists, exiting");
             return;
         }
@@ -181,17 +189,17 @@ public class ThreadActivity
             mAdapter = new ThreadPagerAdapter(getSupportFragmentManager());
         mAdapter.setBoard(board);
         mAdapter.setQuery(query);
-        if (mPager == null) {
+        mAdapter.notifyDataSetChanged();
+        if (mPager == null)
             mPager = (ControllableViewPager) findViewById(R.id.pager);
-            try {
-                mPager.setAdapter(mAdapter);
-                boolean pagingEnabled = query == null || query.isEmpty();
-                mPager.setPagingEnabled(pagingEnabled);
-            }
-            catch (IllegalStateException e) {
-                Log.e(TAG, "Error: pager state exception", e);
-                Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_create_pager, Toast.LENGTH_SHORT);
-            }
+        try {
+            mPager.setAdapter(mAdapter);
+            boolean pagingEnabled = query == null || query.isEmpty();
+            mPager.setPagingEnabled(pagingEnabled);
+        }
+        catch (IllegalStateException e) {
+            Log.e(TAG, "Error: pager state exception", e);
+            Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_create_pager, Toast.LENGTH_SHORT);
         }
     }
 
@@ -271,10 +279,14 @@ public class ThreadActivity
     @Override
     protected void onNewIntent(Intent intent) {
         if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE) + "/"
-                + intent.getLongExtra(ChanThread.THREAD_NO, 0));
-        setIntent(intent);
-        setFromIntent(intent);
-        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/" + threadNo);
+                + intent.getLongExtra(ChanThread.THREAD_NO, -1)
+                + "#p" + intent.getLongExtra(ChanThread.POST_NO, -1)
+                + " q=" + intent.getStringExtra(SearchManager.QUERY));
+        switchThreadInternal(intent.getStringExtra(ChanBoard.BOARD_CODE),
+                intent.getLongExtra(ChanThread.THREAD_NO, -1),
+                intent.getLongExtra(ChanThread.POST_NO, -1),
+                intent.getStringExtra(SearchManager.QUERY));
+        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/" + threadNo + " q=" + query);
     }
 
     public void setFromIntent(Intent intent) {
@@ -304,7 +316,7 @@ public class ThreadActivity
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
         }
-        if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/" + threadNo + "#p" + postNo);
+        if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
     }
 
     @Override
@@ -397,24 +409,43 @@ public class ThreadActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo + " q=" + query);
         if (handler == null)
             handler = new Handler();
-        resumePager();
+        if (redisplayPagerOnResume) {
+            redisplayPagerOnResume = false;
+            redisplayPager();
+        }
+        else {
+            resumePager();
+        }
     }
 
     protected void resumePager() {
+        /*
+        if (query != null && !query.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "resumePager /" + boardCode + "/" + threadNo + " q=" + query + " performing query");
+            redisplayPager(boardCode, threadNo, "");
+        }
+        else
+        */
+        /*
+        if (query != null && !query.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "resumePager /" + boardCode + "/" + threadNo + " awaiting query callback");
+        }
+        else
+        */
         if (mAdapter != null && mAdapter.getCount() > 0) {
-            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo + " setting current item pager count=" + mAdapter.getCount());
+            if (DEBUG) Log.i(TAG, "resumePager /" + boardCode + "/" + threadNo + " setting current item pager count=" + mAdapter.getCount());
             syncPagerAsync();
         }
         else {
-            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo + " pager not loaded, awaiting callback");
+            if (DEBUG) Log.i(TAG, "resumePager /" + boardCode + "/" + threadNo + " pager not loaded, awaiting callback");
         }
         if (onTablet()
                 && !getSupportLoaderManager().hasRunningLoaders()
                 && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0)) {
-            if (DEBUG) Log.i(TAG, "onResume calling restartLoader");
+            if (DEBUG) Log.i(TAG, "resumePager calling restartLoader");
             getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
         }
     }
@@ -425,7 +456,8 @@ public class ThreadActivity
         ThreadFragment fragment = getCurrentFragment();
         if (fragment != null) {
             ChanActivityId aid = fragment.getChanActivityId();
-            if (aid != null && boardCode.equals(aid.boardCode) && threadNo == aid.threadNo) {
+            if (aid != null && boardCode.equals(aid.boardCode) && threadNo == aid.threadNo
+                    && ((query == null && aid.text == null) || query.equals(aid.text))) {
                 Log.i(TAG, "syncPagerAsync() already on thread, exiting");
                 return;
             }
@@ -434,16 +466,16 @@ public class ThreadActivity
             @Override
             public void run() {
                 if (NetworkProfileManager.instance().getActivity() != activity) {
-                    if (DEBUG) Log.i(TAG, "onResume() storing activity change");
+                    if (DEBUG) Log.i(TAG, "syncPagerAsync() storing activity change");
                     NetworkProfileManager.instance().activityChange(activity);
                 }
                 ChanBoard board = BoardCursorLoader.loadBoardSorted(ThreadActivity.this, boardCode);
                 int idx = board.getThreadIndex(boardCode, threadNo);
                 if (idx == -1) {
-                    if (DEBUG) Log.i(TAG, "onResume() thread not in board, waiting for board refresh");
+                    if (DEBUG) Log.i(TAG, "syncPagerAsync() thread not in board, waiting for board refresh");
                 }
                 else {
-                    if (DEBUG) Log.i(TAG, "onResume() set current item to thread");
+                    if (DEBUG) Log.i(TAG, "syncPagerAsync() set current item to thread");
                     syncPagerOnHandler(board);
                 }
             }
@@ -533,31 +565,43 @@ public class ThreadActivity
         }).start();
     }
 
-    protected void redisplayPager(final String boardCode, final long threadNo, final String message) {
+    protected boolean redisplayPagerOnResume = false;
+
+    protected void redisplayPager() {
+        redisplayPager(boardCode, threadNo, query, "");
+    }
+
+    protected void redisplayPager(final String boardCode, final long threadNo, final String query, final String message) {
+        if (DEBUG) Log.i(TAG, "redisplayPager() /" + boardCode + "/" + threadNo + " q=" + query + " handler=" + handler);
         final ChanBoard fragmentBoard = BoardCursorLoader.loadBoardSorted(ThreadActivity.this, boardCode);
         if (fragmentBoard.defData)
             return;
-        if (handler != null)
+        if (handler == null) {
+            redisplayPagerOnResume = true;
+        }
+        else {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    if (DEBUG) Log.i(TAG, "redisplayPager() /" + boardCode + "/" + threadNo + " q=" + query + " recreating pager on handler");
                     if (onTablet()) {
                         createAbsListView();
                         getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
                     }
                     createPager(fragmentBoard);
                     syncPager(fragmentBoard);
-                    refreshAllDisplayedFragments(boardCode, threadNo, message);
+                    refreshAllDisplayedFragments(boardCode, threadNo, query, message);
                 }
             });
+        }
     }
 
     public void refreshFragmentSync(final String boardCode, final long threadNo, final String message) {
         if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " message=" + message);
         if (hasValidPager())
-            refreshAllDisplayedFragments(boardCode, threadNo, message);
+            refreshAllDisplayedFragments(boardCode, threadNo, query, message);
         else
-            redisplayPager(boardCode, threadNo, message);
+            redisplayPager(boardCode, threadNo, query, message);
     }
 
     protected boolean hasValidPager() {
@@ -574,7 +618,11 @@ public class ThreadActivity
         return true;
     }
 
-    protected void refreshAllDisplayedFragments(final String boardCode, final long threadNo, final String message) {
+    protected void refreshAllDisplayedFragments(final String boardCode, final long threadNo, final String query, final String message) {
+        if (query != null && !query.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "refreshAllDisplayedFragments() query present, exiting");
+            return;
+        }
         if (handler != null)
             handler.post(new Runnable() {
                 @Override
@@ -632,6 +680,7 @@ public class ThreadActivity
                     + " unmatching data=/" + data.boardCode + "/" + data.threadNo + ", skipping");
             return false;
         }
+        fragment.setQuery("");
         if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos + " refreshing");
         fragment.refreshThread(message);
         return true;
@@ -1031,7 +1080,14 @@ public class ThreadActivity
 
     @Override
     public void onBackPressed() {
-        navigateUp();
+        if (query != null && !query.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "onBackPressed with query, refreshing activity");
+            switchThreadInternal(boardCode, threadNo, postNo, "");
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onBackPressed without query, navigating up");
+            navigateUp();
+        }
     }
 
     public void navigateUp() {
@@ -1111,14 +1167,20 @@ public class ThreadActivity
     protected void switchThreadInternal(String boardCode, long threadNo, long postNo, String query) { // for when we are already in this class
         if (DEBUG) Log.i(TAG, "switchThreadInternal begin /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
         String oldBoardCode = this.boardCode;
+        String oldQuery = this.query != null ? this.query : "";
+        String checkQuery = query != null ? query : "";
         Intent intent = createIntent(this, boardCode, threadNo, postNo, query);
         setIntent(intent);
         setFromIntent(intent);
         NetworkProfileManager.instance().activityChange(this);
 
         if (!oldBoardCode.equals(boardCode)) { // recreate pager
-            if (DEBUG) Log.i(TAG, "switchThreadInternal redisplayPager() /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
-            redisplayPager(boardCode, threadNo, "");
+            if (DEBUG) Log.i(TAG, "switchThreadInternal new board redisplayPager() /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
+            redisplayPager(boardCode, threadNo, query, "");
+        }
+        else if (!oldQuery.equals(query)) {
+            if (DEBUG) Log.i(TAG, "switchThreadInternal new query redisplayPager() /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
+            redisplayPager(boardCode, threadNo, query, "");
         }
         else {
             if (DEBUG) Log.i(TAG, "switchThreadInternal showThread() /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);

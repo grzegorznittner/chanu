@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.SearchView;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.component.AnalyticsComponent;
@@ -34,6 +35,14 @@ public class SearchActivity extends Activity {
                 return;
             searchView.setSubmitButtonEnabled(true);
             searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
+            searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    //if (activity != null)
+                    //    activity.disableAutoRefresh();
+                    if (DEBUG) Log.i(TAG, "onFocusChange()");
+                }
+            });
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -44,6 +53,7 @@ public class SearchActivity extends Activity {
                     activity.startActivity(intent);
                     return true;
                 }
+
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     if (DEBUG) android.util.Log.i(TAG, "SearchView.onQueryTextChange");

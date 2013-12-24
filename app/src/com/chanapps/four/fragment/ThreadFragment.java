@@ -272,11 +272,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             public void run() {
                 ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
                 if (thread == null) {
-                    if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " null thread");
+                    if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " null thread, exiting");
                     return;
                 }
                 if (thread.isDead) {
-                    if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " dead thread");
+                    if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " dead thread, exiting");
+                    return;
+                }
+                if (query != null && !query.isEmpty()) {
+                    if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " query present, exiting");
                     return;
                 }
                 final int replies = thread.replies;
@@ -375,7 +379,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int AUTOUPDATE_THREAD_DELAY_MS = 30000;
 
     protected void scheduleAutoUpdate() {
-        if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() checking /" + boardCode + "/" + threadNo);
+        if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() checking /" + boardCode + "/" + threadNo + " q=" + query);
         Context context = getActivityContext();
         if (context == null)
             return;
@@ -384,6 +388,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 .getBoolean(SettingsActivity.PREF_AUTOUPDATE_THREADS, true);
         if (!autoUpdate) {
             if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() autoupdate disabled, exiting /" + boardCode + "/" + threadNo);
+            return;
+        }
+        if (query != null && !query.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() query is present, exiting /" + boardCode + "/" + threadNo);
             return;
         }
         if (getActivity() != null && ((ThreadActivity)getActivity()).getCurrentFragment() != this) {
@@ -538,6 +546,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     @Override
                     public void run() {
                         //absListView.invalidateViews();
+                        displaySearchTitle();
                         setProgressFromThreadState(thread);
                     }
                 });
@@ -548,6 +557,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
+                        displaySearchTitle();
                         setProgressFromThreadState(thread);
                     }
                 });
@@ -1347,7 +1357,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/" + threadNo + " id=" + id);
+            if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/" + threadNo + " q=" + query + " id=" + id);
             setProgress(true);
             boolean showRelatedBoards;
             if (onTablet())
@@ -1532,6 +1542,16 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (getActivity() == null)
             return;
         displayTitleBar(getString(R.string.search_results_title), R.drawable.search, R.drawable.search_light);
+        displayResultsBar();
+    }
+
+    protected void displayResultsBar() {
+        if (boardSearchResultsBar == null)
+            return;
+        if (query == null || query.isEmpty()) {
+            boardSearchResultsBar.setVisibility(View.GONE);
+            return;
+        }
         int resultsId = adapter != null && adapter.getCount() > 0
                 ? R.string.thread_search_results
                 : R.string.thread_search_no_results;
@@ -1544,6 +1564,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected void displayTitleBar(String title, int lightIconId, int darkIconId) {
         if (boardTitleBar == null)
             return;
+        if (query == null || query.isEmpty()) {
+            boardTitleBar.setVisibility(View.GONE);
+            return;
+        }
         TextView boardTitle = (TextView)boardTitleBar.findViewById(R.id.board_title_text);
         ImageView boardIcon = (ImageView)boardTitleBar.findViewById(R.id.board_title_icon);
         if (boardTitle == null || boardIcon == null)
@@ -1579,6 +1603,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public String getQuery() {
         return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     public void onUpdateFastScroll(final boolean enabled) {

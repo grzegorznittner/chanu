@@ -1588,11 +1588,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     public void onBackPressed() {
-        if (DEBUG) Log.i(TAG, "onBackPressed() /" + boardCode + "/ q=" + query);
         if (query != null && !query.isEmpty()) {
-            finish();
+            if (DEBUG) Log.i(TAG, "onBackPressed with query, refreshing activity");
+            switchBoard(boardCode, "");
         }
         else {
+            if (DEBUG) Log.i(TAG, "onBackPressed without query, navigating up");
             navigateUp();
         }
     }
