@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.chanapps.four.activity"
-          android:versionCode="58"
+          android:versionCode="59"
           android:versionName="@string/versionName">
 
     <uses-sdk
