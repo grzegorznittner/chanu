@@ -263,7 +263,7 @@ public class ChanPost {
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
     public long jumpToPostNo = 0;
 
-    public static final String quoteText(String in) {
+    public static final String quoteText(String in, long resto) {
         if (in == null || in.isEmpty())
             return "";
         String s = in.replaceAll("<br/>", "\n");
@@ -292,7 +292,9 @@ public class ChanPost {
                 l++;
             }
         }
-        return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
+        String p = o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
+        String q = p.replaceAll(">>" + resto, ">>" + resto + " (OP)");
+        return q;
     }
 
     public String combinedSubCom() {

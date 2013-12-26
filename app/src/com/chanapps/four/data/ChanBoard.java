@@ -260,7 +260,9 @@ public class ChanBoard {
     }
 
     public static int imagelessStickyDrawableId(String boardCode, long threadNo) {
-        if (boardCode.equals("s") && threadNo == 9112225)
+        if (boardCode.equals("s") && threadNo == 12370429)
+            return R.drawable.s_2;
+        else if (boardCode.equals("s") && threadNo == 9112225)
             return R.drawable.s_9112225;
         else if (boardCode.equals("gif") && threadNo == 5404329)
             return R.drawable.gif_5405329;
@@ -458,7 +460,6 @@ public class ChanBoard {
                 },
                 {   BoardType.OTHER.toString(),
                         META_OTHER_BOARD_CODE, ctx.getString(R.string.board_type_other),
-                        "q", ctx.getString(R.string.board_q),
                         "trv", ctx.getString(R.string.board_trv),
                         "fit", ctx.getString(R.string.board_fit),
                         "x", ctx.getString(R.string.board_x),
@@ -530,7 +531,6 @@ public class ChanBoard {
                         "gd", ctx.getString(R.string.board_gd),
                         "diy", ctx.getString(R.string.board_diy),
                         "wsg", ctx.getString(R.string.board_wsg),
-                        "q", ctx.getString(R.string.board_q),
                         "trv", ctx.getString(R.string.board_trv),
                         "fit", ctx.getString(R.string.board_fit),
                         "x", ctx.getString(R.string.board_x),

@@ -322,6 +322,10 @@
     <string name="drawer_close">Close navigation drawer</string>
     <dimen name="drawer_spacer_width">32dp</dimen>
     <dimen name="drawer_spacer_height">16dp</dimen>
+    <dimen name="drawer_item_height">47dp</dimen>
+    <dimen name="drawer_padding_left">16dp</dimen>
+    <dimen name="drawer_padding_right">16dp</dimen>
+    <dimen name="drawer_icon_wrapper_width">46dp</dimen>
 
     <dimen name="ItemsDialogFragment_title_minHeight">64dp</dimen>
     <dimen name="ItemsDialogFragment_title_paddingLeft">16dp</dimen>

@@ -77,6 +77,7 @@
 
         <FrameLayout style="@style/ThreadListItemImageSection" android:id="@+id/list_item_image_expanded_wrapper">
             <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
+            <WebView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview" android:visibility="gone"/>
             <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
             <View style="@style/ThreadListItemImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
         </FrameLayout>

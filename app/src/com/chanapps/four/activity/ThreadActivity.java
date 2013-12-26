@@ -456,9 +456,10 @@ public class ThreadActivity
         ThreadFragment fragment = getCurrentFragment();
         if (fragment != null) {
             ChanActivityId aid = fragment.getChanActivityId();
-            if (aid != null && boardCode.equals(aid.boardCode) && threadNo == aid.threadNo
-                    && ((query == null && aid.text == null) || query.equals(aid.text))) {
-                Log.i(TAG, "syncPagerAsync() already on thread, exiting");
+            boolean onThread = aid != null && boardCode != null && boardCode.equals(aid.boardCode) && threadNo == aid.threadNo;
+            boolean sameQuery = aid != null && ((query == null && aid.text == null) || (query != null && query.equals(aid.text)));
+            if (onThread && sameQuery) {
+                Log.i(TAG, "syncPagerAsync() already on thread with idential query, exiting");
                 return;
             }
         }

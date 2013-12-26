@@ -923,7 +923,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (cursor == null)
             return "";
         cursor.moveToPosition(i);
-        String postNo = cursor.getString(cursor.getColumnIndex(ChanPost.POST_ID));
+        long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+        long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
         String t = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
         String u = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
         String itemText = (t == null ? "" : t)
@@ -931,8 +932,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 + (u == null ? "" : u);
         if (itemText == null)
             itemText = "";
-        String postPrefix = ">>" + postNo + "\n";
-        String text = postPrefix + ChanPost.quoteText(itemText);
+        String postRef = postNo == resto ? " (OP)" : "";
+        String postPrefix = ">>" + postNo + postRef + "\n";
+        String text = postPrefix + ChanPost.quoteText(itemText, resto);
         if (DEBUG) Log.i(TAG, "Selected itemText=" + itemText + " resulting quoteText=" + text);
         return text;
     }

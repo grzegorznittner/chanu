@@ -1231,7 +1231,7 @@
     <!-- Drawer -->
 
     <dimen name="Drawer.layout_width">320dp</dimen>
-    <dimen name="Drawer.paddingTop">16dp</dimen>
+    <dimen name="Drawer.paddingTop">0dp</dimen>
 
     <!-- YesNoPreference -->
 

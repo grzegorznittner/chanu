@@ -35,7 +35,7 @@ abstract public class
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
     protected static final boolean DEBUG = false;
-    protected static final boolean DEVELOPER_MODE = true;
+    protected static final boolean DEVELOPER_MODE = false;
 
     protected static final String THREAD_PATTERN = "/([a-z0-9]+)/([0-9]+).*";
     protected static final String BOARD_PATTERN = "/([a-z0-9]+)/.*";
@@ -143,7 +143,7 @@ abstract public class
         int i = 0;
         boardsArray[i++] = getString(R.string.board_select);
         for (ChanBoard board : boards)
-            boardsArray[i++] = "/" + board.link + "/ " + board.name;
+            boardsArray[i++] = " /" + board.link + "/ " + board.name;
         mSpinnerArray = boardsArray;
     }
 
@@ -235,6 +235,7 @@ abstract public class
     };
 
     protected boolean handleSelectItem(String boardAsMenu) {
+        boardAsMenu = boardAsMenu.trim();
         if (DEBUG) Log.i(TAG, "handleSelectItem boardAsMenu=" + boardAsMenu);
         if (isSelfDrawerMenu(boardAsMenu))
             return false;

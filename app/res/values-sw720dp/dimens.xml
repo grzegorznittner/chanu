@@ -293,6 +293,10 @@
 
     <dimen name="drawer_spacer_width">80dp</dimen>
     <dimen name="drawer_spacer_height">32dp</dimen>
+    <dimen name="drawer_item_height">46dp</dimen>
+    <dimen name="drawer_padding_left">16dp</dimen>
+    <dimen name="drawer_padding_right">16dp</dimen>
+    <dimen name="drawer_icon_wrapper_width">46dp</dimen>
 
     <dimen name="ad_layout_height">90dp</dimen>
 

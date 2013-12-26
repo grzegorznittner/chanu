@@ -507,7 +507,7 @@ public class ThreadViewer {
     static private final String QUOTE_RE_FIRST_REPLACE = "<font color=\"#7a9441\">$1</font>$2";   // #7a9441
     static private final String QUOTE_RE_MID = "(<br/?>)(>[^<>]*)";
     static private final String QUOTE_RE_MID_REPLACE = "$1<font color=\"#7a9441\">$2</font>";   // #7a9441
-    static private final Pattern POST_PATTERN = Pattern.compile("(>>(\\d+))");
+    static private final Pattern POST_PATTERN = Pattern.compile("(>>(\\d+))( \\(OP\\))?");
     //static private final Pattern REPLY_PATTERN = Pattern.compile("(1 Reply|\\d+ Replies)");
     static private final Pattern ID_PATTERN = Pattern.compile("Id: ([A-Za-z0-9+./_:!-]+)");
 
@@ -785,18 +785,14 @@ public class ThreadViewer {
     }
 
     static private boolean hideExpandedImage(ThreadViewHolder viewHolder) {
-        View itemExpandedImage = viewHolder.list_item_image_expanded;
-        View itemExpandedImageClickEffect = viewHolder.list_item_image_expanded_click_effect;
-        View itemExpandedProgressBar = viewHolder.list_item_expanded_progress_bar;
-        View itemExpandedImageWrapper = viewHolder.list_item_image_expanded_wrapper;
-        if (itemExpandedImage != null)
-            itemExpandedImage.setVisibility(View.GONE);
-        if (itemExpandedImageClickEffect != null)
-            itemExpandedImageClickEffect.setVisibility(View.GONE);
-        if (itemExpandedProgressBar != null)
-            itemExpandedProgressBar.setVisibility(View.GONE);
-        if (itemExpandedImageWrapper != null)
-            itemExpandedImageWrapper.setVisibility(View.GONE);
+        View[] views = { viewHolder.list_item_image_expanded,
+                viewHolder.list_item_image_expanded_webview,
+                viewHolder.list_item_image_expanded_click_effect,
+                viewHolder.list_item_expanded_progress_bar,
+                viewHolder.list_item_image_expanded_wrapper};
+        for (View v : views)
+            if (v != null)
+                v.setVisibility(View.GONE);
         return true;
     }
 

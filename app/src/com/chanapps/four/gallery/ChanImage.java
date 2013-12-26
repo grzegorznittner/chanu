@@ -374,6 +374,10 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     }
     
     private boolean isAnimatedGif() {
+        return isAnimatedGif(ext, fsize, w, h);
+    }
+
+    static public boolean isAnimatedGif(String ext, int fsize, int w, int h) {
     	if (".gif".equals(ext)) {
     		if (fsize > 0) {
     			return fsize > w * h * 8 / 10;
@@ -381,7 +385,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     	}
     	return false;
     }
-    
+
     @Override
 	public Uri getPlayUri() {
     	File localFile = new File (localImagePath);

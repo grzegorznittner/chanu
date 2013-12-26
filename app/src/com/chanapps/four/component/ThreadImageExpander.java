@@ -8,9 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.webkit.WebView;
+import android.widget.FrameLayout;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.gallery.ChanImage;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.viewer.ThreadViewHolder;
 import com.chanapps.four.viewer.ThreadViewer;
@@ -35,6 +38,7 @@ public class ThreadImageExpander {
 
     private static final String TAG = ThreadImageExpander.class.getSimpleName();
     private static final boolean DEBUG = false;
+    private static final String WEBVIEW_BLANK_URL = "about:blank";
     //private static final double MAX_EXPANDED_SCALE = 1.5;
 
     private ThreadViewHolder viewHolder;
@@ -45,6 +49,9 @@ public class ThreadImageExpander {
     private String fullImagePath = null;
     private boolean withProgress;
     private int stub;
+    private Point targetSize;
+    private String postExt;
+    private int fsize;
 
     public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor,
                                View.OnClickListener expandedImageListener, boolean withProgress, int stub) {
@@ -55,7 +62,8 @@ public class ThreadImageExpander {
 
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
-        String postExt = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
+        postExt = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
+        fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
         Uri uri = ChanFileStorage.getHiddenLocalImageUri(viewHolder.list_item.getContext(), boardCode, postId, postExt);
 
         postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
@@ -90,10 +98,6 @@ public class ThreadImageExpander {
         //viewHolder.list_item_image_wrapper.setVisibility(View.INVISIBLE);
     }
 
-    private void setImageDimensions(Point targetSize) {
-        setImageDimensions(viewHolder, targetSize);
-    }
-
     static public void setImageDimensions(ThreadViewHolder viewHolder, Point targetSize) {
         ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded.getLayoutParams();
         if (params == null) {
@@ -110,11 +114,18 @@ public class ThreadImageExpander {
                 params2.height = params.height;
             }
         }
-        if (viewHolder.list_item_image_expanded_wrapper != null) {
-            ViewGroup.LayoutParams params3 = viewHolder.list_item_image_expanded_wrapper.getLayoutParams();
+        if (viewHolder.list_item_image_expanded_webview != null) {
+            ViewGroup.LayoutParams params3 = viewHolder.list_item_image_expanded_webview.getLayoutParams();
             if (params3 != null) {
-                //params3.width = params.width; always match width
+                params3.width = params.width;
                 params3.height = params.height;
+            }
+        }
+        if (viewHolder.list_item_image_expanded_wrapper != null) {
+            ViewGroup.LayoutParams params4 = viewHolder.list_item_image_expanded_wrapper.getLayoutParams();
+            if (params4 != null) {
+                //params3.width = params.width; always match width
+                params4.height = params.height;
             }
         }
     }
@@ -129,92 +140,128 @@ public class ThreadImageExpander {
             viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
         }
 
-        Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
+        targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
         if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
-        setImageDimensions(targetSize);
+        setImageDimensions(viewHolder, targetSize);
 
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
-        if (viewHolder.list_item_expanded_progress_bar != null)
-            viewHolder.list_item_expanded_progress_bar.setVisibility(withProgress ? View.VISIBLE : View.GONE);
         if (viewHolder.list_item_image_expanded_wrapper != null)
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
+
+        //if (isAnimatedGif())
+            displayWebView();
+        //else
+        //    displayImageView();
+    }
+
+    protected boolean isAnimatedGif() {
+        return ChanImage.isAnimatedGif(postExt, fsize, postW, postH);
+    }
+
+    protected void displayWebView() {
+        WebView v = viewHolder.list_item_image_expanded_webview;
+        if (v == null)
+            return;
+        if (viewHolder.list_item_expanded_progress_bar != null)
+            viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+        if (viewHolder.list_item_image_expanded != null)
+            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+
+        float maxWidth = postW > 1 ? postW : 250;
+        float maxHeight = postH > 1 ? postH: 250;
+        float itemWidth = targetSize.x;
+        float itemHeight = targetSize.y;
+        int scale = (int)Math.min(Math.ceil(itemWidth * 100 / maxWidth), Math.ceil(itemWidth * 100 / maxWidth));
+        v.setInitialScale(scale);
+        if (DEBUG) Log.i(TAG, "postSize=" + postW + "x" + postH + " targetSize=" + itemWidth + "x" + itemHeight + " scale=" + scale);
+        v.getRootView().setBackgroundColor(0x000000);
+        v.setBackgroundColor(0x000000);
+        v.getSettings().setJavaScriptEnabled(false);
+        v.getSettings().setBuiltInZoomControls(false);
+        if (DEBUG) Log.i(TAG, "Loading anim gif webview url=" + postImageUrl);
+        v.loadUrl(WEBVIEW_BLANK_URL);
+        v.setVisibility(View.VISIBLE);
+        displayClickEffect();
+        v.loadUrl(postImageUrl);
+    }
+
+    protected void displayImageView() {
+        if (viewHolder.list_item_expanded_progress_bar != null)
+            viewHolder.list_item_expanded_progress_bar.setVisibility(withProgress ? View.VISIBLE : View.GONE);
+        if (viewHolder.list_item_image_expanded_webview != null)
+            viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
         if (viewHolder.list_item_image_expanded != null)
             viewHolder.list_item_image_expanded.setVisibility(View.VISIBLE);
-
         int width = targetSize.x; // may need to adjust to avoid out of mem
         int height = targetSize.y;
         ImageSize imageSize = new ImageSize(width, height); // load image at half res to avoid out of mem
         if (DEBUG) Log.i(TAG, "Downsampling image to size=" + imageSize.getWidth() + "x" + imageSize.getHeight());
         DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
                 .imageSize(imageSize)
-                //.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                        //.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
                 .cacheOnDisc()
                 .fullSizeImageLocation(fullImagePath)
                 .resetViewBeforeLoading()
                 .showStubImage(stub)
                 .build();
-
         // display image async
         ChanImageLoader
                 .getInstance(viewHolder.list_item_image_expanded.getContext())
                 .displayImage(postImageUrl, viewHolder.list_item_image_expanded,
-                        expandedDisplayImageOptions, new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-            }
+                        expandedDisplayImageOptions, expandedImageLoadingListener);
+    }
 
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                String reason = failReason.toString();
-                if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
-                if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-                    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-                if (viewHolder.list_item_image_expanded_click_effect != null) {
-                    if (expandedImageListener != null) {
-                        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
-                        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
-                    }
-                    else {
-                        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
-                        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(null);
-                    }
-                }
-            }
+    ImageLoadingListener expandedImageLoadingListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+        }
 
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                if (DEBUG) Log.v(TAG, "onLoadingComplete uri=" + imageUri);
-                if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-                    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-                if (viewHolder.list_item_image_expanded_click_effect != null) {
-                    if (expandedImageListener != null) {
-                        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
-                        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
-                    }
-                    else {
-                        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
-                        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(null);
-                    }
-                }
-                if (viewHolder.list_item_image_nothumbs_expand != null)
-                    viewHolder.list_item_image_nothumbs_expand.setVisibility(View.GONE);
-                if (viewHolder.list_item_image_expansion_target != null) {
-                    //viewHolder.list_item_image_expansion_target.setOnClickListener(null);
-                    //viewHolder.list_item_image_expansion_target.setForeground(view.getResources().getDrawable(R.drawable.null_selector_bg));
-                }
-                if (withProgress)
-                    hideThumbnail();
-                if (viewHolder.list_item != null)
-                    viewHolder.list_item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
-            }
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            String reason = failReason.toString();
+            if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
+            if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+                viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+            displayClickEffect();
+        }
 
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
-                if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-                    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            if (DEBUG) Log.v(TAG, "onLoadingComplete uri=" + imageUri);
+            if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+                viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+            displayClickEffect();
+            if (viewHolder.list_item_image_nothumbs_expand != null)
+                viewHolder.list_item_image_nothumbs_expand.setVisibility(View.GONE);
+            if (viewHolder.list_item_image_expansion_target != null) {
+                //viewHolder.list_item_image_expansion_target.setOnClickListener(null);
+                //viewHolder.list_item_image_expansion_target.setForeground(view.getResources().getDrawable(R.drawable.null_selector_bg));
             }
-        }); // load async
+            if (withProgress)
+                hideThumbnail();
+            if (viewHolder.list_item != null)
+                viewHolder.list_item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
+        }
+
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+                viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+        }
+    };
+
+    private void displayClickEffect() {
+        if (viewHolder.list_item_image_expanded_click_effect != null) {
+            if (expandedImageListener != null) {
+                viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
+                viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
+            }
+            else {
+                viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+                viewHolder.list_item_image_expanded_click_effect.setOnClickListener(null);
+            }
+        }
     }
 
     private boolean shouldExpandImage() {
@@ -224,7 +271,15 @@ public class ThreadImageExpander {
             if (DEBUG) Log.i(TAG, "Image already expanded, skipping");
             return false;
         }
-        return true;
+        else if (viewHolder.list_item_image_expanded_webview != null
+                && viewHolder.list_item_image_expanded_webview.getVisibility() != View.GONE
+                && viewHolder.list_item_image_expanded_webview.getHeight() > 0) {
+            if (DEBUG) Log.i(TAG, "Image webview already expanded, skipping");
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     /*

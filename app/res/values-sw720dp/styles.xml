@@ -16,5 +16,5 @@
         <!--<item name="android:background">@color/PaletteTitleBg</item>-->
     </style>
     <dimen name="Drawer.layout_width">380dp</dimen>
-    <dimen name="Drawer.paddingTop">16dp</dimen>
+    <dimen name="Drawer.paddingTop">0dp</dimen>
 </resources>

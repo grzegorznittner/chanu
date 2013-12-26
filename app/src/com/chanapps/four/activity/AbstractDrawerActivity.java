@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("unchecked")
 abstract public class
         AbstractDrawerActivity
         extends AbstractBoardSpinnerActivity
@@ -277,6 +278,7 @@ abstract public class
 
             public void onDrawerOpened(View drawerView) {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                loadDrawerArray();
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);

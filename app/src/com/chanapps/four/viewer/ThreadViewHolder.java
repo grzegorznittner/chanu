@@ -2,6 +2,7 @@ package com.chanapps.four.viewer;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.*;
 import com.chanapps.four.activity.R;
 
@@ -28,6 +29,7 @@ public class ThreadViewHolder {
     public ImageView list_item_image_nothumbs_expand;
     public ViewGroup list_item_image_expansion_target;
     public ImageView list_item_image_expanded;
+    public WebView list_item_image_expanded_webview;
     public ImageView list_item_num_comments_spinner;
     public ImageView list_item_num_images_spinner;
     public ImageView list_item_image_spinner;
@@ -74,6 +76,7 @@ public class ThreadViewHolder {
         list_item_image_nothumbs_expand = (ImageView)item.findViewById(R.id.list_item_image_nothumbs_expand);
         list_item_image_expansion_target = (ViewGroup)item.findViewById(R.id.list_item_image_expansion_target);
         list_item_image_expanded = (ImageView)item.findViewById(R.id.list_item_image_expanded);
+        list_item_image_expanded_webview = (WebView)item.findViewById(R.id.list_item_image_expanded_webview);
         list_item_num_comments_spinner = (ImageView)item.findViewById(R.id.list_item_num_comments_spinner);
         list_item_num_images_spinner = (ImageView)item.findViewById(R.id.list_item_num_images_spinner);
         list_item_image_spinner = (ImageView)item.findViewById(R.id.list_item_image_spinner);
