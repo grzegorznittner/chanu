@@ -29,6 +29,7 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FontSize;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -50,6 +51,7 @@ import java.util.regex.Pattern;
  * Time: 3:32 PM
  * To change this template use File | Settings | File Templates.
  */
+@SuppressWarnings("unchecked") // for spoiler handler stuff
 public class ThreadViewer {
 
     //public static final double MAX_HEADER_SCALE = 1.5;
@@ -732,8 +734,6 @@ public class ThreadViewer {
 
     static private boolean prefetchExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
                                                             final View.OnClickListener expandedImageListener) {
-        return false;
-        /*
         if (viewHolder.list_item == null)
             return false;
         boolean autoload = shouldAutoload(viewHolder.list_item.getContext(), cursor);
@@ -743,32 +743,31 @@ public class ThreadViewer {
                 (new ThreadImageExpander(viewHolder, cursor, expandedImageListener, true, stub));
         expander.displayImage();
         return true;
-        */
     }
 
     static private boolean shouldAutoload(Context context, final Cursor cursor) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String autoloadType = prefs.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
-                context.getString(R.string.pref_autoload_images_default_value));
+                context.getString(R.string.pref_autoload_images_auto_value));
         long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
         if (context.getString(R.string.pref_autoload_images_nothumbs_value).equals(autoloadType))
             return false;
-        else if (resto == 0)
-            return shouldAutoloadBySizeAndNetwork(cursor);
         else if (context.getString(R.string.pref_autoload_images_never_value).equals(autoloadType))
             return false;
         else if (context.getString(R.string.pref_autoload_images_always_value).equals(autoloadType))
             return true;
-        //else if (context.getString(R.string.pref_autoload_images_auto_value).equals(autoloadType))
+        else if (context.getString(R.string.pref_autoload_images_auto_value).equals(autoloadType))
+            return shouldAutoloadBySizeAndNetwork(cursor);
         else
             return shouldAutoloadBySizeAndNetwork(cursor);
     }
 
     static private boolean shouldAutoloadBySizeAndNetwork(final Cursor cursor) {
-        int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
-        int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
+        //int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
+        //int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
         //if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
-        return (fsize <= maxAutoloadFSize);
+        //return (fsize <= maxAutoloadFSize);
+        return NetworkProfileManager.instance().getCurrentProfile().getConnectionType() == NetworkProfile.Type.WIFI;
     }
 
     static private boolean displayCachedExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,

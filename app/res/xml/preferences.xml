@@ -73,7 +73,7 @@
                 android:title="@string/pref_autoload_images_title"
                 android:entries="@array/pref_autoload_images_entries"
                 android:entryValues="@array/pref_autoload_images_entry_values"
-                android:defaultValue="@string/pref_autoload_images_never_value" />
+                android:defaultValue="@string/pref_autoload_images_auto_value" />
         <!--
                         android:summary="@string/pref_autoload_images_summary"
         -->
