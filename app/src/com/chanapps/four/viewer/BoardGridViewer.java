@@ -200,27 +200,37 @@ public class BoardGridViewer {
         boolean isWideHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & CATALOG_GRID) == 0;
         if (isWideHeader) {
             iv.setImageBitmap(null);
-            iv.setVisibility(View.GONE);
+            //iv.setVisibility(View.GONE);
             return true;
         }
 
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         if ((options & ABBREV_BOARDS) > 0) {
             iv.setImageBitmap(null);
-            iv.setVisibility(View.GONE);
+            //iv.setVisibility(View.GONE);
             displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
             return true;
         }
         displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
 
         String url = imageUrl(iv, boardCode, groupBoardCode, cursor, flags, options);
-        if (url == null || url.isEmpty())
-            return true;
-        iv.setVisibility(View.VISIBLE);
-        if (url.equals(iv.getTag(R.id.IMG_URL)) && iv.getDrawable() != null)
+        if (url == null || url.isEmpty()) {
+            iv.setImageDrawable(null);
             return true;
 
-        iv.setImageDrawable(null);
+        }
+        //iv.setVisibility(View.VISIBLE);
+        int drawHash = iv.getDrawable() == null ? 0 : iv.getDrawable().hashCode();
+        int tagHash = iv.getTag(R.id.IMG_HASH) == null ? 0 : (Integer)iv.getTag(R.id.IMG_HASH);
+        String tagUrl = (String)iv.getTag(R.id.IMG_URL);
+        if (DEBUG) Log.i(TAG, "checking url=" + url + " tagUrl=" + tagUrl + " drawHash=" + drawHash + " tagHash=" + tagHash);
+        if (drawHash != 0 && drawHash == tagHash && url.equals(tagUrl)) {
+            if (DEBUG) Log.i(TAG, "skipping url=" + url + " drawable=" + iv.getDrawable());
+            return true;
+        }
+
+        //iv.setImageDrawable(null);
+        //iv.setImageBitmap(null);
         View item = viewHolder.grid_item;
         sizeImage(iv, item, columnWidth, columnHeight, options);
         imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
@@ -324,7 +334,7 @@ public class BoardGridViewer {
     }
 
     protected static void sizeImage(ImageView iv, View item, int columnWidth, int columnHeight, int options) {
-        iv.setVisibility(View.VISIBLE);
+        //iv.setVisibility(View.VISIBLE);
         if ((options & CATALOG_GRID) > 0) {
             /*
             ViewParent parent = iv.getParent();
@@ -427,24 +437,36 @@ public class BoardGridViewer {
     protected static ImageLoadingListener thumbLoadingListener = new ImageLoadingListener() {
         @Override
         public void onLoadingStarted(String imageUri, View view) {
+            if (view != null && view instanceof ImageView) {
+                ((ImageView)view).setImageDrawable(null);
+                view.setTag(R.id.IMG_URL, null);
+                view.setTag(R.id.IMG_HASH, null);
+            }
         }
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             if (DEBUG) Log.e(TAG, "Loading failed uri=" + imageUri + " reason=" + failReason.getType());
             //displayDefaultItem(imageUri, view);
-            if (view != null)
+            if (view != null) {
                 view.setTag(R.id.IMG_URL, null);
+                view.setTag(R.id.IMG_HASH, null);
+            }
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            if (view != null)
-                view.setTag(R.id.IMG_URL, imageUri);
+            if (view != null && view instanceof ImageView) {
+                ImageView iv = (ImageView)view;
+                iv.setTag(R.id.IMG_URL, imageUri);
+                iv.setTag(R.id.IMG_HASH, iv.getDrawable() == null ? null : iv.getDrawable().hashCode());
+            }
         }
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
             if (DEBUG) Log.e(TAG, "Loading cancelled uri=" + imageUri);
-            if (view != null)
+            if (view != null) {
                 view.setTag(R.id.IMG_URL, null);
+                view.setTag(R.id.IMG_HASH, null);
+            }
         }
     };
 

@@ -163,12 +163,10 @@ public class ThreadViewer {
                 repliesOnClickListener,
                 overflowListener);
         setImageWrapper(viewHolder, flags);
-        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
             setHeaderImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
-        }
-        else {
+        else
             setImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
-        }
         setCountryFlag(viewHolder, cursor, flags);
         setHeaderValue(viewHolder, cursor, sameIdOnClickListener);
         setSubject(viewHolder, cursor, flags, backlinkOnClickListener);
