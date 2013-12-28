@@ -8,7 +8,6 @@ import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
-import android.database.MatrixCursor;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -55,6 +54,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected static final String UPDATE_ABBREV_ACTION = "updateAbbrevAction";
     protected static final String UPDATE_FAST_SCROLL_ACTION = "updateFastScrollAction";
     protected static final String UPDATE_CATALOG_ACTION = "updateCatalogAction";
+    protected static final String UPDATE_HIDE_LAST_REPLIES_ACTION = "updateHideLastRepliesAction";
     protected static final String OPTION_ENABLE = "optionEnable";
     protected static final String BACKGROUND_REFRESH = "backgroundRefresh";
 
@@ -284,6 +284,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateBoardReceived, new IntentFilter(UPDATE_BOARD_ACTION));
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateAbbrevReceived, new IntentFilter(UPDATE_ABBREV_ACTION));
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateCatalogReceived, new IntentFilter(UPDATE_CATALOG_ACTION));
+        LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateHideLastRepliesReceived, new IntentFilter(UPDATE_HIDE_LAST_REPLIES_ACTION));
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateFastScrollReceived, new IntentFilter(UPDATE_FAST_SCROLL_ACTION));
     }
 
@@ -300,6 +301,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setAbbrevBoardsEnabled(getBoolPref(SettingsActivity.PREF_USE_ABBREV_BOARDS));
         else
             setAbbrevBoardsEnabled(false);
+
+        setHideLastRepliesEnabled(getBoolPref(SettingsActivity.PREF_HIDE_LAST_REPLIES));
     }
 
     protected void setSmallGridEnabled(boolean enabled) {
@@ -314,6 +317,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             gridViewOptions |= BoardGridViewer.ABBREV_BOARDS;
         else
             gridViewOptions &= ~BoardGridViewer.ABBREV_BOARDS;
+    }
+
+    protected void setHideLastRepliesEnabled(boolean enabled) {
+        if (enabled)
+            gridViewOptions |= BoardGridViewer.HIDE_LAST_REPLIES;
+        else
+            gridViewOptions &= ~BoardGridViewer.HIDE_LAST_REPLIES;
     }
 
     protected boolean getBoolPref(String preference) {
@@ -489,7 +499,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setSelector(android.R.color.transparent);
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        //absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
         emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         bindPullToRefresh();
@@ -1625,7 +1635,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (DEBUG) Log.i(TAG, "dispatchKeyEvent event=" + event.toString());
-        boolean handled = ListViewKeyScroller.dispatchKeyEvent(event, absListView);
+        if (absListView == null) {
+            if (DEBUG) Log.i(TAG, "dispatchKeyEvent absListView is null, ignoring");
+            return super.dispatchKeyEvent(event);
+        }
+        boolean handled = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(SettingsActivity.PREF_USE_VOLUME_SCROLL, false)
+                && ListViewKeyScroller.dispatchKeyEvent(event, absListView);
         if (handled)
             return true;
         else
@@ -1701,11 +1717,29 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             boolean receivedcatalogEnable = intent != null && intent.getAction().equals(UPDATE_CATALOG_ACTION) && intent.hasExtra(OPTION_ENABLE)
                     ? intent.getBooleanExtra(OPTION_ENABLE, false)
                     : false;
-            if (DEBUG) Log.i(TAG, "onUpdatecatalogReceived /" + boardCode + "/ received=/" + receivedcatalogEnable + "/");
+            if (DEBUG) Log.i(TAG, "onUpdateCatalogReceived /" + boardCode + "/ received=/" + receivedcatalogEnable + "/");
             if (receivedcatalogEnable)
                 gridViewOptions |= BoardGridViewer.CATALOG_GRID;
             else
                 gridViewOptions &= ~BoardGridViewer.CATALOG_GRID;
+            final Handler gridHandler = handler != null ? handler : new Handler();
+            if (gridHandler != null)
+                gridHandler.post(refreshAbsListView);
+        }
+    };
+
+    protected BroadcastReceiver onUpdateHideLastRepliesReceived = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean receivedEnable = intent != null && intent.getAction().equals(UPDATE_HIDE_LAST_REPLIES_ACTION)
+                    && intent.hasExtra(OPTION_ENABLE)
+                    ? intent.getBooleanExtra(OPTION_ENABLE, false)
+                    : false;
+            if (DEBUG) Log.i(TAG, "onUpdateHideLastRepliesReceived /" + boardCode + "/ received=/" + receivedEnable + "/");
+            if (receivedEnable)
+                gridViewOptions |= BoardGridViewer.HIDE_LAST_REPLIES;
+            else
+                gridViewOptions &= ~BoardGridViewer.HIDE_LAST_REPLIES;
             final Handler gridHandler = handler != null ? handler : new Handler();
             if (gridHandler != null)
                 gridHandler.post(refreshAbsListView);
@@ -1726,6 +1760,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     public static void updateCatalog(Context context, boolean enabled) {
         Intent intent = new Intent(BoardActivity.UPDATE_CATALOG_ACTION);
+        intent.putExtra(OPTION_ENABLE, enabled);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public static void updateHideLastReplies(Context context, boolean enabled) {
+        Intent intent = new Intent(BoardActivity.UPDATE_HIDE_LAST_REPLIES_ACTION);
         intent.putExtra(OPTION_ENABLE, enabled);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }

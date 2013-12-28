@@ -1,9 +1,6 @@
 package com.chanapps.four.data;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +16,7 @@ import com.chanapps.four.component.URLFormatComponent;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
-public class ChanPost {
+public class ChanPost implements Serializable {
 
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -134,7 +131,7 @@ public class ChanPost {
         return flags;
     }
 
-    public static final String[] POST_COLUMNS = {
+    private static final String[] POST_COLUMNS = {
             POST_ID,
             POST_BOARD_CODE,
             POST_RESTO,
@@ -506,6 +503,15 @@ public class ChanPost {
             return "";
     }
 
+    public String lastReplyThumbnailUrl(final Context context, final String board) {
+        if (spoiler > 0)
+            return ChanBoard.spoilerThumbnailUrl(context, board);
+        else if (tim > 0 && filedeleted == 0) // && tn_w > 2 && tn_h > 2)
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_THUMBS_URL_FORMAT), board, tim);
+        else
+            return "";
+    }
+
     public int thumbnailId() { // for resource types
         int stickyId = ChanBoard.imagelessStickyDrawableId(board, no);
         if (stickyId > 0)
@@ -534,6 +540,13 @@ public class ChanPost {
    	public String imageName() {
    		return no + ext;
    	}
+
+    public String lastReplyCountryFlagUrl(Context context, String boardCode) {
+        if (country != null && !country.isEmpty())
+            return countryFlagUrl(context, boardCode, country);
+        else
+            return null;
+    }
 
     public String countryFlagUrl(Context context) {
         if (country != null && !country.isEmpty())
@@ -1062,6 +1075,7 @@ public class ChanPost {
         };
     }
 
+    /*
     public static Object[] makeTitleRow(String boardCode, String title) {
         return makeTitleRow(boardCode, title, "");
     }
@@ -1102,7 +1116,7 @@ public class ChanPost {
                 FLAG_HAS_SUBJECT | FLAG_IS_TITLE
         };
     }
-    /*
+
     public static final int MIN_TOKEN_LENGTH = 5;
 
     public Set<String> keywords() {

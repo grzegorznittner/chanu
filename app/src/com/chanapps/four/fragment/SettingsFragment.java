@@ -174,6 +174,18 @@ public class SettingsFragment
         Preference catalog = findPreference(SettingsActivity.PREF_USE_CATALOG);
         catalog.setOnPreferenceChangeListener(catalogListener);
 
+        Preference.OnPreferenceChangeListener hideLastRepliesListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if (DEBUG) Log.i(TAG, "onPrefrenceChange pref=" + preference.getKey() + " newVal=" + newValue);
+                Boolean b = newValue instanceof Boolean ? (Boolean) newValue : null;
+                BoardActivity.updateHideLastReplies(getActivity(), b != null ? b : false);
+                return true;
+            }
+        };
+        Preference hideLastReplies = findPreference(SettingsActivity.PREF_HIDE_LAST_REPLIES);
+        hideLastReplies.setOnPreferenceChangeListener(hideLastRepliesListener);
+
         /*
         Preference.OnPreferenceChangeListener nsfwListener = new Preference.OnPreferenceChangeListener() {
             @Override

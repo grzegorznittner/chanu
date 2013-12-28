@@ -48,7 +48,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
 
         if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
         int i = 0;
-        for (ChanPost thread : board.threads) {
+        for (ChanThread thread : board.threads) {
             if (DEBUG) Log.i(TAG, "Loading thread:" + thread.no);
             if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, thread.trip)
                     || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, thread.name)

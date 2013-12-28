@@ -33,13 +33,18 @@
                  -->
 
         <CheckBoxPreference
-                android:key="pref_use_volume_scroll"
-                android:title="@string/pref_use_volume_scroll"
+                android:key="pref_use_abbrev_boards"
+                android:title="@string/pref_use_abbrev_boards"
                 android:defaultValue="false" />
 
         <CheckBoxPreference
-                android:key="pref_use_abbrev_boards"
-                android:title="@string/pref_use_abbrev_boards"
+                android:key="pref_hide_last_replies"
+                android:title="@string/pref_hide_last_replies"
+                android:defaultValue="false" />
+
+        <CheckBoxPreference
+                android:key="pref_use_volume_scroll"
+                android:title="@string/pref_use_volume_scroll"
                 android:defaultValue="false" />
 
         <CheckBoxPreference

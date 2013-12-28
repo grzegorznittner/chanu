@@ -205,7 +205,8 @@
   <string name="dialog_set">セット</string>
   <string name="dialog_cancel">キャンセル</string>
   <string name="dialog_added_to_watchlist">ウォッチリストに追加しました</string>
-  <string name="dialog_deleted_from_watchlist">お気に入りのボードを指定</string>
+  <!-- <string name="dialog_deleted_from_watchlist">お気に入りのボードを指定</string>-->
+  <string name="dialog_deleted_from_watchlist">削除された</string>
   <string name="dialog_cleared_watchlist">ウォッチリストをクリアしました</string>
   <string name="dialog_cleaning_watchlist">ウォッチリストをクリアしています</string>
   <string name="dialog_cleaned_watchlist">ウォッチリストをクリアしました</string>

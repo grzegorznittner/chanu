@@ -166,7 +166,7 @@
   <string name="dialog_set">Definir</string>
   <string name="dialog_cancel">Cancelar</string>
   <string name="dialog_added_to_watchlist">Assinado</string>
-  <string name="dialog_deleted_from_watchlist">Removido das assinaturas</string>
+  <string name="dialog_deleted_from_watchlist">Removido</string>
   <string name="dialog_cleared_watchlist">Lista de assinaturas limpa</string>
   <string name="dialog_cleaning_watchlist">Limpando lista de assinaturas...</string>
   <string name="dialog_cleaned_watchlist">Lista de assinaturas limpa</string>

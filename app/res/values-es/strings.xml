@@ -164,7 +164,7 @@
   <string name="dialog_set">Establecer</string>
   <string name="dialog_cancel">Cancelar</string>
   <string name="dialog_added_to_watchlist">Agregado a watchlist</string>
-  <string name="dialog_deleted_from_watchlist">Eliminado de la watchlist</string>
+  <string name="dialog_deleted_from_watchlist">Eliminado</string>
   <string name="dialog_cleared_watchlist">Watchlist limpiada</string>
   <string name="dialog_cleaning_watchlist">Limpiando watchlist...</string>
   <string name="dialog_cleaned_watchlist">Watchlist limpiada</string>

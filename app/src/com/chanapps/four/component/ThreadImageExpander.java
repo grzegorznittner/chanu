@@ -38,7 +38,9 @@ public class ThreadImageExpander {
 
     private static final String TAG = ThreadImageExpander.class.getSimpleName();
     private static final boolean DEBUG = false;
+
     private static final String WEBVIEW_BLANK_URL = "about:blank";
+    private static final int BIG_IMAGE_SIZE_BYTES = 1024 * 250; // more than 250kb, show in web view
     //private static final double MAX_EXPANDED_SCALE = 1.5;
 
     private ThreadViewHolder viewHolder;
@@ -148,14 +150,18 @@ public class ThreadImageExpander {
         if (viewHolder.list_item_image_expanded_wrapper != null)
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
 
-        //if (isAnimatedGif())
+        if (isAnimatedGif() || isBigImage())
             displayWebView();
-        //else
-        //    displayImageView();
+        else
+            displayImageView();
     }
 
     protected boolean isAnimatedGif() {
         return ChanImage.isAnimatedGif(postExt, fsize, postW, postH);
+    }
+
+    protected boolean isBigImage() {
+        return fsize > BIG_IMAGE_SIZE_BYTES;
     }
 
     protected void displayWebView() {

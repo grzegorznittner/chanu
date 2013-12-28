@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:id="@+id/grid_item"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
@@ -7,6 +7,7 @@
         >
 
     <RelativeLayout
+            android:id="@+id/grid_item_thread"
             android:layout_width="match_parent"
             android:layout_height="@dimen/BoardGridImageSize"
             >
@@ -173,6 +174,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
+            android:layout_alignParentRight="true"
             android:paddingRight="5dp"
             android:paddingTop="4dp"
             android:src="@drawable/card_overflow_icon"
@@ -193,4 +195,204 @@
             android:paddingBottom="@dimen/BoardGridView.infoBottomPadding"
             />
 
-</FrameLayout>
+    <RelativeLayout
+            android:id="@+id/grid_item_thread_1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/BoardGridImageSizeHalf"
+            android:layout_below="@+id/grid_item_thread"
+            >
+        <View style="@style/ThreadListHeaderNumHorizontalBorder"/>
+        <ImageView
+                android:id="@+id/grid_item_thread_thumb_1"
+                android:layout_width="@dimen/BoardGridImageSizeHalf"
+                android:layout_height="@dimen/BoardGridImageSizeHalf"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
+                />
+        <TextView
+                android:id="@+id/grid_item_thread_subject_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/grid_item_thread_thumb_1"
+                android:layout_toLeftOf="@+id/grid_item_country_flag_1"
+                android:paddingLeft="@dimen/BoardGridView.spacing"
+                android:paddingRight="@dimen/BoardGridView.rightSpacing"
+                android:paddingTop="@dimen/BoardGridView.topSpacing"
+                android:textColor="?themedCardSubjectTextColor"
+                android:textSize="@dimen/BoardGridLargeSubject"
+                android:maxLines="@integer/BoardGridView.Half.maxLines"
+                />
+        <ImageView
+                android:id="@+id/grid_item_country_flag_1"
+                android:layout_width="@dimen/BoardGridItemCountryFlagWidth"
+                android:layout_height="@dimen/BoardGridItemCountryFlagHeight"
+                android:paddingTop="@dimen/BoardGridItemCountryFlagPaddingBottom"
+                android:layout_marginRight="@dimen/BoardGridView.spacing"
+                android:scaleType="fitXY"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/thread_country_flag"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:id="@+id/grid_item_thread_2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/BoardGridImageSizeHalf"
+            android:layout_below="@+id/grid_item_thread_1"
+            >
+        <View style="@style/ThreadListHeaderNumHorizontalBorder"/>
+        <ImageView
+                android:id="@+id/grid_item_thread_thumb_2"
+                android:layout_width="@dimen/BoardGridImageSizeHalf"
+                android:layout_height="@dimen/BoardGridImageSizeHalf"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
+                />
+        <TextView
+                android:id="@+id/grid_item_thread_subject_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/grid_item_thread_thumb_2"
+                android:layout_toLeftOf="@+id/grid_item_country_flag_2"
+                android:paddingLeft="@dimen/BoardGridView.spacing"
+                android:paddingRight="@dimen/BoardGridView.rightSpacing"
+                android:paddingTop="@dimen/BoardGridView.topSpacing"
+                android:textColor="?themedCardSubjectTextColor"
+                android:textSize="@dimen/BoardGridLargeSubject"
+                android:maxLines="@integer/BoardGridView.Half.maxLines"
+                />
+        <ImageView
+                android:id="@+id/grid_item_country_flag_2"
+                android:layout_width="@dimen/BoardGridItemCountryFlagWidth"
+                android:layout_height="@dimen/BoardGridItemCountryFlagHeight"
+                android:paddingTop="@dimen/BoardGridItemCountryFlagPaddingBottom"
+                android:layout_marginRight="@dimen/BoardGridView.spacing"
+                android:scaleType="fitXY"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/thread_country_flag"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:id="@+id/grid_item_thread_3"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/BoardGridImageSizeHalf"
+            android:layout_below="@+id/grid_item_thread_2"
+            >
+        <View style="@style/ThreadListHeaderNumHorizontalBorder"/>
+        <ImageView
+                android:id="@+id/grid_item_thread_thumb_3"
+                android:layout_width="@dimen/BoardGridImageSizeHalf"
+                android:layout_height="@dimen/BoardGridImageSizeHalf"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
+                />
+        <TextView
+                android:id="@+id/grid_item_thread_subject_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/grid_item_thread_thumb_3"
+                android:layout_toLeftOf="@+id/grid_item_country_flag_3"
+                android:paddingLeft="@dimen/BoardGridView.spacing"
+                android:paddingRight="@dimen/BoardGridView.rightSpacing"
+                android:paddingTop="@dimen/BoardGridView.topSpacing"
+                android:textColor="?themedCardSubjectTextColor"
+                android:textSize="@dimen/BoardGridLargeSubject"
+                android:maxLines="@integer/BoardGridView.Half.maxLines"
+                />
+        <ImageView
+                android:id="@+id/grid_item_country_flag_3"
+                android:layout_width="@dimen/BoardGridItemCountryFlagWidth"
+                android:layout_height="@dimen/BoardGridItemCountryFlagHeight"
+                android:paddingTop="@dimen/BoardGridItemCountryFlagPaddingBottom"
+                android:layout_marginRight="@dimen/BoardGridView.spacing"
+                android:scaleType="fitXY"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/thread_country_flag"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:id="@+id/grid_item_thread_4"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/BoardGridImageSizeHalf"
+            android:layout_below="@+id/grid_item_thread_3"
+            >
+        <View style="@style/ThreadListHeaderNumHorizontalBorder"/>
+        <ImageView
+                android:id="@+id/grid_item_thread_thumb_4"
+                android:layout_width="@dimen/BoardGridImageSizeHalf"
+                android:layout_height="@dimen/BoardGridImageSizeHalf"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
+                />
+        <TextView
+                android:id="@+id/grid_item_thread_subject_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/grid_item_thread_thumb_4"
+                android:layout_toLeftOf="@+id/grid_item_country_flag_4"
+                android:paddingLeft="@dimen/BoardGridView.spacing"
+                android:paddingRight="@dimen/BoardGridView.rightSpacing"
+                android:paddingTop="@dimen/BoardGridView.topSpacing"
+                android:textColor="?themedCardSubjectTextColor"
+                android:textSize="@dimen/BoardGridLargeSubject"
+                android:maxLines="@integer/BoardGridView.Half.maxLines"
+                />
+        <ImageView
+                android:id="@+id/grid_item_country_flag_4"
+                android:layout_width="@dimen/BoardGridItemCountryFlagWidth"
+                android:layout_height="@dimen/BoardGridItemCountryFlagHeight"
+                android:paddingTop="@dimen/BoardGridItemCountryFlagPaddingBottom"
+                android:layout_marginRight="@dimen/BoardGridView.spacing"
+                android:scaleType="fitXY"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/thread_country_flag"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:id="@+id/grid_item_thread_5"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/BoardGridImageSizeHalf"
+            android:layout_below="@+id/grid_item_thread_4"
+            >
+        <View style="@style/ThreadListHeaderNumHorizontalBorder"/>
+        <ImageView
+                android:id="@+id/grid_item_thread_thumb_5"
+                android:layout_width="@dimen/BoardGridImageSizeHalf"
+                android:layout_height="@dimen/BoardGridImageSizeHalf"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
+                />
+        <TextView
+                android:id="@+id/grid_item_thread_subject_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/grid_item_thread_thumb_5"
+                android:layout_toLeftOf="@+id/grid_item_country_flag_5"
+                android:paddingLeft="@dimen/BoardGridView.spacing"
+                android:paddingRight="@dimen/BoardGridView.rightSpacing"
+                android:paddingTop="@dimen/BoardGridView.topSpacing"
+                android:textColor="?themedCardSubjectTextColor"
+                android:textSize="@dimen/BoardGridLargeSubject"
+                android:maxLines="@integer/BoardGridView.Half.maxLines"
+                />
+        <ImageView
+                android:id="@+id/grid_item_country_flag_5"
+                android:layout_width="@dimen/BoardGridItemCountryFlagWidth"
+                android:layout_height="@dimen/BoardGridItemCountryFlagHeight"
+                android:paddingTop="@dimen/BoardGridItemCountryFlagPaddingBottom"
+                android:layout_marginRight="@dimen/BoardGridView.spacing"
+                android:scaleType="fitXY"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/thread_country_flag"
+                />
+    </RelativeLayout>
+
+</RelativeLayout>

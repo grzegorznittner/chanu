@@ -40,6 +40,28 @@ public class BoardGridViewHolder {
     public View grid_item_line_1;
     public View grid_item_line_2;
 
+    public ViewGroup grid_item_thread_1;
+    public ImageView grid_item_thread_thumb_1;
+    public TextView grid_item_thread_subject_1;
+    public ImageView grid_item_country_flag_1;
+    public ViewGroup grid_item_thread_2;
+    public ImageView grid_item_thread_thumb_2;
+    public TextView grid_item_thread_subject_2;
+    public ImageView grid_item_country_flag_2;
+    public ViewGroup grid_item_thread_3;
+    public ImageView grid_item_thread_thumb_3;
+    public TextView grid_item_thread_subject_3;
+    public ImageView grid_item_country_flag_3;
+    public ViewGroup grid_item_thread_4;
+    public ImageView grid_item_thread_thumb_4;
+    public TextView grid_item_thread_subject_4;
+    public ImageView grid_item_country_flag_4;
+    public ViewGroup grid_item_thread_5;
+    public ImageView grid_item_thread_thumb_5;
+    public TextView grid_item_thread_subject_5;
+    public ImageView grid_item_country_flag_5;
+
+
     public BoardGridViewHolder(View item) {
         grid_item = (ViewGroup)item;
         grid_item_bottom_frame = (ViewGroup)item.findViewById(R.id.grid_item_bottom_frame);
@@ -66,6 +88,28 @@ public class BoardGridViewHolder {
         grid_item_sticky_icon = (ImageView)item.findViewById(R.id.grid_item_sticky_icon);
         grid_item_line_1 = item.findViewById(R.id.grid_item_line_1);
         grid_item_line_2 = item.findViewById(R.id.grid_item_line_2);
+
+        grid_item_thread_1 = (ViewGroup)item.findViewById(R.id.grid_item_thread_1);
+        grid_item_thread_thumb_1 = (ImageView)item.findViewById(R.id.grid_item_thread_thumb_1);
+        grid_item_thread_subject_1 = (TextView)item.findViewById(R.id.grid_item_thread_subject_1);
+        grid_item_country_flag_1 = (ImageView)item.findViewById(R.id.grid_item_country_flag_1);
+        grid_item_thread_2 = (ViewGroup)item.findViewById(R.id.grid_item_thread_2);
+        grid_item_thread_thumb_2 = (ImageView)item.findViewById(R.id.grid_item_thread_thumb_2);
+        grid_item_thread_subject_2 = (TextView)item.findViewById(R.id.grid_item_thread_subject_2);
+        grid_item_country_flag_2 = (ImageView)item.findViewById(R.id.grid_item_country_flag_2);
+        grid_item_thread_3 = (ViewGroup)item.findViewById(R.id.grid_item_thread_3);
+        grid_item_thread_thumb_3 = (ImageView)item.findViewById(R.id.grid_item_thread_thumb_3);
+        grid_item_thread_subject_3 = (TextView)item.findViewById(R.id.grid_item_thread_subject_3);
+        grid_item_country_flag_3 = (ImageView)item.findViewById(R.id.grid_item_country_flag_3);
+        grid_item_thread_4 = (ViewGroup)item.findViewById(R.id.grid_item_thread_4);
+        grid_item_thread_thumb_4 = (ImageView)item.findViewById(R.id.grid_item_thread_thumb_4);
+        grid_item_thread_subject_4 = (TextView)item.findViewById(R.id.grid_item_thread_subject_4);
+        grid_item_country_flag_4 = (ImageView)item.findViewById(R.id.grid_item_country_flag_4);
+        grid_item_thread_5 = (ViewGroup)item.findViewById(R.id.grid_item_thread_5);
+        grid_item_thread_thumb_5 = (ImageView)item.findViewById(R.id.grid_item_thread_thumb_5);
+        grid_item_thread_subject_5 = (TextView)item.findViewById(R.id.grid_item_thread_subject_5);
+        grid_item_country_flag_5 = (ImageView)item.findViewById(R.id.grid_item_country_flag_5);
+
     }
 
 }

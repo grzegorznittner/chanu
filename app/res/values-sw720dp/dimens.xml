@@ -274,6 +274,7 @@
     <dimen name="widget_textSize">12sp</dimen>
 
     <integer name="BoardGridView.maxLines">4</integer>
+    <integer name="BoardGridView.Half.maxLines">2</integer>
     <integer name="BoardGridViewNarrowTablet.maxLines">6</integer>
     <dimen name="BoardGridView.topSpacing">8dp</dimen>
     <dimen name="BoardGridView.halfSpacing">8dp</dimen>

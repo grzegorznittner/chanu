@@ -39,7 +39,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
 public class BoardParserService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = BoardParserService.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 200;
 
     private String boardCode;
@@ -224,10 +224,13 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     	        for (JsonNode threadValue : pageNode.path("threads")) { // iterate over threads
     	            try {
                         ChanThread thread = mapper.readValue(threadValue, ChanThread.class);
-                        if (DEBUG) Log.i(TAG, "thread sub=" + thread.sub + " thumb=" + thread.tn_w + "x" + thread.tn_h + " full=" + thread.w + "x" + thread.h);
+                        if (DEBUG) Log.i(TAG, "thread sub=" + thread.sub + " thumb=" + thread.tn_w + "x" + thread.tn_h
+                                + " full=" + thread.w + "x" + thread.h + " com=" + thread.com);
                         if (thread != null) {
                             thread.board = boardCode;
                             threads.add(thread);
+                            if (DEBUG) Log.i(TAG, "thread lastReplies=" + thread.lastReplies
+                                    + " len=" + (thread.lastReplies == null ? 0 : thread.lastReplies.length));
                         }
                     }
                     catch (JsonMappingException e) { // if we have just one error, try and recover

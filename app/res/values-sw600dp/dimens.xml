@@ -296,6 +296,7 @@
     <dimen name="ItemsDialogFragment_title_textSize">28sp</dimen>
 
     <integer name="BoardGridView.maxLines">6</integer>
+    <integer name="BoardGridView.Half.maxLines">3</integer>
     <integer name="BoardGridViewNarrowTablet.maxLines">7</integer>
     <dimen name="BoardGridView.topSpacing">6dp</dimen>
     <dimen name="BoardGridView.halfSpacing">8dp</dimen>

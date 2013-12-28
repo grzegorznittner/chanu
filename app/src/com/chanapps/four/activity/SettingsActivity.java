@@ -40,6 +40,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_USE_CATALOG = "pref_use_catalog";
     public static final String PREF_USE_VOLUME_SCROLL = "pref_use_volume_scroll";
     public static final String PREF_USE_ABBREV_BOARDS = "pref_use_abbrev_boards";
+    public static final String PREF_HIDE_LAST_REPLIES = "pref_hide_last_replies";
     public static final String PREF_BOARD_SORT_TYPE = "pref_board_sort_type";
     public static final String PREF_FONT_SIZE = "pref_font_size";
     public static final String PREF_AUTOUPDATE_THREADS = "pref_autoupdate_threads";

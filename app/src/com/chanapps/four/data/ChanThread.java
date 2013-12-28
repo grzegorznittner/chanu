@@ -1,12 +1,18 @@
 package com.chanapps.four.data;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.DateFormat;
 import java.util.*;
 
 import android.util.Log;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.NetworkProfileManager;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.http.impl.cookie.DateUtils;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import android.content.Context;
@@ -15,7 +21,9 @@ import android.database.MatrixCursor;
 import com.chanapps.four.activity.R;
 
 public class ChanThread extends ChanPost {
-    private static final boolean DEBUG = false;
+
+    private static final String TAG = ChanThread.class.getSimpleName();
+    private static final boolean DEBUG = true;
     public static final double MAX_THUMBNAIL_PX = 250;
 
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
@@ -25,6 +33,9 @@ public class ChanThread extends ChanPost {
     public boolean loadedFromBoard = false;
 
 	public ChanPost posts[] = new ChanPost[0];
+
+    @JsonProperty("last_replies")
+    public ChanPost[] lastReplies = new ChanPost[0];
 
     public static final String THREAD_COMPOSITE_ID = "_id";
     public static final String THREAD_BOARD_CODE = "threadBoardCode";
@@ -41,6 +52,7 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_TN_H = "threadThumbHeight";
     public static final String THREAD_JUMP_TO_POST_NO = "threadJumpToPostNo";
     public static final String THREAD_FLAGS = "threadFlags";
+    public static final String THREAD_LAST_REPLIES_BLOB = "lastRepliesBlob";
 
     public static final int THREAD_FLAG_DEAD = 0x001;
     public static final int THREAD_FLAG_CLOSED = 0x002;
@@ -52,7 +64,7 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_RECENT_IMAGE = 0x200;
     public static final int THREAD_FLAG_HEADER = 0x400;
 
-    public static final String[] THREAD_COLUMNS = {
+    private static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
             THREAD_BOARD_CODE,
             THREAD_NO,
@@ -67,6 +79,7 @@ public class ChanThread extends ChanPost {
             THREAD_TN_W,
             THREAD_TN_H,
             THREAD_JUMP_TO_POST_NO,
+            THREAD_LAST_REPLIES_BLOB,
             THREAD_FLAGS
     };
 
@@ -85,26 +98,29 @@ public class ChanThread extends ChanPost {
         return flags;
     }
 
-    public static Object[] makeRow(Context context, ChanPost post, String query, int extraFlags,
+    public static Object[] makeRow(Context context, ChanThread thread, String query, int extraFlags,
                                    boolean showNumReplies, boolean abbrev) {
-        String id = post.board + "/" + post.no;
-        String[] textComponents = post.textComponents(query);
+        String id = thread.board + "/" + thread.no;
+        String[] textComponents = thread.textComponents(query);
+        byte[] lastRepliesBlob = blobifyLastReplies(thread.lastReplies);
+        if (DEBUG) Log.i(TAG, "makeRow /" + thread.board + "/" + thread.no + " lastRepliesBlob=" + lastRepliesBlob);
         return new Object[] {
                 id.hashCode(),
-                post.board,
-                post.no,
+                thread.board,
+                thread.no,
                 textComponents[0],
-                post.headline(context, query, true, null, showNumReplies, abbrev),
+                thread.headline(context, query, true, null, showNumReplies, abbrev),
                 textComponents[1],
-                post.thumbnailUrl(context),
-                post.countryFlagUrl(context),
+                thread.thumbnailUrl(context),
+                thread.countryFlagUrl(context),
                 "",
-                post.replies,
-                post.images,
-                post.tn_w > 0 ? post.tn_w : MAX_THUMBNAIL_PX,
-                post.tn_h > 0 ? post.tn_h : MAX_THUMBNAIL_PX,
-                post.jumpToPostNo,
-                threadFlags(post) | extraFlags
+                thread.replies,
+                thread.images,
+                thread.tn_w > 0 ? thread.tn_w : MAX_THUMBNAIL_PX,
+                thread.tn_h > 0 ? thread.tn_h : MAX_THUMBNAIL_PX,
+                thread.jumpToPostNo,
+                lastRepliesBlob,
+                threadFlags(thread) | extraFlags
         };
     }
 
@@ -124,6 +140,7 @@ public class ChanThread extends ChanPost {
                 MAX_THUMBNAIL_PX,
                 MAX_THUMBNAIL_PX,
                 0,
+                null,
                 THREAD_FLAG_BOARD | extraFlags
         };
     }
@@ -153,6 +170,7 @@ public class ChanThread extends ChanPost {
                 MAX_THUMBNAIL_PX,
                 MAX_THUMBNAIL_PX,
                 0,
+                null,
                 THREAD_FLAG_BOARD | THREAD_FLAG_HEADER
         };
     }
@@ -314,6 +332,36 @@ public class ChanThread extends ChanPost {
             return false;
         else
             return true;
+    }
+
+    public static byte[] blobifyLastReplies(ChanPost[] list) {
+        if (list == null || list.length == 0)
+            return null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(list);
+            return baos.toByteArray();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Couldn't serialize list=" + list, e);
+        }
+        return null;
+    }
+
+    public static ChanPost[] parseLastRepliesBlob(final byte[] b) {
+        if (b == null || b.length == 0)
+            return null;
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(b);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            ChanPost[] list = (ChanPost[])ois.readObject();
+            return list;
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't deserialize blob=" + b);
+        }
+        return null;
     }
 
 }

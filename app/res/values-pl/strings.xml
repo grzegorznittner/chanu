@@ -166,7 +166,7 @@
   <string name="dialog_set">Ustaw</string>
   <string name="dialog_cancel">Anuluj</string>
   <string name="dialog_added_to_watchlist">Dodano do listy obserwowanych</string>
-  <string name="dialog_deleted_from_watchlist">Usunięto z listy obserwowanych</string>
+  <string name="dialog_deleted_from_watchlist">Usunięto</string>
   <string name="dialog_cleared_watchlist">Lista obserwowanych wyczyszczona</string>
   <string name="dialog_cleaning_watchlist">Czyszczenie listy obserwowanych...</string>
   <string name="dialog_cleaned_watchlist">Lista obserwowanych wyczyszczona</string>

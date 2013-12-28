@@ -344,6 +344,7 @@
     <integer name="BoardGridViewSmall.numColumns">3</integer>
     <integer name="BoardTabletGridView.numColumns">1</integer>
     <integer name="BoardGridView.maxLines">4</integer>
+    <integer name="BoardGridView.Half.maxLines">2</integer>
     <integer name="BoardGridViewNarrowTablet.maxLines">4</integer>
     <dimen name="BoardGridView.topSpacing">4dp</dimen>
     <dimen name="BoardGridView.halfSpacing">4dp</dimen>
