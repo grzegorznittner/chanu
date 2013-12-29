@@ -459,7 +459,7 @@ public class ThreadActivity
             boolean onThread = aid != null && boardCode != null && boardCode.equals(aid.boardCode) && threadNo == aid.threadNo;
             boolean sameQuery = aid != null && ((query == null && aid.text == null) || (query != null && query.equals(aid.text)));
             if (onThread && sameQuery) {
-                Log.i(TAG, "syncPagerAsync() already on thread with idential query, exiting");
+                if (DEBUG) Log.i(TAG, "syncPagerAsync() already on thread with idential query, exiting");
                 return;
             }
         }

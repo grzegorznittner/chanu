@@ -114,7 +114,8 @@ public class BoardGridViewer {
             }
         }
 
-        ViewGroup overlay = viewHolder.grid_item;
+        //ViewGroup overlay = viewHolder.grid_item;
+        ViewGroup overlay = viewHolder.grid_item_thread;
         if (overlay != null) {
             if (overlayListener != null && !isHeader) {
                 overlay.setOnClickListener(overlayListener);
@@ -204,22 +205,24 @@ public class BoardGridViewer {
         if (iv == null)
             return false;
         boolean isWideHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & CATALOG_GRID) == 0;
+        if (DEBUG) Log.i(TAG, "setImage isWideHeader=" + isWideHeader + " no=" + cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO)));
         if (isWideHeader) {
             iv.setImageBitmap(null);
-            //iv.setVisibility(View.GONE);
+            iv.setVisibility(View.GONE);
             return true;
         }
 
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         if ((options & ABBREV_BOARDS) > 0) {
             iv.setImageBitmap(null);
-            //iv.setVisibility(View.GONE);
+            iv.setVisibility(View.GONE);
             displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
             return true;
         }
         displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
         sizeImage(iv, viewHolder.grid_item, columnWidth, columnHeight, options);
         String url = imageUrl(iv, boardCode, groupBoardCode, cursor, flags, options);
+        iv.setVisibility(View.VISIBLE);
         displayImage(iv, url);
         return true;
     }
@@ -754,23 +757,33 @@ public class BoardGridViewer {
             if (DEBUG) Log.i(TAG, "lastReplies len=" + lastReplies.length);
             if (lastReplies.length == 0)
                 return;
-            isSet[0] = displayLastReply(viewHolder.grid_item_thread_subject_1,
+            isSet[0] = lastReplies.length < 1
+                    ? false
+                    : displayLastReply(viewHolder.grid_item_thread_subject_1,
                     viewHolder.grid_item_thread_thumb_1,
                     viewHolder.grid_item_country_flag_1,
                     lastReplies[0], boardCode);
-            isSet[1] = displayLastReply(viewHolder.grid_item_thread_subject_2,
+            isSet[1] = lastReplies.length < 2
+                    ? false
+                    : displayLastReply(viewHolder.grid_item_thread_subject_2,
                     viewHolder.grid_item_thread_thumb_2,
                     viewHolder.grid_item_country_flag_2,
                     lastReplies[1], boardCode);
-            isSet[2] = displayLastReply(viewHolder.grid_item_thread_subject_3,
+            isSet[2] = lastReplies.length < 3
+                    ? false
+                    : displayLastReply(viewHolder.grid_item_thread_subject_3,
                     viewHolder.grid_item_thread_thumb_3,
                     viewHolder.grid_item_country_flag_3,
                     lastReplies[2], boardCode);
-            isSet[3] = displayLastReply(viewHolder.grid_item_thread_subject_4,
+            isSet[3] = lastReplies.length < 4
+                    ? false
+                    : displayLastReply(viewHolder.grid_item_thread_subject_4,
                     viewHolder.grid_item_thread_thumb_4,
                     viewHolder.grid_item_country_flag_4,
                     lastReplies[3], boardCode);
-            isSet[4] = displayLastReply(viewHolder.grid_item_thread_subject_5,
+            isSet[4] = lastReplies.length < 5
+                    ? false
+                    : displayLastReply(viewHolder.grid_item_thread_subject_5,
                     viewHolder.grid_item_thread_thumb_5,
                     viewHolder.grid_item_country_flag_5,
                     lastReplies[4], boardCode);

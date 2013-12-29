@@ -15,6 +15,7 @@ import com.chanapps.four.activity.R;
 public class BoardGridViewHolder {
 
     public ViewGroup grid_item;
+    public ViewGroup grid_item_thread;
     public ViewGroup grid_item_bottom_frame;
     public ViewGroup grid_item_thumb_frame;
     public ImageView grid_item_thread_thumb;
@@ -64,6 +65,7 @@ public class BoardGridViewHolder {
 
     public BoardGridViewHolder(View item) {
         grid_item = (ViewGroup)item;
+        grid_item_thread = (ViewGroup)item.findViewById(R.id.grid_item_thread);
         grid_item_bottom_frame = (ViewGroup)item.findViewById(R.id.grid_item_bottom_frame);
         grid_item_thumb_frame = (ViewGroup)item.findViewById(R.id.grid_item_thumb_frame);
         grid_item_thread_thumb = (ImageView)item.findViewById(R.id.grid_item_thread_thumb);

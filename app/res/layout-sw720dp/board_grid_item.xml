@@ -9,6 +9,7 @@
     <!-- width is @dimen/BoardGridViewTablet_layout_width -->
 
 <RelativeLayout
+        android:id="@+id/grid_item_thread"
         android:layout_width="match_parent"
         android:layout_height="@dimen/BoardGridImageSizeDouble"
         >

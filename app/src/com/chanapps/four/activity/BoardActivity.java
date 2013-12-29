@@ -48,7 +48,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     protected static final String UPDATE_BOARD_ACTION = "updateBoardAction";
     protected static final String UPDATE_ABBREV_ACTION = "updateAbbrevAction";
@@ -118,6 +118,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "switchBoardInternal begin /" + boardCode + "/ q=" + query);
         this.boardCode = boardCode;
         this.query = query;
+        getLoaderManager().destroyLoader(0); // clear out existing list
         //setupStaticBoards();
         loadDrawerArray();
         createAbsListView();
@@ -466,10 +467,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             layoutId = R.layout.board_grid_layout_small;
         else if (query != null && !query.isEmpty())
             layoutId = R.layout.board_grid_layout_search;
-        else if (ChanBoard.isVirtualBoard(boardCode))
-            layoutId = R.layout.board_grid_layout;
         else
-            layoutId = R.layout.board_grid_layout_no_title;
+            layoutId = R.layout.board_grid_layout;
+        //else if (ChanBoard.isVirtualBoard(boardCode))
+        //    layoutId = R.layout.board_grid_layout;
+        //else
+        //    layoutId = R.layout.board_grid_layout_no_title;
         layout = getLayoutInflater().inflate(layoutId, null);
         contentFrame.addView(layout);
         //int numColumns = (gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0
@@ -494,15 +497,63 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return filteredCursor;
             }
         });
-        absListView = (GridView)findViewById(R.id.board_grid_view);
+        absListView = (AbsListView)findViewById(R.id.board_grid_view);
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
-        absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        //absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         //absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
         emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         bindPullToRefresh();
+        bindSwipeToDismiss();
+        bindOnItemClick();
+    }
+
+    protected void bindOnItemClick() {
+        absListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                overlayListener.onClick(view);
+            }
+        });
+    }
+
+    protected void bindSwipeToDismiss() {
+        // Set the callback that handles dismisses.
+        if (DEBUG) Log.i(TAG, "bindSwipeToDismiss absListView=" + absListView);
+        if (!(absListView instanceof EnhancedListView))
+            return;
+        final EnhancedListView mListView = (EnhancedListView)absListView;
+        mListView.setDismissCallback(new EnhancedListView.OnDismissCallback() {
+            /**
+             * This method will be called when the user swiped a way or deleted it via
+             * {@link de.timroes.android.listview.EnhancedListView#delete(int)}.
+             *
+             * @param listView The {@link EnhancedListView} the item has been deleted from.
+             * @param position The position of the item to delete from your adapter.
+             * @return An {@link de.timroes.android.listview.EnhancedListView.Undoable}, if you want
+             *      to give the user the possibility to undo the deletion.
+             */
+            @Override
+            public EnhancedListView.Undoable onDismiss(EnhancedListView listView, final int position) {
+
+                //final String item = (String) adapter.getItem(position);
+                //mAdapter.remove(position);
+                Toast.makeText(listView.getContext(), "Remove pos=" + position, Toast.LENGTH_SHORT).show();
+                return new EnhancedListView.Undoable() {
+                    @Override
+                    public void undo() {
+                        //mAdapter.insert(position, item);
+                        Toast.makeText(mListView.getContext(), "Undo pos=" + position, Toast.LENGTH_SHORT).show();
+                    }
+                };
+            }
+        });
+        //mListView.setSwipeDirection(EnhancedListView.SwipeDirection.END);
+        //mListView.setSwipingLayout(R.id.grid_item_thread_slide_layout);
+        mListView.enableSwipeToDismiss();
+        mListView.discardUndo();
     }
 
     protected void bindPullToRefresh() {
@@ -773,9 +824,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             //OnClickListener overflow = ChanBoard.META_BOARD_CODE.equals(boardCode) ? null : overflowListener;
-            OnClickListener overflow = overflowListener;
+            //OnClickListener overflow = overflowListener;
+            //return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
+            //        overlayListener, overflow, gridViewOptions, null);
+           // return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
+           //         overlayListener, overflowListener, gridViewOptions, null);
             return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
-                    overlayListener, overflow, gridViewOptions, null);
+                    null, overflowListener, gridViewOptions, null);
         }
     };
 

@@ -1341,4 +1341,11 @@
 
     <!-- new -->
     <string name="pref_hide_last_replies">Hide Last Replies</string>
+
+    <!-- for enhanced list view -->
+	<string name="undo">Undo</string>
+	<string name="undo_all">Undo All</string>
+    <string name="item_deleted">Item deleted</string>
+    <string name="n_items_deleted">%1$s items deleted</string>
+
 </resources>
