@@ -56,7 +56,6 @@ public class ThreadViewHolder {
     public TextView list_item_text;
     public TextView list_item_title;
     public View list_item_image_expanded_click_effect;
-    public View list_item_left_spacer;
     public View list_item_num_horizontal_border;
     public View list_item_num_vertical_border;
     public View list_item_right_menu_spacer;
@@ -103,7 +102,6 @@ public class ThreadViewHolder {
         list_item_text = (TextView)item.findViewById(R.id.list_item_text);
         list_item_title = (TextView)item.findViewById(R.id.list_item_title);
         list_item_image_expanded_click_effect = item.findViewById(R.id.list_item_image_expanded_click_effect);
-        list_item_left_spacer = item.findViewById(R.id.list_item_left_spacer);
         list_item_num_horizontal_border = item.findViewById(R.id.list_item_num_horizontal_border);
         list_item_num_vertical_border = item.findViewById(R.id.list_item_num_vertical_border);
         list_item_right_menu_spacer = item.findViewById(R.id.list_item_right_menu_spacer);

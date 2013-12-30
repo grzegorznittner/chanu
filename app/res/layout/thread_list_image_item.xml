@@ -41,7 +41,6 @@
                         <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
                         <ImageView style="@style/ThreadListItemImageCollapse" android:id="@+id/list_item_image_collapse"/>
                     </FrameLayout>
-                    <View style="@style/ThreadListItemLeftSpacer" android:id="@+id/list_item_left_spacer"/>
                     <LinearLayout style="@style/ThreadListItemBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
                         <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
                         <TextView style="@style/ThreadListItemBarAgo" android:id="@+id/list_item_header_bar_ago"/>

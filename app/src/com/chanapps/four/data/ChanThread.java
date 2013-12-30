@@ -52,6 +52,7 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_TN_H = "threadThumbHeight";
     public static final String THREAD_JUMP_TO_POST_NO = "threadJumpToPostNo";
     public static final String THREAD_FLAGS = "threadFlags";
+    public static final String THREAD_NUM_LAST_REPLIES = "numLastReplies";
     public static final String THREAD_LAST_REPLIES_BLOB = "lastRepliesBlob";
 
     public static final int THREAD_FLAG_DEAD = 0x001;
@@ -79,6 +80,7 @@ public class ChanThread extends ChanPost {
             THREAD_TN_W,
             THREAD_TN_H,
             THREAD_JUMP_TO_POST_NO,
+            THREAD_NUM_LAST_REPLIES,
             THREAD_LAST_REPLIES_BLOB,
             THREAD_FLAGS
     };
@@ -119,6 +121,7 @@ public class ChanThread extends ChanPost {
                 thread.tn_w > 0 ? thread.tn_w : MAX_THUMBNAIL_PX,
                 thread.tn_h > 0 ? thread.tn_h : MAX_THUMBNAIL_PX,
                 thread.jumpToPostNo,
+                thread.lastReplies == null ? 0 : thread.lastReplies.length,
                 lastRepliesBlob,
                 threadFlags(thread) | extraFlags
         };
@@ -139,6 +142,7 @@ public class ChanThread extends ChanPost {
                 0,
                 MAX_THUMBNAIL_PX,
                 MAX_THUMBNAIL_PX,
+                0,
                 0,
                 null,
                 THREAD_FLAG_BOARD | extraFlags
@@ -169,6 +173,7 @@ public class ChanThread extends ChanPost {
                 0,
                 MAX_THUMBNAIL_PX,
                 MAX_THUMBNAIL_PX,
+                0,
                 0,
                 null,
                 THREAD_FLAG_BOARD | THREAD_FLAG_HEADER

@@ -36,11 +36,14 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.chanapps.four.activity.R;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -863,7 +866,7 @@ public class EnhancedListView extends ListView {
         mUndoButton.setText(msg);
     }
 
-    private OnScrollListener makeScrollListener() {
+    public OnScrollListener makeScrollListener() {
         return new OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {

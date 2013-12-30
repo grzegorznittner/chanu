@@ -23,7 +23,12 @@ import java.util.ArrayList;
 public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
 
     protected static final int TYPE_GRID_ITEM = 0;
-    protected static final int TYPE_MAX_COUNT = 1;
+    protected static final int TYPE_GRID_ITEM_1 = 1;
+    protected static final int TYPE_GRID_ITEM_2 = 2;
+    protected static final int TYPE_GRID_ITEM_3 = 3;
+    protected static final int TYPE_GRID_ITEM_4 = 4;
+    protected static final int TYPE_GRID_ITEM_5 = 5;
+    protected static final int TYPE_MAX_COUNT = 6;
 
     public BoardGridCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context,
@@ -46,13 +51,53 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return TYPE_GRID_ITEM;
+        Cursor cursor = getCursor();
+        if (cursor == null || !cursor.moveToPosition(position))
+            return TYPE_GRID_ITEM;
+        int numLastReplies = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_LAST_REPLIES));
+        switch (numLastReplies) {
+            case 5:
+                return TYPE_GRID_ITEM_5;
+            case 4:
+                return TYPE_GRID_ITEM_4;
+            case 3:
+                return TYPE_GRID_ITEM_3;
+            case 2:
+                return TYPE_GRID_ITEM_2;
+            case 1:
+                return TYPE_GRID_ITEM_1;
+            case 0:
+            default:
+                return TYPE_GRID_ITEM;
+        }
+    }
+
+    protected int getItemViewLayout(int position) {
+        Cursor cursor = getCursor();
+        if (cursor == null || !cursor.moveToPosition(position))
+            return R.layout.board_grid_item;
+        int numLastReplies = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_LAST_REPLIES));
+        switch (numLastReplies) {
+            case 5:
+                return R.layout.board_grid_item_5;
+            case 4:
+                return R.layout.board_grid_item_4;
+            case 3:
+                return R.layout.board_grid_item_3;
+            case 2:
+                return R.layout.board_grid_item_2;
+            case 1:
+                return R.layout.board_grid_item_1;
+            case 0:
+            default:
+                return R.layout.board_grid_item;
+        }
     }
 
     @Override
     protected View newView(ViewGroup parent, int tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        View v = mInflater.inflate(R.layout.board_grid_item, parent, false);
+        View v = mInflater.inflate(getItemViewLayout(position), parent, false);
         BoardGridViewHolder viewHolder = new BoardGridViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);

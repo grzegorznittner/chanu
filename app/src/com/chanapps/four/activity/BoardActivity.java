@@ -501,13 +501,21 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
         //absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        //absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
         emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         bindPullToRefresh();
         bindSwipeToDismiss();
         bindOnItemClick();
+        bindPauseOnScrollListener();
+    }
+
+    protected void bindPauseOnScrollListener() {
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
+        AbsListView.OnScrollListener customListener =
+                absListView != null && absListView instanceof EnhancedListView
+                ? ((EnhancedListView)absListView).makeScrollListener()
+                : null;
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true, customListener));
     }
 
     protected void bindOnItemClick() {

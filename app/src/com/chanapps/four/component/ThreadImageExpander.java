@@ -95,8 +95,6 @@ public class ThreadImageExpander {
             if (DEBUG) Log.i(TAG, "Skipping adjusting thumbnail height, null thumbnail image wrapper");
             return;
         }
-        if (viewHolder.list_item_left_spacer != null)
-            viewHolder.list_item_left_spacer.setVisibility(View.VISIBLE);
         //viewHolder.list_item_image_wrapper.setVisibility(View.INVISIBLE);
     }
 
@@ -150,10 +148,10 @@ public class ThreadImageExpander {
         if (viewHolder.list_item_image_expanded_wrapper != null)
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
 
-        if (isAnimatedGif() || isBigImage())
+        //if (isAnimatedGif() || isBigImage())
             displayWebView();
-        else
-            displayImageView();
+        //else
+        //    displayImageView();
     }
 
     protected boolean isAnimatedGif() {
@@ -188,6 +186,7 @@ public class ThreadImageExpander {
         v.loadUrl(WEBVIEW_BLANK_URL);
         v.setVisibility(View.VISIBLE);
         displayClickEffect();
+        hideThumbnail();
         v.loadUrl(postImageUrl);
     }
 

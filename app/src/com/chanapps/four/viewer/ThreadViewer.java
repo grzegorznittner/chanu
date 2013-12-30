@@ -200,9 +200,6 @@ public class ThreadViewer {
         viewHolder.list_item.setOnClickListener(null);
         viewHolder.list_item.setClickable(false);
 
-        View listItemLeftSpacer = viewHolder.list_item_left_spacer;
-        if (listItemLeftSpacer != null)
-            listItemLeftSpacer.setVisibility((flags & ChanPost.FLAG_HAS_IMAGE) > 0 ? View.GONE : View.VISIBLE);
         View overflow = viewHolder.list_item_header_bar_overflow_wrapper;
         if (overflow != null) {
             if (showContextMenu) {

@@ -32,19 +32,19 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
      * This field should be made private, so it is hidden from the SDK.
      * {@hide}
      */
-    protected int[] mFrom;
+    //protected int[] mFrom;
     /**
      * A list of View ids representing the views to which the data must be bound.
      * This field should be made private, so it is hidden from the SDK.
      * {@hide}
      */
-    protected int[] mTo;
+    //protected int[] mTo;
 
     protected ViewBinder mViewBinder;
     protected Context context;
     protected LayoutInflater mInflater;
 
-    protected String[] mOriginalFrom;
+    //protected String[] mOriginalFrom;
 
     /**
      * Standard constructor.
@@ -64,8 +64,8 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
     public AbstractBoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, null, 0);
         this.context = context;
-        mTo = to;
-        mOriginalFrom = from;
+        //mTo = to;
+        //mOriginalFrom = from;
         mViewBinder = viewBinder;
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -120,18 +120,18 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
      * @param from the Strings naming the columns of interest
      */
     private void findColumns(Cursor c, String[] from) {
-        if (c != null) {
-            int i;
-            int count = from.length;
-            if (mFrom == null || mFrom.length != count) {
-                mFrom = new int[count];
-            }
-            for (i = 0; i < count; i++) {
-                mFrom[i] = c.getColumnIndexOrThrow(from[i]);
-            }
-        } else {
-            mFrom = null;
-        }
+        //if (c != null) {
+            //int i;
+            //int count = from.length;
+            //if (mFrom == null || mFrom.length != count) {
+            //    mFrom = new int[count];
+            //}
+            //for (i = 0; i < count; i++) {
+            //    mFrom[i] = c.getColumnIndexOrThrow(from[i]);
+            //}
+        //} else {
+        //    mFrom = null;
+        //}
     }
 
     @Override
@@ -139,12 +139,12 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         // super.swapCursor() will notify observers before we have
         // a valid mapping, make sure we have a mapping before this
         // happens
-        if (mFrom == null) {
-            findColumns(getCursor(), mOriginalFrom);
-        }
+        //if (mFrom == null) {
+        //    findColumns(getCursor(), mOriginalFrom);
+        //}
         Cursor res = super.swapCursor(c);
         // rescan columns in case cursor layout is different
-        findColumns(c, mOriginalFrom);
+        //findColumns(c, mOriginalFrom);
         return res;
     }
 
@@ -153,12 +153,12 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         // super.swapCursor() will notify observers before we have
         // a valid mapping, make sure we have a mapping before this
         // happens
-        if (mFrom == null) {
-            findColumns(getCursor(), mOriginalFrom);
-        }
+        //if (mFrom == null) {
+        //    findColumns(getCursor(), mOriginalFrom);
+        //}
         super.changeCursor(c);
         // rescan columns in case cursor layout is different
-        findColumns(c, mOriginalFrom);
+        //findColumns(c, mOriginalFrom);
     }
 
     /**
@@ -173,16 +173,16 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
      *            parameter.  Can be null if the cursor is not available yet.
      */
     public void changeCursorAndColumns(Cursor c, String[] from, int[] to) {
-        mOriginalFrom = from;
-        mTo = to;
+        //mOriginalFrom = from;
+        //mTo = to;
         // super.changeCursor() will notify observers before we have
         // a valid mapping, make sure we have a mapping before this
         // happens
-        if (mFrom == null) {
-            findColumns(getCursor(), mOriginalFrom);
-        }
+        //if (mFrom == null) {
+        //    findColumns(getCursor(), mOriginalFrom);
+        //}
         super.changeCursor(c);
-        findColumns(c, mOriginalFrom);
+        //findColumns(c, mOriginalFrom);
     }
 
     public static interface ViewBinder {

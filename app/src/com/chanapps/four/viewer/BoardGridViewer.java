@@ -114,8 +114,8 @@ public class BoardGridViewer {
             }
         }
 
-        //ViewGroup overlay = viewHolder.grid_item;
-        ViewGroup overlay = viewHolder.grid_item_thread;
+        ViewGroup overlay = viewHolder.grid_item;
+        //ViewGroup overlay = viewHolder.grid_item_thread;
         if (overlay != null) {
             if (overlayListener != null && !isHeader) {
                 overlay.setOnClickListener(overlayListener);
@@ -125,7 +125,6 @@ public class BoardGridViewer {
                 overlay.setClickable(false);
             }
         }
-
         return true;
     }
     
@@ -792,6 +791,7 @@ public class BoardGridViewer {
             Log.e(TAG, "Exception reading lastRepliesBlob", e);
         }
         finally {
+            /*
             if (viewHolder.grid_item_thread_1 != null)
                 viewHolder.grid_item_thread_1.setVisibility(isSet[0] ? View.VISIBLE : View.GONE);
             if (viewHolder.grid_item_thread_2 != null)
@@ -802,6 +802,7 @@ public class BoardGridViewer {
                 viewHolder.grid_item_thread_4.setVisibility(isSet[3] ? View.VISIBLE : View.GONE);
             if (viewHolder.grid_item_thread_5 != null)
                 viewHolder.grid_item_thread_5.setVisibility(isSet[4] ? View.VISIBLE : View.GONE);
+                */
         }
     }
 
