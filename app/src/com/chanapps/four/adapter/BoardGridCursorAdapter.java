@@ -2,10 +2,12 @@ package com.chanapps.four.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.viewer.BoardGridViewHolder;
@@ -29,6 +31,9 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
     protected static final int TYPE_GRID_ITEM_4 = 4;
     protected static final int TYPE_GRID_ITEM_5 = 5;
     protected static final int TYPE_MAX_COUNT = 6;
+    protected static final int TYPE_HIDE_LAST_COUNT = 1;
+
+    protected boolean hideLastReplies;
 
     public BoardGridCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context,
@@ -47,10 +52,14 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
                         R.id.grid_item_thread_thumb
                 }
         );
+        hideLastReplies = PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, false);
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (hideLastReplies)
+            return TYPE_GRID_ITEM;
         Cursor cursor = getCursor();
         if (cursor == null || !cursor.moveToPosition(position))
             return TYPE_GRID_ITEM;
@@ -73,6 +82,8 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
     }
 
     protected int getItemViewLayout(int position) {
+        if (hideLastReplies)
+            return R.layout.board_grid_item;
         Cursor cursor = getCursor();
         if (cursor == null || !cursor.moveToPosition(position))
             return R.layout.board_grid_item;
@@ -106,7 +117,10 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return TYPE_MAX_COUNT;
+        if (hideLastReplies)
+            return TYPE_HIDE_LAST_COUNT;
+        else
+            return TYPE_MAX_COUNT;
     }
 
 }

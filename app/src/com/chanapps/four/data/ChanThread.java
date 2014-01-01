@@ -369,4 +369,18 @@ public class ChanThread extends ChanPost {
         return null;
     }
 
+    public boolean matchesQuery(String query) {
+        if (query == null || query.isEmpty())
+            return true;
+        if (super.matchesQuery(query))
+            return true;
+        if (lastReplies != null) {
+            for (ChanPost p : lastReplies) {
+                if (p.matchesQuery(query))
+                    return true;
+            }
+        }
+        return false;
+    }
+
 }

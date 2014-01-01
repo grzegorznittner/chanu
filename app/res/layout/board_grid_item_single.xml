@@ -34,6 +34,7 @@
             android:paddingTop="@dimen/BoardGridView.spacing"
             android:paddingBottom="@dimen/BoardGridView.spacing"
             android:layout_gravity="center"
+            android:layout_centerInParent="true"
             android:gravity="center"
             android:textColor="?themedCardSubjectTextColor"
             android:textSize="@dimen/BoardGridSubjectHeader"

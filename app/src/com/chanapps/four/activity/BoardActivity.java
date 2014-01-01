@@ -515,7 +515,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 absListView != null && absListView instanceof EnhancedListView
                 ? ((EnhancedListView)absListView).makeScrollListener()
                 : null;
-        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true, customListener));
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true, customListener));
     }
 
     protected void bindOnItemClick() {
