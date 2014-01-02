@@ -95,10 +95,6 @@ public class BoardGridViewer {
                                      int flags,
                                      int options) {
         boolean isHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0;
-        if (viewHolder.grid_item_line_1 != null)
-            viewHolder.grid_item_line_1.setVisibility(isHeader ? View.GONE : View.VISIBLE);
-        if (viewHolder.grid_item_line_2 != null)
-            viewHolder.grid_item_line_2.setVisibility(isHeader ? View.GONE : View.VISIBLE);
 
         View overflow = viewHolder.grid_item_overflow_icon;
         if (overflow != null) {

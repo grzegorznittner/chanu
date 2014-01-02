@@ -301,9 +301,14 @@
 
     <dimen name="ad_layout_height">90dp</dimen>
 
+    <!--
     <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">false</bool>
     <bool name="narrow_tablet">true</bool>
+    -->
+    <bool name="wide_tablet">false</bool>
+    <bool name="BoardGridView.abbrev">true</bool>
+    <bool name="narrow_tablet">false</bool>
 
     <dimen name="PostReplyRecaptcha.marginLeft">32dp</dimen>
     <dimen name="PostReplyRecaptcha.marginRight">32dp</dimen>
