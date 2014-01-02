@@ -3,11 +3,13 @@ package com.chanapps.four.activity;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
+import android.database.MatrixCursor;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -501,7 +503,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
         //absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
+        absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, true));
+        absListView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
         emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         bindPullToRefresh();
         bindSwipeToDismiss();
@@ -533,36 +536,85 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (!(absListView instanceof EnhancedListView))
             return;
         final EnhancedListView mListView = (EnhancedListView)absListView;
-        mListView.setDismissCallback(new EnhancedListView.OnDismissCallback() {
-            /**
-             * This method will be called when the user swiped a way or deleted it via
-             * {@link de.timroes.android.listview.EnhancedListView#delete(int)}.
-             *
-             * @param listView The {@link EnhancedListView} the item has been deleted from.
-             * @param position The position of the item to delete from your adapter.
-             * @return An {@link de.timroes.android.listview.EnhancedListView.Undoable}, if you want
-             *      to give the user the possibility to undo the deletion.
-             */
-            @Override
-            public EnhancedListView.Undoable onDismiss(EnhancedListView listView, final int position) {
-
-                //final String item = (String) adapter.getItem(position);
-                //mAdapter.remove(position);
-                Toast.makeText(listView.getContext(), "Remove pos=" + position, Toast.LENGTH_SHORT).show();
-                return new EnhancedListView.Undoable() {
-                    @Override
-                    public void undo() {
-                        //mAdapter.insert(position, item);
-                        Toast.makeText(mListView.getContext(), "Undo pos=" + position, Toast.LENGTH_SHORT).show();
-                    }
-                };
-            }
-        });
-        //mListView.setSwipeDirection(EnhancedListView.SwipeDirection.END);
-        //mListView.setSwipingLayout(R.id.grid_item_thread_slide_layout);
-        mListView.enableSwipeToDismiss();
-        mListView.discardUndo();
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+            mListView.setDismissCallback(swipeDismissWatchedCallback);
+            mListView.enableSwipeToDismiss();
+            mListView.discardUndo();
+        }
+        else if (!ChanBoard.isVirtualBoard(boardCode)) {
+            mListView.setDismissCallback(swipeDismissCallback);
+            mListView.enableSwipeToDismiss();
+            mListView.discardUndo();
+        }
+        else {
+            mListView.disableSwipeToDismiss();
+        }
     }
+
+    protected EnhancedListView.OnDismissCallback swipeDismissCallback = new EnhancedListView.OnDismissCallback() {
+        @Override
+        public EnhancedListView.Undoable onDismiss(EnhancedListView listView, final int position) {
+            final Cursor c = adapter == null ? null : adapter.getCursor();
+            if (c == null || !c.moveToPosition(position))
+                return null;
+            String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));
+            final String uniqueId = ChanThread.uniqueId(board, no, 0);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ChanBlocklist.add(BoardActivity.this, ChanBlocklist.BlockType.THREAD, uniqueId);
+                    if (c == null || adapter != null)
+                        adapter.notifyDataSetChanged();
+                }
+            }).start();
+            return new EnhancedListView.Undoable() {
+                @Override
+                public void undo() {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ChanBlocklist.remove(BoardActivity.this, ChanBlocklist.BlockType.THREAD, uniqueId);
+                            refresh();
+                        }
+                    }).start();
+                }
+            };
+        }
+    };
+
+    protected EnhancedListView.OnDismissCallback swipeDismissWatchedCallback = new EnhancedListView.OnDismissCallback() {
+        @Override
+        public EnhancedListView.Undoable onDismiss(EnhancedListView listView, final int position) {
+            final Cursor c = adapter == null ? null : adapter.getCursor();
+            if (c == null || !c.moveToPosition(position))
+                return null;
+            final String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            final long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));
+            final String uniqueId = ChanThread.uniqueId(board, no, 0);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ThreadFragment.removeFromWatchlist(BoardActivity.this, handler, board, no);
+                    if (c == null || adapter != null)
+                        adapter.notifyDataSetChanged();
+                    //refresh();
+                }
+            }).start();
+            return new EnhancedListView.Undoable() {
+                @Override
+                public void undo() {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ThreadFragment.addToWatchlist(BoardActivity.this, handler, board, no);
+                            refresh();
+                        }
+                    }).start();
+                }
+            };
+        }
+    };
 
     protected void bindPullToRefresh() {
         if (mPullToRefreshAttacher == null) {
@@ -815,6 +867,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         getLoaderManager().destroyLoader(0);
         closeSearch();
     	handler = null;
+        if (absListView != null && absListView instanceof EnhancedListView)
+            ((EnhancedListView)absListView).discardUndo();
         AnalyticsComponent.onStop(this);
     }
 
@@ -1020,6 +1074,36 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 //adapter.swapCursor(c);
                 adapter.changeCursor(c);
                 return true;
+            case R.id.sort_order_menu:
+                (new BoardSortOrderDialogFragment(boardSortType))
+                        .setNotifySortOrderListener(new BoardSortOrderDialogFragment.NotifySortOrderListener() {
+                            @Override
+                            public void onSortOrderChanged(BoardSortType boardSortType) {
+                                if (boardSortType != null) {
+                                    BoardActivity.this.boardSortType = boardSortType;
+                                    BoardSortType.saveToPrefs(BoardActivity.this, boardSortType);
+                                    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                                }
+                            }
+                        })
+                        .show(getSupportFragmentManager(), TAG);
+                return true;
+            case R.id.show_hidden_threads_menu:
+                /* debug
+                Set<String> b = ChanBlocklist.getBlocklist(BoardActivity.this).get(ChanBlocklist.BlockType.THREAD);
+                for (String s : b) {
+                    Log.e(TAG, "block: " + s);
+                }
+                */
+                final String uid = ChanPost.uniqueId(boardCode, 0, 0);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ChanBlocklist.removeMatching(BoardActivity.this, ChanBlocklist.BlockType.THREAD, uid);
+                        refresh();
+                    }
+                }).start();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -1061,82 +1145,90 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clean_watchlist_menu).setVisible(true);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(true);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
-            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
-            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
+            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
-            //menu.findItem(R.id.board_rules_menu).setVisible(false);
             //menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
+            menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
-            menu.findItem(R.id.web_menu).setVisible(false);
+            //menu.findItem(R.id.web_menu).setVisible(false);
             menu.findItem(R.id.view_as_grid_menu).setVisible(false);
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
+            menu.findItem(R.id.sort_order_menu).setVisible(false);
+            menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(true);
-            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
-            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
+            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
+            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
-            //menu.findItem(R.id.board_rules_menu).setVisible(false);
             //menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
+            menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
-            menu.findItem(R.id.web_menu).setVisible(false);
+            //menu.findItem(R.id.web_menu).setVisible(false);
             menu.findItem(R.id.view_as_grid_menu).setVisible(false);
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
+            menu.findItem(R.id.sort_order_menu).setVisible(false);
+            menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
         }
         else if (board.isPopularBoard()) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
-            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
-            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
+            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
-            //menu.findItem(R.id.board_rules_menu).setVisible(false);
             //menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
-            menu.findItem(R.id.global_rules_menu).setVisible(true);
-            menu.findItem(R.id.web_menu).setVisible(true);
+            menu.findItem(R.id.board_rules_menu).setVisible(false);
+            menu.findItem(R.id.global_rules_menu).setVisible(false);
+            //menu.findItem(R.id.web_menu).setVisible(true);
             menu.findItem(R.id.view_as_grid_menu).setVisible(false);
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
+            menu.findItem(R.id.sort_order_menu).setVisible(false);
+            menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
         }
         else if (board.isVirtualBoard()) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
-            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
-            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
+            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
-            //menu.findItem(R.id.board_rules_menu).setVisible(false);
             //menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
+            menu.findItem(R.id.board_rules_menu).setVisible(false);
             menu.findItem(R.id.global_rules_menu).setVisible(true);
-            menu.findItem(R.id.web_menu).setVisible(false);
+            //menu.findItem(R.id.web_menu).setVisible(false);
             menu.findItem(R.id.view_as_grid_menu).setVisible(false);
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
+            menu.findItem(R.id.sort_order_menu).setVisible(false);
+            menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
         }
         else {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(false);
-            //menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
-            //menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(true);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(true);
-            //menu.findItem(R.id.board_rules_menu).setVisible(true);
             //menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
+            menu.findItem(R.id.board_rules_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
-            menu.findItem(R.id.web_menu).setVisible(false);
+            //menu.findItem(R.id.web_menu).setVisible(false);
             menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardGridViewer.CATALOG_GRID) == 0);
             menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0);
-            //setFavoritesMenuAsync();
+            menu.findItem(R.id.sort_order_menu).setVisible(true);
+            setHiddenThreadsMenuAsync(menu);
+            setFavoritesMenuAsync(menu);
         }
         menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
 
@@ -1453,8 +1545,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 menuId = R.menu.popular_context_menu;
             else if (ChanBoard.isMetaBoard(boardCode) || ChanBoard.isMetaBoard(groupBoardCode))
                 menuId = R.menu.meta_board_context_menu;
-            else if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0)
-                menuId = R.menu.board_header_context_menu;
             else
                 menuId = R.menu.board_context_menu;
             popup.inflate(menuId);
@@ -1464,14 +1554,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     @Override
                     public void run() {
                         showOverflowMenuAsync(popup, boardCode, threadNo);
-                    }
-                }).start();
-            }
-            else if (menuId == R.menu.board_header_context_menu) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showMetaOverflowMenuAsync(popup, boardCode);
                     }
                 }).start();
             }
@@ -1516,6 +1598,50 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     popup.show();
                 }
             });
+    }
+
+    protected void setFavoritesMenuAsync(final Menu menu) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final ChanBoard favoritesBoard = ChanFileStorage.loadBoardData(BoardActivity.this, ChanBoard.FAVORITES_BOARD_CODE);
+                final ChanThread thread = ChanBoard.makeFavoritesThread(BoardActivity.this, boardCode);
+                final boolean favorited = ChanFileStorage.isFavoriteBoard(favoritesBoard, thread);
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (menu == null)
+                                return;
+                            MenuItem item;
+                            if ((item = menu.findItem(R.id.board_add_to_favorites_menu)) != null)
+                                item.setVisible(!favorited);
+                            if ((item = menu.findItem(R.id.favorites_remove_board_menu)) != null)
+                                item.setVisible(favorited);
+                        }
+                    });
+            }
+        }).start();
+    }
+
+    protected void setHiddenThreadsMenuAsync(final Menu menu) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final boolean hasHiddenThreads = ChanBlocklist.hasMatching(BoardActivity.this, ChanBlocklist.BlockType.THREAD, ChanThread.uniqueId(boardCode, 0, 0));
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (menu == null)
+                                return;
+                            MenuItem item;
+                            if ((item = menu.findItem(R.id.show_hidden_threads_menu)) != null)
+                                item.setVisible(hasHiddenThreads);
+                        }
+                    });
+            }
+        }).start();
     }
 
     protected void showOverflowMenuAsync(final PopupMenu popup, String boardCode, long threadNo) {
@@ -1596,20 +1722,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     return true;
                 case R.id.offline_board_view_menu:
                     GalleryViewActivity.startOfflineAlbumViewActivity(BoardActivity.this, boardCode);
-                    return true;
-                case R.id.sort_order_menu:
-                    (new BoardSortOrderDialogFragment(boardSortType))
-                            .setNotifySortOrderListener(new BoardSortOrderDialogFragment.NotifySortOrderListener() {
-                                @Override
-                                public void onSortOrderChanged(BoardSortType boardSortType) {
-                                    if (boardSortType != null) {
-                                        BoardActivity.this.boardSortType = boardSortType;
-                                        BoardSortType.saveToPrefs(BoardActivity.this, boardSortType);
-                                        getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
-                                    }
-                                }
-                            })
-                            .show(getSupportFragmentManager(), TAG);
                     return true;
                 case R.id.board_rules_menu:
                     displayBoardRules();
@@ -1759,16 +1871,17 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         @Override
         public void onReceive(Context context, Intent intent) {
             final boolean receivedEnable = intent != null && intent.getAction().equals(UPDATE_FAST_SCROLL_ACTION) && intent.hasExtra(OPTION_ENABLE)
-                    ? intent.getBooleanExtra(OPTION_ENABLE, false)
-                    : false;
+                    ? intent.getBooleanExtra(OPTION_ENABLE, true)
+                    : true;
             if (DEBUG) Log.i(TAG, "onUpdateFastScrollReceived /" + boardCode + "/ received=/" + receivedEnable + "/");
             final Handler gridHandler = handler != null ? handler : new Handler();
             if (gridHandler != null)
                 gridHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (absListView != null)
+                        if (absListView != null) {
                             absListView.setFastScrollEnabled(receivedEnable);
+                        }
                     }
                 });
         }

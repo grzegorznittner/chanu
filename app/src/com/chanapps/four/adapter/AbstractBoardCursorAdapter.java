@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ResourceCursorAdapter;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.*;
+import com.chanapps.four.fragment.ThreadFragment;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -43,32 +45,19 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
     protected ViewBinder mViewBinder;
     protected Context context;
     protected LayoutInflater mInflater;
+    protected String groupBoardCode;
 
     //protected String[] mOriginalFrom;
 
-    /**
-     * Standard constructor.
-     *
-     * @param context The context where the ListView associated with this
-     *            SimpleListItemFactory is running
-     * @param layout resource identifier of a layout file that defines the views
-     *            for this list item. The layout file should include at least
-     *            those named views defined in "to"
-     * @param from A list of column names representing the data to bind to the UI.  Can be null
-     *            if the cursor is not available yet.
-     * @param to The views that should display column in the "from" parameter.
-     *            These should all be TextViews. The first N views in this list
-     *            are given the values of the first N columns in the from
-     *            parameter.  Can be null if the cursor is not available yet.
-     */
-    public AbstractBoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
-        super(context, layout, null, 0);
+    public AbstractBoardCursorAdapter(Context context, ViewBinder viewBinder) {
+        super(context, 0, null, 0);
         this.context = context;
-        //mTo = to;
-        //mOriginalFrom = from;
         mViewBinder = viewBinder;
-
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public void setGroupBoardCode(String board) {
+        groupBoardCode = board;
     }
 
     @Override
@@ -86,8 +75,30 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
                 return;
             }
         }
+        if (isBlocked(cursor)) {
+            ViewGroup.LayoutParams params = view.getLayoutParams();
+            if (params != null)
+                params.height = 0;
+            view.setVisibility(View.GONE);
+        }
         if (binder != null)
             binder.setViewValue(view, cursor, 0);
+    }
+
+    protected boolean isBlocked(Cursor c) {
+        String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+        long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));
+        final String uniqueId = ChanThread.uniqueId(board, no, 0);
+        return ChanBlocklist.contains(context, ChanBlocklist.BlockType.THREAD, uniqueId);
+    }
+
+    protected boolean isOffWatchlist(Cursor c) {
+        if (!ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
+            return false;
+        String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+        long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));
+        final ChanThread thread = ChanFileStorage.loadThreadData(context, board, no);
+        return !ChanFileStorage.isThreadWatched(context, thread);
     }
 
     protected void updateView(final View view, final Cursor cursor, final int pos) {
@@ -201,5 +212,6 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
          */
         boolean setViewValue(View view, Cursor cursor, int columnIndex);
     }
+
 }
 

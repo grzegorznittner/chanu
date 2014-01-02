@@ -66,6 +66,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_BLOCKLIST_NAME = "prefBlocklistName";
     public static final String PREF_BLOCKLIST_EMAIL = "prefBlocklistEmail";
     public static final String PREF_BLOCKLIST_ID = "prefBlocklistId";
+    public static final String PREF_BLOCKLIST_THREAD = "prefBlocklistThread";
     public static final String PREF_AUTOMATICALLY_MANAGE_WATCHLIST = "pref_automatically_manage_watchlist";
     public static final String PREF_USE_FAST_SCROLL = "pref_use_fast_scroll";
 

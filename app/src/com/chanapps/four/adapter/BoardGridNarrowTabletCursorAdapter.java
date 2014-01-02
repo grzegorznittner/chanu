@@ -21,22 +21,7 @@ public class BoardGridNarrowTabletCursorAdapter extends AbstractBoardCursorAdapt
     protected static final int TYPE_MAX_COUNT = 1;
 
     public BoardGridNarrowTabletCursorAdapter(Context context, ViewBinder viewBinder) {
-        super(context,
-                R.layout.board_grid_item_narrow_tablet,
-                viewBinder,
-                new String[]{
-                        ChanThread.THREAD_SUBJECT,
-                        ChanThread.THREAD_HEADLINE,
-                        ChanThread.THREAD_COUNTRY_FLAG_URL,
-                        ChanThread.THREAD_THUMBNAIL_URL
-                },
-                new int[]{
-                        R.id.grid_item_thread_subject,
-                        R.id.grid_item_thread_info,
-                        R.id.grid_item_country_flag,
-                        R.id.grid_item_thread_thumb
-                }
-        );
+        super(context, viewBinder);
     }
 
     @Override

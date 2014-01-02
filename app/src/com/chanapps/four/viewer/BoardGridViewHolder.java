@@ -33,7 +33,7 @@ public class BoardGridViewHolder {
     public TextView grid_item_num_images_label_abbr;
     public ImageView grid_item_num_replies_img;
     public ImageView grid_item_num_images_img;
-    public ImageView grid_item_overflow_icon;
+    public View grid_item_overflow_icon;
     public ImageView grid_item_dead_icon;
     public ImageView grid_item_closed_icon;
     public ImageView grid_item_sticky_icon;
@@ -77,7 +77,7 @@ public class BoardGridViewHolder {
         grid_item_num_images_label_abbr = (TextView)item.findViewById(R.id.grid_item_num_images_label_abbr);
         grid_item_num_replies_img = (ImageView)item.findViewById(R.id.grid_item_num_replies_img);
         grid_item_num_images_img = (ImageView)item.findViewById(R.id.grid_item_num_images_img);
-        grid_item_overflow_icon = (ImageView)item.findViewById(R.id.grid_item_overflow_icon);
+        grid_item_overflow_icon = item.findViewById(R.id.grid_item_overflow_icon);
         grid_item_dead_icon = (ImageView)item.findViewById(R.id.grid_item_dead_icon);
         grid_item_closed_icon = (ImageView)item.findViewById(R.id.grid_item_closed_icon);
         grid_item_sticky_icon = (ImageView)item.findViewById(R.id.grid_item_sticky_icon);

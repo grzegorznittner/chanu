@@ -38,36 +38,12 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected boolean showContextMenu;
     protected Runnable onDismissCallback;
 
-    protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
-        super(context, layout, viewBinder, from, to);
+    protected ThreadListCursorAdapter(Context context, ViewBinder viewBinder) {
+        super(context, viewBinder);
     }
 
     public ThreadListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu, Runnable onDismissCallback) {
-        this(context,
-                R.layout.thread_list_image_item,
-                viewBinder,
-                new String[]{
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_HEADLINE_TEXT,
-                        ChanPost.POST_SUBJECT_TEXT,
-                        ChanPost.POST_SUBJECT_TEXT,
-                        ChanPost.POST_SUBJECT_TEXT,
-                        ChanPost.POST_TEXT,
-                        ChanPost.POST_COUNTRY_URL,
-                        ChanPost.POST_FLAGS
-                },
-                new int[]{
-                        R.id.list_item_image_wrapper,
-                        R.id.list_item_image,
-                        R.id.list_item_header,
-                        R.id.list_item_subject,
-                        R.id.list_item_subject_icons,
-                        R.id.list_item_title,
-                        R.id.list_item_text,
-                        R.id.list_item_country_flag,
-                        R.id.list_item_exif_text
-                });
+        this(context, viewBinder);
         this.showContextMenu = showContextMenu;
         this.onDismissCallback = onDismissCallback;
     }

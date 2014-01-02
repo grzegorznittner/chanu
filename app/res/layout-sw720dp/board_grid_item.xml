@@ -201,7 +201,7 @@
 -->
 </RelativeLayout>
 
-<ImageView
+    <ImageView
         android:id="@+id/grid_item_overflow_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

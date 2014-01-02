@@ -1049,9 +1049,10 @@ public class ChanBoard {
     }
 
     public static String defaultBoardCode(final Context context) {
-        if (hasWatchlist(context))
-            return ChanBoard.WATCHLIST_BOARD_CODE;
-        else if (hasFavorites(context))
+        //if (hasWatchlist(context))
+        //    return ChanBoard.WATCHLIST_BOARD_CODE;
+        //else
+        if (hasFavorites(context))
             return ChanBoard.FAVORITES_BOARD_CODE;
         else
             return ChanBoard.ALL_BOARDS_BOARD_CODE;

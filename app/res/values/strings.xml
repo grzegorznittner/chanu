@@ -1341,6 +1341,7 @@
 
     <!-- new -->
     <string name="pref_hide_last_replies">Hide Last Replies</string>
+    <string name="show_hidden_threads">Show Hidden Threads</string>
 
     <!-- for enhanced list view -->
 	<string name="undo">Undo</string>

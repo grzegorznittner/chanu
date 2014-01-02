@@ -30,28 +30,14 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
     protected static final int TYPE_GRID_ITEM_3 = 3;
     protected static final int TYPE_GRID_ITEM_4 = 4;
     protected static final int TYPE_GRID_ITEM_5 = 5;
-    protected static final int TYPE_MAX_COUNT = 6;
+    protected static final int TYPE_GRID_ITEM_EMPTY = 6;
+    protected static final int TYPE_MAX_COUNT = 7;
     protected static final int TYPE_HIDE_LAST_COUNT = 1;
 
     protected boolean hideLastReplies;
 
     public BoardGridCursorAdapter(Context context, ViewBinder viewBinder) {
-        super(context,
-                R.layout.board_grid_item,
-                viewBinder,
-                new String[]{
-                        ChanThread.THREAD_SUBJECT,
-                        ChanThread.THREAD_HEADLINE,
-                        ChanThread.THREAD_COUNTRY_FLAG_URL,
-                        ChanThread.THREAD_THUMBNAIL_URL
-                },
-                new int[]{
-                        R.id.grid_item_thread_subject,
-                        R.id.grid_item_thread_info,
-                        R.id.grid_item_country_flag,
-                        R.id.grid_item_thread_thumb
-                }
-        );
+        super(context, viewBinder);
         hideLastReplies = PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, false);
     }
@@ -63,6 +49,10 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
         Cursor cursor = getCursor();
         if (cursor == null || !cursor.moveToPosition(position))
             return TYPE_GRID_ITEM;
+        if (isBlocked(cursor))
+            return TYPE_GRID_ITEM_EMPTY;
+        if (isOffWatchlist(cursor))
+            return TYPE_GRID_ITEM_EMPTY;
         int numLastReplies = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_LAST_REPLIES));
         switch (numLastReplies) {
             case 5:
@@ -87,6 +77,10 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
         Cursor cursor = getCursor();
         if (cursor == null || !cursor.moveToPosition(position))
             return R.layout.board_grid_item;
+        if (isBlocked(cursor))
+            return R.layout.board_grid_item_empty;
+        if (isOffWatchlist(cursor))
+            return R.layout.board_grid_item_empty;
         int numLastReplies = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_LAST_REPLIES));
         switch (numLastReplies) {
             case 5:

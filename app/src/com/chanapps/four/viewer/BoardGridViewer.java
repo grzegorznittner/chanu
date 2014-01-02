@@ -102,7 +102,10 @@ public class BoardGridViewer {
 
         View overflow = viewHolder.grid_item_overflow_icon;
         if (overflow != null) {
-            if ((options & ABBREV_BOARDS) > 0) {
+            if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0) {
+                overflow.setVisibility(View.GONE);
+            }
+            else if ((options & ABBREV_BOARDS) > 0) {
                 overflow.setVisibility(View.GONE);
             }
             else if (overflowListener == null) {

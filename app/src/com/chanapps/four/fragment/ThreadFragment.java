@@ -580,7 +580,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         absListView.setOnCreateContextMenuListener(this);
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
+        absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, true));
+        absListView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
     }
 
     public void setPullToRefreshAttacher(PullToRefreshAttacher mPullToRefreshAttacher) {
@@ -873,6 +874,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     Log.e(TAG, "Exception deleting /" + boardCode + "/" + threadNo + " from watchlist", e);
                 }
                 final int stringId = msgId;
+                /*
                 if (handler != null)
                     handler.post(new Runnable() {
                         @Override
@@ -880,6 +882,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
                         }
                     });
+                    */
             }
         }).start();
     }

@@ -1,6 +1,9 @@
 package com.chanapps.four.adapter;
 
 import android.content.Context;
+import android.database.Cursor;
+import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanThread;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,8 +17,20 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
     protected static final String TAG = AbstractThreadCursorAdapter.class.getSimpleName();
     protected static final boolean DEBUG = false;
 
-    public AbstractThreadCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
-        super(context, layout, viewBinder, from, to);
+    public AbstractThreadCursorAdapter(Context context, ViewBinder viewBinder) {
+        super(context, viewBinder);
     }
+
+    protected boolean isBlocked(Cursor c) {
+        return false; // post blocking not supported
+        /*
+        String board = c.getString(c.getColumnIndex(ChanThread.POST_BOARD_CODE));
+        long no = c.getLong(c.getColumnIndex(ChanThread.POST_NO));
+        long resto = c.getLong(c.getColumnIndex(ChanThread.POST_RESTO));
+        final String uniqueId = ChanThread.uniqueId(board, no, resto);
+        return ChanBlocklist.contains(context, ChanBlocklist.BlockType.THREAD, uniqueId);
+        */
+    }
+
 
 }

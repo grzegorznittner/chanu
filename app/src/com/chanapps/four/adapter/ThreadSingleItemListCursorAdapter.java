@@ -21,8 +21,8 @@ public class ThreadSingleItemListCursorAdapter extends ThreadListCursorAdapter {
     protected static final String TAG = ThreadSingleItemListCursorAdapter.class.getSimpleName();
     protected static final boolean DEBUG = false;
 
-    protected ThreadSingleItemListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
-        super(context, layout, viewBinder, from, to);
+    protected ThreadSingleItemListCursorAdapter(Context context, ViewBinder viewBinder) {
+        super(context, viewBinder);
     }
 
     public ThreadSingleItemListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu, Runnable onDismissCallback) {

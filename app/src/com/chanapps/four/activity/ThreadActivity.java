@@ -913,7 +913,7 @@ public class ThreadActivity
         boardGrid.setAdapter(adapterBoardsTablet);
         boardGrid.setOnItemClickListener(boardGridListener);
         boardGrid.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        boardGrid.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
+        boardGrid.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, true));
     }
 
     protected void onBoardsTabletLoadFinished(Cursor data) {
@@ -1134,8 +1134,8 @@ public class ThreadActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             final boolean receivedEnable = intent != null && intent.getAction().equals(UPDATE_FAST_SCROLL_ACTION) && intent.hasExtra(OPTION_ENABLE)
-                    ? intent.getBooleanExtra(OPTION_ENABLE, false)
-                    : false;
+                    ? intent.getBooleanExtra(OPTION_ENABLE, true)
+                    : true;
             if (DEBUG) Log.i(TAG, "onUpdateFastScrollReceived /" + boardCode + "/ received=/" + receivedEnable + "/");
             final Handler gridHandler = handler != null ? handler : new Handler();
             if (gridHandler != null)
