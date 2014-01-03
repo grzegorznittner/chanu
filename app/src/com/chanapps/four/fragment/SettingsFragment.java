@@ -155,7 +155,7 @@ public class SettingsFragment
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if (DEBUG) Log.i(TAG, "onPrefrenceChange pref=" + preference.getKey() + " newVal=" + newValue);
                 Boolean b = newValue instanceof Boolean ? (Boolean) newValue : null;
-                BoardActivity.updateFastScroll(getActivity(), b != null ? b : true);
+                BoardActivity.updateFastScroll(getActivity(), b != null ? b : false);
                 return true;
             }
         };

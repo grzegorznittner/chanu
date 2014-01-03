@@ -503,8 +503,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
         //absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, true));
-        absListView.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+        absListView.setFastScrollEnabled(PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false));
         emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         bindPullToRefresh();
         bindSwipeToDismiss();
@@ -518,7 +518,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 absListView != null && absListView instanceof EnhancedListView
                 ? ((EnhancedListView)absListView).makeScrollListener()
                 : null;
-        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true, customListener));
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true, customListener));
     }
 
     protected void bindOnItemClick() {
@@ -530,25 +530,31 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         });
     }
 
+    protected static final int UNDO_DELAY_MS = 3000;
+
     protected void bindSwipeToDismiss() {
         // Set the callback that handles dismisses.
         if (DEBUG) Log.i(TAG, "bindSwipeToDismiss absListView=" + absListView);
         if (!(absListView instanceof EnhancedListView))
             return;
         final EnhancedListView mListView = (EnhancedListView)absListView;
-        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
-            mListView.setDismissCallback(swipeDismissWatchedCallback);
-            mListView.enableSwipeToDismiss();
-            mListView.discardUndo();
-        }
-        else if (!ChanBoard.isVirtualBoard(boardCode)) {
-            mListView.setDismissCallback(swipeDismissCallback);
-            mListView.enableSwipeToDismiss();
-            mListView.discardUndo();
-        }
-        else {
+        EnhancedListView.OnDismissCallback callback;
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+            callback = swipeDismissWatchedCallback;
+        else if (!ChanBoard.isVirtualBoard(boardCode))
+            callback = swipeDismissCallback;
+        else
+            callback = null;
+        if (callback == null) {
             mListView.disableSwipeToDismiss();
+            return;
         }
+        mListView.setDismissCallback(callback);
+        mListView.enableSwipeToDismiss();
+        mListView.setSwipeDirection(EnhancedListView.SwipeDirection.END);
+        mListView.setUndoHideDelay(UNDO_DELAY_MS);
+        mListView.setRequireTouchBeforeDismiss(false);
+        mListView.discardUndo();
     }
 
     protected EnhancedListView.OnDismissCallback swipeDismissCallback = new EnhancedListView.OnDismissCallback() {
@@ -1870,8 +1876,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected BroadcastReceiver onUpdateFastScrollReceived = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final boolean receivedEnable = intent != null && intent.getAction().equals(UPDATE_FAST_SCROLL_ACTION) && intent.hasExtra(OPTION_ENABLE)
-                    ? intent.getBooleanExtra(OPTION_ENABLE, true)
+            final boolean receivedEnable = intent != null
+                    && intent.getAction().equals(UPDATE_FAST_SCROLL_ACTION)
+                    && intent.hasExtra(OPTION_ENABLE)
+                    ? intent.getBooleanExtra(OPTION_ENABLE, false)
                     : true;
             if (DEBUG) Log.i(TAG, "onUpdateFastScrollReceived /" + boardCode + "/ received=/" + receivedEnable + "/");
             final Handler gridHandler = handler != null ? handler : new Handler();

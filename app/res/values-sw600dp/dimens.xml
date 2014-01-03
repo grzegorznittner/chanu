@@ -133,9 +133,9 @@
     <dimen name="ThreadListHeaderInnerLayout_paddingLeft">0dp</dimen>
     <dimen name="ThreadListLayout_paddingRight">16dp</dimen>
 
-    <dimen name="ThreadListHeader_flowsize">72dp</dimen>
+    <dimen name="ThreadListHeader_flowsize">48dp</dimen>
     <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
-    <dimen name="ThreadListHeader_paddingPlusLeft">88dp</dimen>
+    <dimen name="ThreadListHeader_paddingPlusLeft">64dp</dimen>
     <dimen name="ThreadListHeader_padding">16dp</dimen>
     <dimen name="ThreadListHeader_medplus_padding">14dp</dimen>
     <dimen name="ThreadListHeader_med_padding">12dp</dimen>
@@ -295,8 +295,8 @@
     <dimen name="ItemsDialogFragment_title_paddingRight">24dp</dimen>
     <dimen name="ItemsDialogFragment_title_textSize">28sp</dimen>
 
-    <integer name="BoardGridView.maxLines">6</integer>
-    <integer name="BoardGridView.Half.maxLines">3</integer>
+    <integer name="BoardGridView.maxLines">4</integer>
+    <integer name="BoardGridView.Half.maxLines">2</integer>
     <integer name="BoardGridViewNarrowTablet.maxLines">7</integer>
     <dimen name="BoardGridView.topSpacing">6dp</dimen>
     <dimen name="BoardGridView.halfSpacing">8dp</dimen>
@@ -307,9 +307,9 @@
     <dimen name="BoardGridViewTablet.quarterSpacing">4dp</dimen>
     <!-- <dimen name="BoardGridTextHeight">96dp</dimen> -->
     <!-- <dimen name="BoardGridImageSize">108dp</dimen> -->
-    <dimen name="BoardGridImageSize">144dp</dimen>
-    <dimen name="BoardGridImageSizeDouble">288dp</dimen>
-    <dimen name="BoardGridImageSizeHalf">72dp</dimen>
+    <dimen name="BoardGridImageSize">96dp</dimen>
+    <dimen name="BoardGridImageSizeDouble">192dp</dimen>
+    <dimen name="BoardGridImageSizeHalf">48dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">96dp</dimen>-->
 
     <integer name="BoardGridView.numColumns">1</integer>

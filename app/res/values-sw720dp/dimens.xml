@@ -121,9 +121,9 @@
     <dimen name="BoardListText_paddingBottom">16dp</dimen>
     <dimen name="BoardListText_textSize">16sp</dimen>
 
-    <dimen name="ThreadListHeader_flowsize">72dp</dimen>
+    <dimen name="ThreadListHeader_flowsize">48dp</dimen>
     <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
-    <dimen name="ThreadListHeader_paddingPlusLeft">88dp</dimen>
+    <dimen name="ThreadListHeader_paddingPlusLeft">64dp</dimen>
     <dimen name="ThreadListHeader_padding">16dp</dimen>
     <dimen name="ThreadListHeader_medplus_padding">14dp</dimen>
     <dimen name="ThreadListHeader_med_padding">12dp</dimen>
@@ -287,9 +287,9 @@
     <integer name="BoardGridView.numColumns">2</integer>
     <integer name="BoardGridViewSmall.numColumns">5</integer>
     <!-- <dimen name="BoardGridTextHeight">160dp</dimen> -->
-    <dimen name="BoardGridImageSize">144dp</dimen>
-    <dimen name="BoardGridImageSizeDouble">288dp</dimen>
-    <dimen name="BoardGridImageSizeHalf">72dp</dimen>
+    <dimen name="BoardGridImageSize">96dp</dimen>
+    <dimen name="BoardGridImageSizeDouble">192dp</dimen>
+    <dimen name="BoardGridImageSizeHalf">48dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">128dp</dimen>-->
 
     <dimen name="drawer_spacer_width">80dp</dimen>

@@ -127,11 +127,10 @@
     <dimen name="BoardListText_paddingBottom">8dp</dimen>
     <dimen name="BoardListText_textSize">16sp</dimen>
 
-    <!-- <dimen name="ThreadListHeader_flowsize">48dp</dimen> -->
-    <dimen name="ThreadListHeader_flowsize">72dp</dimen>
+    <dimen name="ThreadListHeader_flowsize">48dp</dimen>
     <dimen name="ThreadListHeader_flowsize_small">32dp</dimen>
     <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
-    <dimen name="ThreadListHeader_paddingPlusLeft">88dp</dimen>
+    <dimen name="ThreadListHeader_paddingPlusLeft">64dp</dimen>
     <dimen name="ThreadListHeader_padding">16dp</dimen>
     <dimen name="ThreadListHeader_medplus_padding">14dp</dimen>
     <dimen name="ThreadListHeader_med_padding">12dp</dimen>
@@ -344,8 +343,8 @@
     <integer name="BoardGridView.numColumns">1</integer>
     <integer name="BoardGridViewSmall.numColumns">3</integer>
     <integer name="BoardTabletGridView.numColumns">1</integer>
-    <integer name="BoardGridView.maxLines">6</integer>
-    <integer name="BoardGridView.Half.maxLines">3</integer>
+    <integer name="BoardGridView.maxLines">4</integer>
+    <integer name="BoardGridView.Half.maxLines">2</integer>
     <integer name="BoardGridViewNarrowTablet.maxLines">4</integer>
     <dimen name="BoardGridView.topSpacing">4dp</dimen>
     <dimen name="BoardGridView.halfSpacing">4dp</dimen>
@@ -354,25 +353,19 @@
     <dimen name="BoardGridView.doubleSpacing">8dp</dimen>
     <dimen name="BoardGridView.rightSpacing">24dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">8dp</dimen>
-    <!-- <dimen name="BoardGridImageSize">96dp</dimen> -->
-    <dimen name="BoardGridImageSize">144dp</dimen>
+    <dimen name="BoardGridImageSize">96dp</dimen>
     <dimen name="BoardGridImageSizeDouble">192dp</dimen>
-    <dimen name="BoardGridImageSizeHalf">72dp</dimen>
-    <dimen name="BoardGridImageSizeForFlag">100dp</dimen>
-    <dimen name="BoardGridImageSizeHalfMinusSpacing">64dp</dimen>
+    <dimen name="BoardGridImageSizeHalf">48dp</dimen>
+    <dimen name="BoardGridImageSizeForFlag">52dp</dimen>
+    <dimen name="BoardGridImageSizeHalfMinusSpacing">40dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">80dp</dimen>-->
     <dimen name="BoardGridItemHeight">@dimen/BoardGridImageSize</dimen>
-    <dimen name="BoardGridItemHeight1">216dp</dimen>
-    <dimen name="BoardGridItemHeight2">288dp</dimen>
-    <dimen name="BoardGridItemHeight3">360dp</dimen>
-    <dimen name="BoardGridItemHeight4">432dp</dimen>
-    <dimen name="BoardGridItemHeight5">504dp</dimen>
-
-    <dimen name="BoardGridItemOverflowIconMarginTop">112dp</dimen>
-    <dimen name="BoardGridItemOverflowIconMarginTopHalf">40dp</dimen>
-    <dimen name="BoardGridItemWidthPlusSpacing">104dp</dimen>
-
-    <dimen name="tab_host_default_height">48dp</dimen>
+    <dimen name="BoardGridItemHeight1">144dp</dimen>
+    <dimen name="BoardGridItemHeight2">192dp</dimen>
+    <dimen name="BoardGridItemHeight3">240dp</dimen>
+    <dimen name="BoardGridItemHeight4">288dp</dimen>
+    <dimen name="BoardGridItemHeight5">336dp</dimen>
+    <dimen name="BoardGridItemOverflowIconMarginTop">64dp</dimen>
 
     <!-- prefs -->
     <dimen name="preference_item_padding_side">8dip</dimen>

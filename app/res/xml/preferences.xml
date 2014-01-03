@@ -50,7 +50,7 @@
         <CheckBoxPreference
                 android:key="pref_use_fast_scroll"
                 android:title="@string/pref_use_fast_scroll"
-                android:defaultValue="true" />
+                android:defaultValue="false" />
 
         <ListPreference
                 android:key="pref_theme"

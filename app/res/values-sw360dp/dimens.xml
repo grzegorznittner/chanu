@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="ThreadListHeader_flowsize">72dp</dimen>
+    <dimen name="ThreadListHeader_flowsize">48dp</dimen>
 
-    <dimen name="ThreadListHeader_paddingPlusLeft">88dp</dimen>
+    <dimen name="ThreadListHeader_paddingPlusLeft">64dp</dimen>
 
     <dimen name="ThreadListItemReplyWrap_marginRight">32dp</dimen>
 
