@@ -23,7 +23,7 @@ import com.chanapps.four.activity.R;
 public class ChanThread extends ChanPost {
 
     private static final String TAG = ChanThread.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     public static final double MAX_THUMBNAIL_PX = 250;
 
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)

@@ -305,12 +305,19 @@
     <dimen name="BoardGridView.rightSpacing">32dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.quarterSpacing">4dp</dimen>
-    <!-- <dimen name="BoardGridTextHeight">96dp</dimen> -->
-    <!-- <dimen name="BoardGridImageSize">108dp</dimen> -->
     <dimen name="BoardGridImageSize">96dp</dimen>
     <dimen name="BoardGridImageSizeDouble">192dp</dimen>
     <dimen name="BoardGridImageSizeHalf">48dp</dimen>
-    <!--<dimen name="BoardGridTextHeightSmall">96dp</dimen>-->
+    <dimen name="BoardGridImageSizeForFlag">52dp</dimen>
+    <dimen name="BoardGridImageSizeHalfMinusSpacing">40dp</dimen>
+    <dimen name="BoardGridItemHeight">@dimen/BoardGridImageSize</dimen>
+    <dimen name="BoardGridItemHeight1">144dp</dimen>
+    <dimen name="BoardGridItemHeight2">192dp</dimen>
+    <dimen name="BoardGridItemHeight3">240dp</dimen>
+    <dimen name="BoardGridItemHeight4">288dp</dimen>
+    <dimen name="BoardGridItemHeight5">336dp</dimen>
+    <dimen name="BoardGridItemOverflowIconMarginTop">64dp</dimen>
+
 
     <integer name="BoardGridView.numColumns">1</integer>
     <integer name="BoardGridViewSmall.numColumns">4</integer>

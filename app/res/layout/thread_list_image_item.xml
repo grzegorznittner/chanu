@@ -37,9 +37,7 @@
                     clickable: android:foreground="@drawable/thread_list_selector_bg"
                     -->
                     <FrameLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
-                        <ImageView style="@style/ThreadListItemImageNothumbsExpand" android:id="@+id/list_item_image_nothumbs_expand"/>
                         <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
-                        <ImageView style="@style/ThreadListItemImageCollapse" android:id="@+id/list_item_image_collapse"/>
                     </FrameLayout>
                     <LinearLayout style="@style/ThreadListItemBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
                         <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
@@ -75,9 +73,9 @@
         </FrameLayout>
 
         <FrameLayout style="@style/ThreadListItemImageSection" android:id="@+id/list_item_image_expanded_wrapper">
-            <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
-            <WebView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview" android:visibility="gone"/>
-            <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
+            <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"  android:visibility="gone"/>
+            <WebView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview"/>
+            <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar" android:visibility="gone"/>
             <View style="@style/ThreadListItemImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
         </FrameLayout>
 

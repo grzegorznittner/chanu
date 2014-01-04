@@ -25,8 +25,6 @@ public class ThreadViewHolder {
     public ImageView list_item_header_bar_overflow;
     public ImageView list_item_image;
     public ImageView list_item_image_header;
-    public ImageView list_item_image_collapse;
-    public ImageView list_item_image_nothumbs_expand;
     public ViewGroup list_item_image_expansion_target;
     public ImageView list_item_image_expanded;
     public WebView list_item_image_expanded_webview;
@@ -71,8 +69,6 @@ public class ThreadViewHolder {
         list_item_header_bar_overflow = (ImageView)item.findViewById(R.id.list_item_header_bar_overflow);
         list_item_image = (ImageView)item.findViewById(R.id.list_item_image);
         list_item_image_header = (ImageView)item.findViewById(R.id.list_item_image_header);
-        list_item_image_collapse = (ImageView)item.findViewById(R.id.list_item_image_collapse);
-        list_item_image_nothumbs_expand = (ImageView)item.findViewById(R.id.list_item_image_nothumbs_expand);
         list_item_image_expansion_target = (ViewGroup)item.findViewById(R.id.list_item_image_expansion_target);
         list_item_image_expanded = (ImageView)item.findViewById(R.id.list_item_image_expanded);
         list_item_image_expanded_webview = (WebView)item.findViewById(R.id.list_item_image_expanded_webview);

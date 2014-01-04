@@ -43,9 +43,7 @@
                     clickable: android:foreground="@drawable/thread_list_selector_bg"
                     -->
                     <FrameLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper" android:layout_marginRight="0dp">
-                        <ImageView style="@style/ThreadListItemImageNothumbsExpand" android:id="@+id/list_item_image_nothumbs_expand"/>
                         <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
-                        <ImageView style="@style/ThreadListItemImageCollapse" android:id="@+id/list_item_image_collapse"/>
                     </FrameLayout>
                     <!-- <View style="@style/ThreadListItemLeftSpacer" android:id="@+id/list_item_left_spacer"/> -->
                     <LinearLayout style="@style/ThreadListItemBarAgoWrapper" android:id="@+id/list_item_ago_wrapper" android:layout_marginLeft="@dimen/ThreadListHeader_padding" android:layout_toRightOf="@+id/list_item_image_wrapper">

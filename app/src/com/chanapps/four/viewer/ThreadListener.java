@@ -138,9 +138,7 @@ public class ThreadListener {
     public final View.OnClickListener thumbOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (threadViewable == null)
-                return;
-            if (threadViewable.getAbsListView() == null)
+            if (threadViewable == null || threadViewable.getAbsListView() == null)
                 return;
             int pos = threadViewable.getAbsListView().getPositionForView(v);
             if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
@@ -157,47 +155,45 @@ public class ThreadListener {
             if (itemView == null)
                 return;
             ThreadViewHolder viewHolder = (ThreadViewHolder)itemView.getTag(R.id.VIEW_HOLDER);
+            if (DEBUG) Log.i(TAG, "found viewHolder=" + itemView);
             if (viewHolder == null)
                 return;
-
-            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED)) {
-                if (DEBUG) Log.i(TAG, "image already expanded, collapsing");
-                if (viewHolder.list_item_image_expanded_wrapper != null)
-                    viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
-                if (viewHolder.list_item_image_collapse != null)
-                    viewHolder.list_item_image_collapse.setVisibility(View.GONE);
-                if (viewHolder.list_item_image != null)
-                    viewHolder.list_item_image.setVisibility(View.VISIBLE);
-                if (viewHolder.list_item_image_header != null)
-                    viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
-                if (viewHolder.list_item_image_nothumbs_expand != null)
-                    viewHolder.list_item_image_nothumbs_expand.setVisibility(View.VISIBLE);
-                if (viewHolder.list_item != null)
-                    viewHolder.list_item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
+            if (viewHolder.list_item_image_header != null
+                    && viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE
+                    && (viewHolder.list_item_image_expanded.getVisibility() == View.VISIBLE
+                        || viewHolder.list_item_image_expanded_webview.getVisibility() == View.VISIBLE)
+                    ) {
+                if (DEBUG) Log.i(TAG, "header already expanded, collapsing");
+                ThreadViewer.toggleExpandedImage(viewHolder);
+                return;
+            }
+            else if (viewHolder.list_item_image_header == null
+                    && viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) { // hide and return
+                if (DEBUG) Log.i(TAG, "non-header already expanded, collapsing");
+                ThreadViewer.toggleExpandedImage(viewHolder);
                 return;
             }
 
-            if (threadViewable == null)
+            if (threadViewable == null || threadViewable.getAdapter() == null) {
+                if (DEBUG) Log.i(TAG, "no thread viewable or no adapter, exiting");
                 return;
-            if (threadViewable.getAdapter() == null)
-                return;
+            }
             Cursor cursor = threadViewable.getAdapter().getCursor();
             cursor.moveToPosition(pos);
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
-            if ((flags & (ChanPost.FLAG_HAS_IMAGE)) > 0) {
-                //if (viewHolder.list_item_image_expanded != null
-                //        && viewHolder.list_item_image_expanded.getVisibility() != View.GONE
-                //        && viewHolder.list_item_image_expanded.getHeight() > 0) {
-                if (DEBUG) Log.i(TAG, "expanding pos: " + pos);
-                ThreadImageExpander expander = (new ThreadImageExpander(viewHolder, cursor, expandedImageListener,
-                        true,
-                        isDark
-                                ? R.drawable.stub_image_background_dark
-                                : R.drawable.stub_image_background));
-                expander.displayImage();
-                itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
+            if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
+                if (DEBUG) Log.i(TAG, "no image found in cursor, exiting");
+                return;
             }
+
+            if (DEBUG) Log.i(TAG, "expanding pos: " + pos);
+            ThreadImageExpander expander = (new ThreadImageExpander(viewHolder, cursor,
+                    true,
+                    isDark
+                            ? R.drawable.stub_image_background_dark
+                            : R.drawable.stub_image_background));
+            expander.displayImage();
         }
     };
 

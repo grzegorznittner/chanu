@@ -1,6 +1,5 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <item name="THREAD_VIEW_TYPE" type="id">2</item>
-    <item name="THREAD_VIEW_IS_IMAGE_EXPANDED" type="id">3</item>
     <item name="THREAD_VIEW_IS_EXIF_EXPANDED" type="id">4</item>
     <item name="BOARD_GRID_VIEW_DEFAULT_DRAWABLE" type="id">5</item>
     <item name="BOARD_CODE" type="id">6</item>

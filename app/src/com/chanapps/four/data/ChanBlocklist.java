@@ -110,6 +110,8 @@ public class ChanBlocklist {
         if (blocklist == null)
             initBlocklist(context);
         Set<String> blocks = blocklist.get(blockType);
+        if (blocks == null)
+            return false;
         for (String b : blocks) {
             if (b != null && b.contains(substring))
                 return true;

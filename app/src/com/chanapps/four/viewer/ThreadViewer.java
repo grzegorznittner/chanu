@@ -164,11 +164,16 @@ public class ThreadViewer {
                 imagesOnClickListener,
                 repliesOnClickListener,
                 overflowListener);
-        setImageWrapper(viewHolder, flags);
+        //setImageWrapper(viewHolder, flags);
+        //if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
+            bindThumbnailExpandTarget(viewHolder.list_item_image_expansion_target, thumbOnClickListener);
+            bindThumbnailExpandTarget(viewHolder.list_item_image_header, thumbOnClickListener);
+        //}
+
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            setHeaderImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
+            setHeaderImage(viewHolder, cursor, flags, expandedImageListener);
         else
-            setImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
+            setImage(viewHolder, cursor, flags, expandedImageListener);
         setCountryFlag(viewHolder, cursor, flags);
         setHeaderValue(viewHolder, cursor, sameIdOnClickListener);
         setSubject(viewHolder, cursor, flags, backlinkOnClickListener);
@@ -189,7 +194,6 @@ public class ThreadViewer {
         ViewGroup item = viewHolder.list_item;
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag(postId);
-        item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
         item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
 
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
@@ -567,46 +571,51 @@ public class ThreadViewer {
         return true;
     }
 
-
+    /*
     static private boolean setImageWrapper(ThreadViewHolder viewHolder, final int flags) {
         View v = viewHolder.list_item_image_wrapper;
         if (v == null)
             return false;
-        if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
+        if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleExpandedImage(viewHolder);
+                }
+            });
             v.setVisibility(View.VISIBLE);
-        else
+        }
+        else {
             v.setVisibility(View.GONE);
+        }
         return true;
     }
+    */
 
     static private boolean setHeaderImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
-                                    View.OnClickListener thumbOnClickListener,
-                                    View.OnClickListener expandedImageListener) {
+                                    View.OnClickListener expandedImageListener
+                                    ) {
         if (viewHolder.list_item_image_header == null)
             return false;
         if (DEBUG) Log.i(TAG, "setHeaderImage()");
-        if (viewHolder.list_item_image_collapse != null)
-            viewHolder.list_item_image_collapse.setVisibility(View.GONE);
+        /*
         if (!shouldLoadThumbs(viewHolder.list_item_image_header.getContext())) {
             if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
-                if (viewHolder.list_item_image_nothumbs_expand != null)
-                    viewHolder.list_item_image_nothumbs_expand.setVisibility(View.VISIBLE);
                 bindThumbnailExpandTarget(viewHolder.list_item_image_expansion_target, thumbOnClickListener);
             }
             return hideImage(viewHolder, viewHolder.list_item_image_header, null);
         }
-        if (viewHolder.list_item_image_wrapper != null)
-            viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
-        if (viewHolder.list_item_image_nothumbs_expand != null)
-            viewHolder.list_item_image_nothumbs_expand.setVisibility(View.GONE);
-        if (hideNoImage(viewHolder, viewHolder.list_item_image_header, null, flags))
-            return true;
+        */
+        //if (viewHolder.list_item_image_wrapper != null)
+        //    viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+        //if (hideNoImage(viewHolder, flags))
+        //    return true;
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
-        return displayHeaderImage(viewHolder, cursor, flags, thumbOnClickListener);
+        return displayHeaderImage(viewHolder, cursor, flags);
     }
 
     static private boolean shouldLoadThumbs(Context context) {
@@ -617,31 +626,23 @@ public class ThreadViewer {
     }
 
     static private boolean setImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
-                                    View.OnClickListener thumbOnClickListener,
                                     View.OnClickListener expandedImageListener) {
-        ImageView spinner = viewHolder.list_item_image_spinner;
         if (viewHolder.list_item_image == null)
             return false;
-        if (viewHolder.list_item_image_collapse != null)
-            viewHolder.list_item_image_collapse.setVisibility(View.GONE);
+        /*
         if (!shouldLoadThumbs(viewHolder.list_item_image.getContext())) {
             if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
-                if (viewHolder.list_item_image_nothumbs_expand != null)
-                    viewHolder.list_item_image_nothumbs_expand.setVisibility(View.VISIBLE);
                 bindThumbnailExpandTarget(viewHolder.list_item_image_expansion_target, thumbOnClickListener);
             }
             return hideImage(viewHolder, viewHolder.list_item_image, spinner);
         }
-        if (viewHolder.list_item_image_nothumbs_expand != null)
-            viewHolder.list_item_image_nothumbs_expand.setVisibility(View.GONE);
-        if (hideNoImage(viewHolder, viewHolder.list_item_image, spinner, flags))
-            return true;
-        //if (isListLink(flags))
-        //    return displayNonHeaderImage(iv, null, cursor, null);
-        setSpinnerTarget(spinner, expandedImageListener);
+        */
+        //if (hideNoImage(viewHolder, flags))
+        //    return true;
+        setSpinnerTarget(viewHolder.list_item_image_spinner, expandedImageListener);
 
         // display thumb and also expand if available
-        displayNonHeaderImage(viewHolder.list_item_image, viewHolder.list_item_image_expansion_target, cursor, thumbOnClickListener);
+        displayNonHeaderImage(viewHolder.list_item_image, viewHolder.list_item_image_expansion_target, cursor);
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
@@ -665,8 +666,7 @@ public class ThreadViewer {
         }
     }
 
-    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags,
-                                           View.OnClickListener thumbOnClickListener) {
+    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags) {
         if (DEBUG) Log.w(TAG, "displayHeaderImage()");
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
@@ -695,22 +695,22 @@ public class ThreadViewer {
         DisplayImageOptions options = createExpandedDisplayImageOptions(displayImageSize);
 
         // display image
-        if (thumbOnClickListener != null)
-            viewHolder.list_item_image_header.setOnClickListener(thumbOnClickListener);
         viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
         viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
         //ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (DEBUG) Log.w(TAG, "displayHeaderImage() url=" + url);
         //imageLoader.displayImage(url, iv, options, listener);
-        imageLoader.displayImage(url, viewHolder.list_item_image_header, options);
+        imageLoader.displayImage(url, viewHolder.list_item_image_header, options, thumbLoadingListener);
 
         return true;
     }
 
-    static private boolean hideNoImage(ThreadViewHolder viewHolder, ImageView iv, ImageView spinner, int flags) {
+    /*
+    static private boolean hideNoImage(ThreadViewHolder viewHolder, int flags) {
         if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
-            return hideImage(viewHolder, iv, spinner);
+            toggleExpandedImage(viewHolder);
+            return true;
         }
         else {
             iv.setVisibility(View.VISIBLE);
@@ -719,25 +719,16 @@ public class ThreadViewer {
             return false;
         }
     }
-
-    static private boolean hideImage(ThreadViewHolder viewHolder, ImageView iv, ImageView spinner) {
-        if (DEBUG) Log.i(TAG, "hideImage()");
-        iv.setImageBitmap(null);
-        iv.setVisibility(View.GONE);
-        if (spinner != null)
-            spinner.setVisibility(View.GONE);
-        return hideExpandedImage(viewHolder);
-    }
+    */
 
     static private boolean prefetchExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
                                                             final View.OnClickListener expandedImageListener) {
         if (viewHolder.list_item == null)
             return false;
-        boolean autoload = shouldAutoload(viewHolder.list_item.getContext(), cursor);
-        if (!autoload)
+        if (!shouldAutoload(viewHolder.list_item.getContext(), cursor))
             return false;
         ThreadImageExpander expander =
-                (new ThreadImageExpander(viewHolder, cursor, expandedImageListener, true, stub));
+                (new ThreadImageExpander(viewHolder, cursor, true, stub));
         expander.displayImage();
         return true;
     }
@@ -771,29 +762,18 @@ public class ThreadViewer {
                                                       final View.OnClickListener expandedImageListener) {
         File file = fullSizeImageFile(viewHolder.list_item.getContext(), cursor); // try for full size first
         if (file == null) {
-            return !hideExpandedImage(viewHolder);
+            //toggleExpandedImage(viewHolder);
+            return false;
         }
 
         if (DEBUG) Log.i(TAG, "displayCachedExpandedImage() expanded file=" + file.getAbsolutePath());
         ThreadImageExpander expander =
-                (new ThreadImageExpander(viewHolder, cursor, expandedImageListener, false, stub));
+                (new ThreadImageExpander(viewHolder, cursor, false, stub));
         expander.displayImage();
         return true;
     }
 
-    static private boolean hideExpandedImage(ThreadViewHolder viewHolder) {
-        View[] views = { viewHolder.list_item_image_expanded,
-                viewHolder.list_item_image_expanded_webview,
-                viewHolder.list_item_image_expanded_click_effect,
-                viewHolder.list_item_expanded_progress_bar,
-                viewHolder.list_item_image_expanded_wrapper};
-        for (View v : views)
-            if (v != null)
-                v.setVisibility(View.GONE);
-        return true;
-    }
-
-    static private void bindThumbnailExpandTarget(final ViewGroup wrapper, View.OnClickListener thumbOnClickListener) {
+    static private void bindThumbnailExpandTarget(final View wrapper, View.OnClickListener thumbOnClickListener) {
         if (wrapper == null)
             return;
         if (thumbOnClickListener != null) {
@@ -808,15 +788,13 @@ public class ThreadViewer {
         }
     }
 
-    static private boolean displayNonHeaderImage(final ImageView iv, final ViewGroup wrapper, final Cursor cursor,
-                                                 View.OnClickListener thumbOnClickListener) {
+    static private boolean displayNonHeaderImage(final ImageView iv, final ViewGroup wrapper, final Cursor cursor) {
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (url != null && url.equals(iv.getTag(R.id.IMG_URL))) {
             iv.setVisibility(View.VISIBLE);
         }
         else if (url != null && !url.isEmpty()) {
             if (DEBUG) Log.i(TAG, "setImage url=" + url);
-            bindThumbnailExpandTarget(wrapper, thumbOnClickListener);
             iv.setImageDrawable(null);
             iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(url, iv, thumbDisplayImageOptions, thumbLoadingListener);
@@ -1132,4 +1110,30 @@ public class ThreadViewer {
             });
     }
 
+    public static boolean toggleExpandedImage(ThreadViewHolder viewHolder) { // returns true iff expanded image will be shown
+        if (viewHolder == null || viewHolder.list_item_image_wrapper == null || viewHolder.list_item_image_expanded_wrapper == null)
+            return false;
+        if (viewHolder.list_item_image_header != null) {
+            if (viewHolder.list_item_image_expanded.getVisibility() == View.VISIBLE
+                    || viewHolder.list_item_image_expanded_webview.getVisibility() == View.VISIBLE) {
+                viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+                viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
+                viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+                ViewGroup.LayoutParams params = viewHolder.list_item_image_wrapper.getLayoutParams();
+                if (params != null)
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+                return false;
+            }
+            return true;
+        }
+        if (viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) {
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
+            viewHolder.list_item_image_wrapper.setVisibility(View.VISIBLE);
+            return false;
+        }
+        viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
+        viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+        return true;
+    }
 }
