@@ -66,8 +66,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public static final int MAX_HTTP_GET_URL_LEN = 1000;
     protected static final int LOADER_ID = 0;
-    protected static final String FIRST_VISIBLE_POSITION = "firstVisiblePosition";
-    protected static final String FIRST_VISIBLE_POSITION_OFFSET = "firstVisiblePositionOffset";
 
     protected String boardCode;
     protected long threadNo;
@@ -85,8 +83,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
     protected ActionMode actionMode = null;
-    protected int firstVisiblePosition = -1;
-    protected int firstVisiblePositionOffset = -1;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected View boardTitleBar;
     protected View boardSearchResultsBar;
@@ -95,6 +91,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected Menu menu = null;
     protected View.OnClickListener commentsOnClickListener = null;
     protected View.OnClickListener imagesOnClickListener = null;
+    protected boolean firstLoad = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle bundle) {
@@ -139,12 +136,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putLong(ChanThread.THREAD_NO, threadNo);
         savedInstanceState.putString(SearchManager.QUERY, query);
-        int pos = absListView == null ? -1 : absListView.getFirstVisiblePosition();
-        View view = absListView == null ? null : absListView.getChildAt(0);
-        int offset = view == null ? 0 : view.getTop();
-        savedInstanceState.putInt(FIRST_VISIBLE_POSITION, pos);
-        savedInstanceState.putInt(FIRST_VISIBLE_POSITION_OFFSET, offset);
-        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo + " pos=" + pos);
+        //int pos = absListView == null ? -1 : absListView.getFirstVisiblePosition();
+        //View view = absListView == null ? null : absListView.getChildAt(0);
+        //int offset = view == null ? 0 : view.getTop();
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo);
     }
 
     @Override
@@ -155,9 +150,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         boardCode = bundle.getString(ChanBoard.BOARD_CODE);
         threadNo = bundle.getLong(ChanThread.THREAD_NO, 0);
         query = bundle.getString(SearchManager.QUERY);
-        firstVisiblePosition = bundle.getInt(FIRST_VISIBLE_POSITION);
-        firstVisiblePositionOffset = bundle.getInt(FIRST_VISIBLE_POSITION_OFFSET);
-        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo + " pos=" + firstVisiblePosition);
+        if (DEBUG) Log.i(TAG, "onViewStateRestored /" + boardCode + "/" + threadNo);
     }
 
     @Override
@@ -239,6 +232,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onPause() {
         super.onPause();
         if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/" + threadNo);
+        saveViewPositionAsync();
         handler = null;
     }
 
@@ -363,6 +357,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         adapter.swapCursor(data);
         setupShareActionProviderOPMenu(menu);
         selectCurrentThreadAsync();
+        if (firstLoad) {
+            firstLoad = false;
+            loadViewPositionAsync();
+        }
     }
 
     protected void selectCurrentThreadAsync() {
@@ -1625,5 +1623,67 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 }
             });
     }
+
+    protected void loadViewPositionAsync() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Context c = getActivityContext();
+                if (c == null)
+                    return;
+                ChanThread thread = ChanFileStorage.loadThreadData(c, boardCode, threadNo);
+                if (thread == null)
+                    return;
+                final int firstVisiblePosition = thread.viewPosition;
+                final int firstVisibleOffset = thread.viewOffset;
+                if (firstVisiblePosition >= 0 && handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (DEBUG) Log.i(TAG, "loaded view position /" + boardCode + "/" + threadNo
+                                    + " pos=" + firstVisiblePosition + " offset=" + firstVisibleOffset);
+                            if (absListView == null)
+                                return;
+                            if (absListView instanceof ListView) {
+                                ((ListView)absListView).setSelectionFromTop(firstVisiblePosition, firstVisibleOffset);
+                            }
+                            else {
+                                absListView.requestFocusFromTouch();
+                                absListView.setSelection(firstVisiblePosition);
+                            }
+                        }
+                    });
+            }
+        }).start();
+    }
+
+    protected void saveViewPositionAsync() {
+        if (absListView == null)
+            return;
+        final int firstVisiblePosition = absListView.getFirstVisiblePosition();
+        final int firstVisibleOffset = absListView.getChildAt(0) == null ? 0 : absListView.getChildAt(0).getTop();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Context c = getActivityContext();
+                if (c == null)
+                    return;
+                ChanThread thread = ChanFileStorage.loadThreadData(c, boardCode, threadNo);
+                if (thread == null)
+                    return;
+                thread.viewPosition = firstVisiblePosition;
+                thread.viewOffset = firstVisibleOffset;
+                try {
+                    ChanFileStorage.storeThreadData(c, thread);
+                    if (DEBUG) Log.i(TAG, "saved view position /" + boardCode + "/" + threadNo
+                            + " pos=" + firstVisiblePosition + " offset=" + firstVisibleOffset);
+                }
+                catch (IOException e) {
+                    Log.e(TAG, "Exception saving thread view position /" + boardCode + "/" + threadNo);
+                }
+            }
+        }).start();
+    }
+
 
 }

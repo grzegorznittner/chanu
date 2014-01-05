@@ -37,6 +37,10 @@ public class ChanThread extends ChanPost {
     @JsonProperty("last_replies")
     public ChanPost[] lastReplies = new ChanPost[0];
 
+    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingIntegerDeserializer.class)
+    public int viewPosition = -1;
+    public int viewOffset = 0;
+
     public static final String THREAD_COMPOSITE_ID = "_id";
     public static final String THREAD_BOARD_CODE = "threadBoardCode";
     public static final String THREAD_NO = "threadNo";

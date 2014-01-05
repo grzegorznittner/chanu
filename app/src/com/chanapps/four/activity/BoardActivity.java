@@ -78,8 +78,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected String query = "";
     protected MenuItem searchMenuItem;
     protected ViewType viewType = ViewType.AS_GRID;
-    protected int firstVisiblePosition = -1;
-    protected int firstVisiblePositionOffset = -1;
     protected View boardTitleBar;
     protected View boardSearchResultsBar;
     protected int gridViewOptions;
@@ -415,8 +413,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         boardCode = bundle.getString(ChanBoard.BOARD_CODE);
         query = bundle.getString(SearchManager.QUERY);
         boardSortType = BoardSortType.loadFromPrefs(this);
-//firstVisiblePosition = bundle.getInt(FIRST_VISIBLE_POSITION);
-        //firstVisiblePositionOffset = bundle.getInt(FIRST_VISIBLE_POSITION_OFFSET);
         if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query);
     }
 
@@ -426,8 +422,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (data == null) {
             boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
             query = intent.getStringExtra(SearchManager.QUERY);
-            firstVisiblePosition = -1;
-            firstVisiblePositionOffset = -1;
             if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from intent");
         }
         else {
@@ -436,15 +430,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (ChanBoard.getBoardByCode(this, uriBoardCode) != null) {
                 boardCode = uriBoardCode;
                 query = "";
-                firstVisiblePosition = -1;
-                firstVisiblePositionOffset = -1;
                 if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from url intent");
             }
             else {
                 boardCode = ChanBoard.POPULAR_BOARD_CODE;
                 query = "";
-                firstVisiblePosition = -1;
-                firstVisiblePositionOffset = -1;
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
         }
@@ -1967,6 +1957,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         intent.putExtra(ChanThread.THREAD_NO, threadNo);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
+
     protected Runnable refreshAbsListView = new Runnable() {
         @Override
         public void run() {
