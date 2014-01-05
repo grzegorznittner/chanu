@@ -32,6 +32,7 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
     public static final int MIN_VALUE = 32;
     public static final int MAX_VALUE = 1024;
     public static final int DEFAULT_VALUE = 128;
+    public static final float MAX_CACHE_PERCENT = 0.1f;
 
 	private static final String ANDROIDNS = "http://schemas.android.com/apk/res/android";
 	private static final String CHANAPPS = "http://chanapps.com";
@@ -70,7 +71,8 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
 		try {
 			File cacheFolder = ChanFileStorage.getCacheDirectory(getContext());
 			long totalSpace = cacheFolder.getTotalSpace() / (1024*1024);
-			maxValue = (int)totalSpace;
+            long maxCache = Math.round((float)totalSpace * MAX_CACHE_PERCENT);
+			maxValue = (int)maxCache;
 			if (maxValue < minValue) {
 				minValue = maxValue / 2 < DEFAULT_VALUE ? DEFAULT_VALUE : maxValue / 2;
 			}

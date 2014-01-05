@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.webkit.WebView;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.CacheSizePreference;
 import com.chanapps.four.data.*;
@@ -111,6 +112,15 @@ public class CleanUpService extends BaseChanService {
         long maxCacheSize = getPreferredCacheSize() * ONE_MB_BYTES;
         targetCacheSize = maxCacheSize * 80 / 100;
         if (DEBUG) Log.i(TAG, "cache size current=" + (totalSize/ONE_MB_BYTES) + "MB target=" + (targetCacheSize/ONE_MB_BYTES) + "MB  max=" + (maxCacheSize / ONE_MB_BYTES) + "MB");
+
+        try {
+            WebView cacheView = new WebView(getApplicationContext());
+            if (cacheView != null)
+                cacheView.clearCache(true);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception clearing web view cache");
+        }
 
         /*
         for (int daysAgo = 6; daysAgo > 0; daysAgo--)
