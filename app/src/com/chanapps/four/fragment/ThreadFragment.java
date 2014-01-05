@@ -1661,7 +1661,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (absListView == null)
             return;
         final int firstVisiblePosition = absListView.getFirstVisiblePosition();
-        final int firstVisibleOffset = absListView.getChildAt(0) == null ? 0 : absListView.getChildAt(0).getTop();
+        final int firstVisibleOffset = absListView.getChildAt(firstVisiblePosition) == null
+                ? 0
+                : absListView.getChildAt(firstVisiblePosition).getTop();
         new Thread(new Runnable() {
             @Override
             public void run() {

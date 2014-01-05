@@ -3,7 +3,9 @@ package com.chanapps.four.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.util.Log;
+import android.widget.GridView;
 import com.chanapps.four.component.AdComponent;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.ChanBoard;
@@ -31,42 +33,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
             startActivity(intent);
         }
     }
-    /*
-    @Override
-    protected void onNewIntent(Intent intent) { // for when we coming from a different class
-        if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE)
-                + "/ q=" + intent.getStringExtra(SearchManager.QUERY));
-        if (!intent.hasExtra(ChanBoard.BOARD_CODE)
-                || intent.getStringExtra(ChanBoard.BOARD_CODE) == null
-                || intent.getStringExtra(ChanBoard.BOARD_CODE).isEmpty()
-                ) {
-            if (DEBUG) Log.i(TAG, "onNewIntent empty board code, ignoring intent");
-            return;
-        }
-        setIntent(intent);
-        setFromIntent(intent);
-        createAbsListView();
-        setupBoardTitle();
-        if (mDrawerAdapter != null)
-            mDrawerAdapter.notifyDataSetInvalidated();
-        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/ q=" + query);
-    }
 
-    public void switchBoard(String boardCode, String query) { // for when we are already in this class
-        if (DEBUG) Log.i(TAG, "switchBoard begin /" + boardCode + "/ q=" + query);
-        this.boardCode = boardCode;
-        this.query = query;
-        //setupStaticBoards();
-        loadDrawerArray();
-        createAbsListView();
-        setupBoardTitle();
-        startLoaderAsync();
-        (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
-        checkNSFW();
-        mDrawerAdapter.notifyDataSetInvalidated();
-        if (DEBUG) Log.i(TAG, "switchBoard end /" + boardCode + "/ q=" + query);
-    }
-    */
     @Override
     protected void activityChangeAsync() {
         final ChanIdentifiedActivity activity = this;
@@ -86,6 +53,21 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
                 }
             }
         }).start();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (absListView != null)
+            viewPosition = absListView.getFirstVisiblePosition();
+        switchBoardInternal(boardCode, "");
+        //if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+
+        //createAbsListView();
+        //if (absListView != null && absListView instanceof GridView) {
+        //    ((GridView)absListView).setNumColumns(R.integer.BoardGridViewSmall_numColumns);
+        //}
+        // the views handle this already
     }
 
 }

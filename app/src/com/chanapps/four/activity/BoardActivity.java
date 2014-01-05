@@ -9,6 +9,7 @@ import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.database.MatrixCursor;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -84,7 +85,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected int checkedPos = -1;
     protected BoardSortType boardSortType;
-
+    protected int viewPosition = -1;
     /*
     public static void startDefaultActivity(Context from) {
         startActivity(from, ChanBoard.defaultBoardCode(from), "");
@@ -943,6 +944,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 hideEmptyText();
             }
             setProgress(false);
+
+            if (viewPosition >= 0) {
+                final int pos = viewPosition;
+                viewPosition = -1;
+                absListView.setSelection(pos);
+            }
         }
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
@@ -1969,5 +1976,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             startLoaderAsync();
         }
     };
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // the views handle this already
+    }
 
 }
