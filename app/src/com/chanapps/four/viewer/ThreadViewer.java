@@ -610,12 +610,14 @@ public class ThreadViewer {
         //    viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
         //if (hideNoImage(viewHolder, flags))
         //    return true;
+        displayHeaderImage(viewHolder, cursor, flags); // make sure it's always displayed
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
-        return displayHeaderImage(viewHolder, cursor, flags);
+        //return displayHeaderImage(viewHolder, cursor, flags);
+        return true;
     }
 
     static private boolean shouldLoadThumbs(Context context) {
