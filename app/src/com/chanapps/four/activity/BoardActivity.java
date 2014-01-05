@@ -488,6 +488,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         adapter = (gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0
                 ? new BoardGridSmallCursorAdapter(this, viewBinder)
                 : new BoardGridCursorAdapter(this, viewBinder);
+        adapter.setGroupBoardCode(boardCode);
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence constraint) {

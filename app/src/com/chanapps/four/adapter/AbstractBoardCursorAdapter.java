@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ResourceCursorAdapter;
+import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.*;
 import com.chanapps.four.fragment.ThreadFragment;
@@ -98,7 +99,8 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));
         final ChanThread thread = ChanFileStorage.loadThreadData(context, board, no);
-        return !ChanFileStorage.isThreadWatched(context, thread);
+        boolean isWatched = ChanFileStorage.isThreadWatched(context, thread);
+        return !isWatched;
     }
 
     protected void updateView(final View view, final Cursor cursor, final int pos) {

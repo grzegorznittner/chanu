@@ -911,6 +911,7 @@ public class ThreadActivity
             adapterBoardsTablet = new BoardGridNarrowTabletCursorAdapter(this, viewBinder);
         else
             adapterBoardsTablet = new BoardGridCursorAdapter(this, viewBinder);
+        adapterBoardsTablet.setGroupBoardCode(boardCode);
         boardGrid.setAdapter(adapterBoardsTablet);
         boardGrid.setOnItemClickListener(boardGridListener);
         boardGrid.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
