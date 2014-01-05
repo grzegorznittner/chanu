@@ -113,15 +113,6 @@ public class CleanUpService extends BaseChanService {
         targetCacheSize = maxCacheSize * 80 / 100;
         if (DEBUG) Log.i(TAG, "cache size current=" + (totalSize/ONE_MB_BYTES) + "MB target=" + (targetCacheSize/ONE_MB_BYTES) + "MB  max=" + (maxCacheSize / ONE_MB_BYTES) + "MB");
 
-        try {
-            WebView cacheView = new WebView(getApplicationContext());
-            if (cacheView != null)
-                cacheView.clearCache(true);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Exception clearing web view cache");
-        }
-
         /*
         for (int daysAgo = 6; daysAgo > 0; daysAgo--)
             cleanUp(daysAgo * ONE_DAY_MS, DeleteType.BY_DATE);

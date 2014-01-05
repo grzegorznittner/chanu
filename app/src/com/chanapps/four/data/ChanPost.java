@@ -71,7 +71,6 @@ public class ChanPost implements Serializable {
     public static final int FLAG_HAS_COUNTRY = 0x020;
     public static final int FLAG_IS_DEAD = 0x040;
     public static final int FLAG_IS_CLOSED = 0x080;
-    public static final int FLAG_IS_TITLE = 0x200;
     public static final int FLAG_IS_HEADER = 0x2000;
     public static final int FLAG_NO_EXPAND = 0x8000;
     public static final int FLAG_HAS_HEAD  = 0x10000;

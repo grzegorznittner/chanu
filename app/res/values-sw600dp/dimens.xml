@@ -310,12 +310,6 @@
     <dimen name="BoardGridImageSizeHalf">48dp</dimen>
     <dimen name="BoardGridImageSizeForFlag">52dp</dimen>
     <dimen name="BoardGridImageSizeHalfMinusSpacing">40dp</dimen>
-    <dimen name="BoardGridItemHeight">@dimen/BoardGridImageSize</dimen>
-    <dimen name="BoardGridItemHeight1">144dp</dimen>
-    <dimen name="BoardGridItemHeight2">192dp</dimen>
-    <dimen name="BoardGridItemHeight3">240dp</dimen>
-    <dimen name="BoardGridItemHeight4">288dp</dimen>
-    <dimen name="BoardGridItemHeight5">336dp</dimen>
     <dimen name="BoardGridItemOverflowIconMarginTop">64dp</dimen>
 
 

@@ -180,7 +180,11 @@
         <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
         <item name="android:drawSelectorOnTop">true</item>
         <item name="android:divider">@color/PaletteTransparent</item>
+        <item name="android:dividerHeight">0dp</item>
+        <!--
+        <item name="android:divider">@color/PaletteTransparent</item>
         <item name="android:dividerHeight">@dimen/BoardGridView.spacing</item>
+        -->
     </style>
 
     <style name="BoardGridViewSmall" parent="BoardGridView">

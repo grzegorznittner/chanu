@@ -1,11 +1,17 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:id="@+id/grid_item"
              android:layout_width="match_parent"
-             android:layout_height="@dimen/BoardGridItemHeight"
-             android:background="?themedLargeCardBackground"
-             android:foreground="@drawable/board_grid_selector_bg"
+             android:layout_height="@dimen/BoardGridItemHeightOuter"
         >
 
-    <include layout="@layout/board_grid_item_single"/>
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/BoardGridItemHeight"
+            android:background="?themedLargeCardBackground"
+            android:foreground="@drawable/board_grid_selector_bg"
+            >
+        <include layout="@layout/board_grid_item_single"/>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</FrameLayout>

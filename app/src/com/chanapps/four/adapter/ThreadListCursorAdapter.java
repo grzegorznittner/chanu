@@ -28,12 +28,10 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final String TAG = ThreadListCursorAdapter.class.getSimpleName();
     protected static final boolean DEBUG = false;
 
-    protected static final int TYPE_MAX_COUNT = 5;
+    protected static final int TYPE_MAX_COUNT = 3;
     protected static final int TYPE_HEADER = 0;
     protected static final int TYPE_IMAGE_ITEM = 1;
     protected static final int TYPE_TEXT_ITEM = 2;
-    protected static final int TYPE_TITLE = 3;
-    protected static final int TYPE_LINK = 4;
 
     protected boolean showContextMenu;
     protected Runnable onDismissCallback;
@@ -59,8 +57,6 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
         int tag;
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
             tag = TYPE_HEADER;
-        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
-            tag = TYPE_TITLE;
         else if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
             tag = TYPE_IMAGE_ITEM;
         else
@@ -73,12 +69,6 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
         switch(tag) {
             case TYPE_HEADER:
                 id = R.layout.thread_list_header;
-                break;
-            case TYPE_TITLE:
-                id = R.layout.thread_list_title;
-                break;
-            case TYPE_LINK:
-                id = R.layout.thread_list_link;
                 break;
             case TYPE_IMAGE_ITEM:
                 id = R.layout.thread_list_image_item;

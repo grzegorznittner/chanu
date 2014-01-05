@@ -358,14 +358,20 @@
     <dimen name="BoardGridImageSizeHalf">48dp</dimen>
     <dimen name="BoardGridImageSizeForFlag">52dp</dimen>
     <dimen name="BoardGridImageSizeHalfMinusSpacing">40dp</dimen>
-    <!--<dimen name="BoardGridTextHeightSmall">80dp</dimen>-->
-    <dimen name="BoardGridItemHeight">@dimen/BoardGridImageSize</dimen>
-    <dimen name="BoardGridItemHeight1">144dp</dimen>
-    <dimen name="BoardGridItemHeight2">192dp</dimen>
-    <dimen name="BoardGridItemHeight3">240dp</dimen>
-    <dimen name="BoardGridItemHeight4">288dp</dimen>
-    <dimen name="BoardGridItemHeight5">336dp</dimen>
     <dimen name="BoardGridItemOverflowIconMarginTop">64dp</dimen>
+    <!--<dimen name="BoardGridTextHeightSmall">80dp</dimen>-->
+    <dimen name="BoardGridItemHeight">96dp</dimen>
+    <dimen name="BoardGridItemHeightOuter">104dp</dimen>
+    <dimen name="BoardGridItemHeight1">144dp</dimen>
+    <dimen name="BoardGridItemHeightOuter1">152dp</dimen>
+    <dimen name="BoardGridItemHeight2">192dp</dimen>
+    <dimen name="BoardGridItemHeightOuter2">200dp</dimen>
+    <dimen name="BoardGridItemHeight3">240dp</dimen>
+    <dimen name="BoardGridItemHeightOuter3">248dp</dimen>
+    <dimen name="BoardGridItemHeight4">288dp</dimen>
+    <dimen name="BoardGridItemHeightOuter4">296dp</dimen>
+    <dimen name="BoardGridItemHeight5">336dp</dimen>
+    <dimen name="BoardGridItemHeightOuter5">344dp</dimen>
 
     <!-- prefs -->
     <dimen name="preference_item_padding_side">8dip</dimen>

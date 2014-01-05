@@ -123,8 +123,6 @@ public class ThreadViewer {
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) // we are on board list
             return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, null, null, 0, null);
-        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
-            return setTitleView(view, cursor);
         else
             return setListItemView(view, cursor, flags,
                     showContextMenu,
@@ -397,11 +395,6 @@ public class ThreadViewer {
         TextView tv = viewHolder.list_item_subject;
         if (tv == null)
             return false;
-        if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-            return true;
-        }
         if ((flags & ChanPost.FLAG_HAS_SUBJECT) == 0) {
             tv.setText("");
             tv.setVisibility(View.GONE);
@@ -940,17 +933,6 @@ public class ThreadViewer {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
         }
-        return true;
-    }
-
-    protected static boolean setTitleView(View view, Cursor cursor) {
-        ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
-        TextView tv = viewHolder.list_item_title;
-        if (tv == null)
-            return false;
-        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-        Spanned spanned = Html.fromHtml(text);
-        tv.setText(spanned);
         return true;
     }
 
