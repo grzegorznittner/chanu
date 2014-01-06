@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
@@ -145,6 +146,8 @@ public class ThreadImageExpander {
         WebView v = viewHolder.list_item_image_expanded_webview;
         if (v == null)
             return;
+        v.setVisibility(View.INVISIBLE);
+        v.setWebViewClient(webViewClient);
 
         float maxWidth = postW > 1 ? postW : 250;
         float maxHeight = postH > 1 ? postH: 250;
@@ -158,11 +161,17 @@ public class ThreadImageExpander {
         v.getSettings().setJavaScriptEnabled(false);
         v.getSettings().setBuiltInZoomControls(false);
         if (DEBUG) Log.i(TAG, "Loading anim gif webview url=" + postImageUrl);
-        v.loadUrl(WEBVIEW_BLANK_URL);
-        v.setVisibility(View.VISIBLE);
         displayClickEffect();
         v.loadUrl(postImageUrl);
     }
+
+    protected WebViewClient webViewClient = new WebViewClient() {
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            if (view != null)
+                view.setVisibility(View.VISIBLE);
+        }
+    };
 
     protected void displayImageView() {
         if (viewHolder.list_item_image_expanded_wrapper != null)

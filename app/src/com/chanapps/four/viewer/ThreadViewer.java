@@ -796,8 +796,7 @@ public class ThreadViewer {
         }
         else if (url != null && !url.isEmpty()) {
             if (DEBUG) Log.i(TAG, "setImage url=" + url);
-            iv.setImageDrawable(null);
-            iv.setVisibility(View.VISIBLE);
+            iv.setVisibility(View.GONE);
             imageLoader.displayImage(url, iv, thumbDisplayImageOptions, thumbLoadingListener);
         }
         else {
@@ -824,8 +823,10 @@ public class ThreadViewer {
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            if (view != null)
+            if (view != null) {
                 view.setTag(R.id.IMG_URL, imageUri);
+                view.setVisibility(View.VISIBLE);
+            }
         }
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
