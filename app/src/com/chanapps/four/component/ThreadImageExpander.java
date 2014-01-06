@@ -147,6 +147,7 @@ public class ThreadImageExpander {
         if (v == null)
             return;
         v.setVisibility(View.INVISIBLE);
+        v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
         v.setWebViewClient(webViewClient);
 
         float maxWidth = postW > 1 ? postW : 250;

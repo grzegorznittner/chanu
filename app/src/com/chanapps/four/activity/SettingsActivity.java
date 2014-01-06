@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
@@ -69,6 +70,13 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_BLOCKLIST_THREAD = "prefBlocklistThread";
     public static final String PREF_AUTOMATICALLY_MANAGE_WATCHLIST = "pref_automatically_manage_watchlist";
     public static final String PREF_USE_FAST_SCROLL = "pref_use_fast_scroll";
+
+    static public boolean shouldLoadThumbs(Context context) {
+        String autoloadType = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(PREF_AUTOLOAD_IMAGES,
+                        context.getString(R.string.pref_autoload_images_default_value));
+        return !(context.getString(R.string.pref_autoload_images_nothumbs_value).equals(autoloadType));
+    }
 
     public static enum DownloadImages {STANDARD, ALL_IN_ONE, PER_BOARD, PER_THREAD};
 

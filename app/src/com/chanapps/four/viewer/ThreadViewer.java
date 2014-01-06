@@ -590,52 +590,31 @@ public class ThreadViewer {
                                     ) {
         if (viewHolder.list_item_image_header == null)
             return false;
-        if (DEBUG) Log.i(TAG, "setHeaderImage()");
-        /*
-        if (!shouldLoadThumbs(viewHolder.list_item_image_header.getContext())) {
-            if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
-                bindThumbnailExpandTarget(viewHolder.list_item_image_expansion_target, thumbOnClickListener);
-            }
-            return hideImage(viewHolder, viewHolder.list_item_image_header, null);
-        }
-        */
-        //if (viewHolder.list_item_image_wrapper != null)
-        //    viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
-        //if (hideNoImage(viewHolder, flags))
-        //    return true;
+        if (!SettingsActivity.shouldLoadThumbs(viewHolder.list_item_image_header.getContext()))
+            return showExpandableThumb(viewHolder, viewHolder.list_item_image);
         displayHeaderImage(viewHolder, cursor, flags); // make sure it's always displayed
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
-        //return displayHeaderImage(viewHolder, cursor, flags);
         return true;
     }
 
-    static private boolean shouldLoadThumbs(Context context) {
-        String autoloadType = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
-                        context.getString(R.string.pref_autoload_images_default_value));
-        return !(context.getString(R.string.pref_autoload_images_nothumbs_value).equals(autoloadType));
+    static private boolean showExpandableThumb(ThreadViewHolder viewHolder, ImageView thumb) {
+        if (viewHolder.list_item_image_expanded_wrapper != null)
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
+        thumb.setVisibility(View.GONE);
+        return true;
     }
 
     static private boolean setImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
                                     View.OnClickListener expandedImageListener) {
         if (viewHolder.list_item_image == null)
             return false;
-        /*
-        if (!shouldLoadThumbs(viewHolder.list_item_image.getContext())) {
-            if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
-                bindThumbnailExpandTarget(viewHolder.list_item_image_expansion_target, thumbOnClickListener);
-            }
-            return hideImage(viewHolder, viewHolder.list_item_image, spinner);
-        }
-        */
-        //if (hideNoImage(viewHolder, flags))
-        //    return true;
         setSpinnerTarget(viewHolder.list_item_image_spinner, expandedImageListener);
-
+        if (!SettingsActivity.shouldLoadThumbs(viewHolder.list_item_image.getContext()))
+            return showExpandableThumb(viewHolder, viewHolder.list_item_image);
         // display thumb and also expand if available
         displayNonHeaderImage(viewHolder.list_item_image, viewHolder.list_item_image_expansion_target, cursor);
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))

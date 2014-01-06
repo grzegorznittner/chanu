@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.LetterSpacingTextView;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
@@ -218,6 +219,7 @@ public class BoardGridViewer {
             return true;
         }
         displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
+
         sizeImage(iv, viewHolder.grid_item, columnWidth, columnHeight, options);
         String url = imageUrl(iv, boardCode, groupBoardCode, cursor, flags, options);
         iv.setVisibility(View.VISIBLE);
@@ -226,7 +228,13 @@ public class BoardGridViewer {
     }
 
     protected static boolean displayImage(final ImageView iv, final String url) {
+        if (!SettingsActivity.shouldLoadThumbs(iv.getContext())) {
+            iv.setVisibility(View.GONE);
+            iv.setImageBitmap(null);
+            return true;
+        }
         if (url == null || url.isEmpty()) {
+            iv.setVisibility(View.GONE);
             iv.setImageDrawable(null);
             return false;
         }
@@ -238,6 +246,7 @@ public class BoardGridViewer {
             if (DEBUG) Log.i(TAG, "skipping url=" + url + " drawable=" + iv.getDrawable());
             return true;
         }
+        iv.setVisibility(View.GONE);
         imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         return true;
     }
@@ -463,6 +472,7 @@ public class BoardGridViewer {
                 ImageView iv = (ImageView)view;
                 iv.setTag(R.id.IMG_URL, imageUri);
                 iv.setTag(R.id.IMG_HASH, iv.getDrawable() == null ? null : iv.getDrawable().hashCode());
+                view.setVisibility(View.VISIBLE);
             }
         }
         @Override
@@ -484,14 +494,19 @@ public class BoardGridViewer {
     protected static boolean setCountryFlag(final ImageView iv, final String url) {
         if (iv == null)
             return false;
-        if (url != null && !url.isEmpty()) {
-            iv.setVisibility(View.VISIBLE);
-            imageLoader.displayImage(url, iv, displayImageOptions);
-        }
-        else {
+        if (!SettingsActivity.shouldLoadThumbs(iv.getContext())) {
             iv.setVisibility(View.GONE);
-            iv.setImageDrawable(null);
+            iv.setImageBitmap(null);
+            return true;
         }
+        if (url == null || url.isEmpty()) {
+            iv.setVisibility(View.GONE);
+            imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
+            return true;
+        }
+
+        iv.setVisibility(View.GONE);
+        iv.setImageDrawable(null);
         return true;
     }
 
@@ -814,11 +829,9 @@ public class BoardGridViewer {
             setSubject(subject, textComponents[0], textComponents[1], 0);
         if (countryFlag != null)
             setCountryFlag(countryFlag, post.lastReplyCountryFlagUrl(countryFlag.getContext(), boardCode));
-        if (thumb != null) {
-            boolean hasImage = displayImage(thumb, post.lastReplyThumbnailUrl(thumb.getContext(), boardCode));
-            thumb.setVisibility(hasImage ? View.VISIBLE : View.GONE);
-        }
+        if (thumb != null)
+            displayImage(thumb, post.lastReplyThumbnailUrl(thumb.getContext(), boardCode));
         return true;
     }
-    
+
 }
