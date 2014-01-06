@@ -222,7 +222,6 @@ public class BoardGridViewer {
 
         sizeImage(iv, viewHolder.grid_item, columnWidth, columnHeight, options);
         String url = imageUrl(iv, boardCode, groupBoardCode, cursor, flags, options);
-        iv.setVisibility(View.VISIBLE);
         displayImage(iv, url);
         return true;
     }
