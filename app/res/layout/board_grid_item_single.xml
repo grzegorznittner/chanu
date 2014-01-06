@@ -25,21 +25,6 @@
             android:maxLines="@integer/BoardGridView.maxLines"
             />
 
-    <TextView
-            android:id="@+id/grid_item_thread_subject_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/BoardGridView.spacing"
-            android:paddingRight="@dimen/BoardGridView.rightSpacing"
-            android:paddingTop="@dimen/BoardGridView.spacing"
-            android:paddingBottom="@dimen/BoardGridView.spacing"
-            android:layout_gravity="center"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:textColor="?themedCardSubjectTextColor"
-            android:textSize="@dimen/BoardGridSubjectHeader"
-            />
-
     <ImageView
             android:id="@+id/grid_item_country_flag"
             android:layout_marginTop="@dimen/BoardGridImageSizeForFlag"

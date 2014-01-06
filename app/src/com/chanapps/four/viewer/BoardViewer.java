@@ -43,7 +43,7 @@ public class BoardViewer {
     public static final int HIDE_LAST_REPLIES = 0x04;
 
     private static String TAG = BoardViewer.class.getSimpleName();
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static ImageLoader imageLoader;
@@ -200,11 +200,12 @@ public class BoardViewer {
 
     protected static boolean setImage(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode,
                                       int flags, int columnWidth, int columnHeight, int options, Typeface titleTypeface) {
+        if (DEBUG) Log.i(TAG, "setImage()");
         ImageView iv = viewHolder.grid_item_thread_thumb;
         if (iv == null)
             return false;
         boolean isWideHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & CATALOG_GRID) == 0;
-        if (DEBUG) Log.i(TAG, "setImage isWideHeader=" + isWideHeader + " no=" + cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO)));
+        if (DEBUG) Log.i(TAG, "setImage() isWideHeader=" + isWideHeader + " no=" + cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO)));
         if (isWideHeader) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
@@ -213,6 +214,7 @@ public class BoardViewer {
 
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         if ((options & ABBREV_BOARDS) > 0) {
+            if (DEBUG) Log.i(TAG, "setImage() abbrevBoards");
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
             displayBoardCode(viewHolder, cursor, boardCode, groupBoardCode, titleTypeface, flags, options);
@@ -227,6 +229,7 @@ public class BoardViewer {
     }
 
     protected static boolean displayImage(final ImageView iv, final String url) {
+        if (DEBUG) Log.i(TAG, "displayImage()");
         if (!SettingsActivity.shouldLoadThumbs(iv.getContext())) {
             iv.setVisibility(View.GONE);
             iv.setImageBitmap(null);
@@ -240,9 +243,9 @@ public class BoardViewer {
         int drawHash = iv.getDrawable() == null ? 0 : iv.getDrawable().hashCode();
         int tagHash = iv.getTag(R.id.IMG_HASH) == null ? 0 : (Integer)iv.getTag(R.id.IMG_HASH);
         String tagUrl = (String)iv.getTag(R.id.IMG_URL);
-        if (DEBUG) Log.i(TAG, "checking url=" + url + " tagUrl=" + tagUrl + " drawHash=" + drawHash + " tagHash=" + tagHash);
-        if (drawHash != 0 && drawHash == tagHash && url.equals(tagUrl)) {
-            if (DEBUG) Log.i(TAG, "skipping url=" + url + " drawable=" + iv.getDrawable());
+        if (DEBUG) Log.i(TAG, "displayImage() checking url=" + url + " tagUrl=" + tagUrl + " drawHash=" + drawHash + " tagHash=" + tagHash);
+        if (drawHash != 0 && drawHash == tagHash && tagUrl != null && !tagUrl.isEmpty() && url.equals(tagUrl)) {
+            if (DEBUG) Log.i(TAG, "displayImage() skipping url=" + url + " drawable=" + iv.getDrawable());
             return true;
         }
         iv.setVisibility(View.GONE);
@@ -258,6 +261,7 @@ public class BoardViewer {
                                            Typeface titleTypeface,
                                            int flags,
                                            int options) {
+        if (DEBUG) Log.i(TAG, "displayBoardCode");
         if ((options & ABBREV_BOARDS) > 0) {
             if (viewHolder.grid_item_board_code != null) {
                 viewHolder.grid_item_board_code.setText("");
@@ -319,7 +323,7 @@ public class BoardViewer {
                                      Cursor cursor, int flags, int options) {
         String url;
         long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-        if (DEBUG) Log.i(TAG, "setImage() /" + boardCode + "/" + threadNo);
+        if (DEBUG) Log.i(TAG, "imageUrl() /" + boardCode + "/" + threadNo);
         if (groupBoardCode != null
                 && !ChanBoard.isVirtualBoard(groupBoardCode)
                 && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
@@ -336,7 +340,7 @@ public class BoardViewer {
         //}
         else {
             url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
-            if (DEBUG) Log.i(TAG, "setImage() /" + boardCode + "/ url=" + url);
+            if (DEBUG) Log.i(TAG, "imageUrl() /" + boardCode + "/ url=" + url);
             int i = (Long.valueOf(threadNo % 3)).intValue();
             String defaultUrl = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
             iv.setTag(R.id.BOARD_GRID_VIEW_DEFAULT_DRAWABLE, defaultUrl);
@@ -510,25 +514,26 @@ public class BoardViewer {
     }
 
     protected static boolean setInfo(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode, int flags, int options) {
-        TextView tv = viewHolder.grid_item_thread_info;
-        TextView headerTv = viewHolder.grid_item_thread_info_header;
-        if (tv == null)
-            return false;
         if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0) {
-            tv.setText("");
-            if (headerTv != null)
-                headerTv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE))));
+            if (viewHolder.grid_item_thread_info != null)
+                viewHolder.grid_item_thread_info.setText("");
+            if (viewHolder.grid_item_thread_info_header != null)
+                viewHolder.grid_item_thread_info_header.setText(
+                        Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE))));
             return true;
         }
-        else {
-            if (headerTv != null)
-                headerTv.setText("");
-        }
 
+        if (viewHolder.grid_item_thread_info_header != null)
+            viewHolder.grid_item_thread_info_header.setText("");
+
+        TextView tv = viewHolder.grid_item_thread_info;
+        if (tv == null)
+            return false;
         if (cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE)).equals(groupBoardCode)) {
             tv.setText("");
             return true;
         }
+
         String s = (flags & ChanThread.THREAD_FLAG_BOARD) == 0
                 ? getBoardAbbrev(tv.getContext(), cursor, groupBoardCode)
                 : "";

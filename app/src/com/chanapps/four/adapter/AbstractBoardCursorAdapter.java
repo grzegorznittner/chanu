@@ -86,6 +86,10 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
             binder.setViewValue(view, cursor, 0);
     }
 
+    protected boolean isHeader(Cursor c) {
+        return (c.getInt(c.getColumnIndex(ChanThread.THREAD_FLAGS)) & ChanThread.THREAD_FLAG_HEADER) > 0;
+    }
+
     protected boolean isBlocked(Cursor c) {
         String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));

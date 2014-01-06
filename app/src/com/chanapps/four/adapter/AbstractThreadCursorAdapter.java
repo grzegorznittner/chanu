@@ -21,6 +21,12 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         super(context, viewBinder);
     }
 
+    @Override
+    protected boolean isHeader(Cursor c) {
+        return (c.getInt(c.getColumnIndex(ChanThread.POST_FLAGS)) & ChanThread.FLAG_IS_HEADER) > 0;
+    }
+
+    @Override
     protected boolean isBlocked(Cursor c) {
         return false; // post blocking not supported
         /*
@@ -32,5 +38,9 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         */
     }
 
+    @Override
+    protected boolean isOffWatchlist(Cursor c) {
+        return false;
+    }
 
 }
