@@ -54,7 +54,7 @@ public class PostReplyActivity
 {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final String BOARD_CODE = "postReplyBoardCode";
     public static final String THREAD_NO = "postReplyThreadNo";
@@ -638,6 +638,7 @@ public class PostReplyActivity
     @Override
     protected void onPause() {
         super.onPause();
+        saveUserFieldsToPrefs();
         if (DEBUG) Log.i(TAG, "onPause");
     }
 
@@ -668,6 +669,8 @@ public class PostReplyActivity
             ed.putString(SettingsActivity.PREF_USER_EMAIL, email);
         if (!password.isEmpty())
             ed.putString(SettingsActivity.PREF_USER_PASSWORD, password);
+        ed.apply();
+        if (DEBUG) Log.i(TAG, "saved name=" + name);
     }
 
     public void refresh() {
@@ -695,8 +698,10 @@ public class PostReplyActivity
         CharSequence existingName = nameText.getText();
         CharSequence existingEmail = emailText.getText();
         CharSequence existingPassword = passwordText.getText();
+        if (DEBUG) Log.i(TAG, "existingName=" + existingName);
         if (existingName == null || existingName.length() == 0) {
             String name = ensurePrefs().getString(SettingsActivity.PREF_USER_NAME, "");
+            if (DEBUG) Log.i(TAG, "prefName=" + name);
             if (!name.isEmpty())
                 nameText.setText(name);
         }
