@@ -643,6 +643,9 @@ public class ThreadViewer {
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
+        /* we haven't expanded the image at this point, so collapse if it's still being shown from previous view */
+        if (viewHolder.list_item_image_expanded_wrapper != null)
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
         return true;
     }
 
@@ -653,31 +656,34 @@ public class ThreadViewer {
         spinner.setVisibility(View.VISIBLE);
     }
 
-    static private void sizeImageView(ImageView imageView, Point imageSize) {
-        ViewGroup.LayoutParams params = imageView.getLayoutParams();
+    static private void sizeView(View view, Point imageSize) {
+        ViewGroup.LayoutParams params = view.getLayoutParams();
         if (params != null) {
             params.width = imageSize.x;
             params.height = imageSize.y;
         }
     }
 
-    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags) {
-        if (DEBUG) Log.w(TAG, "displayHeaderImage()");
+    static private Point sizeHeaderImage(Cursor cursor) {
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
+        int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0 || tn_w <= 0 || tn_h <= 0) { // don't size based on hidden image, size based on filler image
             tn_w = 250;
             tn_h = 250;
         }
         //if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
         //    return displayHeaderImageAtDefaultSize(iv, url);
-
         // scale image
         //if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
-        Point imageSize = sizeHeaderImage(tn_w, tn_h);
-        if (DEBUG) Log.w(TAG, "displayHeaderImage() sized=" + imageSize.x + "x" + imageSize.y);
-        sizeImageView(viewHolder.list_item_image_header, imageSize);
+       return sizeHeaderImage(tn_w, tn_h);
+    }
+
+    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags) {
+        Point imageSize = sizeHeaderImage(cursor);
+        sizeView(viewHolder.list_item_image_header, imageSize);
         ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
+        if (DEBUG) Log.i(TAG, "displayHeaderImage() size=" + imageSize.x + "x" + imageSize.y);
         //}
         //else {
         //    imageSize = sizeItemImage(tn_w, tn_h);
@@ -1103,9 +1109,15 @@ public class ThreadViewer {
                 viewHolder.list_item_image_expanded.setVisibility(View.GONE);
                 viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
                 viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
-                ViewGroup.LayoutParams params = viewHolder.list_item_image_wrapper.getLayoutParams();
-                if (params != null)
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+
+                ViewGroup.LayoutParams params = viewHolder.list_item_image_header.getLayoutParams();
+                if (params != null) {
+                    Point imageSize = new Point(params.width, params.height);
+                    sizeView(viewHolder.list_item_image_header, imageSize);
+                    ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
+                    if (DEBUG) Log.i(TAG, "sizedHeader " + params.width + "x" + params.height);
+                }
+
                 viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
                 return false;
             }
