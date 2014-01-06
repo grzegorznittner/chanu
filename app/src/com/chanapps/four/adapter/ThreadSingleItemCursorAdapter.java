@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThemeSelector;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.viewer.ThreadViewHolder;
 
 /**
@@ -16,16 +15,16 @@ import com.chanapps.four.viewer.ThreadViewHolder;
  * Time: 8:35 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadSingleItemListCursorAdapter extends ThreadListCursorAdapter {
+public class ThreadSingleItemCursorAdapter extends ThreadCursorAdapter {
 
-    protected static final String TAG = ThreadSingleItemListCursorAdapter.class.getSimpleName();
+    protected static final String TAG = ThreadSingleItemCursorAdapter.class.getSimpleName();
     protected static final boolean DEBUG = false;
 
-    protected ThreadSingleItemListCursorAdapter(Context context, ViewBinder viewBinder) {
+    protected ThreadSingleItemCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context, viewBinder);
     }
 
-    public ThreadSingleItemListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu, Runnable onDismissCallback) {
+    public ThreadSingleItemCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu, Runnable onDismissCallback) {
         super(context, viewBinder, showContextMenu, onDismissCallback);
     }
 

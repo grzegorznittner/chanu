@@ -2,12 +2,10 @@ package com.chanapps.four.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanPost;
@@ -23,9 +21,9 @@ import com.chanapps.four.viewer.ThreadViewer;
  * Time: 7:36 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
+public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
 
-    protected static final String TAG = ThreadListCursorAdapter.class.getSimpleName();
+    protected static final String TAG = ThreadCursorAdapter.class.getSimpleName();
     protected static final boolean DEBUG = false;
 
     protected static final int TYPE_MAX_COUNT = 3;
@@ -36,11 +34,11 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected boolean showContextMenu;
     protected Runnable onDismissCallback;
 
-    protected ThreadListCursorAdapter(Context context, ViewBinder viewBinder) {
+    protected ThreadCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context, viewBinder);
     }
 
-    public ThreadListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu, Runnable onDismissCallback) {
+    public ThreadCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu, Runnable onDismissCallback) {
         this(context, viewBinder);
         this.showContextMenu = showContextMenu;
         this.onDismissCallback = onDismissCallback;

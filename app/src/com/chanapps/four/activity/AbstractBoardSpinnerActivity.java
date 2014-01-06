@@ -1,31 +1,25 @@
 package com.chanapps.four.activity;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.*;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import com.chanapps.four.component.AdComponent;
-import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.component.SendFeedback;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.viewer.BoardGridViewer;
+import com.chanapps.four.viewer.BoardViewer;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.analytics.tracking.android.EasyTracker;
 
 abstract public class
         AbstractBoardSpinnerActivity
@@ -78,7 +72,7 @@ abstract public class
         }
         super.onCreate(bundle);
 
-        BoardGridViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
+        BoardViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
 
         NetworkProfileManager.instance().ensureInitialized(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar

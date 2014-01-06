@@ -26,8 +26,8 @@ import android.view.*;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.BoardGridCursorAdapter;
-import com.chanapps.four.adapter.BoardGridNarrowTabletCursorAdapter;
+import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.adapter.BoardNarrowTabletCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
@@ -37,7 +37,7 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.chanapps.four.viewer.BoardGridViewer;
+import com.chanapps.four.viewer.BoardViewer;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
@@ -908,9 +908,9 @@ public class ThreadActivity
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
         if (narrowTablet)
-            adapterBoardsTablet = new BoardGridNarrowTabletCursorAdapter(this, viewBinder);
+            adapterBoardsTablet = new BoardNarrowTabletCursorAdapter(this, viewBinder);
         else
-            adapterBoardsTablet = new BoardGridCursorAdapter(this, viewBinder);
+            adapterBoardsTablet = new BoardCursorAdapter(this, viewBinder);
         adapterBoardsTablet.setGroupBoardCode(boardCode);
         boardGrid.setAdapter(adapterBoardsTablet);
         boardGrid.setOnItemClickListener(boardGridListener);
@@ -996,8 +996,8 @@ public class ThreadActivity
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            int options = (wideTablet || narrowTablet) ? 0 : BoardGridViewer.CATALOG_GRID;
-            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, options, null);
+            int options = (wideTablet || narrowTablet) ? 0 : BoardViewer.CATALOG_GRID;
+            return BoardViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, options, null);
         }
     };
 

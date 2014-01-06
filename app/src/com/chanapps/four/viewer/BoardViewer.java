@@ -36,13 +36,13 @@ import org.xml.sax.XMLReader;
  * To change this template use File | Settings | File Templates.
  */
 @SuppressWarnings("unchecked")
-public class BoardGridViewer {
+public class BoardViewer {
 
     public static final int CATALOG_GRID = 0x01;
     public static final int ABBREV_BOARDS = 0x02;
     public static final int HIDE_LAST_REPLIES = 0x04;
 
-    private static String TAG = BoardGridViewer.class.getSimpleName();
+    private static String TAG = BoardViewer.class.getSimpleName();
     private static boolean DEBUG = false;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
@@ -77,7 +77,7 @@ public class BoardGridViewer {
 
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         boolean isDark = ThemeSelector.instance(view.getContext()).isDark();
-        BoardGridViewHolder viewHolder = (BoardGridViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        BoardViewHolder viewHolder = (BoardViewHolder)view.getTag(R.id.VIEW_HOLDER);
         setItem(viewHolder, overlayListener, overflowListener, flags, options);
         setSubject(viewHolder, cursor, flags);
         setSubjectLarge(viewHolder, cursor, flags, subjectTypeface);
@@ -90,7 +90,7 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setItem(BoardGridViewHolder viewHolder,
+    protected static boolean setItem(BoardViewHolder viewHolder,
                                      View.OnClickListener overlayListener,
                                      View.OnClickListener overflowListener,
                                      int flags,
@@ -144,7 +144,7 @@ public class BoardGridViewer {
         return threadAbbrev;
     }
 
-    protected static boolean setSubject(final BoardGridViewHolder viewHolder, final Cursor cursor, final int flags) {
+    protected static boolean setSubject(final BoardViewHolder viewHolder, final Cursor cursor, final int flags) {
         return setSubject(viewHolder.grid_item_thread_subject,
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT)),
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT)),
@@ -175,7 +175,7 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setSubjectLarge(BoardGridViewHolder viewHolder, Cursor cursor, int flags, Typeface subjectTypeface) {
+    protected static boolean setSubjectLarge(BoardViewHolder viewHolder, Cursor cursor, int flags, Typeface subjectTypeface) {
         TextView tv = viewHolder.grid_item_thread_subject_header;
         if (tv == null)
             return false;
@@ -198,7 +198,7 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setImage(BoardGridViewHolder viewHolder, Cursor cursor, String groupBoardCode,
+    protected static boolean setImage(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode,
                                       int flags, int columnWidth, int columnHeight, int options, Typeface titleTypeface) {
         ImageView iv = viewHolder.grid_item_thread_thumb;
         if (iv == null)
@@ -252,7 +252,7 @@ public class BoardGridViewer {
     
     protected static final float BOARD_CODE_LETTER_SPACING = 0.65f;
 
-    protected static void displayBoardCode(BoardGridViewHolder viewHolder,
+    protected static void displayBoardCode(BoardViewHolder viewHolder,
                                            Cursor cursor,
                                            String boardCode, String groupBoardCode,
                                            Typeface titleTypeface,
@@ -484,7 +484,7 @@ public class BoardGridViewer {
         }
     };
 
-    protected static boolean setCountryFlag(BoardGridViewHolder viewHolder, Cursor cursor) {
+    protected static boolean setCountryFlag(BoardViewHolder viewHolder, Cursor cursor) {
         ImageView iv = viewHolder.grid_item_country_flag;
         String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL));
         return setCountryFlag(iv, url);
@@ -509,7 +509,7 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setInfo(BoardGridViewHolder viewHolder, Cursor cursor, String groupBoardCode, int flags, int options) {
+    protected static boolean setInfo(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode, int flags, int options) {
         TextView tv = viewHolder.grid_item_thread_info;
         TextView headerTv = viewHolder.grid_item_thread_info_header;
         if (tv == null)
@@ -544,7 +544,7 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setNumReplies(BoardGridViewHolder viewHolder, Cursor cursor, String groupBoardCode,
+    protected static boolean setNumReplies(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode,
                                            int flags, int options) {
         TextView numReplies = viewHolder.grid_item_num_replies_text;
         TextView numImages = viewHolder.grid_item_num_images_text;
@@ -647,7 +647,7 @@ public class BoardGridViewer {
         v.setAlpha(a);
     }
 
-    protected static boolean setIcons(BoardGridViewHolder viewHolder, int flags, boolean isDark) {
+    protected static boolean setIcons(BoardViewHolder viewHolder, int flags, boolean isDark) {
         int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
         if (viewHolder.grid_item_dead_icon != null) {
             viewHolder.grid_item_dead_icon.setVisibility((flags & ChanThread.THREAD_FLAG_DEAD) > 0 ? View.VISIBLE : View.GONE);
@@ -749,7 +749,7 @@ public class BoardGridViewer {
         }
     };
 
-    protected static void setLastReplies(final BoardGridViewHolder viewHolder, final Cursor cursor, final int options) {
+    protected static void setLastReplies(final BoardViewHolder viewHolder, final Cursor cursor, final int options) {
         boolean[] isSet = new boolean[5];
         try {
             if ((options & CATALOG_GRID) > 0)

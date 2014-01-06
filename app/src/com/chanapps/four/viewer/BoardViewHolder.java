@@ -12,7 +12,7 @@ import com.chanapps.four.activity.R;
  * Time: 12:00 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BoardGridViewHolder {
+public class BoardViewHolder {
 
     public ViewGroup grid_item;
     public ViewGroup grid_item_bottom_frame;
@@ -55,7 +55,7 @@ public class BoardGridViewHolder {
     public ImageView grid_item_country_flag_5;
 
 
-    public BoardGridViewHolder(View item) {
+    public BoardViewHolder(View item) {
         grid_item = (ViewGroup)item;
         grid_item_bottom_frame = (ViewGroup)item.findViewById(R.id.grid_item_bottom_frame);
         grid_item_thumb_frame = (ViewGroup)item.findViewById(R.id.grid_item_thumb_frame);

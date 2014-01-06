@@ -8,12 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.viewer.BoardGridViewHolder;
-import com.chanapps.four.viewer.ThreadViewHolder;
-
-import java.util.ArrayList;
+import com.chanapps.four.viewer.BoardViewHolder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,7 +18,7 @@ import java.util.ArrayList;
  * Time: 6:56 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
+public class BoardCursorAdapter extends AbstractBoardCursorAdapter {
 
     protected static final int TYPE_GRID_ITEM = 0;
     protected static final int TYPE_GRID_ITEM_1 = 1;
@@ -36,7 +32,7 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
 
     protected boolean hideLastReplies;
 
-    public BoardGridCursorAdapter(Context context, ViewBinder viewBinder) {
+    public BoardCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context, viewBinder);
         hideLastReplies = PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, false);
@@ -103,7 +99,7 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
     protected View newView(ViewGroup parent, int tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
         View v = mInflater.inflate(getItemViewLayout(position), parent, false);
-        BoardGridViewHolder viewHolder = new BoardGridViewHolder(v);
+        BoardViewHolder viewHolder = new BoardViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);
         return v;

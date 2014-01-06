@@ -3,14 +3,12 @@ package com.chanapps.four.activity;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.database.MatrixCursor;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -31,8 +29,8 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.BoardGridCursorAdapter;
-import com.chanapps.four.adapter.BoardGridSmallCursorAdapter;
+import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.adapter.BoardSmallCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
@@ -42,7 +40,7 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.chanapps.four.viewer.BoardGridViewer;
+import com.chanapps.four.viewer.BoardViewer;
 import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
@@ -309,23 +307,23 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected void setSmallGridEnabled(boolean enabled) {
         if (enabled)
-            gridViewOptions |= BoardGridViewer.CATALOG_GRID;
+            gridViewOptions |= BoardViewer.CATALOG_GRID;
         else
-            gridViewOptions &= ~BoardGridViewer.CATALOG_GRID;
+            gridViewOptions &= ~BoardViewer.CATALOG_GRID;
     }
 
     protected void setAbbrevBoardsEnabled(boolean enabled) {
         if (enabled)
-            gridViewOptions |= BoardGridViewer.ABBREV_BOARDS;
+            gridViewOptions |= BoardViewer.ABBREV_BOARDS;
         else
-            gridViewOptions &= ~BoardGridViewer.ABBREV_BOARDS;
+            gridViewOptions &= ~BoardViewer.ABBREV_BOARDS;
     }
 
     protected void setHideLastRepliesEnabled(boolean enabled) {
         if (enabled)
-            gridViewOptions |= BoardGridViewer.HIDE_LAST_REPLIES;
+            gridViewOptions |= BoardViewer.HIDE_LAST_REPLIES;
         else
-            gridViewOptions &= ~BoardGridViewer.HIDE_LAST_REPLIES;
+            gridViewOptions &= ~BoardViewer.HIDE_LAST_REPLIES;
     }
 
     protected boolean getBoolPref(String preference) {
@@ -444,9 +442,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     /*
     protected void forceGridViewOptions() {
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
-            gridViewOptions &= ~BoardGridViewer.CATALOG_GRID; // force watchlist to full size
+            gridViewOptions &= ~BoardViewer.CATALOG_GRID; // force watchlist to full size
         else  if (ChanBoard.isVirtualBoard(boardCode))
-            gridViewOptions |= BoardGridViewer.CATALOG_GRID; // force meta boards to small
+            gridViewOptions |= BoardViewer.CATALOG_GRID; // force meta boards to small
     }
     */
     protected void createAbsListView() {
@@ -456,7 +454,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         initGridViewOptions();
         //forceGridViewOptions();
         int layoutId;
-        if ((gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0)
+        if ((gridViewOptions & BoardViewer.CATALOG_GRID) > 0)
             layoutId = R.layout.board_grid_layout_small;
         else if (query != null && !query.isEmpty())
             layoutId = R.layout.board_grid_layout_search;
@@ -468,7 +466,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         //    layoutId = R.layout.board_grid_layout_no_title;
         layout = getLayoutInflater().inflate(layoutId, null);
         contentFrame.addView(layout);
-        //int numColumns = (gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0
+        //int numColumns = (gridViewOptions & BoardViewer.CATALOG_GRID) > 0
         //        ? R.integer.BoardGridViewSmall_numColumns
         //        : R.integer.BoardGridViewSmall_numColumns;
 //                : R.integer.BoardGridView_numColumns;
@@ -476,9 +474,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 getResources().getInteger(R.integer.BoardGridViewSmall_numColumns),
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
-        adapter = (gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0
-                ? new BoardGridSmallCursorAdapter(this, viewBinder)
-                : new BoardGridCursorAdapter(this, viewBinder);
+        adapter = (gridViewOptions & BoardViewer.CATALOG_GRID) > 0
+                ? new BoardSmallCursorAdapter(this, viewBinder)
+                : new BoardCursorAdapter(this, viewBinder);
         adapter.setGroupBoardCode(boardCode);
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
@@ -621,7 +619,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             mPullToRefreshAttacher = new PullToRefreshAttacher(this, options);
         }
         mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
-        //if ((gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0) {
+        //if ((gridViewOptions & BoardViewer.CATALOG_GRID) > 0) {
         //    mPullToRefreshAttacher = null; // doesn't work well with grids
         //}
         //else
@@ -885,11 +883,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             //OnClickListener overflow = ChanBoard.META_BOARD_CODE.equals(boardCode) ? null : overflowListener;
             //OnClickListener overflow = overflowListener;
-            //return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
+            //return BoardViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
             //        overlayListener, overflow, gridViewOptions, null);
-           // return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
+           // return BoardViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
            //         overlayListener, overflowListener, gridViewOptions, null);
-            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
+            return BoardViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
                     null, overflowListener, gridViewOptions, null);
         }
     };
@@ -1228,8 +1226,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.board_rules_menu).setVisible(true);
             menu.findItem(R.id.global_rules_menu).setVisible(false);
             //menu.findItem(R.id.web_menu).setVisible(false);
-            menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardGridViewer.CATALOG_GRID) == 0);
-            menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardGridViewer.CATALOG_GRID) > 0);
+            menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardViewer.CATALOG_GRID) == 0);
+            menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardViewer.CATALOG_GRID) > 0);
             menu.findItem(R.id.sort_order_menu).setVisible(true);
             setHiddenThreadsMenuAsync(menu);
             setFavoritesMenuAsync(menu);
@@ -1862,9 +1860,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     : false;
             if (DEBUG) Log.i(TAG, "onUpdateAbbrevReceived /" + boardCode + "/ received=/" + receivedAbbrevEnable + "/");
             if (receivedAbbrevEnable)
-                gridViewOptions |= BoardGridViewer.ABBREV_BOARDS;
+                gridViewOptions |= BoardViewer.ABBREV_BOARDS;
             else
-                gridViewOptions &= ~BoardGridViewer.ABBREV_BOARDS;
+                gridViewOptions &= ~BoardViewer.ABBREV_BOARDS;
             final Handler gridHandler = handler != null ? handler : new Handler();
             if (gridHandler != null)
                 gridHandler.post(refreshAbsListView);
@@ -1901,9 +1899,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     : false;
             if (DEBUG) Log.i(TAG, "onUpdateCatalogReceived /" + boardCode + "/ received=/" + receivedcatalogEnable + "/");
             if (receivedcatalogEnable)
-                gridViewOptions |= BoardGridViewer.CATALOG_GRID;
+                gridViewOptions |= BoardViewer.CATALOG_GRID;
             else
-                gridViewOptions &= ~BoardGridViewer.CATALOG_GRID;
+                gridViewOptions &= ~BoardViewer.CATALOG_GRID;
             final Handler gridHandler = handler != null ? handler : new Handler();
             if (gridHandler != null)
                 gridHandler.post(refreshAbsListView);
@@ -1919,9 +1917,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     : false;
             if (DEBUG) Log.i(TAG, "onUpdateHideLastRepliesReceived /" + boardCode + "/ received=/" + receivedEnable + "/");
             if (receivedEnable)
-                gridViewOptions |= BoardGridViewer.HIDE_LAST_REPLIES;
+                gridViewOptions |= BoardViewer.HIDE_LAST_REPLIES;
             else
-                gridViewOptions &= ~BoardGridViewer.HIDE_LAST_REPLIES;
+                gridViewOptions &= ~BoardViewer.HIDE_LAST_REPLIES;
             final Handler gridHandler = handler != null ? handler : new Handler();
             if (gridHandler != null)
                 gridHandler.post(refreshAbsListView);

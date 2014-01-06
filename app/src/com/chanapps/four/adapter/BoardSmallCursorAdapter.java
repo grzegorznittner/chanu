@@ -5,8 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.viewer.BoardGridViewHolder;
+import com.chanapps.four.viewer.BoardViewHolder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,12 +14,12 @@ import com.chanapps.four.viewer.BoardGridViewHolder;
  * Time: 6:56 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BoardGridNarrowTabletCursorAdapter extends AbstractBoardCursorAdapter {
+public class BoardSmallCursorAdapter extends AbstractBoardCursorAdapter {
 
     protected static final int TYPE_GRID_ITEM = 0;
     protected static final int TYPE_MAX_COUNT = 1;
 
-    public BoardGridNarrowTabletCursorAdapter(Context context, ViewBinder viewBinder) {
+    public BoardSmallCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context, viewBinder);
     }
 
@@ -32,8 +31,8 @@ public class BoardGridNarrowTabletCursorAdapter extends AbstractBoardCursorAdapt
     @Override
     protected View newView(ViewGroup parent, int tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        View v = mInflater.inflate(R.layout.board_grid_item_narrow_tablet, parent, false);
-        BoardGridViewHolder viewHolder = new BoardGridViewHolder(v);
+        View v = mInflater.inflate(R.layout.board_grid_item_small, parent, false);
+        BoardViewHolder viewHolder = new BoardViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);
         return v;

@@ -5,7 +5,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -22,7 +21,7 @@ import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.ThreadListCursorAdapter;
+import com.chanapps.four.adapter.ThreadCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -573,7 +572,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected void createAbsListView() {
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
         absListView = (ListView) layout.findViewById(R.id.thread_list_view);
-        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder, true, null);
+        adapter = new ThreadCursorAdapter(getActivity(), viewBinder, true, null);
         absListView.setAdapter(adapter);
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         absListView.setOnCreateContextMenuListener(this);

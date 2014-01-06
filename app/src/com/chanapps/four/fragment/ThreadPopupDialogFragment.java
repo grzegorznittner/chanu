@@ -2,27 +2,23 @@ package com.chanapps.four.fragment;
 
 import android.app.*;
 import android.support.v4.app.LoaderManager;
-import android.content.DialogInterface;
 import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.*;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.*;
-import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.ThreadListCursorAdapter;
-import com.chanapps.four.adapter.ThreadSingleItemListCursorAdapter;
+import com.chanapps.four.adapter.ThreadCursorAdapter;
+import com.chanapps.four.adapter.ThreadSingleItemCursorAdapter;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.ChanBoard;
@@ -295,7 +291,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
 
     protected void createAdapter() {
         if (popupType == PopupType.SELF) {
-            adapter = new ThreadSingleItemListCursorAdapter(getActivity(), viewBinder, true, new Runnable() {
+            adapter = new ThreadSingleItemCursorAdapter(getActivity(), viewBinder, true, new Runnable() {
                 @Override
                 public void run() {
                     dismiss();
@@ -303,7 +299,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             });
         }
         else {
-        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder, true, new Runnable() {
+        adapter = new ThreadCursorAdapter(getActivity(), viewBinder, true, new Runnable() {
             @Override
             public void run() {
                 dismiss();
