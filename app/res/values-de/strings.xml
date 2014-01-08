@@ -21,7 +21,7 @@
   <string name="blocklist_add_id_confirm">%1$s %2$s %3$s zur Blocklist hinzufügen?</string>
   <string name="blocklist_select_type">Wähle die Art der Blockierung</string>
   <string name="blocklist_no_types_found">Kein blockierbarer Tripcode, Name, E-Mail oder ID gefunden</string>
-  <string name="blocklist_empty">Die Blockliste ist leer, durchsuche einen Thread und wähle einen Tripcode, Name, E-Mail oder ID, die blockiert werden soll</string>
+  <string name="blocklist_empty">Die Blockliste ist leer</string>
   <string name="delete_post_title">Beitrag löschen</string>
   <string name="delete_post_title_confirm">Passwort zum Löschen</string>
   <string name="delete_post_password_hint">Passwort für den Beitrag</string>

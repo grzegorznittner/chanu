@@ -21,7 +21,7 @@
   <string name="blocklist_add_id_confirm">¿Añadir %1$s%2$s %3$s a la lista de bloqueados?</string>
   <string name="blocklist_select_type">Seleccione el tipo de bloque</string>
   <string name="blocklist_no_types_found">Código de desconexión bloqueable, nombre, correo electrónico o id no encontrado</string>
-  <string name="blocklist_empty">La lista de bloqueados esta vacía, visite los hilos para seleccionar el tripcode, el nombre, el email o el código a bloquear</string>
+  <string name="blocklist_empty">La lista de bloqueados esta vacía</string>
   <string name="delete_post_title">Borrar Publicación</string>
   <string name="delete_post_title_confirm">Contraseña para borrar</string>
   <string name="delete_post_password_hint">Contraseña para publicar</string>

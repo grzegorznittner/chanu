@@ -72,12 +72,14 @@ public class BlocklistViewAllDialogFragment
         setStyle(STYLE_NO_TITLE, 0);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.blocklist_items_dialog_fragment, null);
+        View empty = layout.findViewById(R.id.empty);
         listView = (EnhancedListView)layout.findViewById(R.id.items);
         listView.setOnItemClickListener(itemClickListener);
         listView.setDismissCallback(dismissCallback);
         listView.enableSwipeToDismiss();
         listView.setRequireTouchBeforeDismiss(false);
         listView.setUndoHideDelay(UNDO_HIDE_DELAY_MS);
+        listView.setEmptyView(empty);
         TextView titleView = (TextView)layout.findViewById(R.id.title);
         titleView.setText(R.string.blocklist_title);
 

@@ -27,8 +27,7 @@
   <string name="blocklist_select_type">ブロックのタイプを選択</string>
   <string name="blocklist_no_types_found">ブロックできるトリップコード、名前、メールアドレス、IDがみつかりません
 </string>
-  <string name="blocklist_empty">ブロックリストには何もありません。スレッドを開いてブロックしたいトリップコード、名前、メールアドレス、またはIDをを選択し、ブロックします
-</string>
+  <string name="blocklist_empty">ブロックリストには何もありません</string>
   <string name="delete_post_title">ポストを削除</string>
   <string name="delete_post_title_confirm">削除用パスワード</string>
   <string name="delete_post_password_hint">ポストのパスワード</string>

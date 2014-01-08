@@ -23,7 +23,7 @@
     <string name="blocklist_add_id_confirm">Adaugă %1$s%2$s %3$s în lista de blocare?</string>
     <string name="blocklist_select_type">Selectează tip de blocare</string>
     <string name="blocklist_no_types_found">Nici un cod de blocare, nume, email sau id găsit</string>
-    <string name="blocklist_empty">Lista de blocare este goală. Vizitează fire de discuție pentru a selecta cod de blocare, nume, email sau id pentru blocare</string>
+    <string name="blocklist_empty">Lista de blocare este goală</string>
 
     <!-- delete post -->
     <string name="delete_post_title">Șterge postare</string>

@@ -47,18 +47,22 @@ public class ChanBlocklist {
     private static void initBlocklist(Context context) {
         if (blocklist == null)
             blocklist = new HashMap<BlockType, Set<String>>();
-        blocklist.clear();
-        for (int i = 0; i < BlockType.values().length; i++) {
-            BlockType blockType = BlockType.values()[i];
-            Set<String> savedBlocks = PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .getStringSet(blockType.blockPref(), new HashSet<String>());
-            // copy to avoid android getStringSet bug
-            Set<String> blocks = new HashSet<String>(savedBlocks.size());
-            blocks.addAll(savedBlocks);
-            blocklist.put(blockType, blocks);
+        else
+            return;
+        synchronized (blocklist) {
+            blocklist.clear();
+            for (int i = 0; i < BlockType.values().length; i++) {
+                BlockType blockType = BlockType.values()[i];
+                Set<String> savedBlocks = PreferenceManager
+                        .getDefaultSharedPreferences(context)
+                        .getStringSet(blockType.blockPref(), new HashSet<String>());
+                // copy to avoid android getStringSet bug
+                Set<String> blocks = new HashSet<String>(savedBlocks.size());
+                blocks.addAll(savedBlocks);
+                blocklist.put(blockType, blocks);
+            }
+            compileTestPattern();
         }
-        compileTestPattern();
     }
 
     public static Map<BlockType, Set<String>> getBlocklist(Context context) {
@@ -191,6 +195,8 @@ public class ChanBlocklist {
                 ;
         if (simpleMatch)
             return true;
+        if (testPattern == null)
+            return false;
         if (post.sub != null && testPattern.matcher(post.sub).find())
             return true;
         if (post.com != null && testPattern.matcher(post.com).find())
@@ -207,13 +213,24 @@ public class ChanBlocklist {
 
     private static void compileTestPattern() {
         Set<String> blocks = blocklist.get(BlockType.TEXT);
-        String regex = "(";
-        for (String block : blocks) {
-            if (regex.length() > 1)
-                regex += "|";
-            regex += block.replaceAll("[()|]", "");
+        if (blocks.isEmpty()) {
+            testPattern = null;
+            return;
         }
-        regex += ")";
+        List<String> regexList = new ArrayList<String>();
+        for (String block : blocks) {
+            if (block == null || block.isEmpty())
+                continue;
+            String regex = block.replaceAll("[()|]", "");
+            if (regex.isEmpty())
+                continue;
+            regexList.add(regex);
+        }
+        if (regexList.isEmpty()) {
+            testPattern = null;
+            return;
+        }
+        String regex = "(" + StringUtils.join(regexList, "|") + ")";
         testPattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
     }
 

@@ -22,7 +22,7 @@
   <string name="blocklist_add_id_confirm">Adicionar %1$s%2$s %3$s à lista de bloqueios?</string>
   <string name="blocklist_select_type">Selecione o tipo de bloqueio</string>
   <string name="blocklist_no_types_found">Nenhum tripcode, nome, e-mail ou id bloqueável foram encontrados</string>
-  <string name="blocklist_empty">A lista de bloqueio está vazia, visite tópicos para selecionar tripcode, nome, e-mail ou id para bloquear</string>
+  <string name="blocklist_empty">A lista de bloqueio está vazia</string>
   <string name="delete_post_title">Excluir post</string>
   <string name="delete_post_title_confirm">Senha para excluir</string>
   <string name="delete_post_password_hint">Senha para postar</string>

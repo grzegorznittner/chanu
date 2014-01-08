@@ -305,12 +305,26 @@
     <dimen name="BoardGridView.rightSpacing">32dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.quarterSpacing">4dp</dimen>
+
     <dimen name="BoardGridImageSize">96dp</dimen>
     <dimen name="BoardGridImageSizeDouble">192dp</dimen>
     <dimen name="BoardGridImageSizeHalf">48dp</dimen>
     <dimen name="BoardGridImageSizeForFlag">52dp</dimen>
     <dimen name="BoardGridImageSizeHalfMinusSpacing">40dp</dimen>
     <dimen name="BoardGridItemOverflowIconMarginTop">64dp</dimen>
+    <!--<dimen name="BoardGridTextHeightSmall">80dp</dimen>-->
+    <dimen name="BoardGridItemHeight">96dp</dimen>
+    <dimen name="BoardGridItemHeightOuter">112dp</dimen>
+    <dimen name="BoardGridItemHeight1">144dp</dimen>
+    <dimen name="BoardGridItemHeightOuter1">160dp</dimen>
+    <dimen name="BoardGridItemHeight2">192dp</dimen>
+    <dimen name="BoardGridItemHeightOuter2">208dp</dimen>
+    <dimen name="BoardGridItemHeight3">240dp</dimen>
+    <dimen name="BoardGridItemHeightOuter3">256dp</dimen>
+    <dimen name="BoardGridItemHeight4">288dp</dimen>
+    <dimen name="BoardGridItemHeightOuter4">304dp</dimen>
+    <dimen name="BoardGridItemHeight5">336dp</dimen>
+    <dimen name="BoardGridItemHeightOuter5">352dp</dimen>
 
 
     <integer name="BoardGridView.numColumns">1</integer>
@@ -337,9 +351,9 @@
     <dimen name="PostReplyButton.marginRight">16dp</dimen>
     <dimen name="PostReplyButton.marginBottom">8dp</dimen>
 
-    <dimen name="ThreadListItemReplyWrap_marginRight">@dimen/ThreadListHeader_flowsize</dimen>
-    <dimen name="ThreadListItemReplyNum_marginLeft">@dimen/ThreadListHeader_flowsize</dimen>
-    <dimen name="ThreadListItemBarOverflow_layout_width">@dimen/ThreadListHeader_flowsize</dimen>
+    <dimen name="ThreadListItemReplyWrap_marginRight">32dp</dimen>
+    <dimen name="ThreadListItemReplyNum_marginLeft">56dp</dimen>
+    <dimen name="ThreadListItemBarOverflow_layout_width">32dp</dimen>
 
     <string name="list_item_ago_date_separator">~</string>
 

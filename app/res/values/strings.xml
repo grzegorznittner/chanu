@@ -22,7 +22,7 @@
     <string name="blocklist_add_id_confirm">Add %1$s%2$s %3$s to blocklist?</string>
     <string name="blocklist_select_type">Select Block Type</string>
     <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
-    <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block</string>
+    <string name="blocklist_empty">Blocklist is empty</string>
 
     <!-- delete post -->
     <string name="delete_post_title">Delete Post</string>

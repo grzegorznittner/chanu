@@ -331,9 +331,9 @@
     <dimen name="PostReplyButton.marginRight">32dp</dimen>
     <dimen name="PostReplyButton.marginBottom">32dp</dimen>
 
-    <dimen name="ThreadListItemReplyWrap_marginRight">@dimen/ThreadListHeader_flowsize</dimen>
-    <dimen name="ThreadListItemReplyNum_marginLeft">@dimen/ThreadListHeader_flowsize</dimen>
-    <dimen name="ThreadListItemBarOverflow_layout_width">@dimen/ThreadListHeader_flowsize</dimen>
+    <dimen name="ThreadListItemReplyWrap_marginRight">32dp</dimen>
+    <dimen name="ThreadListItemReplyNum_marginLeft">56dp</dimen>
+    <dimen name="ThreadListItemBarOverflow_layout_width">32dp</dimen>
 
     <string name="list_item_ago_date_separator">~</string>
 

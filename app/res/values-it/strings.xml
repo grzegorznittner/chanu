@@ -21,7 +21,7 @@
   <string name="blocklist_add_id_confirm">Vuoi aggiungere %1$s%2$s %3$s alla lista dei blocchi?</string>
   <string name="blocklist_select_type">Seleziona il Tipo di Blocco</string>
   <string name="blocklist_no_types_found">Non sono stati trovati codici viaggio bloccabili, nome, email o id</string>
-  <string name="blocklist_empty">L\'elenco dei blocchi è vuoto, visita le discussioni per selezionare TripCode, nome, email o id da bloccare</string>
+  <string name="blocklist_empty">L\'elenco dei blocchi è vuoto</string>
   <string name="delete_post_title">Messaggio Cancellato</string>
   <string name="delete_post_title_confirm">Password per Cancellare</string>
   <string name="delete_post_password_hint">Password per inserire il Messaggio</string>

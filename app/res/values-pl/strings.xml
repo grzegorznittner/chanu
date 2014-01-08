@@ -22,7 +22,7 @@
   <string name="blocklist_add_id_confirm">Czy dodać %1$s%2$s %3$s do zablokowanych?</string>
   <string name="blocklist_select_type">Wybierz rodzaj blokady</string>
   <string name="blocklist_no_types_found">Nie znaleziono tripcode, nazwy, email lub id do zablokowania</string>
-  <string name="blocklist_empty">List blokad jest pusta, odwiedź wątki i wybierz tripcode, nazwę, email lub id do zablokowania</string>
+  <string name="blocklist_empty">List blokad jest pusta</string>
   <string name="delete_post_title">Usuń wpis</string>
   <string name="delete_post_title_confirm">Hasło do usunięcia wpisu</string>
   <string name="delete_post_password_hint">Hasło dla wpisu</string>
