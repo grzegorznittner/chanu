@@ -592,12 +592,16 @@ public class ThreadViewer {
             return false;
         if (!SettingsActivity.shouldLoadThumbs(viewHolder.list_item_image_header.getContext()))
             return showExpandableThumb(viewHolder, viewHolder.list_item_image);
-        displayHeaderImage(viewHolder, cursor, flags); // make sure it's always displayed
-        if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
+        if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener)) {
+            displayHeaderImage(viewHolder, cursor, flags, false); // make sure it's always displayed
             return true;
+        }
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
-        if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
+        if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener)) {
+            displayHeaderImage(viewHolder, cursor, flags, false); // make sure it's always displayed
             return true;
+        }
+        displayHeaderImage(viewHolder, cursor, flags, true); // make sure it's always displayed
         return true;
     }
 
@@ -658,7 +662,7 @@ public class ThreadViewer {
        return sizeHeaderImage(tn_w, tn_h);
     }
 
-    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags) {
+    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags, boolean visible) {
         Point imageSize = sizeHeaderImage(cursor);
         sizeView(viewHolder.list_item_image_header, imageSize);
         ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
@@ -676,12 +680,14 @@ public class ThreadViewer {
 
         // display image
         viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
-        viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+        if (visible)
+            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
         //ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (DEBUG) Log.w(TAG, "displayHeaderImage() url=" + url);
         //imageLoader.displayImage(url, iv, options, listener);
-        imageLoader.displayImage(url, viewHolder.list_item_image_header, options, thumbLoadingListener);
+        imageLoader.displayImage(url, viewHolder.list_item_image_header, options,
+                visible ? thumbLoadingListener : invisibleThumbLoadingListener);
 
         return true;
     }
@@ -791,6 +797,27 @@ public class ThreadViewer {
         return true;
     }
 
+    static private ImageLoadingListener invisibleThumbLoadingListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+        }
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            if (view != null)
+                view.setTag(R.id.IMG_URL, null);
+        }
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            if (view != null) {
+                view.setTag(R.id.IMG_URL, imageUri);
+            }
+        }
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            if (view != null)
+                view.setTag(R.id.IMG_URL, null);
+        }
+    };
     static private ImageLoadingListener thumbLoadingListener = new ImageLoadingListener() {
         @Override
         public void onLoadingStarted(String imageUri, View view) {

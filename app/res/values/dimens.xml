@@ -356,6 +356,9 @@
     <dimen name="BoardGridImageSize">96dp</dimen>
     <dimen name="BoardGridImageSizeDouble">192dp</dimen>
     <dimen name="BoardGridImageSizeHalf">48dp</dimen>
+    <dimen name="BoardGridImageSizeNarrow">144dp</dimen>
+    <dimen name="BoardGridImageSizeNarrowDouble">288dp</dimen>
+    <dimen name="BoardGridImageSizeNarrowHalf">72dp</dimen>
     <dimen name="BoardGridImageSizeForFlag">52dp</dimen>
     <dimen name="BoardGridImageSizeHalfMinusSpacing">40dp</dimen>
     <dimen name="BoardGridItemOverflowIconMarginTop">64dp</dimen>
@@ -456,5 +459,7 @@
     <string name="thread_has_imagelimit">(IL)</string>
     <string name="board_vg_abbrev">/vg/</string>
     <string name="app_name">Chanu</string>
+
+    <string name="BlocklistItemHeight">48dp</string>
 
 </resources>

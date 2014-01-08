@@ -306,25 +306,28 @@
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.quarterSpacing">4dp</dimen>
 
-    <dimen name="BoardGridImageSize">96dp</dimen>
-    <dimen name="BoardGridImageSizeDouble">192dp</dimen>
-    <dimen name="BoardGridImageSizeHalf">48dp</dimen>
-    <dimen name="BoardGridImageSizeForFlag">52dp</dimen>
-    <dimen name="BoardGridImageSizeHalfMinusSpacing">40dp</dimen>
-    <dimen name="BoardGridItemOverflowIconMarginTop">64dp</dimen>
+    <dimen name="BoardGridImageSize">120dp</dimen>
+    <dimen name="BoardGridImageSizeDouble">240dp</dimen>
+    <dimen name="BoardGridImageSizeHalf">60dp</dimen>
+    <dimen name="BoardGridImageSizeNarrow">144dp</dimen>
+    <dimen name="BoardGridImageSizeNarrowDouble">288dp</dimen>
+    <dimen name="BoardGridImageSizeNarrowHalf">72dp</dimen>
+    <dimen name="BoardGridImageSizeForFlag">76dp</dimen>
+    <dimen name="BoardGridImageSizeHalfMinusSpacing">64dp</dimen>
+    <dimen name="BoardGridItemOverflowIconMarginTop">88dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">80dp</dimen>-->
-    <dimen name="BoardGridItemHeight">96dp</dimen>
-    <dimen name="BoardGridItemHeightOuter">112dp</dimen>
-    <dimen name="BoardGridItemHeight1">144dp</dimen>
-    <dimen name="BoardGridItemHeightOuter1">160dp</dimen>
-    <dimen name="BoardGridItemHeight2">192dp</dimen>
-    <dimen name="BoardGridItemHeightOuter2">208dp</dimen>
-    <dimen name="BoardGridItemHeight3">240dp</dimen>
-    <dimen name="BoardGridItemHeightOuter3">256dp</dimen>
-    <dimen name="BoardGridItemHeight4">288dp</dimen>
-    <dimen name="BoardGridItemHeightOuter4">304dp</dimen>
-    <dimen name="BoardGridItemHeight5">336dp</dimen>
-    <dimen name="BoardGridItemHeightOuter5">352dp</dimen>
+    <dimen name="BoardGridItemHeight">120dp</dimen>
+    <dimen name="BoardGridItemHeightOuter">136dp</dimen>
+    <dimen name="BoardGridItemHeight1">180dp</dimen>
+    <dimen name="BoardGridItemHeightOuter1">196dp</dimen>
+    <dimen name="BoardGridItemHeight2">240dp</dimen>
+    <dimen name="BoardGridItemHeightOuter2">256dp</dimen>
+    <dimen name="BoardGridItemHeight3">300dp</dimen>
+    <dimen name="BoardGridItemHeightOuter3">316dp</dimen>
+    <dimen name="BoardGridItemHeight4">360dp</dimen>
+    <dimen name="BoardGridItemHeightOuter4">376dp</dimen>
+    <dimen name="BoardGridItemHeight5">420dp</dimen>
+    <dimen name="BoardGridItemHeightOuter5">436dp</dimen>
 
 
     <integer name="BoardGridView.numColumns">1</integer>
@@ -377,5 +380,7 @@
     <dimen name="BoardGridItemIconSpacing">8dp</dimen>
 
     <integer name="BoardGridSubject_maxLines">4</integer>
+
+    <dimen name="BlocklistItemHeight">56dp</dimen>
 
 </resources>

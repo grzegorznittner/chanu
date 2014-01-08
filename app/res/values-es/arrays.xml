@@ -67,4 +67,13 @@
         <item>@string/font_size_huge</item>
     </string-array>
 
+    <string-array name="block_types">
+        <item>@string/block_type_text</item>
+        <item>@string/block_type_trip</item>
+        <item>@string/pref_user_name</item>
+        <item>@string/pref_user_email</item>
+        <item>@string/block_type_id</item>
+        <item>@string/thread_activity</item>
+    </string-array>
+
 </resources>

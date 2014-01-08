@@ -273,7 +273,7 @@
     <dimen name="widget_twocol_inner_paddingLeft">108dp</dimen>
     <dimen name="widget_textSize">12sp</dimen>
 
-    <integer name="BoardGridView.maxLines">4</integer>
+    <integer name="BoardGridView.maxLines">5</integer>
     <integer name="BoardGridView.Half.maxLines">2</integer>
     <integer name="BoardGridViewNarrowTablet.maxLines">6</integer>
     <dimen name="BoardGridView.topSpacing">8dp</dimen>
@@ -289,6 +289,9 @@
     <dimen name="BoardGridImageSize">144dp</dimen>
     <dimen name="BoardGridImageSizeDouble">288dp</dimen>
     <dimen name="BoardGridImageSizeHalf">72dp</dimen>
+    <dimen name="BoardGridImageSizeNarrow">144dp</dimen>
+    <dimen name="BoardGridImageSizeNarrowDouble">288dp</dimen>
+    <dimen name="BoardGridImageSizeNarrowHalf">72dp</dimen>
     <dimen name="BoardGridImageSizeForFlag">100dp</dimen>
     <dimen name="BoardGridImageSizeHalfMinusSpacing">64dp</dimen>
     <dimen name="BoardGridItemOverflowIconMarginTop">112dp</dimen>
@@ -357,5 +360,7 @@
     <dimen name="BoardGridItemIconSpacing">12dp</dimen>
 
     <integer name="BoardGridSubject_maxLines">3</integer>
+
+    <dimen name="BlocklistItemHeight">64dp</dimen>
 
 </resources>
