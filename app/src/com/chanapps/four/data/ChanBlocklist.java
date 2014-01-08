@@ -3,10 +3,13 @@ package com.chanapps.four.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Pair;
 import android.widget.Toast;
 import com.chanapps.four.activity.SettingsActivity;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,11 +21,12 @@ import java.util.*;
 public class ChanBlocklist {
 
     public enum BlockType {
-        TRIPCODE ("Tripcode", SettingsActivity.PREF_BLOCKLIST_TRIPCODE),
-        NAME ("Name", SettingsActivity.PREF_BLOCKLIST_NAME),
-        EMAIL ("Email", SettingsActivity.PREF_BLOCKLIST_EMAIL),
-        ID ("Id", SettingsActivity.PREF_BLOCKLIST_ID),
-        THREAD ("Thread", SettingsActivity.PREF_BLOCKLIST_THREAD);
+        TEXT ("text", SettingsActivity.PREF_BLOCKLIST_TEXT),
+        TRIPCODE ("tripcode", SettingsActivity.PREF_BLOCKLIST_TRIPCODE),
+        NAME ("name", SettingsActivity.PREF_BLOCKLIST_NAME),
+        EMAIL ("email", SettingsActivity.PREF_BLOCKLIST_EMAIL),
+        ID ("id", SettingsActivity.PREF_BLOCKLIST_ID),
+        THREAD ("thread", SettingsActivity.PREF_BLOCKLIST_THREAD);
         private String displayString;
         private String blockPref;
         BlockType(String s, String t) {
@@ -38,6 +42,7 @@ public class ChanBlocklist {
     };
 
     private static Map<BlockType, Set<String>> blocklist;
+    private static Pattern testPattern = null;
 
     private static void initBlocklist(Context context) {
         if (blocklist == null)
@@ -53,6 +58,7 @@ public class ChanBlocklist {
             blocks.addAll(savedBlocks);
             blocklist.put(blockType, blocks);
         }
+        compileTestPattern();
     }
 
     public static Map<BlockType, Set<String>> getBlocklist(Context context) {
@@ -69,6 +75,34 @@ public class ChanBlocklist {
         Collections.sort(sorted);
         return sorted;
     }
+
+    public static List<Pair<String, BlockType>> getSorted(Context context) {
+        if (blocklist == null)
+            initBlocklist(context);
+        List<Pair<String, BlockType>> sorted = new ArrayList<Pair<String, BlockType>>();
+        for (BlockType blockType : BlockType.values()) {
+            Set<String> blocks = blocklist.get(blockType);
+            if (blocks == null || blocks.isEmpty())
+                continue;
+            for (String block : blocks) {
+                if (block != null && !block.isEmpty())
+                    sorted.add(new Pair<String, BlockType>(block, blockType));
+            }
+        }
+        Collections.sort(sorted, blocklistComparator);
+        return sorted;
+
+    }
+
+    protected static Comparator<Pair<String, BlockType>> blocklistComparator = new Comparator<Pair<String, BlockType>>() {
+        @Override
+        public int compare(Pair<String, BlockType> lhs, Pair<String, BlockType> rhs) {
+            int comp1 = lhs.first.compareToIgnoreCase(rhs.first);
+            if (comp1 != 0)
+                return comp1;
+            return lhs.second.compareTo(rhs.second);
+        }
+    };
 
     public static void removeAll(Context context, BlockType blockType, List<String> removeBlocks) {
         if (blocklist == null)
@@ -147,17 +181,54 @@ public class ChanBlocklist {
     }
 
     public static boolean isBlocked(Context context, ChanPost post) {
-        return ChanBlocklist.contains(context, ChanBlocklist.BlockType.THREAD, post.uniqueId())
-                || ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, post.trip)
-                || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, post.name)
-                || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, post.email)
-                || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, post.id)
+        if (blocklist == null)
+            initBlocklist(context);
+        boolean simpleMatch =  contains(context, BlockType.THREAD, post.uniqueId())
+                || contains(context, BlockType.TRIPCODE, post.trip)
+                || contains(context, BlockType.NAME, post.name)
+                || contains(context, BlockType.EMAIL, post.email)
+                || contains(context, BlockType.ID, post.id)
                 ;
+        if (simpleMatch)
+            return true;
+        if (post.sub != null && testPattern.matcher(post.sub).find())
+            return true;
+        if (post.com != null && testPattern.matcher(post.com).find())
+            return true;
+        return false;
     }
 
     private static void saveBlocklist(Context context, BlockType blockType) {
+        if (blockType == BlockType.TEXT) // precreate regex for efficient matching
+            compileTestPattern();
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putStringSet(blockType.blockPref(), blocklist.get(blockType)).apply();
+    }
+
+    private static void compileTestPattern() {
+        Set<String> blocks = blocklist.get(BlockType.TEXT);
+        String regex = "(";
+        for (String block : blocks) {
+            if (regex.length() > 1)
+                regex += "|";
+            regex += block.replaceAll("[()|]", "");
+        }
+        regex += ")";
+        testPattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+    }
+
+    public static void save(Context context, List<Pair<String, BlockType>> newBlocks) {
+        if (blocklist == null)
+            initBlocklist(context);
+        synchronized (blocklist) {
+            for (BlockType blockType : BlockType.values()) // out with the old
+                blocklist.get(blockType).clear();
+            for (Pair<String, BlockType> block : newBlocks) // and in with the new
+                if (block.first != null && !block.first.isEmpty() && block.second != null)
+                    blocklist.get(block.second).add(block.first);
+            for (BlockType blockType : BlockType.values())
+                saveBlocklist(context, blockType);
+        }
     }
 
 }

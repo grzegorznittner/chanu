@@ -11,15 +11,18 @@ import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.component.BillingComponent;
+import com.chanapps.four.data.ChanBlocklist;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 
 import java.io.File;
+import java.util.List;
 
 
 /**
@@ -55,8 +58,8 @@ public class SettingsFragment
         blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                (new BlocklistSelectToViewDialogFragment(SettingsFragment.this))
-                        .show(getFragmentManager(), SettingsFragment.TAG);
+                List<Pair<String, ChanBlocklist.BlockType>> blocks = ChanBlocklist.getSorted(getActivity());
+                (new BlocklistViewAllDialogFragment(blocks)).show(getFragmentManager(),TAG);
                 return true;
             }
         });

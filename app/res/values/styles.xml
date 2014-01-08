@@ -1214,6 +1214,20 @@
         <item name="android:textColor">@color/PaletteWhite</item>
     </style>
 
+    <!-- Dialog -->
+    <style name="BlocklistItemsDialogItemLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/ItemsDialogItemLayout_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/ItemsDialogItemLayout_paddingBottom</item>
+        <item name="android:paddingLeft">@dimen/ItemsDialogItemLayout_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ItemsDialogItemLayout_paddingRight</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/ItemsDialogItemLayout_textSize</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
     <!-- Widgets -->
     <style name="WidgetConfigureOkButton">
         <item name="android:layout_width">match_parent</item>

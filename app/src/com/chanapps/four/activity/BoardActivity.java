@@ -1703,6 +1703,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     FetchChanDataService.scheduleThreadFetch(BoardActivity.this, boardCode, threadNo, true, false);
                     GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
                     return true;
+                case R.id.board_thread_blocklist_menu:
+                    List<Pair<String, ChanBlocklist.BlockType>> blocks = ChanBlocklist.getSorted(BoardActivity.this);
+                    (new BlocklistViewAllDialogFragment(blocks)).show(getFragmentManager(),TAG);
+                    return true;
                 case R.id.board_add_to_favorites_menu:
                     addToFavorites(BoardActivity.this, handler, boardCode);
                     return true;
@@ -1828,20 +1832,19 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected BroadcastReceiver onUpdateBoardReceived = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String receivedBoardCode = intent != null
-                    && intent.getAction().equals(UPDATE_BOARD_ACTION)
-                    && intent.hasExtra(ChanBoard.BOARD_CODE)
-                    ? intent.getStringExtra(ChanBoard.BOARD_CODE)
-                    : null;
-            long receivedThreadNo = intent != null
-                    && intent.getAction().equals(UPDATE_BOARD_ACTION)
-                    && intent.hasExtra(ChanThread.THREAD_NO)
-                    ? intent.getLongExtra(ChanThread.THREAD_NO, -1)
-                    : -1;
-            if (DEBUG) Log.i(TAG, "onUpdateBoardReceived /" + boardCode + "/ received=/" + receivedBoardCode + "/"
-                    + (receivedThreadNo >= 0 ? receivedThreadNo : ""));
-            if (receivedBoardCode == null)
+            if (intent == null || !intent.getAction().equals(UPDATE_BOARD_ACTION))
                 return;
+            if (!intent.hasExtra(ChanBoard.BOARD_CODE) || intent.getStringExtra(ChanBoard.BOARD_CODE) == null) {
+                setAdapters();
+                refresh();
+                return;
+            }
+            String receivedBoardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+            //long receivedThreadNo = intent.hasExtra(ChanThread.THREAD_NO)
+            //        ? intent.getLongExtra(ChanThread.THREAD_NO, -1)
+            //        : -1;
+            //if (DEBUG) Log.i(TAG, "onUpdateBoardReceived /" + boardCode + "/ received=/" + receivedBoardCode + "/"
+            //        + (receivedThreadNo >= 0 ? receivedThreadNo : ""));
             setAdapters();
             if (!receivedBoardCode.equals(boardCode))
                 return;
@@ -1960,6 +1963,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         Intent intent = new Intent(BoardActivity.UPDATE_BOARD_ACTION);
         intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
         intent.putExtra(ChanThread.THREAD_NO, threadNo);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public static void updateBoard(Context context) {
+        Intent intent = new Intent(BoardActivity.UPDATE_BOARD_ACTION);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 

@@ -840,14 +840,14 @@ public class EnhancedListView extends ListView {
     private void changePopupText() {
         String msg = null;
         if(mUndoActions.size() > 1) {
-            msg = getResources().getString(R.string.n_items_deleted, mUndoActions.size());
+            msg = getResources().getString(R.string.dialog_deleted_from_watchlist, mUndoActions.size());
         } else if(mUndoActions.size() >= 1) {
             // Set title from single undoable or when no multiple deletion string
             // is given
             msg = mUndoActions.get(mUndoActions.size() - 1).getTitle();
 
             if(msg == null) {
-                msg = getResources().getString(R.string.item_deleted);
+                msg = getResources().getString(R.string.dialog_deleted_from_watchlist);
             }
         }
         mUndoPopupTextView.setText(msg);
