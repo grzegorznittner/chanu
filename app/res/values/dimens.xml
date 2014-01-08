@@ -460,6 +460,6 @@
     <string name="board_vg_abbrev">/vg/</string>
     <string name="app_name">Chanu</string>
 
-    <string name="BlocklistItemHeight">48dp</string>
+    <dimen name="BlocklistItemHeight">48dp</dimen>
 
 </resources>

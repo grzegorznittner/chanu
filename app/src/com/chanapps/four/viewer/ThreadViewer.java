@@ -592,16 +592,17 @@ public class ThreadViewer {
             return false;
         if (!SettingsActivity.shouldLoadThumbs(viewHolder.list_item_image_header.getContext()))
             return showExpandableThumb(viewHolder, viewHolder.list_item_image);
+        displayHeaderImage(viewHolder, cursor, flags, false); // make sure it's always displayed
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener)) {
-            displayHeaderImage(viewHolder, cursor, flags, false); // make sure it's always displayed
+            viewHolder.list_item_image_header.setVisibility(View.GONE);
             return true;
         }
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener)) {
-            displayHeaderImage(viewHolder, cursor, flags, false); // make sure it's always displayed
+            viewHolder.list_item_image_header.setVisibility(View.GONE);
             return true;
         }
-        displayHeaderImage(viewHolder, cursor, flags, true); // make sure it's always displayed
+        viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
         return true;
     }
 
