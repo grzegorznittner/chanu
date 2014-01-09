@@ -42,7 +42,7 @@
 
     <dimen name="BoardGridItemSmallHeight">96dp</dimen>
     <dimen name="BoardGridViewTablet_image_width">112dp</dimen>
-    <dimen name="BoardGridViewTablet_layout_width">304dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">304dp</dimen>
     <dimen name="BoardGridViewTablet_narrow_image_width">96dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
@@ -284,7 +284,7 @@
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.quarterSpacing">4dp</dimen>
 
-    <integer name="BoardGridView.numColumns">2</integer>
+    <integer name="BoardGridView.numColumns">1</integer>
     <integer name="BoardGridViewSmall.numColumns">5</integer>
     <dimen name="BoardGridImageSize">144dp</dimen>
     <dimen name="BoardGridImageSizeDouble">288dp</dimen>

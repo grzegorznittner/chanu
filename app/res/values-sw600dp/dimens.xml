@@ -41,9 +41,6 @@
     <!-- Padding & Margins -->
     <dimen name="BoardGridItemSmallHeight">104dp</dimen>
     <dimen name="BoardGridViewTablet_image_width">180dp</dimen>
-    <!--
-    <dimen name="BoardGridViewTablet_layout_width">180dp</dimen>
-    -->
     <dimen name="BoardGridViewTablet_layout_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">282dp</dimen>
     <dimen name="BoardGridViewTablet_layout_marginHeight_belowImage">160dp</dimen>
