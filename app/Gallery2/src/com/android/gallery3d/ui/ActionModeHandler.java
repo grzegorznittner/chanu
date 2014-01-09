@@ -67,6 +67,7 @@ public class ActionModeHandler implements ActionMode.Callback {
     private Future<?> mMenuTask;
     private Handler mMainHandler;
     private ShareActionProvider mShareActionProvider;
+    private ShareActionProvider mShareActionProviderURL;
 
     public ActionModeHandler(
             GalleryActivity activity, SelectionManager selectionManager) {
@@ -149,6 +150,7 @@ public class ActionModeHandler implements ActionMode.Callback {
         inflater.inflate(R.menu.operation, menu);
 
         mShareActionProvider = GalleryActionBar.initializeShareActionProvider(menu);
+        mShareActionProviderURL = GalleryActionBar.initializeShareActionProviderURL(menu);
         OnShareTargetSelectedListener listener = new OnShareTargetSelectedListener() {
             public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
                 mSelectionManager.leaveSelectionMode();
@@ -157,6 +159,7 @@ public class ActionModeHandler implements ActionMode.Callback {
         };
 
         mShareActionProvider.setOnShareTargetSelectedListener(listener);
+        mShareActionProviderURL.setOnShareTargetSelectedListener(listener);
         mMenu = menu;
         return true;
     }

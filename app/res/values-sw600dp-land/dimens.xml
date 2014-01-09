@@ -9,10 +9,9 @@
     <dimen name="tutorial_overlay_subject_paddingTop">254dp</dimen>
     <integer name="tutorial_overlay_border_cols">2</integer>
 
-    <integer name="BoardGridView.numColumns">2</integer>
+    <integer name="BoardGridView.numColumns">3</integer>
     <integer name="BoardGridViewSmall.numColumns">6</integer>
 
-    <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">true</bool>
     <bool name="narrow_tablet">true</bool>
 

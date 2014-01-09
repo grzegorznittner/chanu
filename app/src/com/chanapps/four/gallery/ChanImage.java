@@ -410,13 +410,13 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     public MediaDetails getDetails() {
         MediaDetails details = super.getDetails();
         if (sub != null && !sub.isEmpty())
-            details.addDetail(MediaDetails.INDEX_TITLE, Html.fromHtml(sub));
+            details.addDetail(MediaDetails.INDEX_TITLE, Html.fromHtml("<b>" + sub + "</b>"));
         else
             details.addDetail(MediaDetails.INDEX_TITLE, name);
         if (com != null && !com.isEmpty())
             details.addDetail(MediaDetails.INDEX_DESCRIPTION, Html.fromHtml(com));
         else
-            details.addDetail(MediaDetails.INDEX_DESCRIPTION, "(no text)");
+            details.addDetail(MediaDetails.INDEX_DESCRIPTION, "");
         if (width != 0 && height != 0) {
             details.addDetail(MediaDetails.INDEX_WIDTH, w);
             details.addDetail(MediaDetails.INDEX_HEIGHT, h);

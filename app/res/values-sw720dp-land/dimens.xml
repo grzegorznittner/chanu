@@ -16,10 +16,9 @@
     <integer name="tutorial_overlay_center_cols">2</integer>
     <integer name="tutorial_overlay_fill_cols">3</integer>
 
-    <integer name="BoardGridView.numColumns">2</integer>
+    <integer name="BoardGridView.numColumns">4</integer>
     <integer name="BoardGridViewSmall.numColumns">8</integer>
 
-    <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">true</bool>
     <bool name="narrow_tablet">true</bool>
 
@@ -53,6 +52,5 @@
 
     <dimen name="BoardGridItemIconSmallMarginBottom">0dp</dimen>
 
-    <bool name="narrow_tablet">false</bool>
     -->
 </resources>

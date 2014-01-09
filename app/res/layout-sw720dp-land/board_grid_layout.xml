@@ -18,7 +18,6 @@
             style="@style/BoardGridView"
             android:layout_below="@+id/board_title_bar"
             android:layout_above="@+id/board_grid_advert"
-            android:verticalSpacing="0dp"
             />
 
     <TextView

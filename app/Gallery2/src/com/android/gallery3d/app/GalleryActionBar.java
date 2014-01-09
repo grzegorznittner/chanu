@@ -174,9 +174,16 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     public static ShareActionProvider initializeShareActionProvider(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_share);
         ShareActionProvider shareActionProvider = null;
-        if (item != null) {
+        if (item != null)
             shareActionProvider = (ShareActionProvider) item.getActionProvider();
-        }
+        return shareActionProvider;
+    }
+
+    public static ShareActionProvider initializeShareActionProviderURL(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_share_url);
+        ShareActionProvider shareActionProvider = null;
+        if (item != null)
+            shareActionProvider = (ShareActionProvider) item.getActionProvider();
         return shareActionProvider;
     }
 

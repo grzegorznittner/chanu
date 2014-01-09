@@ -27,7 +27,7 @@ import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardCursorAdapter;
-import com.chanapps.four.adapter.BoardNarrowTabletCursorAdapter;
+import com.chanapps.four.adapter.BoardNarrowCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
@@ -77,7 +77,6 @@ public class ThreadActivity
     protected MenuItem searchMenuItem;
     protected long postNo; // for direct jumps from latest post / recent images
     protected PullToRefreshAttacher mPullToRefreshAttacher;
-    protected boolean wideTablet;
     protected boolean narrowTablet;
     protected View layout;
 
@@ -161,7 +160,6 @@ public class ThreadActivity
         }
         ThreadViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
 
-        wideTablet = getResources().getBoolean(R.bool.wide_tablet);
         narrowTablet = getResources().getBoolean(R.bool.narrow_tablet);
         setupReceivers();
     }
@@ -908,7 +906,7 @@ public class ThreadActivity
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
         if (narrowTablet)
-            adapterBoardsTablet = new BoardNarrowTabletCursorAdapter(this, viewBinder);
+            adapterBoardsTablet = new BoardNarrowCursorAdapter(this, viewBinder);
         else
             adapterBoardsTablet = new BoardCursorAdapter(this, viewBinder);
         adapterBoardsTablet.setGroupBoardCode(boardCode);
@@ -996,7 +994,7 @@ public class ThreadActivity
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            int options = (wideTablet || narrowTablet) ? 0 : BoardViewer.CATALOG_GRID;
+            int options = narrowTablet ? 0 : BoardViewer.CATALOG_GRID;
             return BoardViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, options, null);
         }
     };

@@ -1,10 +1,12 @@
 package com.chanapps.four.adapter;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.viewer.BoardViewHolder;
 
 /**
@@ -14,24 +16,34 @@ import com.chanapps.four.viewer.BoardViewHolder;
  * Time: 6:56 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BoardNarrowTabletCursorAdapter extends AbstractBoardCursorAdapter {
+public class BoardNarrowCursorAdapter extends AbstractBoardCursorAdapter {
 
-    protected static final int TYPE_GRID_ITEM = 0;
-    protected static final int TYPE_MAX_COUNT = 1;
+    protected static final int TYPE_GRID_HEADER = 0;
+    protected static final int TYPE_GRID_ITEM = 1;
+    protected static final int TYPE_MAX_COUNT = 2;
 
-    public BoardNarrowTabletCursorAdapter(Context context, ViewBinder viewBinder) {
+    public BoardNarrowCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context, viewBinder);
     }
 
     @Override
     public int getItemViewType(int position) {
-        return TYPE_GRID_ITEM;
+        Cursor c = getCursor();
+        if (c != null
+                && c.moveToPosition(position)
+                && (c.getInt(c.getColumnIndex(ChanThread.THREAD_FLAGS)) & ChanThread.THREAD_FLAG_HEADER) > 0)
+            return TYPE_GRID_HEADER;
+        else
+            return TYPE_GRID_ITEM;
     }
 
     @Override
     protected View newView(ViewGroup parent, int tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        View v = mInflater.inflate(R.layout.board_grid_item_narrow_tablet, parent, false);
+        int layoutId = getItemViewType(position) == TYPE_GRID_HEADER
+                ? R.layout.board_grid_header_narrow
+                : R.layout.board_grid_item_narrow;
+        View v = mInflater.inflate(layoutId, parent, false);
         BoardViewHolder viewHolder = new BoardViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);

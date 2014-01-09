@@ -388,7 +388,6 @@
     <dimen name="ad_layout_horizontal_padding">16dp</dimen>
     <dimen name="ad_layout_vertical_padding">8dp</dimen>
 
-    <bool name="wide_tablet">false</bool>
     <bool name="BoardGridView.abbrev">false</bool>
     <bool name="narrow_tablet">true</bool>
 

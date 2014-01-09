@@ -28,6 +28,13 @@
             android:actionProviderClass="android.widget.ShareActionProvider"
             android:showAsAction="never"
             />
+    <item android:id="@+id/action_share_url"
+            android:icon="@drawable/ic_menu_share_holo_light"
+            android:title="@string/share_url"
+            android:enabled="true"
+            android:actionProviderClass="android.widget.ShareActionProvider"
+            android:showAsAction="never"
+            />
     <item android:id="@+id/action_download"
           android:title="@string/web_image_button_download"
           android:showAsAction="never" />

@@ -25,9 +25,10 @@
 
         <FrameLayout
                 android:id="@+id/grid_item_num_replies"
-                android:layout_width="@dimen/BoardGridImageSizeNarrow"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/BoardGridImageSizeNarrowHalf"
                 android:layout_alignParentRight="true"
+                android:layout_marginLeft="@dimen/BoardGridImageSizeNarrow"
                 android:background="@drawable/thread_list_selector_bg"
                 >
             <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
@@ -44,10 +45,11 @@
 
         <FrameLayout
                 android:id="@+id/grid_item_num_images"
-                android:layout_width="@dimen/BoardGridImageSizeNarrow"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/BoardGridImageSizeNarrowHalf"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/grid_item_num_replies"
+                android:layout_marginTop="@dimen/BoardGridImageSizeNarrowHalf"
+                android:layout_marginLeft="@dimen/BoardGridImageSizeNarrow"
                 android:background="@drawable/thread_list_selector_bg"
                 >
             <LinearLayout style="@style/ThreadListHeaderNumWrapInner">

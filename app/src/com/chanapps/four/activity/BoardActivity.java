@@ -30,6 +30,7 @@ import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.adapter.BoardNarrowCursorAdapter;
 import com.chanapps.four.adapter.BoardSmallCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
@@ -474,9 +475,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 getResources().getInteger(R.integer.BoardGridViewSmall_numColumns),
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
-        adapter = (gridViewOptions & BoardViewer.CATALOG_GRID) > 0
-                ? new BoardSmallCursorAdapter(this, viewBinder)
-                : new BoardCursorAdapter(this, viewBinder);
+        if ((gridViewOptions & BoardViewer.CATALOG_GRID) > 0)
+            adapter = new BoardSmallCursorAdapter(this, viewBinder);
+        else if (getResources().getInteger(R.integer.BoardGridView_numColumns) > 1)
+            adapter = new BoardNarrowCursorAdapter(this, viewBinder);
+        else
+            adapter = new BoardCursorAdapter(this, viewBinder);
         adapter.setGroupBoardCode(boardCode);
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
@@ -1167,7 +1171,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.clear_favorites_menu).setVisible(true);
             menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
             menu.findItem(R.id.favorites_remove_board_menu).setVisible(false);
-            menu.findItem(R.id.refresh_menu).setVisible(false);
+            menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             //menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             //menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
@@ -1986,7 +1990,20 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // the views handle this already
+        if (handler != null && absListView != null) {
+            final int pos = absListView.getFirstVisiblePosition();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Cursor c = adapter.getCursor();
+                    createAbsListView();
+                    setupBoardTitle();
+                    //adapter.swapCursor(c);
+                    adapter.changeCursor(c);
+                    absListView.setSelection(pos);
+                }
+            });
+        }
     }
 
 }
