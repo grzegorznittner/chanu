@@ -90,7 +90,8 @@
   <string name="report_posts_menu">Denunciar post</string>
   <string name="block_posts_menu">Bloquear post</string>
   <string name="translate_no_text">Nenhum texto encontrado para traduzir</string>
-  <string name="share_image">Compartilhar</string>
+  <string name="share_image">"Partilhar"</string>
+  <string name="share_url">"Partilhar URL"</string>
   <string name="download_all_images_to_gallery_menu">Baixar imagens</string>
   <string name="download_images_to_gallery_menu">Baixar imagem</string>
   <string name="view_image_gallery_menu">Galeria de tópicos</string>

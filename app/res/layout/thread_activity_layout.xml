@@ -11,7 +11,6 @@
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/board_grid_advert"
             />
 
     <include layout="@layout/ad_section"

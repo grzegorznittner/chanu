@@ -91,6 +91,7 @@
   <string name="block_posts_menu">Zablokuj wpis</string>
   <string name="translate_no_text">Brak tekstu do przetłumaczenia</string>
   <string name="share_image">Udostępnij</string>
+  <string name="share_url">"Udostępnij URL"</string>
   <string name="download_all_images_to_gallery_menu">Pobierz obrazy</string>
   <string name="download_images_to_gallery_menu">Pobierz obraz</string>
   <string name="view_image_gallery_menu">Galeria wątków</string>

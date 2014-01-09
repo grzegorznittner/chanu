@@ -48,7 +48,6 @@
     <string name="confirm_delete" msgid="7358770022173660511">"Ştergeţi"</string>
     <string name="cancel" msgid="3637516880917356226">"Anulaţi"</string>
     <string name="share" msgid="3619042788254195341">"Distribuiţi"</string>
-    <string name="share_url" msgid="3619042788254195341">"Distribuiţi URL"</string>
     <string name="select_all" msgid="3403283025220282175">"Selectaţi-le pe toate"</string>
     <string name="deselect_all" msgid="5758897506061723684">"Deselectaţi-le pe toate"</string>
     <string name="slideshow" msgid="4355906903247112975">"Prezentare"</string>

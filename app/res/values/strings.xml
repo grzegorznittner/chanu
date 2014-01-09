@@ -101,6 +101,7 @@
     <string name="block_posts_menu">Block post</string>
     <string name="translate_no_text">No text found to translate</string>
     <string name="share_image">Share</string>
+    <string name="share_url">Share URL</string>
     <string name="download_all_images_to_gallery_menu">Download images</string>
     <string name="download_images_to_gallery_menu">Download image</string>
     <string name="view_image_gallery_menu">Thread gallery</string>

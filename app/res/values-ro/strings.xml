@@ -100,7 +100,8 @@
     <string name="report_posts_menu">Raportează postare</string>
     <string name="block_posts_menu">Blochează postare</string>
     <string name="translate_no_text">Nici un text găsit pentru traducere</string>
-    <string name="share_image">Share</string>
+    <string name="share_image">"Distribuiţi"</string>
+    <string name="share_url">"Distribuiţi URL"</string>
     <string name="download_all_images_to_gallery_menu">Descarcă imagini</string>
     <string name="download_images_to_gallery_menu">Descarcă imagine</string>
     <string name="view_image_gallery_menu">Galerie fir de discuții</string>

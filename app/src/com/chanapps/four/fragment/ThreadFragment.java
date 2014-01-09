@@ -79,7 +79,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected String imageUrl;
     protected boolean shouldPlayThread = false;
     protected ShareActionProvider shareActionProviderOP = null;
-    protected ShareActionProvider shareActionProvider = null;
+    //protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
     protected ActionMode actionMode = null;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
@@ -710,9 +710,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     protected void setupShareActionProviderOPMenu(final Menu menu) {
-        SparseBooleanArray postPos = new SparseBooleanArray(absListView == null ? 1 : absListView.getCount());
-        postPos.put(0, true); // only share OP
-        updateSharedIntent(shareActionProviderOP, postPos);
+        updateSharedIntentOP(shareActionProviderOP);
         if (menu == null)
             return;
         MenuItem shareItem = menu.findItem(R.id.thread_share_menu);
@@ -978,7 +976,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             }
             else {
                 if (DEBUG) Log.i(TAG, "action mode already started, updating share intent");
-                updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
+                //updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
             }
             return true;
         }
@@ -1173,37 +1171,52 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             return;
 
         // construct paths and add files
-        ArrayList<String> paths = new ArrayList<String>();
-        long firstPost = -1;
-        ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
+        //ArrayList<String> paths = new ArrayList<String>();
+        //long firstPost = -1;
+        //ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
+        String url = null;
         for (int i = 0; i < cursor.getCount(); i++) {
             if (!postPos.get(i))
                 continue;
             if (!cursor.moveToPosition(i))
                 continue;
-            if (firstPost == -1)
-                firstPost = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            File file = ThreadViewer.fullSizeImageFile(getActivityContext(), cursor); // try for full size first
-            if (file == null) { // if can't find it, fall back to thumbnail
-                String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL)); // thumbnail
-                if (DEBUG) Log.i(TAG, "Couldn't find full image, falling back to thumbnail=" + url);
-                file = (url == null || url.isEmpty()) ? null : imageLoader.getDiscCache().get(url);
-            }
-            if (file == null || !file.exists() || !file.canRead() || file.length() <= 0)
-                continue;
-            paths.add(file.getAbsolutePath());
+            //if (firstPost == -1)
+            //    firstPost = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            //File file = ThreadViewer.fullSizeImageFile(getActivityContext(), cursor); // try for full size first
+            //if (file == null) { // if can't find it, fall back to thumbnail
+            url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL)); // thumbnail
+            if (url != null && !url.isEmpty())
+                break;
+                //if (DEBUG) Log.i(TAG, "Couldn't find full image, falling back to thumbnail=" + url);
+                //file = (url == null || url.isEmpty()) ? null : imageLoader.getDiscCache().get(url);
+            //}
+            //if (file == null || !file.exists() || !file.canRead() || file.length() <= 0)
+            //    continue;
+            //paths.add(file.getAbsolutePath());
         }
+        if (url == null || url.isEmpty())
+            return;
 
         // set share text
-        if (DEBUG) Log.i(TAG, "updateSharedIntent() found postNo=" + firstPost + " for threadNo=" + threadNo);
+        //if (DEBUG) Log.i(TAG, "updateSharedIntent() found postNo=" + firstPost + " for threadNo=" + threadNo);
+        /*
         String linkUrl = (firstPost > 0 && firstPost != threadNo)
                 ? ChanPost.postUrl(getActivityContext(), boardCode, threadNo, firstPost)
                 : ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
-
+        */
         // create intent
         Intent intent;
         intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, linkUrl);
+        intent.putExtra(Intent.EXTRA_TEXT, url);
+        intent.setType("text/plain");
+        setShareIntent(provider, intent);
+    }
+
+    protected void updateSharedIntentOP(ShareActionProvider provider) {
+        String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
+        Intent intent;
+        intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, url);
         intent.setType("text/plain");
         setShareIntent(provider, intent);
     }
@@ -1277,7 +1290,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             }
             if (pos == -1)
                 return;
-            updateSharedIntent(shareActionProvider, checked);
+            //updateSharedIntent(shareActionProvider, checked);
             PopupMenu popup = new PopupMenu(getActivityContext(), v);
             Cursor cursor = adapter.getCursor();
             boolean hasImage = cursor != null
@@ -1296,8 +1309,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             popup.setOnMenuItemClickListener(popupListener);
             popup.setOnDismissListener(popupDismissListener);
             MenuItem shareItem = popup.getMenu().findItem(R.id.thread_context_share_action_menu);
-            shareActionProvider = shareItem == null ? null : (ShareActionProvider) shareItem.getActionProvider();
-            if (DEBUG) Log.i(TAG, "overflowListener.onClick() popup called shareActionProvider=" + shareActionProvider);
+            //shareActionProvider = shareItem == null ? null : (ShareActionProvider) shareItem.getActionProvider();
+            //if (DEBUG) Log.i(TAG, "overflowListener.onClick() popup called shareActionProvider=" + shareActionProvider);
             popup.show();
         }
     };
@@ -1398,11 +1411,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.thread_text_context_menu, menu);
             MenuItem shareItem = menu.findItem(R.id.thread_context_share_action_menu);
-            if (shareItem != null) {
-                shareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
-            } else {
-                shareActionProvider = null;
-            }
+            //if (shareItem != null) {
+            //    shareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
+            //} else {
+            //    shareActionProvider = null;
+            //}
             mode.setTitle(R.string.thread_context_select);
             actionMode = mode;
             return true;
@@ -1411,7 +1424,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             if (DEBUG) Log.i(TAG, "onPrepareActionMode");
-            updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
+            //updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
             return true;
         }
 
@@ -1492,7 +1505,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (uri == null)
                 uri = Uri.parse(path);
             checkedImageUris.put(path, uri);
-            updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
+            //updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
         }
     };
 

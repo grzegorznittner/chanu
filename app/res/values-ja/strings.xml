@@ -115,6 +115,7 @@
 </string>
   <string name="translate_no_text">翻訳するテキストがありません</string>
   <string name="share_image">共有</string>
+  <string name="share_url">"共有 URL"</string>
   <string name="download_all_images_to_gallery_menu">画像のダウンロード</string>
   <string name="download_images_to_gallery_menu">画像のダウンロード</string>
   <string name="view_image_gallery_menu">スレッドギャラリー</string>

@@ -6,31 +6,17 @@
         >
 
     <include layout="@layout/board_title_bar" android:id="@+id/board_title_bar"/>
-    <!--
-    <include layout="@layout/board_refresh_bar"
-             android:layout_below="@+id/board_title_bar"
-            />
-    -->
 
-    <!-- <com.chanapps.four.component.EnhancedListView -->
     <GridView
             android:id="@+id/board_grid_view"
             style="@style/BoardGridView"
             android:layout_below="@+id/board_title_bar"
-            android:layout_above="@+id/board_grid_advert"
             />
 
     <TextView
             android:id="@+id/board_grid_empty_text"
             style="@style/BoardGridLayoutEmptyText"
             />
-
-    <!--
-    <ProgressBar
-            android:id="@+id/board_progress_bar"
-            style="@style/BoardProgressBar"
-            />
-    -->
 
     <include layout="@layout/ad_section"
              />

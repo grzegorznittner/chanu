@@ -89,6 +89,7 @@
   <string name="block_posts_menu">Beitrag blockieren</string>
   <string name="translate_no_text">Kein Text für eine Übersetzung gefunden</string>
   <string name="share_image">Teilen</string>
+  <string name="share_url">Teilen URL</string>
   <string name="download_all_images_to_gallery_menu">Bilder herunterladen</string>
   <string name="download_images_to_gallery_menu">Bild herunterladen</string>
   <string name="view_image_gallery_menu">Thread-Galerie</string>

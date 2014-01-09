@@ -116,7 +116,6 @@ public class PhotoPage extends ActivityState
     private MenuExecutor mMenuExecutor;
     private boolean mIsActive;
     private ShareActionProvider mShareActionProvider;
-    private ShareActionProvider mShareActionProviderURL;
 
     public static final String HTML_START = "<!DOCTYPE html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><meta http-equiv=\"cache-control\" content=\"no-cache\"/>" +
             "<meta name=\"viewport\" content=\"width=device-width, target-densitydpi=device-dpi, user-scalable=no\"/>" +
@@ -852,11 +851,6 @@ public class PhotoPage extends ActivityState
             mShareActionProvider = null;
         mShareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
         shareItem.setOnMenuItemClickListener(shareActionItemListener);
-        MenuItem shareItemURL = mMenu.findItem(R.id.action_share_url);
-        if (shareItemURL == null)
-            mShareActionProviderURL = null;
-        mShareActionProviderURL = (ShareActionProvider) shareItemURL.getActionProvider();
-        shareItemURL.setOnMenuItemClickListener(shareActionItemListener);
         if (DEBUG) Log.i(TAG, "setupshareActionProvider() mShareActionProvider=" + mShareActionProvider);
     }
 
@@ -888,31 +882,6 @@ public class PhotoPage extends ActivityState
                     synchronized (this) {
                         if (mShareActionProvider != null && intent != null)
                             mShareActionProvider.setShareIntent(intent);
-                    }
-                }
-            });
-    }
-
-    private void setShareIntentURL(final Intent intent) {
-        Handler handler = null;
-        try {
-            handler = new Handler();
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Couldn't create handler", e);
-        }
-        if (ActivityDispatcher.onUIThread())
-            synchronized (this) {
-                if (mShareActionProviderURL != null && intent != null)
-                    mShareActionProviderURL.setShareIntent(intent);
-            }
-        else if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (this) {
-                        if (mShareActionProviderURL != null && intent != null)
-                            mShareActionProviderURL.setShareIntent(intent);
                     }
                 }
             });
@@ -962,6 +931,7 @@ public class PhotoPage extends ActivityState
             if (DEBUG) Log.i(TAG, "updateSharedIntent no current photo, exiting");
             return;
         }
+        /*
         if (DEBUG) Log.i(TAG, "updateSharedIntent mCurrentPhoto=" + mCurrentPhoto);
         DataManager manager = mActivity.getDataManager();
         int type = mCurrentPhoto.getMediaType();
@@ -974,7 +944,7 @@ public class PhotoPage extends ActivityState
             setShareIntent(intent);
             if (DEBUG) Log.i(TAG, "updateSharedIntent mimeType=" + mimeType + " uri=" + uri.toString());
         }
-
+        */
 
         Object u = mCurrentPhoto.getDetails().getDetail(MediaDetails.INDEX_PATH);
         String url = u instanceof String ? (String)u : null;
@@ -982,7 +952,7 @@ public class PhotoPage extends ActivityState
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.putExtra(Intent.EXTRA_TEXT, url);
             intent.setType("text/plain");
-            setShareIntentURL(intent);
+            setShareIntent(intent);
             if (DEBUG) Log.i(TAG, "updateSharedIntent URL=" + url);
         }
     }

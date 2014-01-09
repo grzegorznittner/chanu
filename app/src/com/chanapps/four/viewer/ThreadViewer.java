@@ -171,7 +171,7 @@ public class ThreadViewer {
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
             setHeaderImage(viewHolder, cursor, flags, expandedImageListener);
         else
-            setImage(viewHolder, cursor, flags, expandedImageListener);
+            setImage(viewHolder, cursor, flags, expandedImageListener, showContextMenu);
         setCountryFlag(viewHolder, cursor, flags);
         setHeaderValue(viewHolder, cursor, sameIdOnClickListener);
         setSubject(viewHolder, cursor, flags, backlinkOnClickListener);
@@ -614,10 +614,10 @@ public class ThreadViewer {
     }
 
     static private boolean setImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
-                                    View.OnClickListener expandedImageListener) {
+                                    View.OnClickListener expandedImageListener, boolean showContextMenu) {
         if (viewHolder.list_item_image == null)
             return false;
-        setSpinnerTarget(viewHolder.list_item_image_spinner, expandedImageListener);
+        setSpinnerTarget(viewHolder.list_item_image_spinner, expandedImageListener, showContextMenu);
         if (!SettingsActivity.shouldLoadThumbs(viewHolder.list_item_image.getContext()))
             return showExpandableThumb(viewHolder, viewHolder.list_item_image);
         // display thumb and also expand if available
@@ -633,9 +633,12 @@ public class ThreadViewer {
         return true;
     }
 
-    static private void setSpinnerTarget(ImageView spinner, View.OnClickListener expandedImageListener) {
-        if (spinner == null || expandedImageListener == null)
+    static private void setSpinnerTarget(ImageView spinner, View.OnClickListener expandedImageListener, boolean showContextMenu) {
+        if (spinner == null || expandedImageListener == null || !showContextMenu) {
+            if (spinner != null)
+                spinner.setVisibility(View.GONE);
             return;
+        }
         spinner.setOnClickListener(expandedImageListener);
         spinner.setVisibility(View.VISIBLE);
     }

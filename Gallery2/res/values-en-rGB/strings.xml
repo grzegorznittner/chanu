@@ -48,7 +48,6 @@
     <string name="confirm_delete" msgid="7358770022173660511">"Delete"</string>
     <string name="cancel" msgid="3637516880917356226">"Cancel"</string>
     <string name="share" msgid="3619042788254195341">"Share"</string>
-    <string name="share_url" msgid="3619042788254195341">"Share URL"</string>
     <string name="select_all" msgid="3403283025220282175">"Select all"</string>
     <string name="deselect_all" msgid="5758897506061723684">"Deselect all"</string>
     <string name="slideshow" msgid="4355906903247112975">"Slideshow"</string>

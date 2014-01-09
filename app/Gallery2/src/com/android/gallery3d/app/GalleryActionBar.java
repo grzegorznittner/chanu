@@ -179,14 +179,6 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
         return shareActionProvider;
     }
 
-    public static ShareActionProvider initializeShareActionProviderURL(Menu menu) {
-        MenuItem item = menu.findItem(R.id.action_share_url);
-        ShareActionProvider shareActionProvider = null;
-        if (item != null)
-            shareActionProvider = (ShareActionProvider) item.getActionProvider();
-        return shareActionProvider;
-    }
-
     public void hideClusterMenu() {
         //mClusterRunner = null;
         //mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);

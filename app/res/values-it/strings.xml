@@ -90,6 +90,7 @@
   <string name="block_posts_menu">Blocca messaggio</string>
   <string name="translate_no_text">Nessun testo trovato da tradurre</string>
   <string name="share_image">Condividi</string>
+  <string name="share_url">"Condividi URL"</string>
   <string name="download_all_images_to_gallery_menu">Scarica immagini</string>
   <string name="download_images_to_gallery_menu">Scarica immagine</string>
   <string name="view_image_gallery_menu">Galleria discussione</string>

@@ -162,7 +162,6 @@ public class MenuExecutor {
         setMenuItemVisibility(menu, R.id.action_rotate_cw, supportRotate);
         setMenuItemVisibility(menu, R.id.action_crop, supportCrop);
         setMenuItemVisibility(menu, R.id.action_share, supportShare);
-        setMenuItemVisibility(menu, R.id.action_share_url, supportShare);
         setMenuItemVisibility(menu, R.id.action_setas, supportSetAs);
         setMenuItemVisibility(menu, R.id.action_show_on_map, supportShowOnMap);
         setMenuItemVisibility(menu, R.id.action_edit, supportEdit);
