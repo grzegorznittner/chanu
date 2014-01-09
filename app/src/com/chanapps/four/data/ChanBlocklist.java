@@ -65,21 +65,6 @@ public class ChanBlocklist {
         }
     }
 
-    public static Map<BlockType, Set<String>> getBlocklist(Context context) {
-        if (blocklist == null)
-            initBlocklist(context);
-        return blocklist;
-    }
-
-    public static List<String> getSorted(Context context, BlockType blockType) {
-        if (blocklist == null)
-            initBlocklist(context);
-        List<String> sorted = new ArrayList<String>();
-        sorted.addAll(blocklist.get(blockType));
-        Collections.sort(sorted);
-        return sorted;
-    }
-
     public static List<Pair<String, BlockType>> getSorted(Context context) {
         if (blocklist == null)
             initBlocklist(context);
@@ -157,14 +142,6 @@ public class ChanBlocklist {
         return false;
     }
 
-    public static void addAll(Context context, BlockType blockType, List<String> newBlocks) {
-        if (blocklist == null)
-            initBlocklist(context);
-        Set<String> blocks = blocklist.get(blockType);
-        blocks.addAll(newBlocks);
-        saveBlocklist(context, blockType);
-    }
-
     public static void add(Context context, BlockType blockType, String newBlock) {
         if (blocklist == null)
             initBlocklist(context);
@@ -201,6 +178,17 @@ public class ChanBlocklist {
             return true;
         if (post.com != null && testPattern.matcher(post.com).find())
             return true;
+        return false;
+    }
+
+    public static boolean isBlocked(Context context, ChanThread thread) {
+        if (isBlocked(context, (ChanPost)thread))
+            return true;
+        if (thread.lastReplies == null)
+            return false;
+        for (ChanPost post : thread.lastReplies)
+            if (isBlocked(context, post))
+                return true;
         return false;
     }
 

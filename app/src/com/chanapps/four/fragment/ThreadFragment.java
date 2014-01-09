@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.view.*;
 import android.widget.*;
@@ -982,12 +983,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }
     };
 
-    protected Map<ChanBlocklist.BlockType, List<String>> extractBlocklist(SparseBooleanArray postPos) {
-        Map<ChanBlocklist.BlockType, List<String>> blocklist = new HashMap<ChanBlocklist.BlockType, List<String>>();
-        List<String> tripcodes = new ArrayList<String>();
-        List<String> names = new ArrayList<String>();
-        List<String> emails = new ArrayList<String>();
-        List<String> userIds = new ArrayList<String>();
+    protected Set<Pair<String, ChanBlocklist.BlockType>> extractBlocklist(SparseBooleanArray postPos) {
+        Set<Pair<String, ChanBlocklist.BlockType>> blocklist = new HashSet<Pair<String, ChanBlocklist.BlockType>>();
         if (adapter == null)
             return blocklist;
         Cursor cursor = adapter.getCursor();
@@ -1001,25 +998,20 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 continue;
             String tripcode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TRIPCODE));
             if (tripcode != null && !tripcode.isEmpty())
-                tripcodes.add(tripcode);
+                blocklist.add(new Pair<String, ChanBlocklist.BlockType>(tripcode, ChanBlocklist.BlockType.TRIPCODE));
+
             String name = cursor.getString(cursor.getColumnIndex(ChanPost.POST_NAME));
             if (name != null && !name.isEmpty() && !name.equals("Anonymous"))
-                names.add(name);
+                blocklist.add(new Pair<String, ChanBlocklist.BlockType>(tripcode, ChanBlocklist.BlockType.NAME));
+
             String email = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EMAIL));
             if (email != null && !email.isEmpty() && !email.equals("sage"))
-                emails.add(email);
+                blocklist.add(new Pair<String, ChanBlocklist.BlockType>(tripcode, ChanBlocklist.BlockType.EMAIL));
+
             String userId = cursor.getString(cursor.getColumnIndex(ChanPost.POST_USER_ID));
             if (userId != null && !userId.isEmpty() && !userId.equals("Heaven"))
-                userIds.add(userId);
+                blocklist.add(new Pair<String, ChanBlocklist.BlockType>(tripcode, ChanBlocklist.BlockType.ID));
         }
-        if (tripcodes.size() > 0)
-            blocklist.put(ChanBlocklist.BlockType.TRIPCODE, tripcodes);
-        if (names.size() > 0)
-            blocklist.put(ChanBlocklist.BlockType.NAME, names);
-        if (emails.size() > 0)
-            blocklist.put(ChanBlocklist.BlockType.EMAIL, emails);
-        if (userIds.size() > 0)
-            blocklist.put(ChanBlocklist.BlockType.ID, userIds);
 
         return blocklist;
     }
@@ -1350,8 +1342,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             .show(getFragmentManager(), ReportPostDialogFragment.TAG);
                     return true;
                 case R.id.block_posts_menu:
-                    Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
-                    (new BlocklistSelectToAddDialogFragment(blocklist)).show(
+                    ChanBlocklist.save(getActivityContext(),
+                            new ArrayList<Pair<String, ChanBlocklist.BlockType>>(extractBlocklist(postPos)));
+                    (new BlocklistViewAllDialogFragment(ChanBlocklist.getSorted(getActivityContext()))).show(
                             getActivity().getFragmentManager(), TAG);
                     return true;
                 case R.id.web_menu:
@@ -1469,9 +1462,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             .show(getFragmentManager(), ReportPostDialogFragment.TAG);
                     return true;
                 case R.id.block_posts_menu:
-                    Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
-                    (new BlocklistSelectToAddDialogFragment(blocklist))
-                            .show(getActivity().getFragmentManager(), TAG);
+                    ChanBlocklist.save(getActivityContext(),
+                            new ArrayList<Pair<String, ChanBlocklist.BlockType>>(extractBlocklist(postPos)));
+                    (new BlocklistViewAllDialogFragment(ChanBlocklist.getSorted(getActivityContext()))).show(
+                            getActivity().getFragmentManager(), TAG);
                     return true;
                 case R.id.web_menu:
                     String url = ChanPost.postUrl(getActivityContext(), boardCode, threadNo, postNos[0]);
