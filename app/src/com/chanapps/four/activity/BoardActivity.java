@@ -681,7 +681,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         createAbsListView();
         setupBoardTitle();
         //startLoaderAsync();
-        (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
+        //(new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         checkNSFW();
         if (mDrawerAdapter != null)
             mDrawerAdapter.notifyDataSetInvalidated();
@@ -729,8 +729,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 if (board == null) {
                     Log.e(TAG, "startLoaderAsync() couldn't load board /" + boardCode + "/");
                 }
-                else if (board.defData) {
-                    Log.e(TAG, "startLoaderAsync() defdata, waiting for load of board /" + boardCode + "/");
+                else if (board.defData && !board.isMetaBoard()) { // meta boards are always defdata
+                    if (DEBUG) Log.i(TAG, "startLoaderAsync() defdata, waiting for load of board /" + boardCode + "/");
                     if (handler != null)
                         handler.post(new Runnable() {
                             @Override
