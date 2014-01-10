@@ -354,7 +354,7 @@
     <dimen name="ThreadListItemReplyNum_marginLeft">56dp</dimen>
     <dimen name="ThreadListItemBarOverflow_layout_width">32dp</dimen>
 
-    <string name="list_item_ago_date_separator">~</string>
+    <string name="list_item_ago_date_separator"> ~ </string>
 
     <integer name="PostReplyComment_minLines">6</integer>
 

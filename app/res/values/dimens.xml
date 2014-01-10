@@ -9,7 +9,7 @@
     <dimen name="BoardGridLargeSubject">14sp</dimen>
     <dimen name="BoardGridSubject">14sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
-    <dimen name="BoardGridSubjectHeader">28sp</dimen>
+    <dimen name="BoardGridSubjectHeader">26sp</dimen>
     <dimen name="BoardGridSubjectHeaderAbbr">36sp</dimen>
     <dimen name="BoardGridInfoHeader">14sp</dimen>
     <dimen name="BoardGridAction">12sp</dimen>
@@ -403,7 +403,7 @@
     <dimen name="ThreadListItemReplyNum_marginLeft">56dp</dimen>
     <dimen name="ThreadListItemBarOverflow_layout_width">32dp</dimen>
 
-    <string name="list_item_ago_date_separator"></string>
+    <string name="list_item_ago_date_separator"> ~ </string>
 
     <integer name="PostReplyComment_minLines">4</integer>
 

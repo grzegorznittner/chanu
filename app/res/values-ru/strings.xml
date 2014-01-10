@@ -486,10 +486,10 @@
   <string name="report_post_type_spam">Реклама/спам</string>
   <string name="plurals_thread_activity_udpdated_one">Новых комментариев : %1$d</string>
   <string name="plurals_thread_actviity_updated_other">Новых комментариев: %1$d</string>
-  <string name="plurals_thread_num_replies_label_one">ПРОКОММЕНТИРОВАТЬ</string>
+  <string name="plurals_thread_num_replies_label_one">КОММЕНТАРИЙ</string>
   <string name="plurals_thread_num_replies_label_other">КОММЕНТАРИИ</string>
-  <string name="plurals_thread_num_images_label_one">ИЗОБРАЖЕНИЕ</string>
-  <string name="plurals_thread_num_images_label_other">ИЗОБРАЖЕНИЯ</string>
+  <string name="plurals_thread_num_images_label_one">КАРТИНКА</string>
+  <string name="plurals_thread_num_images_label_other">КАРТИНКИ</string>
   <string name="cancel_download_title">Загрузка изображения</string>
   <string name="cancel_download_message">Отменить загрузку изображений?</string>
   <string name="pref_view_options">Опции отображения</string>
