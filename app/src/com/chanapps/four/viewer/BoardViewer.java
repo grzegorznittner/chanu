@@ -43,7 +43,7 @@ public class BoardViewer {
     public static final int HIDE_LAST_REPLIES = 0x04;
 
     private static String TAG = BoardViewer.class.getSimpleName();
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static ImageLoader imageLoader;

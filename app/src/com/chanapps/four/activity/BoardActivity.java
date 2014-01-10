@@ -50,7 +50,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     protected static final String UPDATE_BOARD_ACTION = "updateBoardAction";
     protected static final String UPDATE_ABBREV_ACTION = "updateAbbrevAction";
@@ -119,7 +119,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "switchBoardInternal begin /" + boardCode + "/ q=" + query);
         this.boardCode = boardCode;
         this.query = query;
-        getLoaderManager().destroyLoader(0); // clear out existing list
+        getSupportLoaderManager().destroyLoader(0); // clear out existing list
         //setupStaticBoards();
         loadDrawerArray();
         createAbsListView();
@@ -670,11 +670,32 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         setIntent(intent);
         setFromIntent(intent);
+        /*
+        if (absListView != null)
+            absListView.setAdapter(null);
+        adapter = null;
+        cursorLoader = null;
+        */
+        getSupportLoaderManager().destroyLoader(0); // clear out existing list
+        loadDrawerArray();
         createAbsListView();
         setupBoardTitle();
+        //startLoaderAsync();
+        (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
+        checkNSFW();
         if (mDrawerAdapter != null)
             mDrawerAdapter.notifyDataSetInvalidated();
+
+        //createAbsListView();
+        //setupBoardTitle();
+        //setAdapters();
+        //if (mDrawerAdapter != null)
+        //    mDrawerAdapter.notifyDataSetInvalidated();
         if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/ q=" + query);
+
+
+        //setupStaticBoards();
+
     }
 
     @Override
@@ -704,19 +725,31 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 catch (Exception e) {
                     Log.e(TAG, "startLoaderAsync() exception loading board", e);
                 }
+
                 if (board == null) {
                     Log.e(TAG, "startLoaderAsync() couldn't load board /" + boardCode + "/");
-                    return;
                 }
-                updateThreads(board);
-                final ChanBoard finalBoard = board;
-                if (handler != null)
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            startLoader(finalBoard);
-                        }
-                    });
+                else if (board.defData) {
+                    Log.e(TAG, "startLoaderAsync() defdata, waiting for load of board /" + boardCode + "/");
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                onRefresh();
+                            }
+                        });
+                }
+                else {
+                    updateThreads(board);
+                    final ChanBoard finalBoard = board;
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                startLoader(finalBoard);
+                            }
+                        });
+                }
             }
         }).start();
     }
@@ -869,7 +902,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void onStop () {
     	super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
-        getLoaderManager().destroyLoader(0);
+        getSupportLoaderManager().destroyLoader(0);
         closeSearch();
     	handler = null;
         if (absListView != null && absListView instanceof EnhancedListView)
@@ -882,7 +915,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 		super.onDestroy();
         if (DEBUG) Log.i(TAG, "onDestroy /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         if (cursorLoader != null)
-            getLoaderManager().destroyLoader(0);
+            getSupportLoaderManager().destroyLoader(0);
 		handler = null;
         LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateBoardReceived);
 	}
@@ -922,6 +955,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     + " count=" + (data == null ? 0 : data.getCount()));
             if (absListView == null)
                 createAbsListView();
+
             //adapter.swapCursor(data);
             adapter.changeCursor(data);
 
@@ -1844,7 +1878,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (intent == null || !intent.getAction().equals(UPDATE_BOARD_ACTION))
                 return;
             if (!intent.hasExtra(ChanBoard.BOARD_CODE) || intent.getStringExtra(ChanBoard.BOARD_CODE) == null) {
-                setAdapters();
+                //setAdapters();
                 refresh();
                 return;
             }
@@ -1854,7 +1888,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             //        : -1;
             //if (DEBUG) Log.i(TAG, "onUpdateBoardReceived /" + boardCode + "/ received=/" + receivedBoardCode + "/"
             //        + (receivedThreadNo >= 0 ? receivedThreadNo : ""));
-            setAdapters();
+            //setAdapters();
             if (!receivedBoardCode.equals(boardCode))
                 return;
             //if (receivedThreadNo > 0)
