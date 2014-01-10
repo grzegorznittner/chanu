@@ -642,21 +642,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         mPullToRefreshAttacher.setEnabled(enabled);
     }
 
-    protected class LoggingPauseOnScrollListener extends PauseOnScrollListener {
-        public LoggingPauseOnScrollListener(ImageLoader imageLoader, boolean pauseOnScroll, boolean pauseOnFling) {
-            super(imageLoader, pauseOnScroll, pauseOnFling, null);
-        }
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-    }
-
     @Override
     protected void onNewIntent(Intent intent) { // for when we coming from a different class
         if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE)
@@ -670,32 +655,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         setIntent(intent);
         setFromIntent(intent);
-        /*
-        if (absListView != null)
-            absListView.setAdapter(null);
-        adapter = null;
-        cursorLoader = null;
-        */
         getSupportLoaderManager().destroyLoader(0); // clear out existing list
         loadDrawerArray();
         createAbsListView();
         setupBoardTitle();
-        //startLoaderAsync();
-        //(new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         checkNSFW();
         if (mDrawerAdapter != null)
             mDrawerAdapter.notifyDataSetInvalidated();
-
-        //createAbsListView();
-        //setupBoardTitle();
-        //setAdapters();
-        //if (mDrawerAdapter != null)
-        //    mDrawerAdapter.notifyDataSetInvalidated();
         if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/ q=" + query);
-
-
-        //setupStaticBoards();
-
     }
 
     @Override
@@ -704,12 +671,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (handler == null)
             handler = new Handler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
-        /*
-        forceGridViewOptions();
-        startLoaderAsync();
-        */
-
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
         AnalyticsComponent.onStart(this);
     }
 
