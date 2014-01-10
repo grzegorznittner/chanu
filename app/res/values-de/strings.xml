@@ -1167,4 +1167,15 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
     <string name="ad_upgrade">Upgrade nach Profi</string>
     <string name="ad_upgrade_sum">Fördern Entwicklung und neue Funktionalitäten</string>
 
+    <string name="pref_hide_last_replies">Neueste Antworten verstecken</string>
+    <string name="show_hidden_threads">Versteckte Threads aufdecken</string>
+	<string name="undo">Rückgängig machen</string>
+	<string name="undo_all">Alles rückgängig machen</string>
+    <string name="block_type_id">Id</string>
+    <string name="block_type_trip">Tripcode</string>
+    <string name="block_type_text">Text</string>
+    <string name="pref_share_image_url">Teilen Bild via URL</string>
+    <string name="pref_share_image_url_summ_on">Teilen URL statt Bilddatei</string>
+    <string name="pref_share_image_url_summ_off">Teilen Bilddatei statt URL</string>
+
 </resources>

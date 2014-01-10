@@ -1336,4 +1336,26 @@
     <string name="font_size_large">Large</string>
     <string name="font_size_huge">Huge</string>
 
+    <string name="pref_hide_last_replies">Hide Last Replies</string>
+    <string name="show_hidden_threads">Show Hidden Threads</string>
+	<string name="undo">Undo</string>
+	<string name="undo_all">Undo All</string>
+    <string name="block_type_id">Id</string>
+    <string name="block_type_trip">Tripcode</string>
+    <string name="block_type_text">Text</string>
+    <string name="pref_share_image_url">Share Image via URL</string>
+    <string name="pref_share_image_url_summ_on">Share URL instead of image file</string>
+    <string name="pref_share_image_url_summ_off">Share image file instead of URL</string>
+
+    <string name="pref_hide_last_replies">Hide Last Replies</string>
+    <string name="show_hidden_threads">Show Hidden Threads</string>
+    <string name="undo">Undo</string>
+    <string name="undo_all">Undo All</string>
+    <string name="block_type_id">Id</string>
+    <string name="block_type_trip">Tripcode</string>
+    <string name="block_type_text">Text</string>
+    <string name="pref_share_image_url">Share Image via URL</string>
+    <string name="pref_share_image_url_summ_on">Share URL instead of image file</string>
+    <string name="pref_share_image_url_summ_off">Share image file instead of URL</string>
+
 </resources>

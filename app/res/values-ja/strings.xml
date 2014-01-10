@@ -617,5 +617,16 @@
   <string name="ad_upgrade">プロ版にアップグレード</string>
   <string name="ad_upgrade_sum">開発と新機能の追加をサポートしてください
 
+    <string name="pref_hide_last_replies">最後の返信を表示しない</string>
+    <string name="show_hidden_threads">隠されたスレッドを表示</string>
+	<string name="undo">戻す</string>
+	<string name="undo_all">すべて戻す</string>
+    <string name="block_type_id">身元</string>
+    <string name="block_type_trip">はキャップ</string>
+    <string name="block_type_text">テキスト</string>
+    <string name="pref_share_image_url">URL経由で共有イメージ</string>
+    <string name="pref_share_image_url_summ_on">代わりに、画像ファイルの共有のURL</string>
+    <string name="pref_share_image_url_summ_off">代わりに、URLの共有イメージファイル</string>
+
 </string>
 </resources>

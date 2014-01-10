@@ -527,4 +527,27 @@ Tablice uznawane jako NSFW (ryzykowne w pracy) są domyślnie ukryte. Te tablice
   <string name="pref_use_fast_scroll">Szybkie przewijanie</string>
   <string name="ad_upgrade">Uaktualnienie do Pro</string>
   <string name="ad_upgrade_sum">Wsparcie rozwoju i nowe funkcje</string>
+
+    <string name="pref_hide_last_replies">Hide Last Replies</string>
+    <string name="show_hidden_threads">Show Hidden Threads</string>
+	<string name="undo">Undo</string>
+	<string name="undo_all">Undo All</string>
+    <string name="block_type_id">Id</string>
+    <string name="block_type_trip">Tripcode</string>
+    <string name="block_type_text">Text</string>
+    <string name="pref_share_image_url">Share Image via URL</string>
+    <string name="pref_share_image_url_summ_on">Share URL instead of image file</string>
+    <string name="pref_share_image_url_summ_off">Share image file instead of URL</string>
+
+    <string name="pref_hide_last_replies">Ukryć ostatnich odpowiedzi</string>
+    <string name="show_hidden_threads">Pokaż ukryte wątki</string>
+    <string name="undo">Anulować</string>
+    <string name="undo_all">Anulować wszystkie</string>
+    <string name="block_type_id">Id</string>
+    <string name="block_type_trip">Tripcode</string>
+    <string name="block_type_text">Tekst</string>
+    <string name="pref_share_image_url">URL obrazu poprzez udział</string>
+    <string name="pref_share_image_url_summ_on">Podziel URL zamiast pliku obrazu</string>
+    <string name="pref_share_image_url_summ_off">Podziel się plik obrazu, zamiast adresu URL</string>
+
 </resources>

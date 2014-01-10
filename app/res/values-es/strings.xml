@@ -1148,4 +1148,15 @@
     <string name="ad_upgrade">Actualizar a Pro</string>
     <string name="ad_upgrade_sum">Apoyar desarrollo y características nuevas</string>
 
+    <string name="pref_hide_last_replies">Ocultar últimas respuestas</string>
+    <string name="show_hidden_threads">Monstrar hilo oculto</string>
+	<string name="undo">Anular</string>
+	<string name="undo_all">Anular todo</string>
+    <string name="block_type_id">Id</string>
+    <string name="block_type_trip">Tripcode</string>
+    <string name="block_type_text">Texto</string>
+    <string name="pref_share_image_url">Compartir imágenes a través de la URL</string>
+    <string name="pref_share_image_url_summ_on">Compartir URL en lugar del archivo de imagen</string>
+    <string name="pref_share_image_url_summ_off">Compartir de archivos de imagen en lugar de la URL</string>
+
 </resources>

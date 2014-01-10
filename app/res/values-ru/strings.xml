@@ -415,8 +415,10 @@
   <string name="board_desc_3">Моделирование и ИЗО</string>
   <string name="board_desc_a">Новеллы и видео</string>
   <string name="board_desc_adv">Спроси и узнай</string>
-  <string name="board_desc_an">Домашние животные, растения, любимцы</string>
-  <string name="board_desc_asp">BMX, Катание на лыжах, прыжки с парашютом</string>
+  <!-- <string name="board_desc_an">Домашние животные, растения, любимцы</string> -->
+  <string name="board_desc_an">Домашние животные, растения</string>
+  <!-- <string name="board_desc_asp">BMX, Катание на лыжах, прыжки с парашютом</string> -->
+  <string name="board_desc_asp">Прыжки с парашютом</string>
   <string name="board_desc_b">Анонимные анархисты</string>
   <string name="board_desc_c">Waifus и другие</string>
   <string name="board_desc_cgl">Костюмы и Лолита</string>
@@ -462,7 +464,7 @@
   <string name="board_desc_t">Обмен ссылками</string>
   <string name="board_desc_tg">Доски и ролевые игры</string>
   <string name="board_desc_toy">Фигуры и предметы коллекционирования</string>
-  <string name="board_desc_trv">Путешествия, приключения</string>
+  <string name="board_desc_trv">Приключения</string>
   <string name="board_desc_tv">Сериалы</string>
   <string name="board_desc_u">Лесбийское аниме</string>
   <string name="board_desc_v">Консоли и PC игры</string>
@@ -525,4 +527,15 @@
   <string name="pref_use_fast_scroll">Быстрое прокручивание</string>
   <string name="ad_upgrade">Обновление до Pro</string>
   <string name="ad_upgrade_sum">Поддержать разработку и добавление новых функций</string>
+
+    <string name="show_hidden_threads">Показать скрытые темы</string>
+    <string name="undo">Отменить правку</string>
+    <string name="undo_all">Отменить все правки</string>
+    <string name="block_type_id">Идентификатор</string>
+    <string name="block_type_trip">Tripcode</string>
+    <string name="block_type_text">Текст</string>
+    <string name="pref_share_image_url">Поделиться картинкой через URL</string>
+    <string name="pref_share_image_url_summ_on">Поделиться URL вместо файла картинки</string>
+    <string name="pref_share_image_url_summ_off">Поделиться файлом картинки вемсто URL</string>
+
 </resources>
