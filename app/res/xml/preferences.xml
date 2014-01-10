@@ -247,15 +247,13 @@
                 android:summaryOff="@string/pref_background_data_summ_off"
                 android:defaultValue="false" />
 
-        <!--
         <CheckBoxPreference
-                android:key="pref_show_nsfw_boards"
-                android:title="@string/pref_show_nsfw_boards"
-                android:summary="@string/pref_show_nsfw_boards_summ_detail"
-                android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
-                android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
-                android:defaultValue="false" />
-        -->
+                android:key="pref_share_image_url"
+                android:title="@string/pref_share_image_url"
+                android:summaryOn="@string/pref_share_image_url_summ_on"
+                android:summaryOff="@string/pref_share_image_url_summ_off"
+                android:defaultValue="false"
+                />
 
         <CheckBoxPreference
                 android:key="pref_download_nomedia"

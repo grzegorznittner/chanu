@@ -71,6 +71,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_BLOCKLIST_TEXT = "prefBlocklistText";
     public static final String PREF_AUTOMATICALLY_MANAGE_WATCHLIST = "pref_automatically_manage_watchlist";
     public static final String PREF_USE_FAST_SCROLL = "pref_use_fast_scroll";
+    public static final String PREF_SHARE_IMAGE_URL = "pref_share_image_url";
 
     static public boolean shouldLoadThumbs(Context context) {
         String autoloadType = PreferenceManager.getDefaultSharedPreferences(context)

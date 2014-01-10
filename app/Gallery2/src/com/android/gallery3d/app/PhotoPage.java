@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.view.View.MeasureSpec;
@@ -62,6 +63,7 @@ import com.android.gallery3d.ui.UserInteractionListener;
 import com.android.gallery3d.util.GalleryUtils;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.activity.VideoViewActivity;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
@@ -351,17 +353,27 @@ public class PhotoPage extends ActivityState
     private void updateCurrentPhoto(final MediaItem photo) {
         if (DEBUG) Log.w(TAG, "updateCurrentPhoto photo: " + photo.getPath() + ", uri: " + photo.getPlayUri());
         hideOrPlayAnimGif(photo);
-        if (mCurrentPhoto == photo) return;
+        if (mCurrentPhoto == photo) {
+            updateDetails();
+            updateMenuOperations();
+            updateSharedIntent();
+            return;
+        }
         mCurrentPhoto = photo;
         if (mCurrentPhoto == null) return;
+        updateDetails();
         updateMenuOperations();
-        if (mShowDetails) {
-            mDetailsHelper.reloadDetails(mModel.getCurrentIndex());
-        }
         setTitle(photo.getName());
         mPhotoView.showVideoPlayIcon(
                 photo.getMediaType() == MediaObject.MEDIA_TYPE_VIDEO);
         updateSharedIntent();
+    }
+
+    private void updateDetails() {
+        if (mCurrentPhoto == null)
+            return;
+        if (mShowDetails)
+            mDetailsHelper.reloadDetails(mModel.getCurrentIndex());
     }
 
     private void updateMenuOperations() {
@@ -888,6 +900,16 @@ public class PhotoPage extends ActivityState
     }
 
     protected void updateSharedIntent() {
+        boolean shareImageUrl = PreferenceManager
+                .getDefaultSharedPreferences((Context)mActivity)
+                .getBoolean(SettingsActivity.PREF_SHARE_IMAGE_URL, false);
+        if (shareImageUrl)
+            setURLShareIntent();
+        else
+            setImageShareIntent();
+    }
+
+    private void setImageShareIntent() {
         //File localImage = new File(URI.create(filePath));
         //if (localImage == null || !localImage.exists() || !localImage.canRead() || localImage.length() <= 0) {
         //    Log.e(TAG, "updateSharedIntent no image file found for path=" + filePath);
@@ -931,7 +953,6 @@ public class PhotoPage extends ActivityState
             if (DEBUG) Log.i(TAG, "updateSharedIntent no current photo, exiting");
             return;
         }
-        /*
         if (DEBUG) Log.i(TAG, "updateSharedIntent mCurrentPhoto=" + mCurrentPhoto);
         DataManager manager = mActivity.getDataManager();
         int type = mCurrentPhoto.getMediaType();
@@ -944,8 +965,13 @@ public class PhotoPage extends ActivityState
             setShareIntent(intent);
             if (DEBUG) Log.i(TAG, "updateSharedIntent mimeType=" + mimeType + " uri=" + uri.toString());
         }
-        */
+    }
 
+    private void setURLShareIntent() {
+        if (mCurrentPhoto == null) {
+            if (DEBUG) Log.i(TAG, "updateSharedIntent no current photo, exiting");
+            return;
+        }
         Object u = mCurrentPhoto.getDetails().getDetail(MediaDetails.INDEX_PATH);
         String url = u instanceof String ? (String)u : null;
         if (url != null && !url.isEmpty()) {

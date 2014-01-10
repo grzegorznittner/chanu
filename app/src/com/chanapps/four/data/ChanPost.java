@@ -582,14 +582,17 @@ public class ChanPost implements Serializable {
                     + postCal.get(Calendar.DAY_OF_MONTH);
         }
         else {
-            int hour = postCal.get(Calendar.HOUR);
+            int hour = postCal.get(Calendar.HOUR_OF_DAY);
             int min = postCal.get(Calendar.MINUTE);
+            return hour + ":" + min;
+            /*
             return (hour == 0 ? 12 : hour)
                     + ":"
                     + (min < 10 ? "0" : "")
                     + min
                     + " "
                     + postCal.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
+                    */
         }
     }
 
