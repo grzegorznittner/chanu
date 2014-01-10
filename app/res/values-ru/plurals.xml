@@ -1,0 +1,16 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+
+    <plurals name="thread_activity_updated">
+        <item quantity="one">@string/plurals_thread_activity_udpdated_one</item>
+        <item quantity="other">@string/plurals_thread_actviity_updated_other</item>
+    </plurals>
+    <plurals name="thread_num_replies_label">
+        <item quantity="one">@string/plurals_thread_num_replies_label_one</item>
+        <item quantity="other">@string/plurals_thread_num_replies_label_other</item>
+    </plurals>
+    <plurals name="thread_num_images_label">
+        <item quantity="one">@string/plurals_thread_num_images_label_one</item>
+        <item quantity="other">@string/plurals_thread_num_images_label_other</item>
+    </plurals>
+
+</resources>
