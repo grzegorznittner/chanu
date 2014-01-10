@@ -85,6 +85,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected int checkedPos = -1;
     protected BoardSortType boardSortType;
     protected int viewPosition = -1;
+    protected boolean scheduleRecreate = false;
     /*
     public static void startDefaultActivity(Context from) {
         startActivity(from, ChanBoard.defaultBoardCode(from), "");
@@ -782,7 +783,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         */
 
-        if (isAlreadyLoaded()) {
+        if (scheduleRecreate) { // used to support configuration change when coming back to board from another activity
+            scheduleRecreate = false;
+            recreateListViewPreservingPosition();
+        }
+        else if (isAlreadyLoaded()) {
             if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " already loaded");
         }
         else {
@@ -1989,21 +1994,32 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        int orientation = getResources().getConfiguration().orientation;
+        int newOrientation = newConfig.orientation;
+        if (DEBUG) Log.i(TAG, "onConfigurationChanged orientation=" + orientation + " newOrientation=" + orientation
+                + " handler=" + handler + " absListView=" + absListView);
         super.onConfigurationChanged(newConfig);
-        if (handler != null && absListView != null) {
-            final int pos = absListView.getFirstVisiblePosition();
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Cursor c = adapter.getCursor();
-                    createAbsListView();
-                    setupBoardTitle();
-                    //adapter.swapCursor(c);
-                    adapter.changeCursor(c);
-                    absListView.setSelection(pos);
-                }
-            });
-        }
+        if (handler == null || absListView == null)
+            scheduleRecreate = true;
+        else
+            recreateListViewPreservingPosition();
+    }
+
+    protected void recreateListViewPreservingPosition() {
+        if (handler == null || absListView == null)
+            return;
+        final int pos = absListView.getFirstVisiblePosition();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Cursor c = adapter.getCursor();
+                createAbsListView();
+                setupBoardTitle();
+                //adapter.swapCursor(c);
+                adapter.changeCursor(c);
+                absListView.setSelection(pos);
+            }
+        });
     }
 
 }

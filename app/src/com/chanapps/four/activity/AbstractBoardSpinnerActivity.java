@@ -2,6 +2,7 @@ package com.chanapps.four.activity;
 
 import android.app.ActionBar;
 import android.content.*;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
