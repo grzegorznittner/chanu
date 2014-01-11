@@ -674,6 +674,39 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         AnalyticsComponent.onStart(this);
     }
 
+    @Override
+	protected void onResume() {
+		super.onResume();
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
+        if (handler == null)
+            handler = new Handler();
+        /*
+        int oldGridViewOptions = gridViewOptions;
+        initGridViewOptions();
+        if (gridViewOptions != oldGridViewOptions) {
+            Cursor c = adapter.getCursor();
+            createAbsListView();
+            setupBoardTitle();
+            adapter.swapCursor(c);
+        }
+        */
+
+        if (scheduleRecreate) { // used to support configuration change when coming back to board from another activity
+            scheduleRecreate = false;
+            recreateListViewPreservingPosition();
+        }
+        else if (isAlreadyLoaded()) {
+            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " already loaded");
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting loader");
+            startLoaderAsync();
+        }
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting activity change");
+        activityChangeAsync();
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
+    }
+
     protected void startLoaderAsync() {
         new Thread(new Runnable() {
             @Override
@@ -734,9 +767,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         else if (board.hasData() &&
                 (health == NetworkProfile.Health.NO_CONNECTION
-                //        || health == NetworkProfile.Health.BAD
-                //        || health == NetworkProfile.Health.VERY_SLOW
-                //        || health == NetworkProfile.Health.SLOW
+                        //        || health == NetworkProfile.Health.BAD
+                        //        || health == NetworkProfile.Health.VERY_SLOW
+                        //        || health == NetworkProfile.Health.SLOW
                 ))
         {
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection " + health + ", loading immediately");
@@ -760,50 +793,21 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     }
 
-    @Override
-	protected void onResume() {
-		super.onResume();
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
-        if (handler == null)
-            handler = new Handler();
-        /*
-        int oldGridViewOptions = gridViewOptions;
-        initGridViewOptions();
-        if (gridViewOptions != oldGridViewOptions) {
-            Cursor c = adapter.getCursor();
-            createAbsListView();
-            setupBoardTitle();
-            adapter.swapCursor(c);
-        }
-        */
-
-        if (scheduleRecreate) { // used to support configuration change when coming back to board from another activity
-            scheduleRecreate = false;
-            recreateListViewPreservingPosition();
-        }
-        else if (isAlreadyLoaded()) {
-            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " already loaded");
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting loader");
-            startLoaderAsync();
-        }
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting activity change");
-        activityChangeAsync();
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
-    }
-
     protected boolean isAlreadyLoaded() {
+        if (DEBUG) Log.i(TAG, "isAlreadyLoaded() adapter=" + adapter);
         if (adapter == null)
             return false;
+        if (DEBUG) Log.i(TAG, "isAlreadyLoaded() count=" + adapter.getCount());
         if (adapter.getCount() == 0)
             return false;
         Cursor cursor = adapter.getCursor();
+        if (DEBUG) Log.i(TAG, "isAlreadyLoaded() cursor=" + cursor);
         if (cursor == null)
             return false;
         if (!cursor.moveToFirst())
             return false;
         String cursorBoardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+        if (DEBUG) Log.i(TAG, "isAlreadyLoaded() cursorBoardCode=" + cursorBoardCode + " boardCode=" + boardCode);
         if (cursorBoardCode == null)
             return false;
         if (cursorBoardCode.isEmpty())
@@ -863,7 +867,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void onStop () {
     	super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
-        getSupportLoaderManager().destroyLoader(0);
+        //getSupportLoaderManager().destroyLoader(0);
         closeSearch();
     	handler = null;
         if (absListView != null && absListView instanceof EnhancedListView)
