@@ -563,7 +563,7 @@ public class ChanPost implements Serializable {
                     countryCode.toLowerCase());
     }
 
-    public String dateText() {
+    public String dateText(Context context) {
         long timeMs = time > 0 ? 1000 * time : tim;
         if (timeMs <= 0)
             return "";
@@ -582,18 +582,58 @@ public class ChanPost implements Serializable {
                     + postCal.get(Calendar.DAY_OF_MONTH);
         }
         else {
-            int hour = postCal.get(Calendar.HOUR_OF_DAY);
-            int min = postCal.get(Calendar.MINUTE);
-            return hour + ":" + min;
-            /*
-            return (hour == 0 ? 12 : hour)
-                    + ":"
-                    + (min < 10 ? "0" : "")
-                    + min
-                    + " "
-                    + postCal.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
-                    */
+            return timeString(context, postCal);
         }
+    }
+
+    protected static final String[] TWELVE_HOUR_CLOCK_COUNTRY_CODES = {
+            "AL",
+            "SG",
+            "TW",
+            "AU",
+            "BZ",
+            "CA",
+            "JM",
+            "NZ",
+            "PH",
+            "TT",
+            "ZA",
+            "US",
+            "ZW",
+            "GR",
+            "MY",
+            "KP",
+            "KR",
+            "MX"
+    };
+    protected static final Set<String> TWELVE_HOUR_CLOCK_COUNTRY_CODES_SET
+            = new HashSet<String>(Arrays.asList(TWELVE_HOUR_CLOCK_COUNTRY_CODES));
+
+    protected String timeString(Context context, Calendar postCal) {
+        if (TWELVE_HOUR_CLOCK_COUNTRY_CODES_SET.contains(context.getResources().getConfiguration().locale.getCountry()))
+            return twelveHourString(postCal);
+        else
+            return twentyFourHourString(postCal);
+    }
+
+    protected String twelveHourString(Calendar postCal) {
+        int hour = postCal.get(Calendar.HOUR_OF_DAY);
+        int min = postCal.get(Calendar.MINUTE);
+        return (hour == 0 ? 12 : hour)
+                + ":"
+                + (min < 10 ? "0" : "")
+                + min
+                + " "
+                + postCal.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
+    }
+
+    protected String twentyFourHourString(Calendar postCal) {
+        int hour = postCal.get(Calendar.HOUR_OF_DAY);
+        int min = postCal.get(Calendar.MINUTE);
+        return hour
+                + ":"
+                + (min < 10 ? "0" : "")
+                + min;
     }
 
     public String imageDimensions() {
@@ -1054,7 +1094,7 @@ public class ChanPost implements Serializable {
                 images,
                 textComponents[0],
                 textComponents[1],
-                dateText(),
+                dateText(context),
                 tn_w,
                 tn_h,
                 w,
