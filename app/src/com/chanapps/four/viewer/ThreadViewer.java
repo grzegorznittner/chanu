@@ -1114,33 +1114,103 @@ public class ThreadViewer {
     public static boolean toggleExpandedImage(ThreadViewHolder viewHolder) { // returns true iff expanded image will be shown
         if (viewHolder == null || viewHolder.list_item_image_wrapper == null || viewHolder.list_item_image_expanded_wrapper == null)
             return false;
-        if (viewHolder.list_item_image_header != null) {
-            if (viewHolder.list_item_image_expanded.getVisibility() == View.VISIBLE
-                    || viewHolder.list_item_image_expanded_webview.getVisibility() == View.VISIBLE) {
-                viewHolder.list_item_image_expanded.setVisibility(View.GONE);
-                viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
-                viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+        if (viewHolder.isWebView)
+            return toggleExpandedWebView(viewHolder);
+        else
+            return toggleExpandedImageView(viewHolder);
+    }
 
-                ViewGroup.LayoutParams params = viewHolder.list_item_image_header.getLayoutParams();
-                if (params != null) {
-                    Point imageSize = new Point(params.width, params.height);
-                    sizeView(viewHolder.list_item_image_header, imageSize);
-                    ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
-                    if (DEBUG) Log.i(TAG, "sizedHeader " + params.width + "x" + params.height);
-                }
+    private static boolean toggleExpandedWebView(ThreadViewHolder viewHolder) {
+        if (viewHolder.list_item_image_header != null)
+            return toggleExpandedWebViewHeader(viewHolder);
+        else
+            return toggleExpandedWebViewItem(viewHolder);
+    }
 
-                viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
-                return false;
+    private static boolean toggleExpandedWebViewHeader(ThreadViewHolder viewHolder) {
+        if (viewHolder.list_item_image_expanded_webview.getVisibility() == View.VISIBLE) {
+            toggleExpandedWebViewItem(viewHolder);
+            viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+            ViewGroup.LayoutParams params = viewHolder.list_item_image_header.getLayoutParams();
+            if (params != null) {
+                Point imageSize = new Point(params.width, params.height);
+                sizeView(viewHolder.list_item_image_header, imageSize);
+                ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
+                if (DEBUG) Log.i(TAG, "sizedHeader " + params.width + "x" + params.height);
             }
-            return true;
+            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+            return false;
         }
+        else {
+            toggleExpandedWebViewItem(viewHolder);
+            viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+        }
+        return true;
+    }
+
+    private static boolean toggleExpandedWebViewItem(ThreadViewHolder viewHolder) {
         if (viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) {
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
+            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+            viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
             viewHolder.list_item_image_wrapper.setVisibility(View.VISIBLE);
             return false;
         }
-        viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
-        viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+        else {
+            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+            viewHolder.list_item_image_expanded_webview.setVisibility(View.VISIBLE);
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
+            viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+            return true;
+        }
+    }
+
+    private static boolean toggleExpandedImageView(ThreadViewHolder viewHolder) {
+        if (viewHolder.list_item_image_header != null)
+            return toggleExpandedImageViewHeader(viewHolder);
+        else
+            return toggleExpandedImageViewItem(viewHolder);
+    }
+
+    private static boolean toggleExpandedImageViewHeader(ThreadViewHolder viewHolder) {
+        if (viewHolder.list_item_image_expanded.getVisibility() == View.VISIBLE) {
+            toggleExpandedImageViewItem(viewHolder);
+            viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+            ViewGroup.LayoutParams params = viewHolder.list_item_image_header.getLayoutParams();
+            if (params != null) {
+                Point imageSize = new Point(params.width, params.height);
+                sizeView(viewHolder.list_item_image_header, imageSize);
+                ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
+                if (DEBUG) Log.i(TAG, "sizedHeader " + params.width + "x" + params.height);
+            }
+            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else {
+            toggleExpandedImageViewItem(viewHolder);
+            viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+        }
         return true;
     }
+
+    private static boolean toggleExpandedImageViewItem(ThreadViewHolder viewHolder) {
+        if (viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) {
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
+            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+            viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
+            viewHolder.list_item_image_wrapper.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else {
+            viewHolder.list_item_image_expanded.setVisibility(View.VISIBLE);
+            viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
+            viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+            return true;
+        }
+    }
+
+
 }

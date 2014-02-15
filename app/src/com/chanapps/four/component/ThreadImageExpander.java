@@ -117,10 +117,11 @@ public class ThreadImageExpander {
 
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
 
-        //if (isAnimatedGif() || isBigImage())
+        viewHolder.isWebView = isAnimatedGif();
+        if (viewHolder.isWebView)
             displayWebView();
-        //else
-        //    displayImageView();
+        else
+            displayImageView();
     }
 
     protected boolean isAnimatedGif() {
@@ -229,8 +230,9 @@ public class ThreadImageExpander {
                 //viewHolder.list_item_image_expansion_target.setOnClickListener(null);
                 //viewHolder.list_item_image_expansion_target.setForeground(view.getResources().getDrawable(R.drawable.null_selector_bg));
             }
-            if (withProgress)
-                ThreadViewer.toggleExpandedImage(viewHolder);
+
+            //if (withProgress)
+            //    ThreadViewer.toggleExpandedImage(viewHolder);
         }
 
         @Override

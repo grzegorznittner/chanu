@@ -56,6 +56,7 @@ public class ThreadViewHolder {
     public View list_item_num_horizontal_border;
     public View list_item_num_vertical_border;
     public View list_item_right_menu_spacer;
+    public boolean isWebView;
 
     public ThreadViewHolder(View item) {
         list_item = (ViewGroup)item;
