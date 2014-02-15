@@ -381,6 +381,7 @@
     <!-- board names -->
     <string name="board_type_japanese_culture">Japanese Culture</string>
     <string name="board_a">Anime &amp; Manga</string>
+    <string name="board_biz">Business &amp; Finance</string>
     <string name="board_c">Anime/Cute</string>
     <string name="board_w">Anime/Wallpapers</string>
     <string name="board_m">Mecha</string>
@@ -462,6 +463,7 @@
     <string name="board_desc_an">Pets, plants, cuddlies</string>
     <string name="board_desc_asp">BMX, skiing, parachuting</string>
     <string name="board_desc_b">Anarchists Anonymous</string>
+    <string name="board_desc_biz">Get rich or die trying</string>
     <string name="board_desc_c">Waifus and others</string>
     <string name="board_desc_cgl">Costumes and lolita</string>
     <string name="board_desc_ck">Recipies and kitchenware</string>
@@ -613,6 +615,18 @@
 ]]>
 </string>
 
+<string name="board_biz_rules">
+<![CDATA[
+<h3>/biz/ - Business &amp; Finance</h3>
+<p>All discussion should pertain to business, finance, and economics related topics.
+This includes financial markets, securities, currencies (including cryptocurrencies),
+and commodities—as well as topics relating to starting and running a business.</p>
+<p>All political discussion belongs in /pol/. Conspiracy theories belong in /x/.</p>
+<p>Absolutely no advertising, soliciting, or promotion of any kind.
+You may not discuss projects you have an interest in without making that disclosure.
+We will remove anything that remotely breaks this rule.</p>
+]]>
+</string>
 
 <string name="board_c_rules">
 <![CDATA[
@@ -1070,6 +1084,15 @@
 ]]>
 </string>
 
+<string name="board_s4s_rules">
+<![CDATA[
+<h3>/s4s/ - Shit 4chan Says</h3>
+<p>You must check your #fortune in order to post on this board.</p>
+<p>Global rules 1, 2, 4, 6, 7, 9, 10, 11, 12, 13, 14, and 15 are enforced.</p>
+<p>No porn dump threads. Keep that shit on /b/.</p>
+<p>Note: Moderators must check their #fortune as well.</p>
+]]>
+</string>
 
 <string name="board_sci_rules">
 <![CDATA[

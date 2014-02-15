@@ -438,7 +438,8 @@ public class ChanBoard {
                         "asp", ctx.getString(R.string.board_asp),
                         "sci", ctx.getString(R.string.board_sci),
                         "int", ctx.getString(R.string.board_int),
-                        "out", ctx.getString(R.string.board_out)
+                        "out", ctx.getString(R.string.board_out),
+                        "biz", ctx.getString(R.string.board_biz)
                 },
                 {   BoardType.CREATIVE.toString(),
                         META_CREATIVE_BOARD_CODE, ctx.getString(R.string.board_type_creative),
@@ -493,6 +494,7 @@ public class ChanBoard {
                     BoardType.ALL_BOARDS.toString(),
                         ALL_BOARDS_BOARD_CODE, ctx.getString(R.string.board_all_boards),
                         "a", ctx.getString(R.string.board_a),
+                        "biz", ctx.getString(R.string.board_biz),
                         "c", ctx.getString(R.string.board_c),
                         "w", ctx.getString(R.string.board_w),
                         "m", ctx.getString(R.string.board_m),
@@ -962,6 +964,7 @@ public class ChanBoard {
     private static void initBoardDrawables() {
         boardDrawables.clear();
         boardDrawables.put("a", new int[]{ R.drawable.a, R.drawable.a_2, R.drawable.a_3 } );
+        boardDrawables.put("biz", new int[]{ R.drawable.biz, R.drawable.biz_2, R.drawable.biz_3 } );
         boardDrawables.put("c", new int[]{ R.drawable.c, R.drawable.c_2, R.drawable.c_3 } );
         boardDrawables.put("w", new int[]{ R.drawable.w, R.drawable.w_2, R.drawable.w_3 } );
         boardDrawables.put("m", new int[]{ R.drawable.m, R.drawable.m_2, R.drawable.m_3 } );
