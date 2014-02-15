@@ -23,41 +23,32 @@
                 android:descendantFocusability="beforeDescendants"
                 android:focusableInTouchMode="true">
 
+            <FrameLayout
+                    android:id="@+id/post_reply_overflow"
+                    style="@style/ThreadListItemBarOverflow"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:clickable="true"
+                    >
+                <ImageView style="@style/ThreadListItemBarOverflowIcon"
+                           android:layout_gravity="top|right"
+                        />
+            </FrameLayout>
 
-            <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+            <EditText
+                    android:id="@+id/post_reply_subject"
+                    android:hint="@string/post_reply_subject_hint"
+                    android:inputType="textEmailSubject"
+                    style="@style/PostReplyEditText"
+                    android:maxLength="100"
+                    android:layout_width="0dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/post_reply_overflow"
                     android:layout_marginLeft="@dimen/PostReplyEditText_layout_marginLeft"
                     android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
                     android:layout_marginBottom="0dp"
                     android:layout_marginTop="@dimen/PostReplyEditText_layout_marginBottom"
-                    >
-                <EditText
-                        android:id="@+id/post_reply_subject"
-                        android:hint="@string/post_reply_subject_hint"
-                        android:inputType="textEmailSubject"
-                        style="@style/PostReplyEditText"
-                        android:maxLength="100"
-                        android:layout_width="0dp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_toLeftOf="@+id/post_reply_overflow"
-                        android:layout_marginTop="0dp"
-                        android:layout_marginLeft="0dp"
-                        android:layout_marginRight="0dp"
-                        android:layout_marginBottom="0dp"
-                        />
-                <FrameLayout
-                        android:id="@+id/post_reply_overflow"
-                        style="@style/ThreadListItemBarOverflow"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentTop="true"
-                        android:clickable="true"
-                        >
-                    <ImageView style="@style/ThreadListItemBarOverflowIcon"
-                            android:layout_gravity="top|right"
-                            />
-                </FrameLayout>
-            </RelativeLayout>
+                    />
 
             <EditText
                     android:id="@+id/post_reply_text"
