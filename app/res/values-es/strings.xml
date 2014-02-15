@@ -252,7 +252,7 @@
   <string name="pref_cache_category_summ">Espacio para almacenar hilos e imágenes</string>
   <string name="pref_clear_cache">Limpiar caché</string>
   <string name="pref_clear_cache_summ">Eliminar todos los datos almacenados en caché e imágenes</string>
-  <string name="pref_purchase_prokey">Compre Prokey</string>
+  <string name="pref_purchase_prokey">Compra Prokey</string>
   <string name="pref_purchase_prokey_summ">Cómprela una sola vez y se librará de la publicidad en todos sus dispositivos</string>
   <string name="pref_installed_prokey">Prokey instalada</string>
   <string name="pref_installed_prokey_summ">Los anuncios no son mostrados, habilitado para todos los dispositivos</string>
@@ -296,16 +296,16 @@
   <string name="pref_theme_light">Claro</string>
   <string name="pref_theme_dark">Oscuro</string>
   <string name="pref_theme_auto">Auto</string>
-  <string name="pref_autoload_images_title">Auto cargar los hilos de imagenes</string>
+  <string name="pref_autoload_images_title">Auto cargar los hilos de imágenes</string>
   <string name="pref_autoload_images_summary">Nunca, siempre, o automático basado en la velocidad de conexión</string>
   <string name="pref_autoload_images_never">Nunca</string>
   <string name="pref_autoload_images_always">Siempre</string>
   <string name="pref_about_application_category">Aplicación</string>
   <string name="pref_about_application_version">Versión %1$s</string>
   <string name="pref_about_application_version_sum">Fecha de publicación %1$s</string>
-  <string name="pref_about_application_rate">Valórenos</string>
+  <string name="pref_about_application_rate">Valóranos</string>
   <string name="pref_about_application_rate_sum">Valorar Chanu en Google Play</string>
-  <string name="pref_about_application_gplus">Visitenos</string>
+  <string name="pref_about_application_gplus">Visítanos</string>
   <string name="pref_about_application_gplus_sum">Únete a la comunidad Chanu en Google Plus</string>
   <string name="pref_about_data_category">Usos</string>
   <string name="pref_about_data_4chan_sum">Los datos son suministrados en vivo a través de la API de 4chan</string>
@@ -340,13 +340,13 @@
   <string name="board_w">Anime/Wallpapers</string>
   <string name="board_m">Mecha</string>
   <string name="board_cgl">Cosplay y EGL</string>
-  <string name="board_cm">Guapos/Hombres</string>
+  <string name="board_cm">Monadas/Hombres</string>
   <string name="board_n">Transporte</string>
   <string name="board_jp">Cultura Otaku</string>
   <string name="board_vp">Pokemon</string>
   <string name="board_type_interests">Intereses</string>
-  <string name="board_v">Video Juegos</string>
-  <string name="board_vg">Videojuegos generales</string>
+  <string name="board_v">Videojuegos</string>
+  <string name="board_vg">Videojuegos en general</string>
   <string name="board_vr">Juegos Retro</string>
   <string name="board_co">Comics y Dibujos Animados</string>
   <string name="board_g">Tecnología</string>
@@ -365,7 +365,7 @@
   <string name="board_po">Arte en papel y Origami</string>
   <string name="board_p">Fotografía</string>
   <string name="board_ck">Comida y cocina</string>
-  <string name="board_ic">Obra de arte/crítica</string>
+  <string name="board_ic">Obras de arte/crítica</string>
   <string name="board_wg">Wallpapers/General</string>
   <string name="board_mu">Música</string>
   <string name="board_fa">Moda</string>
@@ -373,11 +373,11 @@
   <string name="board_3">3DCG</string>
   <string name="board_gd">Diseño gráfico</string>
   <string name="board_diy">Hágalo usted mismo</string>
-  <string name="board_wsg">GIFs seguros para el trabajo</string>
+  <string name="board_wsg">GIF SFW</string>
   <string name="board_type_adult">Adultos</string>
   <string name="board_s">Mujeres hermosas y sexys</string>
   <string name="board_hc">Explícito</string>
-  <string name="board_hm">Hombres guapos</string>
+  <string name="board_hm">Hombres atractivos</string>
   <string name="board_h">Hentai</string>
   <string name="board_e">Ecchi</string>
   <string name="board_u">Yuri</string>
@@ -400,7 +400,7 @@
   <string name="board_r">Petición</string>
   <string name="board_r9k">ROBOT9001</string>
   <string name="board_pol">Políticamente incorrecto</string>
-  <string name="board_s4s">4Chan dice mierda</string>
+  <string name="board_s4s">4chan dice mierda</string>
   <string name="board_soc">Cámaras y encuentros</string>
   <string name="board_watch">Hilos watchlist</string>
   <string name="board_favorites">Tablones favoritos</string>
@@ -410,23 +410,23 @@
   <string name="board_select">Grupos de Tablones</string>
   <string name="board_all_boards">Todos los tablones</string>
   <string name="board_desc_3">Modelado e imágenes</string>
-  <string name="board_desc_a">Novelas y videos</string>
+  <string name="board_desc_a">Novelas y vídeos</string>
   <string name="board_desc_adv">Pide y recibirás</string>
   <string name="board_desc_an">Mascotas, plantas, achuchables</string>
   <string name="board_desc_asp">BMX, esquí, parapente</string>
   <string name="board_desc_b">Anarquistas anónimos</string>
   <string name="board_desc_c">Waifus y otros</string>
-  <string name="board_desc_cgl">Disfraces y lolita</string>
+  <string name="board_desc_cgl">Disfraces y lolitas</string>
   <string name="board_desc_ck">Recetas y utensilios de cocina</string>
   <string name="board_desc_cm">Manga y anime masculino</string>
-  <string name="board_desc_co">Estilo occidental</string>
+  <string name="board_desc_co">Cómics y Dibujos Animados</string>
   <string name="board_desc_d">Bondage y tentáculos</string>
-  <string name="board_desc_diy">Planes y proyectos</string>
+  <string name="board_desc_diy">Házlo tú mismo</string>
   <string name="board_desc_e">Anime femenino suave</string>
   <string name="board_desc_fa">Atuendos y armarios</string>
   <string name="board_desc_fit">Ganar músculo</string>
   <string name="board_desc_g">Geeks y gadgets</string>
-  <string name="board_desc_gd">Sitios web y logos</string>
+  <string name="board_desc_gd">Sitios web y logotipos</string>
   <string name="board_desc_gif">Bucles sin censura</string>
   <string name="board_desc_h">Sexo anime y desnudos</string>
   <string name="board_desc_hc">Acción explícita en vivo</string>
@@ -436,7 +436,7 @@
   <string name="board_desc_ic">Publicar, valorar y mejorar</string>
   <string name="board_desc_int">Lengua y cultura</string>
   <string name="board_desc_jp">Hello Kitty, J-pop</string>
-  <string name="board_desc_k">Armas y militar</string>
+  <string name="board_desc_k">Armas y temática militar</string>
   <string name="board_desc_lgbt">Lesbianas, gay, bi, trans</string>
   <string name="board_desc_lit">Libros y escritura</string>
   <string name="board_desc_m">Batallas de Robots humanoides</string>
@@ -446,8 +446,8 @@
   <string name="board_desc_o">Todo sobre coches</string>
   <string name="board_desc_out">Trekking y camping</string>
   <string name="board_desc_p">Contenido y crítica</string>
-  <string name="board_desc_po">Recortes y plegables</string>
-  <string name="board_desc_pol">Políticas estilo 4chan</string>
+  <string name="board_desc_po">Recortables y plegables</string>
+  <string name="board_desc_pol">Política estilo 4chan</string>
   <string name="board_desc_q">Mods y características</string>
   <string name="board_desc_r">Solicitar imágenes y videos</string>
   <string name="board_desc_r9k">Comunidad de No-repeats</string>
@@ -457,17 +457,17 @@
   <string name="board_desc_soc">Ideales, valorame</string>
   <string name="board_desc_sp">Equipos y deporte profesional</string>
   <string name="board_desc_t">Compartir enlaces</string>
-  <string name="board_desc_tg">Tablones y juego de rol</string>
+  <string name="board_desc_tg">Juegos de mesa y Rol</string>
   <string name="board_desc_toy">Figuras y coleccionables</string>
   <string name="board_desc_trv">Viajes, aventuras</string>
-  <string name="board_desc_tv">Series y pelis</string>
+  <string name="board_desc_tv">Series y películas</string>
   <string name="board_desc_u">Anime lésbico</string>
   <string name="board_desc_v">Consolas y juegos de PC</string>
   <string name="board_desc_vg">Discusiones duraderas</string>
   <string name="board_desc_vp">Práctica y evolución</string>
-  <string name="board_desc_vr">Vídeo juegos pre-2000</string>
+  <string name="board_desc_vr">Videojuegos pre-2000</string>
   <string name="board_desc_w">J-pop e imágenes de Anime</string>
-  <string name="board_desc_wg">Non-Animes de alta resolución</string>
+  <string name="board_desc_wg">No-Anime de alta resolución</string>
   <string name="board_desc_wsg">Bucles del humor</string>
   <string name="board_desc_x">Aliens y espíritus</string>
   <string name="board_desc_y">Anime homosexual</string>
@@ -578,7 +578,7 @@
 </string>
   <string name="board_cm_rules">
 <![CDATA[
-<h3>/cm/ - Lindo/Masculino</h3>
+<h3>/cm/ - Monadas/Hombres</h3>
 
 <p>1. Las imágenes deben representar a hombres animados y ser de carácter lindo ("moe"). Las imágenes Shounen-ai están permitidas.</p>
 <p>2. <em>El Yaoi</em> tiene su propio tablón. Las parejas pertenecen al tablón de <em>anime/bonito</em>.</p>
@@ -702,7 +702,7 @@
 </string>
   <string name="board_hm_rules">
 <![CDATA[
-<h3>/hm/ - Hombres guapos</h3>
+<h3>/hm/ - Hombres atractivos</h3>
 
 <p>1. Solo esta permitida la pornografia y las fotos con buen gusto.</p>
 <p>2. Este tablón es solo para contenido Homosexual. No publique transexuales aqui.</p>
@@ -732,7 +732,7 @@
 </string>
   <string name="board_ic_rules">
 <![CDATA[
-<h3>/ic/ - Obras de arte/Crítica</h3>
+<h3>/ic/ - Obras de arte/crítica</h3>
 
 <p>1. Los trabajos elaborados por usuarios deben ser presentados por la crítica. No esta permitido enviar  trabajos en los que usted no ha elaborado o contribuido personalmente.</p>
 <p>2. Sólo se aceptará aquella crítica que sea constructiva. Los comentarios groseros u ofensivos daran lugar a la prohibición.</p>
@@ -1016,7 +1016,7 @@
   <string name="board_v_rules">
 
 <![CDATA[
-<h3>/v/ - Vídeo Juegos</h3>
+<h3>/v/ - Videojuegos</h3>
 
 <p>1. Todos los mensajes deben referirse a los vídeo juegos, sus consolas, y a la cultura de los vídeo juegos. Los hilos deben permanecer dentro del tema y permanecer al tema del tablón. No se debe publicar basura "off -topic".</p>
 <p>2. No será tolerado el "Flaming/flagrant", "fanboyism"/etc.</p>
@@ -1029,7 +1029,7 @@
 </string>
   <string name="board_vg_rules">
 <![CDATA[
-<h3>/vg/ - Videojuegos generales</h3>
+<h3>/vg/ - Videojuegos en general</h3>
 
 <p>1.  Este tablón es para la publicación de videojuegos en terminos "generales", que a largo plazo son, los hilos recurrentes sobre un tema específico.</p>
 <p>2. Las novelas visuales occidentales deberan ser publicadas aquí, y las novelas visuales japoneses en <a href="http://boards.4chan.org/jp/">http://boards.4chan.org/jp/</a>. Las novelas visuales traducidas están permitidas en cualquier tablón</p>
@@ -1071,7 +1071,7 @@
 ]]>
 </string>
   <string name="board_wsg_rules"><![CDATA[
-<h3>/wsg/ - GIFs seguros para el trabajo</h3> <p>1. Todos los GIFs seguros para el trabajo son bienvenidos.</p> ]]>
+<h3>/wsg/ - GIF SFW</h3> <p>1. Todos los GIFs seguros para el trabajo son bienvenidos.</p> ]]>
 </string>
   <string name="board_x_rules">
 <![CDATA[
@@ -1119,18 +1119,18 @@
     <string name="sort_order_image_count">Número de imágenes</string>
     <string name="sort_order_creation_date">Fecha de apertura</string>
 
-    <string name="font_size_menu">Talla de letra</string>
+    <string name="font_size_menu">Tamaño de letra</string>
     <string name="font_size_tiny">Minúsculo</string>
     <string name="font_size_small">Pequeña</string>
     <string name="font_size_medium">Medio</string>
     <string name="font_size_large">Grande</string>
     <string name="font_size_huge">Enorme</string>
 
-    <string name="pref_use_volume_scroll">Tecla de volumen recorrer</string>
+    <string name="pref_use_volume_scroll">Recorrer tablones con teclas de volumen</string>
 
     <string name="refresh_favorites">Actualizando tableros...</string>
     <string name="refresh_watchlist">Actualizando hilos...</string>
-    <string name="pref_use_abbrev_boards">Abreviados Tableros</string>
+    <string name="pref_use_abbrev_boards">Tablones abreviados</string>
     <string name="pref_autoload_images_nothumbs">No miniaturas</string>
     <string name="pref_background_data">Datos al fondo</string>
     <string name="pref_background_data_summ_on">Activar datos al fondo por datos móviles</string>
@@ -1138,13 +1138,13 @@
     <string name="pref_download_nomedia">Ocultar Descargas</string>
     <string name="pref_download_nomedia_summ_on">Imágenes estan invisible en la Galería</string>
     <string name="pref_download_nomedia_summ_off">Imágenes estan visible en la Galería</string>
-    <string name="pref_download_location">Localizatión del Descargas</string>
+    <string name="pref_download_location">Localización de descargas</string>
     <string name="pref_download_location_summ">Cambiar</string>
     <string name="pref_download_location_set">Descargar al %1$s</string>
     <string name="pref_download_location_error">No se pudo cambiar</string>
     <string name="dialog_choose">Elegir</string>
     <string name="catalog_menu">Catálogo</string>
-    <string name="pref_use_fast_scroll">Rápido recorrer</string>
+    <string name="pref_use_fast_scroll">Avance rápido</string>
     <string name="ad_upgrade">Actualizar a Pro</string>
     <string name="ad_upgrade_sum">Apoyar desarrollo y características nuevas</string>
 
