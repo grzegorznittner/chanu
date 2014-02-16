@@ -97,6 +97,7 @@
         </LinearLayout>
 
     </LinearLayout>
+    <!--
     <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -111,4 +112,5 @@
                    android:background="@drawable/thread_list_selector_bg"
                 />
     </FrameLayout>
+    -->
 </com.chanapps.four.component.CheckableFrameLayout>

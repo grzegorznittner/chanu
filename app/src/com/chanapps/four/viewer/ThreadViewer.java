@@ -240,9 +240,9 @@ public class ThreadViewer {
         TextView numRepliesLabel = viewHolder.list_item_num_replies_label;
         TextView numImagesLabel = viewHolder.list_item_num_images_label;
         View cmtWrapper = viewHolder.list_item_num_replies;
-        View arrow = viewHolder.list_item_num_comments_spinner;
+        //View arrow = viewHolder.list_item_num_comments_spinner;
         View imgWrapper = viewHolder.list_item_num_images;
-        View spinner = viewHolder.list_item_num_images_spinner;
+        //View spinner = viewHolder.list_item_num_images_spinner;
         if (numReplies != null) {
             FontSize.sizeTextView(numReplies);
             numReplies.setText(String.valueOf(r));
@@ -263,28 +263,28 @@ public class ThreadViewer {
             if (r >= 0 && commentsOnClickListener != null && cursor.getCount() > 1) {
                 cmtWrapper.setOnClickListener(commentsOnClickListener);
                 cmtWrapper.setClickable(true);
-                if (arrow != null)
-                    arrow.setVisibility(View.VISIBLE);
+                //if (arrow != null)
+                //    arrow.setVisibility(View.VISIBLE);
             }
             else {
                 cmtWrapper.setOnClickListener(null);
                 cmtWrapper.setClickable(false);
-                if (arrow != null)
-                    arrow.setVisibility(View.GONE);
+                //if (arrow != null)
+                //    arrow.setVisibility(View.GONE);
             }
         }
         if (imgWrapper != null) {
             if (i >= 0 && imagesOnClickListener != null) {
                 imgWrapper.setOnClickListener(imagesOnClickListener);
                 imgWrapper.setClickable(true);
-                if (spinner != null)
-                    spinner.setVisibility(View.VISIBLE);
+                //if (spinner != null)
+                //    spinner.setVisibility(View.VISIBLE);
             }
             else {
                 imgWrapper.setOnClickListener(null);
                 imgWrapper.setClickable(false);
-                if (spinner != null)
-                    spinner.setVisibility(View.GONE);
+                //if (spinner != null)
+                //    spinner.setVisibility(View.GONE);
             }
         }
     }
@@ -617,7 +617,7 @@ public class ThreadViewer {
                                     View.OnClickListener expandedImageListener, boolean showContextMenu) {
         if (viewHolder.list_item_image == null)
             return false;
-        setSpinnerTarget(viewHolder.list_item_image_spinner, expandedImageListener, showContextMenu);
+        //setSpinnerTarget(viewHolder.list_item_image_spinner, expandedImageListener, showContextMenu);
         if (!SettingsActivity.shouldLoadThumbs(viewHolder.list_item_image.getContext()))
             return showExpandableThumb(viewHolder, viewHolder.list_item_image);
         // display thumb and also expand if available
@@ -718,7 +718,7 @@ public class ThreadViewer {
         if (!shouldAutoload(viewHolder.list_item.getContext(), cursor))
             return false;
         ThreadImageExpander expander =
-                (new ThreadImageExpander(viewHolder, cursor, true, stub));
+                (new ThreadImageExpander(viewHolder, cursor, true, stub, expandedImageListener));
         expander.displayImage();
         return true;
     }
@@ -758,7 +758,7 @@ public class ThreadViewer {
 
         if (DEBUG) Log.i(TAG, "displayCachedExpandedImage() expanded file=" + file.getAbsolutePath());
         ThreadImageExpander expander =
-                (new ThreadImageExpander(viewHolder, cursor, false, stub));
+                (new ThreadImageExpander(viewHolder, cursor, false, stub, expandedImageListener));
         expander.displayImage();
         return true;
     }

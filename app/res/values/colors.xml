@@ -94,6 +94,8 @@
     <color name="ad_background">#ffec964a</color>
     <color name="ad_text_color">#fff2f2f2</color>
 
+    <color name="PaletteCardActionItem">#00B6E6</color>
+
     <color name="PaletteBoardCodeText">#eeeeee</color>
 
     <!-- board code colors -->

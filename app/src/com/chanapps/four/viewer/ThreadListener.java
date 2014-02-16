@@ -192,7 +192,10 @@ public class ThreadListener {
                     true,
                     isDark
                             ? R.drawable.stub_image_background_dark
-                            : R.drawable.stub_image_background));
+                            : R.drawable.stub_image_background,
+                    expandedImageListener
+                    )
+            );
             expander.displayImage();
         }
     };

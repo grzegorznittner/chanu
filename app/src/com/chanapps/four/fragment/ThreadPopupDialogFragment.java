@@ -467,7 +467,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                     null, //threadListener.sameIdOnClickListener,
                     null, //threadListener.exifOnClickListener,
                     null,
-                    null,
+                    threadListener.expandedImageListener,
                     null,
                     null
             );

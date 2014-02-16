@@ -725,10 +725,22 @@
         <!--<item name="android:background">@color/PaletteDarkGray</item>-->
     </style>
 
+    <style name="ThreadListHeaderActionItemLine" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/PaletteThreadHeaderBg</item>
+    </style>
+
     <style name="ThreadListHeaderNumWrap" parent="AppTheme">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItemLineInner" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
     </style>
 
     <style name="ThreadListItemLeftBarWrap" parent="AppTheme">
@@ -779,6 +791,15 @@
         <item name="android:paddingBottom">@dimen/ThreadListHeader_med_padding</item>
     </style>
 
+    <style name="ThreadListHeaderActionItemWrap" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingLeft">@dimen/ThreadListHeader_padding</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_padding</item>
+    </style>
+
     <style name="ThreadListHeaderNumWrapInnerHorizontal" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -796,6 +817,29 @@
         <item name="android:gravity">top|center_horizontal</item>
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
         <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItemLatest" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:src">@drawable/clock_blue</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItemGallery" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:src">@drawable/gallery_blue</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItem" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/ThreadListHeader_padding</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
+        <item name="android:textColor">@color/PaletteCardActionItem</item>
     </style>
 
     <style name="ThreadListHeaderNumNumHorizontal" parent="AppTheme">

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
@@ -53,17 +54,26 @@ public class ThreadImageExpander {
     private Point targetSize;
     private String postExt;
     private int fsize;
+    private long postNo;
+    private long threadNo;
+    private String boardCode;
+    private View.OnClickListener expandedImageListener;
 
-    public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor, boolean withProgress, int stub) {
+    public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor, boolean withProgress, int stub,
+                               View.OnClickListener expandedImageListener) {
         this.viewHolder = viewHolder;
         this.withProgress = withProgress;
         this.stub = stub;
+        this.expandedImageListener = expandedImageListener;
 
-        long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-        String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+        boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+        long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
+        postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+        threadNo = resto > 0 ? postNo : resto;
+
         postExt = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
         fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
-        Uri uri = ChanFileStorage.getHiddenLocalImageUri(viewHolder.list_item.getContext(), boardCode, postId, postExt);
+        Uri uri = ChanFileStorage.getHiddenLocalImageUri(viewHolder.list_item.getContext(), boardCode, postNo, postExt);
 
         postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
         postH = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_H));
@@ -232,7 +242,7 @@ public class ThreadImageExpander {
             }
 
             //if (withProgress)
-            //    ThreadViewer.toggleExpandedImage(viewHolder);
+            //     ThreadViewer.toggleExpandedImage(viewHolder);
         }
 
         @Override
@@ -245,16 +255,19 @@ public class ThreadImageExpander {
     private void displayClickEffect() {
         if (viewHolder.list_item_image_expanded_click_effect != null) {
             viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
-            viewHolder.list_item_image_expanded_click_effect.setOnClickListener(collapseImageListener);
+            //viewHolder.list_item_image_expanded_click_effect.setOnClickListener(collapseImageListener);
+            viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
         }
     }
 
+    /*
     private View.OnClickListener collapseImageListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             ThreadViewer.toggleExpandedImage(viewHolder);
         }
     };
+    */
 
     private boolean shouldExpandImage() {
         if (viewHolder.list_item_image_expanded != null
