@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.*;
 import android.content.res.Configuration;
@@ -19,8 +21,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
+import android.util.Xml;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -42,6 +46,7 @@ import com.chanapps.four.viewer.BoardViewer;
 import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+import org.xmlpull.v1.XmlPullParser;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
@@ -1095,6 +1100,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 prefs.edit().putBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, pref).apply();
                 updateHideLastReplies(this, pref);
                 return true;
+            case R.id.nsfw_menu:
+                showNSFWDialog();
+                return true;
             case R.id.sort_order_menu:
                 (new BoardSortOrderDialogFragment(boardSortType))
                         .setNotifySortOrderListener(new BoardSortOrderDialogFragment.NotifySortOrderListener() {
@@ -1128,6 +1136,36 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    protected void showNSFWDialog() {
+        final Context context = this;
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean showNSFW = pref.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(R.string.pref_show_nsfw_boards)
+                .setMessage(R.string.pref_show_nsfw_boards_summ_message)
+                .setNegativeButton(R.string.cancel, null);
+        if (showNSFW)
+            builder.setPositiveButton(R.string.pref_show_nsfw_boards_summ_neg, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    pref.edit().putBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false).commit();
+                    recreate();
+                    //refreshAllBoards(context);
+                }
+            });
+        else
+            builder.setPositiveButton(R.string.pref_show_nsfw_boards_summ_pos, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    pref.edit().putBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, true).commit();
+                    recreate();
+                    //refreshAllBoards(context);
+                }
+            });
+        AlertDialog d = builder.create();
+        d.show();
     }
 
     protected void displayBoardRules() {
@@ -1181,6 +1219,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
+            menu.findItem(R.id.nsfw_menu).setVisible(false);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1201,6 +1240,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(true);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
+            menu.findItem(R.id.nsfw_menu).setVisible(true);
         }
         else if (board.isPopularBoard()) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1221,6 +1261,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
+            menu.findItem(R.id.nsfw_menu).setVisible(false);
         }
         else if (board.isVirtualBoard()) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1241,6 +1282,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(true);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
+            menu.findItem(R.id.nsfw_menu).setVisible(true);
         }
         else {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1258,6 +1300,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.sort_order_menu).setVisible(true);
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(true);
+            menu.findItem(R.id.nsfw_menu).setVisible(false);
             setHiddenThreadsMenuAsync(menu);
             setFavoritesMenuAsync(menu);
         }

@@ -3,7 +3,7 @@
                   xmlns:chanapps="http://chanapps.com">
 
     <!-- posting -->
-
+    <!--
     <com.chanapps.four.component.YesNoPreference
             android:key="pref_show_nsfw_boards"
             android:title="@string/pref_show_nsfw_boards"
@@ -15,7 +15,7 @@
             android:negativeButtonText="@string/pref_show_nsfw_boards_summ_neg"
             android:defaultValue="false"
             />
-
+    -->
     <PreferenceScreen
             android:key="pref_view_options"
             android:title="@string/pref_view_options"
@@ -68,14 +68,14 @@
                 android:entries="@array/font_sizes"
                 android:entryValues="@array/font_sizes"
                 android:defaultValue="@string/font_size_medium" />
-
+        <!--
         <ListPreference
                 android:key="pref_board_sort_type"
                 android:title="@string/sort_order_menu"
                 android:entries="@array/sort_order_types"
                 android:entryValues="@array/sort_order_types"
                 android:defaultValue="@string/sort_order_bump_order" />
-
+        -->
         <ListPreference
                 android:key="pref_autoload_images"
                 android:title="@string/pref_autoload_images_title"

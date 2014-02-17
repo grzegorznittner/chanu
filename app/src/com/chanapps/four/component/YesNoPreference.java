@@ -156,5 +156,8 @@ public class YesNoPreference extends DialogPreference {
             }
         };
     }
-    
+
+    public void show() {
+        showDialog(null);
+    }
 }

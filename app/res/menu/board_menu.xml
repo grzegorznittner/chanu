@@ -108,6 +108,11 @@
           android:icon="@drawable/location_web_site"
             />
 
+    <item android:id="@+id/nsfw_menu"
+          android:title="@string/pref_show_nsfw_boards"
+          android:icon="@drawable/geomicons_heart"
+            />
+
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
