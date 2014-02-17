@@ -16,10 +16,12 @@
             android:defaultValue="false"
             />
     -->
+    <!--
     <PreferenceScreen
             android:key="pref_view_options"
             android:title="@string/pref_view_options"
             >
+        -->
         <!--
                     android:summary="@string/pref_view_options_summ"
         -->
@@ -45,6 +47,8 @@
                 android:title="@string/pref_hide_last_replies"
                 android:defaultValue="false" />
         -->
+
+    <!--
         <CheckBoxPreference
                 android:key="pref_use_volume_scroll"
                 android:title="@string/pref_use_volume_scroll"
@@ -61,7 +65,7 @@
                 android:entries="@array/pref_theme_entries"
                 android:entryValues="@array/pref_theme_entry_values"
                 android:defaultValue="@string/pref_theme_default_value" />
-
+    -->
         <!--
         <ListPreference
                 android:key="pref_font_size"
@@ -89,16 +93,33 @@
         <!--
                         android:summary="@string/pref_autoload_images_summary"
         -->
-    </PreferenceScreen>
+    <!-- </PreferenceScreen> -->
 
+    <!--
     <PreferenceScreen
             android:key="pref_cache_category"
             android:title="@string/pref_cache_category"
             >
+        -->
         <!--
                     android:summary="@string/pref_cache_category_summ"
         -->
-        <com.chanapps.four.component.CacheSizePreference
+
+    <CheckBoxPreference
+            android:key="pref_notifications"
+            android:title="@string/pref_notifications"
+            android:summaryOn="@string/pref_notifications_summ_on"
+            android:summaryOff="@string/pref_notifications_summ_off"
+            android:defaultValue="true" />
+
+    <CheckBoxPreference
+            android:key="pref_autoupdate_threads"
+            android:title="@string/pref_autoupdate_threads"
+            android:summaryOn="@string/pref_autoupdate_threads_summ_on"
+            android:summaryOff="@string/pref_autoupdate_threads_summ_off"
+            android:defaultValue="true" />
+
+    <com.chanapps.four.component.CacheSizePreference
                 android:key="pref_cache_size"
                 android:title="@string/pref_cache_size"
                 android:summary="@string/pref_cache_size_summ"
@@ -112,7 +133,7 @@
                 android:title="@string/pref_clear_cache"
                 android:summary="@string/pref_clear_cache_summ" />
 
-    </PreferenceScreen>
+    <!-- </PreferenceScreen> -->
 
     <!--
     <PreferenceScreen
@@ -208,13 +229,6 @@
                 android:defaultValue="true" />
         -->
 
-        <CheckBoxPreference
-                android:key="pref_notifications"
-                android:title="@string/pref_notifications"
-                android:summaryOn="@string/pref_notifications_summ_on"
-                android:summaryOff="@string/pref_notifications_summ_off"
-                android:defaultValue="true" />
-
         <!--
         <CheckBoxPreference
                 android:key="pref_use_friendly_ids"
@@ -236,13 +250,6 @@
                 android:title="@string/pref_automatically_manage_watchlist"
                 android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"
                 android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
-                android:defaultValue="true" />
-
-        <CheckBoxPreference
-                android:key="pref_autoupdate_threads"
-                android:title="@string/pref_autoupdate_threads"
-                android:summaryOn="@string/pref_autoupdate_threads_summ_on"
-                android:summaryOff="@string/pref_autoupdate_threads_summ_off"
                 android:defaultValue="true" />
 
         <CheckBoxPreference

@@ -23,16 +23,6 @@
           android:title="@string/download_all_images_to_gallery_menu"
           android:icon="@drawable/av_download"
             />
-    <item android:id="@+id/play_thread_menu"
-          android:title="@string/play_thread_menu"
-          android:icon="@drawable/av_play"
-            />
-    <item android:id="@+id/web_menu"
-          android:title="@string/direct_web_menu"
-          android:icon="@drawable/location_web_site"
-          android:visible="false"
-            />
-
     <item android:id="@+id/view_options_menu"
           android:title="@string/pref_view_options"
           android:icon="@drawable/collections_view_as_grid">
@@ -65,6 +55,16 @@
                   android:title="@string/pref_autoload_images_title"
                   android:icon="@drawable/content_picture_light"
                     />
+            <item android:id="@+id/web_menu"
+                  android:title="@string/direct_web_menu"
+                  android:icon="@drawable/location_web_site"
+                    />
+
+            <item android:id="@+id/play_thread_menu"
+                  android:title="@string/play_thread_menu"
+                  android:icon="@drawable/av_play"
+                    />
+
         </menu>
     </item>
 

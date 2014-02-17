@@ -792,10 +792,28 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
             case R.id.font_size_menu:
-                showFontSizeDialog();
+                new PreferenceDialogs(getActivity()).showFontSizeDialog();
                 return true;
             case R.id.autoload_images_menu:
-                showAutoloadImagesDialog();
+                new PreferenceDialogs(getActivity()).showAutoloadImagesDialog();
+                return true;
+            case R.id.theme_menu:
+                new PreferenceDialogs(getActivity()).showThemeDialog();
+                return true;
+            case R.id.use_volume_scroll_menu:
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                boolean pref = prefs.getBoolean(SettingsActivity.PREF_USE_VOLUME_SCROLL, false);
+                pref = !pref;
+                prefs.edit().putBoolean(SettingsActivity.PREF_USE_VOLUME_SCROLL, pref).apply();
+                getActivity().recreate();
+                return true;
+            case R.id.use_fast_scroll_menu:
+                prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                pref = prefs.getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false);
+                pref = !pref;
+                prefs.edit().putBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, pref).apply();
+                if (absListView != null)
+                    absListView.setFastScrollEnabled(pref);
                 return true;
             default:
                 ThreadActivity activity = (ThreadActivity)getActivity();
@@ -1700,75 +1718,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 }
             }
         }).start();
-    }
-
-    /*
-        <ListPreference
-            android:key="pref_font_size"
-            android:title="@string/font_size_menu"
-            android:entries="@array/font_sizes"
-            android:entryValues="@array/font_sizes"
-            android:defaultValue="@string/font_size_medium" />
-
-    */
-    protected void showFontSizeDialog() {
-        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivityContext());
-        final String fontSize = pref.getString(SettingsActivity.PREF_FONT_SIZE, getString(R.string.font_size_medium));
-        final String[] fontSizes = getResources().getStringArray(R.array.font_sizes);
-        int checkedItem = 0;
-        for (int i = 0; i < fontSizes.length; i++)
-            if (fontSizes[i].equals(fontSize))
-                checkedItem = i;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivityContext())
-                .setTitle(R.string.font_size_menu)
-                .setNeutralButton(R.string.cancel, null);
-        builder.setSingleChoiceItems(R.array.font_sizes, checkedItem, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String newFontSize = fontSizes[which];
-                pref.edit().putString(SettingsActivity.PREF_FONT_SIZE, newFontSize).commit();
-                dialog.dismiss();
-                if (getActivity() != null)
-                    getActivity().recreate();
-            }
-        });
-        AlertDialog d = builder.create();
-        d.show();
-    }
-
-    /*
-            <ListPreference
-                android:key="pref_autoload_images"
-                android:title="@string/pref_autoload_images_title"
-                android:entries="@array/pref_autoload_images_entries"
-                android:entryValues="@array/pref_autoload_images_entry_values"
-                android:defaultValue="@string/pref_autoload_images_auto_value" />
-
-     */
-    protected void showAutoloadImagesDialog() {
-        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivityContext());
-        final String autoloadValue = pref.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
-                getString(R.string.pref_autoload_images_auto_value));
-        final String[] autoloadValues = getResources().getStringArray(R.array.pref_autoload_images_entry_values);
-        int checkedItem = 0;
-        for (int i = 0; i < autoloadValues.length; i++)
-            if (autoloadValues[i].equals(autoloadValue))
-                checkedItem = i;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivityContext())
-                .setTitle(R.string.pref_autoload_images_title)
-                .setNeutralButton(R.string.cancel, null);
-        builder.setSingleChoiceItems(R.array.pref_autoload_images_entries, checkedItem, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String newAutoloadValue = autoloadValues[which];
-                pref.edit().putString(SettingsActivity.PREF_AUTOLOAD_IMAGES, newAutoloadValue).commit();
-                dialog.dismiss();
-                if (getActivity() != null)
-                    getActivity().recreate();
-            }
-        });
-        AlertDialog d = builder.create();
-        d.show();
     }
 
 }

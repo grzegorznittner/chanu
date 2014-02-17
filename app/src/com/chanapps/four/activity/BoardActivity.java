@@ -1100,8 +1100,25 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 prefs.edit().putBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, pref).apply();
                 updateHideLastReplies(this, pref);
                 return true;
+            case R.id.use_volume_scroll_menu:
+                prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                pref = prefs.getBoolean(SettingsActivity.PREF_USE_VOLUME_SCROLL, false);
+                pref = !pref;
+                prefs.edit().putBoolean(SettingsActivity.PREF_USE_VOLUME_SCROLL, pref).apply();
+                recreate();
+                return true;
+            case R.id.use_fast_scroll_menu:
+                prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                pref = prefs.getBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, false);
+                pref = !pref;
+                prefs.edit().putBoolean(SettingsActivity.PREF_USE_FAST_SCROLL, pref).apply();
+                updateFastScroll(this, pref);
+                return true;
             case R.id.nsfw_menu:
-                showNSFWDialog();
+                new PreferenceDialogs(this).showNSFWDialog();
+                return true;
+            case R.id.theme_menu:
+                new PreferenceDialogs(this).showThemeDialog();
                 return true;
             case R.id.sort_order_menu:
                 (new BoardSortOrderDialogFragment(boardSortType))
@@ -1136,36 +1153,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    protected void showNSFWDialog() {
-        final Context context = this;
-        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        final boolean showNSFW = pref.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle(R.string.pref_show_nsfw_boards)
-                .setMessage(R.string.pref_show_nsfw_boards_summ_message)
-                .setNegativeButton(R.string.cancel, null);
-        if (showNSFW)
-            builder.setPositiveButton(R.string.pref_show_nsfw_boards_summ_neg, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    pref.edit().putBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false).commit();
-                    recreate();
-                    //refreshAllBoards(context);
-                }
-            });
-        else
-            builder.setPositiveButton(R.string.pref_show_nsfw_boards_summ_pos, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    pref.edit().putBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, true).commit();
-                    recreate();
-                    //refreshAllBoards(context);
-                }
-            });
-        AlertDialog d = builder.create();
-        d.show();
     }
 
     protected void displayBoardRules() {
