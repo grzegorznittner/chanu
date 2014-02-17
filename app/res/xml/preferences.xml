@@ -62,12 +62,14 @@
                 android:entryValues="@array/pref_theme_entry_values"
                 android:defaultValue="@string/pref_theme_default_value" />
 
+        <!--
         <ListPreference
                 android:key="pref_font_size"
                 android:title="@string/font_size_menu"
                 android:entries="@array/font_sizes"
                 android:entryValues="@array/font_sizes"
                 android:defaultValue="@string/font_size_medium" />
+        -->
         <!--
         <ListPreference
                 android:key="pref_board_sort_type"
@@ -76,12 +78,14 @@
                 android:entryValues="@array/sort_order_types"
                 android:defaultValue="@string/sort_order_bump_order" />
         -->
+        <!--
         <ListPreference
                 android:key="pref_autoload_images"
                 android:title="@string/pref_autoload_images_title"
                 android:entries="@array/pref_autoload_images_entries"
                 android:entryValues="@array/pref_autoload_images_entry_values"
                 android:defaultValue="@string/pref_autoload_images_auto_value" />
+        -->
         <!--
                         android:summary="@string/pref_autoload_images_summary"
         -->

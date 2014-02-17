@@ -7,11 +7,9 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -1194,5 +1192,6 @@ public class ThreadActivity
         //loadDrawerArray();
         //mDrawerAdapter.notifyDataSetInvalidated();
     }
+
 
 }

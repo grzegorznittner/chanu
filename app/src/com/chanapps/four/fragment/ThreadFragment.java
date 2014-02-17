@@ -1,9 +1,12 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -788,6 +791,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             case R.id.web_menu:
                 String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
+            case R.id.font_size_menu:
+                showFontSizeDialog();
+                return true;
+            case R.id.autoload_images_menu:
+                showAutoloadImagesDialog();
+                return true;
             default:
                 ThreadActivity activity = (ThreadActivity)getActivity();
                 if (activity != null)
@@ -1693,5 +1702,73 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }).start();
     }
 
+    /*
+        <ListPreference
+            android:key="pref_font_size"
+            android:title="@string/font_size_menu"
+            android:entries="@array/font_sizes"
+            android:entryValues="@array/font_sizes"
+            android:defaultValue="@string/font_size_medium" />
+
+    */
+    protected void showFontSizeDialog() {
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivityContext());
+        final String fontSize = pref.getString(SettingsActivity.PREF_FONT_SIZE, getString(R.string.font_size_medium));
+        final String[] fontSizes = getResources().getStringArray(R.array.font_sizes);
+        int checkedItem = 0;
+        for (int i = 0; i < fontSizes.length; i++)
+            if (fontSizes[i].equals(fontSize))
+                checkedItem = i;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivityContext())
+                .setTitle(R.string.font_size_menu)
+                .setNeutralButton(R.string.cancel, null);
+        builder.setSingleChoiceItems(R.array.font_sizes, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newFontSize = fontSizes[which];
+                pref.edit().putString(SettingsActivity.PREF_FONT_SIZE, newFontSize).commit();
+                dialog.dismiss();
+                if (getActivity() != null)
+                    getActivity().recreate();
+            }
+        });
+        AlertDialog d = builder.create();
+        d.show();
+    }
+
+    /*
+            <ListPreference
+                android:key="pref_autoload_images"
+                android:title="@string/pref_autoload_images_title"
+                android:entries="@array/pref_autoload_images_entries"
+                android:entryValues="@array/pref_autoload_images_entry_values"
+                android:defaultValue="@string/pref_autoload_images_auto_value" />
+
+     */
+    protected void showAutoloadImagesDialog() {
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivityContext());
+        final String autoloadValue = pref.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
+                getString(R.string.pref_autoload_images_auto_value));
+        final String[] autoloadValues = getResources().getStringArray(R.array.pref_autoload_images_entry_values);
+        int checkedItem = 0;
+        for (int i = 0; i < autoloadValues.length; i++)
+            if (autoloadValues[i].equals(autoloadValue))
+                checkedItem = i;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivityContext())
+                .setTitle(R.string.pref_autoload_images_title)
+                .setNeutralButton(R.string.cancel, null);
+        builder.setSingleChoiceItems(R.array.pref_autoload_images_entries, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newAutoloadValue = autoloadValues[which];
+                pref.edit().putString(SettingsActivity.PREF_AUTOLOAD_IMAGES, newAutoloadValue).commit();
+                dialog.dismiss();
+                if (getActivity() != null)
+                    getActivity().recreate();
+            }
+        });
+        AlertDialog d = builder.create();
+        d.show();
+    }
 
 }

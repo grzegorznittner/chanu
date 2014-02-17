@@ -14,32 +14,44 @@
           android:title="@string/new_thread_menu"
           android:icon="@drawable/content_new"
             />
-    <item android:id="@+id/clean_watchlist_menu"
-          android:title="@string/pref_clean_watchlist"
-          android:icon="@drawable/content_remove"
-          android:visible="false"
-            />
-    <item android:id="@+id/clear_watchlist_menu"
-          android:title="@string/pref_clear_watchlist"
-          android:icon="@drawable/content_discard"
-          android:visible="false"
-            />
-
-    <item android:id="@+id/clear_favorites_menu"
-          android:title="@string/pref_clear_favorites"
-          android:icon="@drawable/content_discard"
-          android:visible="false"
-            />
     <item android:id="@+id/scroll_to_bottom_menu"
           android:title="@string/scroll_to_bottom_menu"
           android:icon="@drawable/av_next"
           android:visible="false"
             />
 
+
+    <item android:id="@+id/board_rules_menu"
+          android:title="@string/board_rules_menu"
+          android:icon="@drawable/action_help"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/global_rules_menu"
+          android:title="@string/global_rules_menu"
+          android:icon="@drawable/action_about"
+            />
+
     <item android:id="@+id/view_options_menu"
           android:title="@string/pref_view_options"
           android:icon="@drawable/collections_view_as_grid">
         <menu>
+            <item android:id="@+id/clean_watchlist_menu"
+                  android:title="@string/pref_clean_watchlist"
+                  android:icon="@drawable/content_remove"
+                  android:visible="false"
+                    />
+            <item android:id="@+id/clear_watchlist_menu"
+                  android:title="@string/pref_clear_watchlist"
+                  android:icon="@drawable/content_discard"
+                  android:visible="false"
+                    />
+
+            <item android:id="@+id/clear_favorites_menu"
+                  android:title="@string/pref_clear_favorites"
+                  android:icon="@drawable/content_discard"
+                  android:visible="false"
+                    />
             <item android:id="@+id/view_as_grid_menu"
                   android:title="@string/view_as_grid_menu"
                   android:icon="@drawable/collections_view_as_grid"
@@ -89,24 +101,13 @@
                   android:visible="false"
                   />
 
+            <item android:id="@+id/web_menu"
+                  android:title="@string/direct_web_menu"
+                  android:icon="@drawable/location_web_site"
+                    />
+
         </menu>
     </item>
-
-    <item android:id="@+id/board_rules_menu"
-          android:title="@string/board_rules_menu"
-          android:icon="@drawable/action_help"
-          android:visible="false"
-            />
-
-    <item android:id="@+id/global_rules_menu"
-          android:title="@string/global_rules_menu"
-          android:icon="@drawable/action_about"
-            />
-
-    <item android:id="@+id/web_menu"
-          android:title="@string/direct_web_menu"
-          android:icon="@drawable/location_web_site"
-            />
 
     <item android:id="@+id/nsfw_menu"
           android:title="@string/pref_show_nsfw_boards"
