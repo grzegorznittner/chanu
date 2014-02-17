@@ -663,11 +663,11 @@ public class PostReplyActivity
         String name = nameText.getText().toString();
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
-        if (!name.isEmpty())
+        //if (!name.isEmpty())
             ed.putString(SettingsActivity.PREF_USER_NAME, name);
-        if (!email.isEmpty() && !email.equalsIgnoreCase("sage")) // no sagebombing
+        //if (!email.isEmpty() && !email.equalsIgnoreCase("sage")) // no sagebombing
             ed.putString(SettingsActivity.PREF_USER_EMAIL, email);
-        if (!password.isEmpty())
+        //if (!password.isEmpty())
             ed.putString(SettingsActivity.PREF_USER_PASSWORD, password);
         ed.apply();
         if (DEBUG) Log.i(TAG, "saved name=" + name);

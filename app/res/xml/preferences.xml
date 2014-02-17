@@ -23,25 +23,28 @@
         <!--
                     android:summary="@string/pref_view_options_summ"
         -->
+        <!--
         <CheckBoxPreference
                 android:key="pref_use_catalog"
                 android:title="@string/catalog_menu"
                 android:defaultValue="false" />
+        -->
         <!--
         android:summaryOn="@string/view_as_grid_menu"
                  android:summaryOff="@string/view_as_list_menu"
                  -->
-
+        <!--
         <CheckBoxPreference
                 android:key="pref_use_abbrev_boards"
                 android:title="@string/pref_use_abbrev_boards"
                 android:defaultValue="false" />
-
+       -->
+        <!--
         <CheckBoxPreference
                 android:key="pref_hide_last_replies"
                 android:title="@string/pref_hide_last_replies"
                 android:defaultValue="false" />
-
+        -->
         <CheckBoxPreference
                 android:key="pref_use_volume_scroll"
                 android:title="@string/pref_use_volume_scroll"
@@ -107,6 +110,7 @@
 
     </PreferenceScreen>
 
+    <!--
     <PreferenceScreen
             android:key="pref_user_category"
             android:title="@string/pref_user_category"
@@ -119,6 +123,7 @@
                 android:summary="@string/pref_user_name_summ"
                 android:inputType="textPersonName"
                 android:maxLength="100"
+                android:visibility="gone"
                 />
 
         <EditTextPreference
@@ -128,6 +133,7 @@
                 android:summary="@string/pref_user_email_summ"
                 android:inputType="textEmailAddress"
                 android:maxLength="100"
+                android:visibility="gone"
                 />
 
         <EditTextPreference
@@ -137,9 +143,11 @@
                 android:summary="@string/pref_user_password_summ"
                 android:inputType="textVisiblePassword|numberPassword"
                 android:maxLength="8"
+                android:visibility="gone"
                 />
 
     </PreferenceScreen>
+    -->
 
     <!-- pass -->
 

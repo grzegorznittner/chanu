@@ -76,21 +76,37 @@
                   android:icon="@drawable/device_access_storage"
                   android:visible="false"
                     />
-            <item android:id="@+id/board_rules_menu"
-                  android:title="@string/board_rules_menu"
-                  android:icon="@drawable/action_help"
+
+            <item android:id="@+id/use_abbrev_boards_menu"
+                  android:title="@string/pref_use_abbrev_boards"
+                  android:icon="@drawable/av_return_from_full_screen"
                   android:visible="false"
                     />
-            <item android:id="@+id/global_rules_menu"
-                  android:title="@string/global_rules_menu"
-                  android:icon="@drawable/action_about"
-                    />
-            <item android:id="@+id/web_menu"
-                  android:title="@string/direct_web_menu"
-                  android:icon="@drawable/location_web_site"
-                    />
+
+            <item android:id="@+id/hide_last_replies_menu"
+                  android:title="@string/pref_hide_last_replies"
+                  android:icon="@drawable/social_chat"
+                  android:visible="false"
+                  />
+
         </menu>
     </item>
+
+    <item android:id="@+id/board_rules_menu"
+          android:title="@string/board_rules_menu"
+          android:icon="@drawable/action_help"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/global_rules_menu"
+          android:title="@string/global_rules_menu"
+          android:icon="@drawable/action_about"
+            />
+
+    <item android:id="@+id/web_menu"
+          android:title="@string/direct_web_menu"
+          android:icon="@drawable/location_web_site"
+            />
 
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

@@ -6,15 +6,12 @@ import java.util.List;
 
 import android.app.ActivityManager;
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
-import android.content.IntentFilter;
+import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
-import android.content.Context;
-import android.content.Intent;
 import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -1084,6 +1081,20 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 //adapter.swapCursor(c);
                 adapter.changeCursor(c);
                 return true;
+            case R.id.use_abbrev_boards_menu:
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                Boolean pref = prefs.getBoolean(SettingsActivity.PREF_USE_ABBREV_BOARDS, false);
+                pref = !pref;
+                prefs.edit().putBoolean(SettingsActivity.PREF_USE_ABBREV_BOARDS, pref).apply();
+                updateAbbrev(this, pref);
+                return true;
+            case R.id.hide_last_replies_menu:
+                prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                pref = prefs.getBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, false);
+                pref = !pref;
+                prefs.edit().putBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, pref).apply();
+                updateHideLastReplies(this, pref);
+                return true;
             case R.id.sort_order_menu:
                 (new BoardSortOrderDialogFragment(boardSortType))
                         .setNotifySortOrderListener(new BoardSortOrderDialogFragment.NotifySortOrderListener() {
@@ -1168,6 +1179,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
             menu.findItem(R.id.sort_order_menu).setVisible(false);
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
+            menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
+            menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1186,6 +1199,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
             menu.findItem(R.id.sort_order_menu).setVisible(false);
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
+            menu.findItem(R.id.use_abbrev_boards_menu).setVisible(true);
+            menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
         }
         else if (board.isPopularBoard()) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1204,6 +1219,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
             menu.findItem(R.id.sort_order_menu).setVisible(false);
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
+            menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
+            menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
         }
         else if (board.isVirtualBoard()) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1222,6 +1239,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_list_menu).setVisible(false);
             menu.findItem(R.id.sort_order_menu).setVisible(false);
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
+            menu.findItem(R.id.use_abbrev_boards_menu).setVisible(true);
+            menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
         }
         else {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1237,6 +1256,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.view_as_grid_menu).setVisible((gridViewOptions & BoardViewer.CATALOG_GRID) == 0);
             menu.findItem(R.id.view_as_list_menu).setVisible((gridViewOptions & BoardViewer.CATALOG_GRID) > 0);
             menu.findItem(R.id.sort_order_menu).setVisible(true);
+            menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
+            menu.findItem(R.id.hide_last_replies_menu).setVisible(true);
             setHiddenThreadsMenuAsync(menu);
             setFavoritesMenuAsync(menu);
         }

@@ -127,6 +127,7 @@ public class SettingsFragment
         File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
         downloadLocationButton.setSummary(downloadFolder.getAbsolutePath());
 
+        /*
         Preference.OnPreferenceClickListener namesListener = new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -140,7 +141,9 @@ public class SettingsFragment
         name.setOnPreferenceClickListener(namesListener);
         email.setOnPreferenceClickListener(namesListener);
         password.setOnPreferenceClickListener(namesListener);
+        */
 
+        /*
         Preference.OnPreferenceChangeListener abbrevBoardsListener = new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -152,6 +155,7 @@ public class SettingsFragment
         };
         Preference abbrevBoards = findPreference(SettingsActivity.PREF_USE_ABBREV_BOARDS);
         abbrevBoards.setOnPreferenceChangeListener(abbrevBoardsListener);
+        */
 
         Preference.OnPreferenceChangeListener fastScrollBoardsListener = new Preference.OnPreferenceChangeListener() {
             @Override
