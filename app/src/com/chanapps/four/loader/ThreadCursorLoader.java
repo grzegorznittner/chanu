@@ -50,7 +50,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     @Override
     public Cursor loadInBackground() {
         try {
-            useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+            //useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+            useFriendlyIds = false;
             ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
             if (DEBUG) Log.i(TAG, "Loaded board from storage " + board);
             ChanThread thread;

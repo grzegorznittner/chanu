@@ -53,7 +53,7 @@ public class SettingsFragment
 
     public void initPreferenceScreen() {
         addPreferencesFromResource(R.xml.preferences);
-
+        /*
         Preference blocklistButton = findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
         blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -63,7 +63,7 @@ public class SettingsFragment
                 return true;
             }
         });
-
+        */
         Preference resetPrefsButton = findPreference(SettingsActivity.PREF_RESET_TO_DEFAULTS);
         resetPrefsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

@@ -119,6 +119,13 @@
             android:summaryOff="@string/pref_autoupdate_threads_summ_off"
             android:defaultValue="true" />
 
+    <CheckBoxPreference
+            android:key="pref_background_data_on_mobile"
+            android:title="@string/pref_background_data"
+            android:summaryOn="@string/pref_background_data_summ_on"
+            android:summaryOff="@string/pref_background_data_summ_off"
+            android:defaultValue="false" />
+
     <com.chanapps.four.component.CacheSizePreference
                 android:key="pref_cache_size"
                 android:title="@string/pref_cache_size"
@@ -175,14 +182,16 @@
     -->
 
     <!-- pass -->
-
+<!--
     <PreferenceScreen
             android:key="pref_pass_category"
             android:title="@string/pref_pass_category"
             >
+-->
 <!--
             android:summary="@string/pref_pass_category_summ"
 -->
+    <!--
         <EditTextPreference
                 android:key="pref_pass_token"
                 android:title="@string/pref_pass_token"
@@ -202,7 +211,7 @@
                 />
 
     </PreferenceScreen>
-
+    -->
     <!-- cache -->
 
 
@@ -260,13 +269,6 @@
                 android:defaultValue="true" />
 
         <CheckBoxPreference
-                android:key="pref_background_data_on_mobile"
-                android:title="@string/pref_background_data"
-                android:summaryOn="@string/pref_background_data_summ_on"
-                android:summaryOff="@string/pref_background_data_summ_off"
-                android:defaultValue="false" />
-
-        <CheckBoxPreference
                 android:key="pref_share_image_url"
                 android:title="@string/pref_share_image_url"
                 android:summaryOn="@string/pref_share_image_url_summ_on"
@@ -297,10 +299,12 @@
                 android:defaultValue="@string/pref_download_images_default_value"
                 />
 
+        <!--
         <Preference
                 android:key="pref_blocklist_button"
                 android:title="@string/blocklist_title"
                 android:summary="@string/pref_blocklist_button_summ" />
+        -->
 
         <Preference
                 android:key="pref_reset_to_defaults"

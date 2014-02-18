@@ -108,6 +108,8 @@ public class PostReplyActivity
     */
     private ImageView deleteButton;
     private View deleteButtonBg;
+    private ImageView webImageButton;
+    private View webImageButtonBg;
     private View sageButton;
     private Handler handler;
 
@@ -130,6 +132,7 @@ public class PostReplyActivity
     private ImageView imagePreview;
     private ProgressBar previewProgress;
     private TextView.OnEditorActionListener fastSend;
+    private View imageClickTarget;
 
     protected Uri imageUri;
     protected String boardCode = null;
@@ -210,6 +213,8 @@ public class PostReplyActivity
         //doneButton = (Button)findViewById(R.id.done);
         deleteButtonBg = findViewById(R.id.post_reply_delete_button_bg);
         deleteButton = (ImageView)findViewById(R.id.post_reply_delete_button);
+        webImageButtonBg = findViewById(R.id.post_reply_web_image_button_bg);
+        webImageButton = (ImageView)findViewById(R.id.post_reply_web_image_button);
         sageButton = findViewById(R.id.post_reply_sage);
         messageText = (EditText)findViewById(R.id.post_reply_text);
         passStatusText = (TextView)findViewById(R.id.post_reply_pass_status);
@@ -248,6 +253,13 @@ public class PostReplyActivity
         deleteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 deleteImage();
+            }
+        });
+
+        webImageButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                (new WebImageDialogFragment(boardCode, threadNo))
+                        .show(getSupportFragmentManager(), WebImageDialogFragment.TAG);
             }
         });
         /*
@@ -302,11 +314,13 @@ public class PostReplyActivity
         });
         recaptchaLoading = (ImageView) findViewById(R.id.post_reply_recaptcha_loading);
 
-        View overflow = findViewById(R.id.post_reply_overflow);
-        if (overflow != null) {
-            overflow.setOnClickListener(overflowListener);
-            overflow.setVisibility(View.VISIBLE);
-        }
+        imageClickTarget = findViewById(R.id.post_reply_image_click_target);
+        imageClickTarget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startGallery();
+            }
+        });
 
         updatePassRecaptchaViews(isPassEnabled());
     }
@@ -720,7 +734,7 @@ public class PostReplyActivity
 
     protected void adjustFieldVisibility() {
         if (threadNo == 0) // new thread
-            sageButton.setVisibility(View.INVISIBLE);
+            sageButton.setVisibility(View.GONE);
 
         if (ChanBoard.hasName(boardCode))
             nameText.setVisibility(View.VISIBLE);
@@ -787,6 +801,7 @@ public class PostReplyActivity
                     Toast.makeText(this, R.string.post_reply_no_load_gallery_image, Toast.LENGTH_SHORT).show();
                 }
                 imageUri = intent.getData();
+                imageClickTarget.setVisibility(View.GONE);
                 break;
             default:
                 Log.e(TAG, "invalid request code for image");
@@ -906,12 +921,14 @@ public class PostReplyActivity
     protected ImageLoadingListener previewListener = new ImageLoadingListener() {
         @Override
         public void onLoadingStarted(String imageUri, View view) {
+            imageClickTarget.setVisibility(View.GONE);
             previewProgress.setVisibility(View.VISIBLE);
-            previewFrame.setVisibility(View.VISIBLE);
+            //previewFrame.setVisibility(View.VISIBLE);
         }
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             previewProgress.setVisibility(View.GONE);
+            imageClickTarget.setVisibility(View.VISIBLE);
             deleteImage();
         }
         @Override
@@ -920,10 +937,12 @@ public class PostReplyActivity
             deleteButtonBg.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
             previewProgress.setVisibility(View.GONE);
+            imageClickTarget.setVisibility(View.GONE);
         }
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
             previewProgress.setVisibility(View.GONE);
+            imageClickTarget.setVisibility(View.VISIBLE);
             deleteImage();
         }
     };
@@ -932,6 +951,7 @@ public class PostReplyActivity
         imagePreview.setVisibility(View.GONE);
         deleteButtonBg.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
+        imageClickTarget.setVisibility(View.VISIBLE);
         imageUri = null;
         imagePath = null;
         contentType = null;
@@ -995,16 +1015,16 @@ public class PostReplyActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.post_reply_send_menu);
         if (item != null) {
-            if (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()
-                    == NetworkProfile.Type.NO_CONNECTION)
-            {
-                item.setEnabled(false);
+            boolean hasConnection = NetworkProfileManager.instance().getCurrentProfile().getConnectionType()
+                    != NetworkProfile.Type.NO_CONNECTION;
+            if (!hasConnection)
                 Toast.makeText(this, R.string.post_reply_pass_no_connection_text, Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                item.setEnabled(true);
-            }
+            item.setVisible(hasConnection);
+        }
+        item = menu.findItem(R.id.post_reply_quote_menu);
+        if (item != null) {
+            boolean hasQuote = quoteText != null && !quoteText.trim().isEmpty();
+            item.setVisible(hasQuote);
         }
         return true;
     }
@@ -1015,9 +1035,14 @@ public class PostReplyActivity
             case android.R.id.home:
                 navigateUp();
                 return true;
+            case R.id.post_reply_quote_menu:
+                insertQuote();
+                return true;
+            /*
             case R.id.post_reply_exit_menu:
                 finish();
                 return true;
+            */
             case R.id.post_reply_send_menu:
                 validateAndSendReply();
                 return true;
@@ -1511,20 +1536,8 @@ public class PostReplyActivity
 
     }
 
-    protected View.OnClickListener overflowListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            PopupMenu popup = new PopupMenu(PostReplyActivity.this, v);
-            popup.inflate(R.menu.post_reply_context_menu);
-            Menu menu = popup.getMenu();
-            if (menu != null)
-                adjustMenuVisibility(menu);
-            popup.setOnMenuItemClickListener(popupListener);
-            //popup.setOnDismissListener(popupDismissListener);
-            popup.show();
-        }
-    };
 
+    /*
     protected void adjustMenuVisibility(Menu menu) {
         MenuItem item2 = menu.findItem(R.id.post_reply_pass_enable_menu);
         if (item2 != null)
@@ -1533,6 +1546,7 @@ public class PostReplyActivity
         if (item3 != null)
             item3.setVisible(showPassDisable);
     }
+    */
 
     protected PopupMenu.OnMenuItemClickListener popupListener = new PopupMenu.OnMenuItemClickListener() {
         @Override
@@ -1541,10 +1555,12 @@ public class PostReplyActivity
                 case R.id.post_reply_quote_menu:
                     insertQuote();
                     return true;
+                /*
                 case R.id.post_reply_web_menu:
                     (new WebImageDialogFragment(boardCode, threadNo))
                             .show(getSupportFragmentManager(), WebImageDialogFragment.TAG);
                     return true;
+
                 case R.id.post_reply_picture_menu:
                     startGallery();
                     return true;
@@ -1556,6 +1572,7 @@ public class PostReplyActivity
                     if (isPassEnabled())
                         disablePass();
                     return true;
+                */
                 default:
                     return false;
             }
@@ -1572,7 +1589,8 @@ public class PostReplyActivity
         if (DEBUG) Log.i(TAG, "insertQuote text=" + s + " replyText=" + replyText + " quoteText=" + quoteText);
         int st;
         if (quoteText != null && !quoteText.isEmpty() && (st = s.indexOf(quoteText)) >= 0) {
-            // ignore, quote is already there
+            // quote is already there, so remove
+            t.replace(st, st + replyText.length(), "");
         }
         else if (replyText != null && !replyText.isEmpty() && (st = s.indexOf(replyText)) >= 0) {
             t.replace(st, st + replyText.length(), quoteText);

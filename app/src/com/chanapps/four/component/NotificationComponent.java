@@ -171,7 +171,8 @@ public class NotificationComponent {
         if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
             return;
 
-        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        //boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        boolean useFriendlyIds = false;
         if (thread != null)
             thread.useFriendlyIds = useFriendlyIds;
 
@@ -297,7 +298,8 @@ public class NotificationComponent {
         if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
             return;
 
-        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        //boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        boolean useFriendlyIds = false;
         if (thread != null)
             thread.useFriendlyIds = useFriendlyIds;
 

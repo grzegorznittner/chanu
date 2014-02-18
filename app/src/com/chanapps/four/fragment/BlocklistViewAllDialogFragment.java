@@ -59,9 +59,9 @@ public class BlocklistViewAllDialogFragment
         final Context context = getActivity();
         if (context == null)
             return null;
-        boolean useFriendlyIds = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        //boolean useFriendlyIds = PreferenceManager
+        //        .getDefaultSharedPreferences(context)
+        //        .getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         blocks = ChanBlocklist.getSorted(context);
         return createFilledListDialog();
     }

@@ -791,6 +791,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             case R.id.web_menu:
                 String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
+                return true;
             case R.id.font_size_menu:
                 new PreferenceDialogs(getActivity()).showFontSizeDialog();
                 return true;

@@ -23,29 +23,12 @@
                 android:descendantFocusability="beforeDescendants"
                 android:focusableInTouchMode="true">
 
-            <FrameLayout
-                    android:id="@+id/post_reply_overflow"
-                    style="@style/ThreadListItemBarOverflow"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:clickable="true"
-                    >
-                <ImageView style="@style/ThreadListItemBarOverflowIcon"
-                           android:layout_gravity="top|right"
-                        />
-            </FrameLayout>
-
             <EditText
                     android:id="@+id/post_reply_subject"
                     android:hint="@string/post_reply_subject_hint"
                     android:inputType="textEmailSubject"
                     style="@style/PostReplyEditText"
                     android:maxLength="100"
-                    android:layout_width="0dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@+id/post_reply_overflow"
-                    android:layout_marginLeft="@dimen/PostReplyEditText_layout_marginLeft"
-                    android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
                     android:layout_marginBottom="0dp"
                     android:layout_marginTop="@dimen/PostReplyEditText_layout_marginBottom"
                     />
@@ -116,33 +99,57 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/PostReplyRecaptcha.marginLeft"
                     android:layout_marginRight="@dimen/PostReplyRecaptcha.marginRight"
-                    android:layout_marginBottom="@dimen/PostReplyRecaptcha.marginBottom"
+                    android:layout_marginBottom="@dimen/PostReplyImage.marginBottom"
                     android:layout_marginTop="0dp"
                     android:gravity="center"
-                    android:visibility="gone"
                     >
                 <ImageView
                         android:id="@+id/post_reply_preview_image"
-                        android:scaleType="fitCenter"
-                        android:layout_gravity="center"
-                        android:adjustViewBounds="true"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="post_reply_add_image"
-                        android:background="@drawable/stub_image_background"
+                        android:scaleType="fitStart"
+                        android:layout_width="@dimen/PostReplyImage.layoutWidth"
+                        android:layout_height="@dimen/PostReplyImage.layoutHeight"
+                        android:contentDescription="@string/post_reply_add_image"
                         />
                 <ProgressBar style="@style/WebImageProgressBar" android:id="@+id/post_reply_preview_progress_bar"
                         />
+
+                <ImageView
+                        android:id="@+id/post_reply_image_click_target"
+                        android:scaleType="fitStart"
+                        android:layout_width="@dimen/PostReplyImage.layoutWidth"
+                        android:layout_height="@dimen/PostReplyImage.layoutHeight"
+                        android:contentDescription="@string/post_reply_add_text_or_image"
+                        android:src="@drawable/no_image"
+                        />
+
+                <View
+                        android:id="@+id/post_reply_web_image_button_bg"
+                        style="@style/PostReplyButton"
+                        android:layout_gravity="right"
+                        android:background="@color/PaletteBlack34Opacity"
+                        />
+                <ImageView
+                        android:id="@+id/post_reply_web_image_button"
+                        style="@style/PostReplyButton"
+                        android:layout_gravity="right"
+                        android:contentDescription="@string/post_reply_delete_hint"
+                        android:hint="@string/post_reply_web_menu"
+                        android:src="@drawable/location_web_site"
+                        />
+
                 <View
                         android:id="@+id/post_reply_delete_button_bg"
                         style="@style/PostReplyButton"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/PostReplyButton_layout_height_withSpacing"
+                        android:layout_gravity="right"
                         android:background="@color/PaletteBlack34Opacity"
+                        android:visibility="gone"
                         />
                 <ImageView
                         android:id="@+id/post_reply_delete_button"
                         style="@style/PostReplyButton"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/PostReplyButton_layout_height_withSpacing"
+                        android:layout_gravity="right"
                         android:visibility="gone"
                         android:contentDescription="@string/post_reply_delete_hint"
                         android:hint="@string/post_reply_delete_hint"
@@ -172,23 +179,31 @@
                         android:inputType="textEmailSubject"
                         style="@style/PostReplyEditText"
                         android:maxLength="100"
-                        android:layout_width="0dp"
-                        android:layout_alignParentLeft="true"
+                        android:layout_width="match_parent"
                         android:layout_toLeftOf="@+id/post_reply_sage"
                         android:layout_marginTop="0dp"
                         android:layout_marginLeft="0dp"
                         android:layout_marginRight="0dp"
                         android:layout_marginBottom="0dp"
+                        android:layout_alignParentBottom="true"
                         />
                 <FrameLayout
                         android:id="@+id/post_reply_sage"
                         style="@style/ThreadListItemBarOverflow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="@dimen/PostReplyButton.marginLeft"
+                        android:layout_marginBottom="@dimen/PostReplyButton.paddingBottom"
+                        android:layout_marginRight="@dimen/PostReplyButton.paddingBottom"
                         android:clickable="true"
                         >
-                    <ImageView style="@style/ThreadListItemBarOverflowIcon"
-                               android:layout_gravity="top|right"
+                    <View
+                            style="@style/PostReplyButton"
+                            android:layout_gravity="right"
+                            android:background="@color/PaletteBlack34Opacity"
+                            />
+                    <ImageView style="@style/PostReplyButton"
                                android:contentDescription="@string/post_reply_sage_hint"
                                android:src="@drawable/rating_bad"
                             />
@@ -208,6 +223,7 @@
                         android:layout_marginBottom="0dp"
                         android:layout_marginRight="0dp"
                         android:layout_alignParentLeft="true"
+                        android:layout_alignParentBottom="true"
                         android:text="@string/pref_user_password"
                         />
                 <EditText
@@ -221,18 +237,27 @@
                         android:layout_toLeftOf="@+id/password_help_icon"
                         android:layout_marginLeft="0dp"
                         android:layout_marginRight="0dp"
+                        android:layout_alignParentBottom="true"
                         />
                 <FrameLayout
                         android:id="@+id/password_help_icon"
                         style="@style/ThreadListItemBarOverflow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="@dimen/PostReplyButton.marginLeft"
+                        android:layout_marginBottom="@dimen/PostReplyButton.paddingBottom"
+                        android:layout_marginRight="@dimen/PostReplyButton.paddingBottom"
                         android:clickable="true"
                         >
-                    <ImageView style="@style/ThreadListItemBarOverflowIcon"
-                               android:layout_gravity="top|right"
+                    <View
+                            style="@style/PostReplyButton"
+                            android:layout_gravity="right"
+                            android:background="@color/PaletteBlack34Opacity"
+                            />
+                    <ImageView style="@style/PostReplyButton"
                                android:contentDescription="@string/post_reply_password_info_hint"
-                               android:src="?themedHelpIcon"
+                               android:src="@drawable/action_about"
                             />
                 </FrameLayout>
             </RelativeLayout>

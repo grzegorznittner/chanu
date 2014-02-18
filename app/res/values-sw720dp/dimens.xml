@@ -224,6 +224,7 @@
 
     <dimen name="PostReplyButton_layout_width">64dp</dimen>
     <dimen name="PostReplyButton_layout_height">64dp</dimen>
+    <dimen name="PostReplyButton_layout_height_withSpacing">88dp</dimen>
 
     <dimen name="PopupFullTextScrollLayout_marginTop">96dp</dimen>
     <dimen name="PopupFullTextScrollLayout_marginLeft">96dp</dimen>
@@ -327,6 +328,9 @@
     <dimen name="PostReplyButton.marginLeft">32dp</dimen>
     <dimen name="PostReplyButton.marginRight">32dp</dimen>
     <dimen name="PostReplyButton.marginBottom">32dp</dimen>
+    <dimen name="PostReplyButton.paddingLeft">16dp</dimen>
+    <dimen name="PostReplyButton.paddingBottom">16dp</dimen>
+    <dimen name="PostReplyImage.marginBottom">48dp</dimen>
 
     <dimen name="ThreadListItemReplyWrap_marginRight">32dp</dimen>
     <dimen name="ThreadListItemReplyNum_marginLeft">56dp</dimen>

@@ -27,8 +27,8 @@ public class ThemeSelector {
 
     protected static final int LIGHT_THEME = R.style.AppTheme;
     protected static final int DARK_THEME = R.style.AppTheme_Dark;
-    protected static final float LIGHT_LUX_THRESHOLD = 5;
-    protected static final float LUX_MIN_DELTA = 10;
+    //protected static final float LIGHT_LUX_THRESHOLD = 5;
+    //protected static final float LUX_MIN_DELTA = 10;
 
     public static final int DEFAULT_THEME = LIGHT_THEME;
 
@@ -37,9 +37,9 @@ public class ThemeSelector {
     protected String themeType;
     protected int themeId = LIGHT_THEME;
     protected Context context;
-    protected SensorManager sensorManager;
-    protected Sensor lightSensor;
-    protected float lux = 100; // default to room lighting
+    //protected SensorManager sensorManager;
+    //protected Sensor lightSensor;
+    //protected float lux = 100; // default to room lighting
 
     protected ThemeSelector(Context context) {
         this.context = context;
@@ -53,12 +53,13 @@ public class ThemeSelector {
                 + " theme");
         prefs.registerOnSharedPreferenceChangeListener(themeChangeListener);
 
-        sensorManager = (SensorManager)context.getSystemService(Service.SENSOR_SERVICE);
-        lightSensor = sensorManager == null ? null : sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        if (lightSensor != null)
-            sensorManager.registerListener(lightSensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        //sensorManager = (SensorManager)context.getSystemService(Service.SENSOR_SERVICE);
+        //lightSensor = sensorManager == null ? null : sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        //if (lightSensor != null)
+        //    sensorManager.registerListener(lightSensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
+    /*
     protected SensorEventListener lightSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -84,6 +85,7 @@ public class ThemeSelector {
             ; // ignore
         }
     };
+    */
 
     protected void updateTheme(int newTheme) {
         if (themeId == newTheme)
@@ -124,8 +126,8 @@ public class ThemeSelector {
             id = LIGHT_THEME;
         else if (context.getString(R.string.pref_theme_dark_value).equals(themeType))
             id = DARK_THEME;
-        else if (context.getString(R.string.pref_theme_auto_value).equals(themeType))
-            id = ambientLuxTheme(); // should be fixed to check sensor lux levels
+        //else if (context.getString(R.string.pref_theme_auto_value).equals(themeType))
+        //    id = ambientLuxTheme(); // should be fixed to check sensor lux levels
         else
             id = DEFAULT_THEME;
         if (DEBUG) Log.i(TAG, "calcThemeId('" + themeType + "') = " + id);
@@ -136,12 +138,14 @@ public class ThemeSelector {
         return themeId == R.style.AppTheme_Dark;
     }
 
+    /*
     protected int ambientLuxTheme() {
         if (lux >= LIGHT_LUX_THRESHOLD)
             return LIGHT_THEME;
         else
             return DARK_THEME;
     }
+    */
 
     public static interface ThemeActivity {
         int getThemeId();

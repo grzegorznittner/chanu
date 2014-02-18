@@ -230,13 +230,14 @@
     <dimen name="PostReplyEditText_padding">8dp</dimen>
     <dimen name="PostReplyEditText_layout_marginLeft">16dp</dimen>
     <dimen name="PostReplyEditText_layout_marginRight">16dp</dimen>
-    <dimen name="PostReplyEditText_layout_marginBottom">8dp</dimen>
+    <dimen name="PostReplyEditText_layout_marginBottom">16dp</dimen>
 
-    <dimen name="PostReplyCheckbox_layout_marginLeft">10dp</dimen>
+    <dimen name="PostReplyCheckbox_layout_marginLeft">12dp</dimen>
     <dimen name="PostReplyCheckbox_layout_marginBottom">8dp</dimen>
 
     <dimen name="PostReplyButton_layout_width">48dp</dimen>
     <dimen name="PostReplyButton_layout_height">48dp</dimen>
+    <dimen name="PostReplyButton_layout_height_withSpacing">70dp</dimen>
 
     <dimen name="PopupFullTextScrollLayout_marginTop">24dp</dimen>
     <dimen name="PopupFullTextScrollLayout_marginLeft">24dp</dimen>
@@ -398,6 +399,11 @@
     <dimen name="PostReplyButton.marginLeft">16dp</dimen>
     <dimen name="PostReplyButton.marginRight">16dp</dimen>
     <dimen name="PostReplyButton.marginBottom">8dp</dimen>
+    <dimen name="PostReplyButton.paddingLeft">4dp</dimen>
+    <dimen name="PostReplyButton.paddingBottom">4dp</dimen>
+    <dimen name="PostReplyImage.layoutWidth">200dp</dimen>
+    <dimen name="PostReplyImage.layoutHeight">200dp</dimen>
+    <dimen name="PostReplyImage.marginBottom">24dp</dimen>
 
     <dimen name="ThreadListItemReplyWrap_marginRight">32dp</dimen>
     <dimen name="ThreadListItemReplyNum_marginLeft">56dp</dimen>
@@ -405,7 +411,7 @@
 
     <string name="list_item_ago_date_separator"> ~ </string>
 
-    <integer name="PostReplyComment_minLines">4</integer>
+    <integer name="PostReplyComment_minLines">5</integer>
 
     <dimen name="BoardGridBoardCodePadding">2dp</dimen>
     <dimen name="BoardGridItemCountryFlagWidth">19dp</dimen>
