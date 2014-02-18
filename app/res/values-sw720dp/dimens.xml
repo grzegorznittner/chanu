@@ -219,7 +219,7 @@
     <dimen name="PostReplyEditText_layout_marginBottom">32dp</dimen>
     <dimen name="PostReplyEditText_leftCol_layout_marginRight">80dp</dimen>
 
-    <dimen name="PostReplyCheckbox_layout_marginLeft">8dp</dimen>
+    <dimen name="PostReplyCheckbox_layout_marginLeft">24dp</dimen>
     <dimen name="PostReplyCheckbox_layout_marginBottom">32dp</dimen>
 
     <dimen name="PostReplyButton_layout_width">64dp</dimen>
@@ -328,7 +328,7 @@
     <dimen name="PostReplyButton.marginLeft">32dp</dimen>
     <dimen name="PostReplyButton.marginRight">32dp</dimen>
     <dimen name="PostReplyButton.marginBottom">32dp</dimen>
-    <dimen name="PostReplyButton.paddingLeft">16dp</dimen>
+    <dimen name="PostReplyButton.paddingLeft">4dp</dimen>
     <dimen name="PostReplyButton.paddingBottom">16dp</dimen>
     <dimen name="PostReplyImage.marginBottom">48dp</dimen>
 

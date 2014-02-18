@@ -195,7 +195,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_marginLeft="@dimen/PostReplyButton.marginLeft"
                         android:layout_marginBottom="@dimen/PostReplyButton.paddingBottom"
-                        android:layout_marginRight="@dimen/PostReplyButton.paddingBottom"
+                        android:layout_marginRight="@dimen/PostReplyButton.paddingLeft"
                         android:clickable="true"
                         >
                     <View
@@ -247,7 +247,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_marginLeft="@dimen/PostReplyButton.marginLeft"
                         android:layout_marginBottom="@dimen/PostReplyButton.paddingBottom"
-                        android:layout_marginRight="@dimen/PostReplyButton.paddingBottom"
+                        android:layout_marginRight="@dimen/PostReplyButton.paddingLeft"
                         android:clickable="true"
                         >
                     <View
