@@ -519,6 +519,7 @@ o è illegale visualizzare il contenuto limitato nella tua giurisdizione.
   <string name="pref_background_data">Dati sullo sfondo</string>
   <string name="pref_background_data_summ_on">I dati nello sfondo si attivano con il piano dati mobile</string>
   <string name="pref_background_data_summ_off">I dati nello sfondo sono disabilitati con il piano dati mobile</string>
+  <string name="hide">Scaricamenti</string>
   <string name="pref_download_nomedia">Scaricamenti nascosti</string>
   <string name="pref_download_nomedia_summ_on">Le immagini scaricate sono nascoste dalla galleria</string>
   <string name="pref_download_nomedia_summ_off">Le immagini scaricate sono visibili nella galleria</string>

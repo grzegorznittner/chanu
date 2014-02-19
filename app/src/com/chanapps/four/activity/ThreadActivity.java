@@ -594,6 +594,10 @@ public class ThreadActivity
         }
     }
 
+    public void restartLoader() {
+        getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+    }
+
     public void refreshFragmentSync(final String boardCode, final long threadNo, final String message) {
         if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " message=" + message);
         if (hasValidPager())

@@ -514,6 +514,7 @@ Esse número foi gerado para você, mas você pode mudá-lo se quiser.</string>
   <string name="pref_background_data">Dados em segundo plano</string>
   <string name="pref_background_data_summ_on">Dados em segundo plano habilitados quando em dados móveis</string>
   <string name="pref_background_data_summ_off">Dados em segundo plano desabilitados quando em dados móveis</string>
+  <string name="hide">Esconder</string>
   <string name="pref_download_nomedia">Esconder Downloads</string>
   <string name="pref_download_nomedia_summ_on">Imagens baixadas não são visíveis na Galeria</string>
   <string name="pref_download_nomedia_summ_off">Imagens baixadas são visíveis na Galeria</string>

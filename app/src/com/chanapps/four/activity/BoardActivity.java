@@ -64,6 +64,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
+    protected static final int LOADER_ID = 0;
 
     protected static Typeface titleTypeface;
     protected static final String TITLE_FONT = "fonts/Edmondsans-Bold.otf";
@@ -121,7 +122,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "switchBoardInternal begin /" + boardCode + "/ q=" + query);
         this.boardCode = boardCode;
         this.query = query;
-        getSupportLoaderManager().destroyLoader(0); // clear out existing list
+        getSupportLoaderManager().destroyLoader(LOADER_ID); // clear out existing list
         //setupStaticBoards();
         loadDrawerArray();
         createAbsListView();
@@ -129,7 +130,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         startLoaderAsync();
         (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         checkNSFW();
-        mDrawerAdapter.notifyDataSetInvalidated();
+        if (mDrawerAdapter != null)
+            mDrawerAdapter.notifyDataSetInvalidated();
         if (DEBUG) Log.i(TAG, "switchBoard end /" + boardCode + "/ q=" + query);
     }
 
@@ -657,7 +659,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         setIntent(intent);
         setFromIntent(intent);
-        getSupportLoaderManager().destroyLoader(0); // clear out existing list
+        getSupportLoaderManager().destroyLoader(LOADER_ID); // clear out existing list
         loadDrawerArray();
         createAbsListView();
         setupBoardTitle();
@@ -757,14 +759,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ non-popular virtual board, loading immediately");
             if (adapter == null || adapter.getCount() == 0) {
                 if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ adapter empty, initializing loader");
-                getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
             }
         }
         else if (board.hasData() && board.isCurrent()) {
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has current data, loading immediately");
             if (adapter == null || adapter.getCount() == 0) {
                 if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ adapter empty, initializing loader");
-                getSupportLoaderManager().restartLoader(0, null, loaderCallbacks); // data is ready, load it
+                getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks); // data is ready, load it
             }
         }
         else if (board.hasData() &&
@@ -777,7 +779,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection " + health + ", loading immediately");
             if (adapter == null || adapter.getCount() == 0) {
                 if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ adapter empty, initializing loader");
-                getSupportLoaderManager().restartLoader(0, null, loaderCallbacks); // data is ready, load it
+                getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks); // data is ready, load it
             }
         }
         else if (health == NetworkProfile.Health.NO_CONNECTION) {
@@ -831,7 +833,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 if ((adapter == null || adapter.getCount() == 0)
                         && board.hasData()
                         && board.isCurrent())
-                    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                    getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
             }
         });
         */
@@ -869,7 +871,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void onStop () {
     	super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
-        //getSupportLoaderManager().destroyLoader(0);
+        //getSupportLoaderManager().destroyLoader(LOADER_ID);
         closeSearch();
     	handler = null;
         if (absListView != null && absListView instanceof EnhancedListView)
@@ -882,7 +884,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 		super.onDestroy();
         if (DEBUG) Log.i(TAG, "onDestroy /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
         if (cursorLoader != null)
-            getSupportLoaderManager().destroyLoader(0);
+            getSupportLoaderManager().destroyLoader(LOADER_ID);
 		handler = null;
         LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateBoardReceived);
 	}
@@ -1128,7 +1130,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                                 if (boardSortType != null) {
                                     BoardActivity.this.boardSortType = boardSortType;
                                     BoardSortType.saveToPrefs(BoardActivity.this, boardSortType);
-                                    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                                    getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
                                 }
                             }
                         })
@@ -1149,6 +1151,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                         refresh();
                     }
                 }).start();
+                return true;
+            case R.id.blocklist_menu:
+                List<Pair<String, ChanBlocklist.BlockType>> blocks = ChanBlocklist.getSorted(BoardActivity.this);
+                (new BlocklistViewAllDialogFragment(blocks, new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+                    }
+                })).show(getFragmentManager(),TAG);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1207,6 +1218,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
             menu.findItem(R.id.nsfw_menu).setVisible(false);
+            menu.findItem(R.id.blocklist_menu).setVisible(true);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1228,6 +1240,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(true);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
             menu.findItem(R.id.nsfw_menu).setVisible(true);
+            menu.findItem(R.id.blocklist_menu).setVisible(false);
         }
         else if (board.isPopularBoard()) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1249,6 +1262,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
             menu.findItem(R.id.nsfw_menu).setVisible(false);
+            menu.findItem(R.id.blocklist_menu).setVisible(true);
         }
         else if (board.isVirtualBoard()) {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1270,6 +1284,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(true);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
             menu.findItem(R.id.nsfw_menu).setVisible(true);
+            menu.findItem(R.id.blocklist_menu).setVisible(false);
         }
         else {
             menu.findItem(R.id.clean_watchlist_menu).setVisible(false);
@@ -1288,6 +1303,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(true);
             menu.findItem(R.id.nsfw_menu).setVisible(false);
+            menu.findItem(R.id.blocklist_menu).setVisible(true);
             setHiddenThreadsMenuAsync(menu);
             setFavoritesMenuAsync(menu);
         }
@@ -1396,7 +1412,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     else {
                         bundle = null;
                     }
-                    getSupportLoaderManager().restartLoader(0, bundle, loaderCallbacks);
+                    getSupportLoaderManager().restartLoader(LOADER_ID, bundle, loaderCallbacks);
                 }
             }
         };
@@ -1457,7 +1473,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                            getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
                         }
                     });
             }
@@ -1761,10 +1777,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 case R.id.board_thread_gallery_menu:
                     FetchChanDataService.scheduleThreadFetch(BoardActivity.this, boardCode, threadNo, true, false);
                     GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
-                    return true;
-                case R.id.board_thread_blocklist_menu:
-                    List<Pair<String, ChanBlocklist.BlockType>> blocks = ChanBlocklist.getSorted(BoardActivity.this);
-                    (new BlocklistViewAllDialogFragment(blocks)).show(getFragmentManager(),TAG);
                     return true;
                 case R.id.board_add_to_favorites_menu:
                     addToFavorites(BoardActivity.this, handler, boardCode);

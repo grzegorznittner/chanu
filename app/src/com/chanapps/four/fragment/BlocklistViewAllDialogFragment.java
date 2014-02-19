@@ -7,6 +7,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -25,6 +26,7 @@ import com.chanapps.four.component.EnhancedListView;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBlocklist;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.viewer.ThreadViewer;
 
 import java.util.*;
 
@@ -45,13 +47,16 @@ public class BlocklistViewAllDialogFragment
     protected EnhancedListAdapter adapter;
     protected EnhancedListView listView;
     protected AlertDialog dialog;
+    protected Dialog.OnDismissListener onDismissListener;
 
     public BlocklistViewAllDialogFragment() {}
 
-    public BlocklistViewAllDialogFragment(List<Pair<String, ChanBlocklist.BlockType>> blocks)
+    public BlocklistViewAllDialogFragment(List<Pair<String, ChanBlocklist.BlockType>> blocks,
+                                          Dialog.OnDismissListener onDismissListener)
     {
         super();
         this.blocks = blocks;
+        this.onDismissListener = onDismissListener;
     }
 
     @Override
@@ -123,12 +128,15 @@ public class BlocklistViewAllDialogFragment
         @Override
         public void onClick(View view) {
             adapter.insert(adapter.getCount(), new Pair<String, ChanBlocklist.BlockType>("", ChanBlocklist.BlockType.TEXT));
+            ThreadViewer.jumpToBottom(listView, new Handler());
         }
     };
 
     protected View.OnClickListener onCloseButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (onDismissListener != null)
+                onDismissListener.onDismiss(dialog);
             dismiss();
         }
     };

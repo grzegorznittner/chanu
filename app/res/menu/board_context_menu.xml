@@ -14,8 +14,4 @@
           android:title="@string/board_thread_gallery_menu"
             />
 
-    <item android:id="@+id/board_thread_blocklist_menu"
-          android:title="@string/blocklist_title"
-            />
-
 </menu>

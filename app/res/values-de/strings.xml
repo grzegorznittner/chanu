@@ -1154,6 +1154,7 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
     <string name="pref_background_data">Hintergrundsdaten</string>
     <string name="pref_background_data_summ_on">Hintergrundsdaten sind bei mobiler Datenverbindung verfügbar</string>
     <string name="pref_background_data_summ_off">Hintergrundsdaten sind bei mobiler Datenverbindung nicht verfügbar</string>
+    <string name="hide">Verstecken</string>
     <string name="pref_download_nomedia">Verstecken Downloads</string>
     <string name="pref_download_nomedia_summ_on">Bilder sind nich sichbar in der Galerie</string>
     <string name="pref_download_nomedia_summ_off">Bilder sind sichbar in der Galerie</string>

@@ -1351,6 +1351,7 @@ We will remove anything that remotely breaks this rule.</p>
     <string name="pref_background_data">Background Data</string>
     <string name="pref_background_data_summ_on">Background data enabled when on mobile data plan</string>
     <string name="pref_background_data_summ_off">Background data disabled when on mobile data plan</string>
+    <string name="hide">Hide</string>
     <string name="pref_download_nomedia">Hide Downloads</string>
     <string name="pref_download_nomedia_summ_on">Downloaded images are hidden from the gallery</string>
     <string name="pref_download_nomedia_summ_off">Downloaded images are visible in the gallery</string>

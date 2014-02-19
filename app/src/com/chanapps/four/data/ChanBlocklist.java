@@ -3,6 +3,7 @@ package com.chanapps.four.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
 import com.chanapps.four.activity.SettingsActivity;
@@ -19,6 +20,9 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public class ChanBlocklist {
+
+    private static final String TAG = ChanBlocklist.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     public enum BlockType {
         TEXT ("text", SettingsActivity.PREF_BLOCKLIST_TEXT),
@@ -44,11 +48,10 @@ public class ChanBlocklist {
     private static Map<BlockType, Set<String>> blocklist;
     private static Pattern testPattern = null;
 
-    private static void initBlocklist(Context context) {
-        if (blocklist == null)
-            blocklist = new HashMap<BlockType, Set<String>>();
-        else
+     private static void initBlocklist(Context context) {
+        if (blocklist != null)
             return;
+        blocklist = new HashMap<BlockType, Set<String>>();
         synchronized (blocklist) {
             blocklist.clear();
             for (int i = 0; i < BlockType.values().length; i++) {
@@ -71,6 +74,7 @@ public class ChanBlocklist {
         List<Pair<String, BlockType>> sorted = new ArrayList<Pair<String, BlockType>>();
         for (BlockType blockType : BlockType.values()) {
             Set<String> blocks = blocklist.get(blockType);
+            if (DEBUG) Log.i(TAG, "getSorted() type=" + blockType + " blocks=" + blocks);
             if (blocks == null || blocks.isEmpty())
                 continue;
             for (String block : blocks) {
@@ -196,7 +200,9 @@ public class ChanBlocklist {
         if (blockType == BlockType.TEXT) // precreate regex for efficient matching
             compileTestPattern();
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        editor.putStringSet(blockType.blockPref(), blocklist.get(blockType)).apply();
+        Set<String> blocks = blocklist.get(blockType);
+        if (DEBUG) Log.i(TAG, "saveBlocklist() type=" + blockType + " blocks=" + blocks);
+        editor.putStringSet(blockType.blockPref(), blocks).apply();
     }
 
     private static void compileTestPattern() {
@@ -226,13 +232,20 @@ public class ChanBlocklist {
         if (blocklist == null)
             initBlocklist(context);
         synchronized (blocklist) {
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
             for (BlockType blockType : BlockType.values()) // out with the old
                 blocklist.get(blockType).clear();
             for (Pair<String, BlockType> block : newBlocks) // and in with the new
                 if (block.first != null && !block.first.isEmpty() && block.second != null)
                     blocklist.get(block.second).add(block.first);
-            for (BlockType blockType : BlockType.values())
-                saveBlocklist(context, blockType);
+            for (BlockType blockType : BlockType.values()) {
+                if (blockType == BlockType.TEXT) // precreate regex for efficient matching
+                    compileTestPattern();
+                Set<String> blocks = blocklist.get(blockType);
+                if (DEBUG) Log.i(TAG, "save() type=" + blockType + " blocks=" + blocks);
+                editor.putStringSet(blockType.blockPref(), blocks);
+            }
+            editor.apply();
         }
     }
 

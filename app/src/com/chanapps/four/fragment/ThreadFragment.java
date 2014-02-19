@@ -816,6 +816,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 if (absListView != null)
                     absListView.setFastScrollEnabled(pref);
                 return true;
+            case R.id.blocklist_menu:
+                List<Pair<String, ChanBlocklist.BlockType>> blocks = ChanBlocklist.getSorted(getActivity());
+                (new BlocklistViewAllDialogFragment(blocks, new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+                        if (onTablet() && getActivity() != null)
+                            ((ThreadActivity)getActivity()).restartLoader();
+                    }
+                })).show(getActivity().getFragmentManager(), TAG);
+                return true;
             default:
                 ThreadActivity activity = (ThreadActivity)getActivity();
                 if (activity != null)
@@ -1369,12 +1380,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     (new ReportPostDialogFragment(boardCode, threadNo, postNos))
                             .show(getFragmentManager(), ReportPostDialogFragment.TAG);
                     return true;
-                case R.id.block_posts_menu:
-                    ChanBlocklist.save(getActivityContext(),
-                            new ArrayList<Pair<String, ChanBlocklist.BlockType>>(extractBlocklist(postPos)));
-                    (new BlocklistViewAllDialogFragment(ChanBlocklist.getSorted(getActivityContext()))).show(
-                            getActivity().getFragmentManager(), TAG);
-                    return true;
                 case R.id.web_menu:
                     String url = ChanPost.postUrl(getActivityContext(), boardCode, threadNo, postNos[0]);
                     ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
@@ -1488,12 +1493,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 case R.id.report_posts_menu:
                     (new ReportPostDialogFragment(boardCode, threadNo, postNos))
                             .show(getFragmentManager(), ReportPostDialogFragment.TAG);
-                    return true;
-                case R.id.block_posts_menu:
-                    ChanBlocklist.save(getActivityContext(),
-                            new ArrayList<Pair<String, ChanBlocklist.BlockType>>(extractBlocklist(postPos)));
-                    (new BlocklistViewAllDialogFragment(ChanBlocklist.getSorted(getActivityContext()))).show(
-                            getActivity().getFragmentManager(), TAG);
                     return true;
                 case R.id.web_menu:
                     String url = ChanPost.postUrl(getActivityContext(), boardCode, threadNo, postNos[0]);

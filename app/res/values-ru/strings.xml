@@ -516,6 +516,7 @@
   <string name="pref_background_data">Фоновый режим</string>
   <string name="pref_background_data_summ_on">Фоновая загрузка в сотовой сети</string>
   <string name="pref_background_data_summ_off">Отключить фоновую загрузку в сотовой сети</string>
+  <string name="hide">Скрыть</string>
   <string name="pref_download_nomedia">Скрыть загрузки</string>
   <string name="pref_download_nomedia_summ_on">Скачанные изображение скрыты из галереи</string>
   <string name="pref_download_nomedia_summ_off">Загруженные изображения видны в галерее</string>

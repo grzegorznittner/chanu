@@ -116,6 +116,11 @@
                   android:icon="@drawable/device_access_volume_on"
                   />
 
+            <item android:id="@+id/blocklist_menu"
+                  android:title="@string/blocklist_title"
+                  android:icon="@drawable/collections_labels"
+                    />
+
             <item android:id="@+id/web_menu"
                   android:title="@string/direct_web_menu"
                   android:icon="@drawable/location_web_site"

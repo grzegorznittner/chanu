@@ -36,9 +36,4 @@
           android:icon="@drawable/content_copy"
             />
 
-    <item android:id="@+id/block_posts_menu"
-          android:title="@string/blocklist_title"
-          android:icon="@drawable/content_remove"
-            />
-
 </menu>

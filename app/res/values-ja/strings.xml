@@ -601,6 +601,7 @@
 </string>
   <string name="pref_background_data_summ_off">バックグラウンドのデータはモバイルデータプランで無効になります
 </string>
+  <string name="hide">を隠す</string>
   <string name="pref_download_nomedia">ダウンロードを隠す</string>
   <string name="pref_download_nomedia_summ_on">ダウンロードした画像をギャラリーから隠しました
 </string>
