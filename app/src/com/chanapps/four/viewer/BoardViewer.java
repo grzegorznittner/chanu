@@ -826,15 +826,15 @@ public class BoardViewer {
 
     protected static boolean displayLastReply(final TextView subject, final ImageView thumb, final ImageView countryFlag,
                                       final ChanPost post, final String boardCode) {
-        if (post == null)
-            return false;
-        String[] textComponents = post.textComponents("");
+        String[] textComponents = post == null ? new String[]{ "", "" } : post.textComponents("");
+        String countryFlagUrl = post == null ? null : post.lastReplyCountryFlagUrl(countryFlag.getContext(), boardCode);
+        String thumbUrl = post == null ? null : post.lastReplyThumbnailUrl(thumb.getContext(), boardCode);
         if (subject != null)
             setSubject(subject, textComponents[0], textComponents[1], 0);
         if (countryFlag != null)
-            setCountryFlag(countryFlag, post.lastReplyCountryFlagUrl(countryFlag.getContext(), boardCode));
+            setCountryFlag(countryFlag, countryFlagUrl);
         if (thumb != null)
-            displayImage(thumb, post.lastReplyThumbnailUrl(thumb.getContext(), boardCode));
+            displayImage(thumb, thumbUrl);
         return true;
     }
 
