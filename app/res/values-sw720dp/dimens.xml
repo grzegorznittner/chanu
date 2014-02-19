@@ -21,7 +21,7 @@
     <dimen name="BoardListHeadline">18sp</dimen>
     <dimen name="ThreadListLayout">16sp</dimen>
     <dimen name="ThreadListHeaderSubject">24sp</dimen>
-    <dimen name="ThreadListHeaderHead">16sp</dimen>
+    <dimen name="ThreadListHeaderHead">18sp</dimen>
     <dimen name="ThreadListHeaderLabel">16sp</dimen>
     <dimen name="ThreadListHeaderExifText">16sp</dimen>
     <dimen name="ThreadListHeaderFullText">16sp</dimen>
@@ -360,5 +360,8 @@
     <integer name="BoardGridSubject_maxLines">3</integer>
 
     <dimen name="BlocklistItemHeight">64dp</dimen>
+
+    <dimen name="dialogFragmentMarginWidth">216dp</dimen>
+    <dimen name="dialogFragmentMarginHeight">8dp</dimen>
 
 </resources>
