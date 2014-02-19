@@ -360,7 +360,7 @@
 
     <string name="list_item_ago_date_separator"> ~ </string>
 
-    <integer name="PostReplyComment_minLines">6</integer>
+    <integer name="PostReplyComment_minLines">17</integer>
 
     <dimen name="BoardGridBoardCodePadding">4dp</dimen>
     <dimen name="BoardGridItemCountryFlagWidth">17dp</dimen>

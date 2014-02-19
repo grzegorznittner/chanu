@@ -411,7 +411,7 @@
 
     <string name="list_item_ago_date_separator"> ~ </string>
 
-    <integer name="PostReplyComment_minLines">5</integer>
+    <integer name="PostReplyComment_minLines">6</integer>
 
     <dimen name="BoardGridBoardCodePadding">2dp</dimen>
     <dimen name="BoardGridItemCountryFlagWidth">19dp</dimen>

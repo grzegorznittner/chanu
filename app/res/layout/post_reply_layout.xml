@@ -24,16 +24,6 @@
                 android:focusableInTouchMode="true">
 
             <EditText
-                    android:id="@+id/post_reply_subject"
-                    android:hint="@string/post_reply_subject_hint"
-                    android:inputType="textEmailSubject"
-                    style="@style/PostReplyEditText"
-                    android:maxLength="100"
-                    android:layout_marginBottom="0dp"
-                    android:layout_marginTop="@dimen/PostReplyEditText_layout_marginBottom"
-                    />
-
-            <EditText
                     android:id="@+id/post_reply_text"
                     style="@style/PostReplyEditText"
                     android:hint="@string/post_reply_text_hint"
@@ -46,7 +36,7 @@
 
             <FrameLayout
                     android:id="@+id/post_reply_recaptcha_frame"
-                    android:layout_marginTop="@dimen/PostReplyEditText_layout_marginBottom"
+                    android:layout_marginTop="0dp"
                     android:layout_marginLeft="@dimen/PostReplyRecaptcha.marginLeft"
                     android:layout_marginRight="@dimen/PostReplyRecaptcha.marginRight"
                     android:layout_marginBottom="@dimen/PostReplyRecaptcha.marginBottom"
@@ -79,18 +69,14 @@
                     android:imeOptions="actionSend"
                     android:imeActionLabel="@string/post_reply_send"
                     android:maxLength="100"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
                     />
 
             <TextView
                     android:id="@+id/post_reply_pass_status"
                     style="@style/PostReplyEditText"
                     android:textStyle="bold"
-                    />
-
-            <CheckBox
-                    android:id="@+id/post_reply_spoiler_checkbox"
-                    style="@style/PostReplyCheckbox"
-                    android:text="@string/post_reply_spoiler"
                     />
 
             <FrameLayout
@@ -157,6 +143,22 @@
                         />
 
             </FrameLayout>
+
+            <CheckBox
+                    android:id="@+id/post_reply_spoiler_checkbox"
+                    style="@style/PostReplyCheckbox"
+                    android:text="@string/post_reply_spoiler"
+                    />
+
+            <EditText
+                    android:id="@+id/post_reply_subject"
+                    android:hint="@string/post_reply_subject_hint"
+                    android:inputType="textEmailSubject"
+                    style="@style/PostReplyEditText"
+                    android:maxLength="100"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="0dp"
+                    />
 
             <EditText
                     android:id="@+id/post_reply_name"

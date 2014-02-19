@@ -17,5 +17,5 @@
     <bool name="BoardGridView.abbrev">false</bool>
     <bool name="narrow_tablet">false</bool>
 
-    <integer name="PostReplyComment_minLines">4</integer>
+    <integer name="PostReplyComment_minLines">5</integer>
 </resources>

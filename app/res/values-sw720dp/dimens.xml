@@ -330,7 +330,7 @@
     <dimen name="PostReplyButton.marginBottom">32dp</dimen>
     <dimen name="PostReplyButton.paddingLeft">4dp</dimen>
     <dimen name="PostReplyButton.paddingBottom">16dp</dimen>
-    <dimen name="PostReplyImage.marginBottom">48dp</dimen>
+    <dimen name="PostReplyImage.marginBottom">24dp</dimen>
 
     <dimen name="ThreadListItemReplyWrap_marginRight">32dp</dimen>
     <dimen name="ThreadListItemReplyNum_marginLeft">56dp</dimen>
@@ -338,7 +338,7 @@
 
     <string name="list_item_ago_date_separator"> ~ </string>
 
-    <integer name="PostReplyComment_minLines">10</integer>
+    <integer name="PostReplyComment_minLines">29</integer>
 
     <dimen name="BoardGridBoardCodePadding">4dp</dimen>
     <dimen name="BoardGridItemCountryFlagWidth">20dp</dimen>
