@@ -629,5 +629,8 @@
     <string name="pref_share_image_url_summ_on">代わりに、画像ファイルの共有のURL</string>
     <string name="pref_share_image_url_summ_off">代わりに、URLの共有イメージファイル</string>
 
-</string>
+      <string name="board_biz">ビジネスと金融</string>
+      <string name="board_desc_biz">金持ちかしようとして死ぬ</string>
+
+  </string>
 </resources>

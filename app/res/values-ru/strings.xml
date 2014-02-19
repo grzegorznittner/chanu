@@ -529,6 +529,7 @@
   <string name="ad_upgrade">Обновление до Pro</string>
   <string name="ad_upgrade_sum">Поддержать разработку и добавление новых функций</string>
 
+    <string name="pref_hide_last_replies">Скрыть последние ответы</string>
     <string name="show_hidden_threads">Показать скрытые темы</string>
     <string name="undo">Отменить правку</string>
     <string name="undo_all">Отменить все правки</string>
@@ -538,5 +539,8 @@
     <string name="pref_share_image_url">Поделиться картинкой через URL</string>
     <string name="pref_share_image_url_summ_on">Поделиться URL вместо файла картинки</string>
     <string name="pref_share_image_url_summ_off">Поделиться файлом картинки вемсто URL</string>
+
+    <string name="board_biz">Бизнес и финансы</string>
+    <string name="board_desc_biz">Разбогатеть или умереть пытаясь</string>
 
 </resources>

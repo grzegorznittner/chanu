@@ -543,4 +543,7 @@ o è illegale visualizzare il contenuto limitato nella tua giurisdizione.
     <string name="pref_share_image_url_summ_on">Condividere URL invece di file di immagine</string>
     <string name="pref_share_image_url_summ_off">Condividi file di immagine al posto di URL</string>
 
+    <string name="board_biz">Affari e Finanza</string>
+    <string name="board_desc_biz">Diventare ricco o morire provandoci</string>
+
 </resources>

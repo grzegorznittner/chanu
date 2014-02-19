@@ -1179,4 +1179,7 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
     <string name="pref_share_image_url_summ_on">Teilen URL statt Bilddatei</string>
     <string name="pref_share_image_url_summ_off">Teilen Bilddatei statt URL</string>
 
+    <string name="board_biz">Wirtschaft &amp; Finanzen</string>
+    <string name="board_desc_biz">Reich oder bei dem Versuch sterben</string>
+
 </resources>

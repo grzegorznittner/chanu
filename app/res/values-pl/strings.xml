@@ -540,4 +540,7 @@ Tablice uznawane jako NSFW (ryzykowne w pracy) są domyślnie ukryte. Te tablice
     <string name="pref_share_image_url_summ_on">Podziel URL zamiast pliku obrazu</string>
     <string name="pref_share_image_url_summ_off">Podziel się plik obrazu, zamiast adresu URL</string>
 
+    <string name="board_biz">Biznes i finanse</string>
+    <string name="board_desc_biz">Bogacą lub umrzeć, próbując</string>
+
 </resources>

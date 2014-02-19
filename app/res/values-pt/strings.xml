@@ -538,4 +538,7 @@ Esse número foi gerado para você, mas você pode mudá-lo se quiser.</string>
     <string name="pref_share_image_url_summ_on">Compartilhar URL em vez de arquivo de imagem</string>
     <string name="pref_share_image_url_summ_off">Compartilhar arquivo de imagem em vez de URL</string>
 
+    <string name="board_biz">Negócios e Finanças</string>
+    <string name="board_desc_biz">Fique rico ou morra tentando</string>
+
 </resources>
