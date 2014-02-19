@@ -564,6 +564,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return null;
             String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
             long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));
+            if (no <= 0) // don't allow swiping away of board header
+                return null;
             final String uniqueId = ChanThread.uniqueId(board, no, 0);
             new Thread(new Runnable() {
                 @Override
