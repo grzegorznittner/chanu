@@ -21,6 +21,7 @@
     <dimen name="BoardListHeadline">18sp</dimen>
     <dimen name="ThreadListLayout">16sp</dimen>
     <dimen name="ThreadListHeaderSubject">24sp</dimen>
+    <dimen name="ThreadListHeaderNumLabel">22sp</dimen>
     <dimen name="ThreadListHeaderHead">18sp</dimen>
     <dimen name="ThreadListHeaderLabel">16sp</dimen>
     <dimen name="ThreadListHeaderExifText">16sp</dimen>

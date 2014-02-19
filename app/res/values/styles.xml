@@ -816,7 +816,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">top|center_horizontal</item>
         <!-- <item name="android:textSize">@dimen/ThreadListHeaderSubject</item> -->
-        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderNumLabel</item>
         <item name="android:textColor">?themedCardSubjectTextColor</item>
     </style>
 
