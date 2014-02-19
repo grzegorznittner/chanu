@@ -467,4 +467,7 @@
 
     <dimen name="BlocklistItemHeight">48dp</dimen>
 
+    <dimen name="dialogFragmentMarginWidth">32dp</dimen>
+    <dimen name="dialogFragmentMarginHeight">16dp</dimen>
+
 </resources>

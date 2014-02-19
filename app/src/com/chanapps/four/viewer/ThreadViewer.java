@@ -69,6 +69,8 @@ public class ThreadViewer {
     private static DisplayImageOptions thumbDisplayImageOptions = null;
     private static int stub;
     private static int boardTabletViewWidthPx = 0;
+    private static int fragmentMarginWidthPx = 0;
+    private static int fragmentMarginHeightPx = 0;
 
     public static void initStatics(Context context, boolean isDark) {
         imageLoader = ChanImageLoader.getInstance(context);
@@ -78,6 +80,8 @@ public class ThreadViewer {
         Resources res = context.getResources();
         cardPaddingPx = res.getDimensionPixelSize(R.dimen.BoardGridView_spacing);
         boardTabletViewWidthPx = res.getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width);
+        fragmentMarginWidthPx = res.getDimensionPixelSize(R.dimen.dialogFragmentMarginWidth);
+        fragmentMarginHeightPx = res.getDimensionPixelSize(R.dimen.dialogFragmentMarginHeight);
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
         expandedDisplayImageOptions = createExpandedDisplayImageOptions(null);
@@ -169,7 +173,7 @@ public class ThreadViewer {
         //}
 
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            setHeaderImage(viewHolder, cursor, flags, expandedImageListener);
+            setHeaderImage(viewHolder, cursor, flags, expandedImageListener, showContextMenu);
         else
             setImage(viewHolder, cursor, flags, expandedImageListener, showContextMenu);
         setCountryFlag(viewHolder, cursor, flags);
@@ -586,19 +590,19 @@ public class ThreadViewer {
     */
 
     static private boolean setHeaderImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
-                                    View.OnClickListener expandedImageListener
+                                    View.OnClickListener expandedImageListener, boolean showContextMenu
                                     ) {
         if (viewHolder.list_item_image_header == null)
             return false;
         if (!SettingsActivity.shouldLoadThumbs(viewHolder.list_item_image_header.getContext()))
             return showExpandableThumb(viewHolder, viewHolder.list_item_image);
-        displayHeaderImage(viewHolder, cursor, flags, false); // make sure it's always displayed
-        if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener)) {
+        displayHeaderImage(viewHolder, cursor, flags, false, showContextMenu); // make sure it's always displayed
+        if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener, showContextMenu)) {
             viewHolder.list_item_image_header.setVisibility(View.GONE);
             return true;
         }
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
-        if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener)) {
+        if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener, showContextMenu)) {
             viewHolder.list_item_image_header.setVisibility(View.GONE);
             return true;
         }
@@ -622,10 +626,10 @@ public class ThreadViewer {
             return showExpandableThumb(viewHolder, viewHolder.list_item_image);
         // display thumb and also expand if available
         displayNonHeaderImage(viewHolder.list_item_image, viewHolder.list_item_image_expansion_target, cursor);
-        if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
+        if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener, showContextMenu))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
-        if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
+        if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener, showContextMenu))
             return true;
         /* we haven't expanded the image at this point, so collapse if it's still being shown from previous view */
         if (viewHolder.list_item_image_expanded_wrapper != null)
@@ -651,7 +655,7 @@ public class ThreadViewer {
         }
     }
 
-    static private Point sizeHeaderImage(Cursor cursor) {
+    static private Point sizeHeaderImage(Cursor cursor, boolean showContextMenu) {
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
@@ -663,11 +667,12 @@ public class ThreadViewer {
         //    return displayHeaderImageAtDefaultSize(iv, url);
         // scale image
         //if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
-       return sizeHeaderImage(tn_w, tn_h);
+       return sizeHeaderImage(tn_w, tn_h, showContextMenu);
     }
 
-    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags, boolean visible) {
-        Point imageSize = sizeHeaderImage(cursor);
+    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags, boolean visible,
+                                              boolean showContextMenu) {
+        Point imageSize = sizeHeaderImage(cursor, showContextMenu);
         sizeView(viewHolder.list_item_image_header, imageSize);
         ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
         if (DEBUG) Log.i(TAG, "displayHeaderImage() size=" + imageSize.x + "x" + imageSize.y);
@@ -711,14 +716,16 @@ public class ThreadViewer {
     }
     */
 
-    static private boolean prefetchExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
-                                                            final View.OnClickListener expandedImageListener) {
+    static private boolean prefetchExpandedImage(ThreadViewHolder viewHolder,
+                                                 final Cursor cursor,
+                                                 final View.OnClickListener expandedImageListener,
+                                                 boolean showContextMenu) {
         if (viewHolder.list_item == null)
             return false;
         if (!shouldAutoload(viewHolder.list_item.getContext(), cursor))
             return false;
         ThreadImageExpander expander =
-                (new ThreadImageExpander(viewHolder, cursor, true, stub, expandedImageListener));
+                (new ThreadImageExpander(viewHolder, cursor, true, stub, expandedImageListener, showContextMenu));
         expander.displayImage();
         return true;
     }
@@ -749,7 +756,8 @@ public class ThreadViewer {
     }
 
     static private boolean displayCachedExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
-                                                      final View.OnClickListener expandedImageListener) {
+                                                      final View.OnClickListener expandedImageListener,
+                                                      boolean showContextMenu) {
         File file = fullSizeImageFile(viewHolder.list_item.getContext(), cursor); // try for full size first
         if (file == null) {
             //toggleExpandedImage(viewHolder);
@@ -758,7 +766,7 @@ public class ThreadViewer {
 
         if (DEBUG) Log.i(TAG, "displayCachedExpandedImage() expanded file=" + file.getAbsolutePath());
         ThreadImageExpander expander =
-                (new ThreadImageExpander(viewHolder, cursor, false, stub, expandedImageListener));
+                (new ThreadImageExpander(viewHolder, cursor, false, stub, expandedImageListener, showContextMenu));
         expander.displayImage();
         return true;
     }
@@ -859,10 +867,10 @@ public class ThreadViewer {
     }
     */
 
-    public static Point sizeHeaderImage(final int tn_w, final int tn_h) {
+    public static Point sizeHeaderImage(final int tn_w, final int tn_h, boolean showContextMenu) {
         Point baseBox = new Point(tn_w, tn_h);
         Point scaledBox = new Point((int)(tn_w * MAX_HEADER_SCALE), (int)(tn_h * MAX_HEADER_SCALE));
-        Point cardBox = new Point(cardMaxImageWidth(), cardMaxImageHeight());
+        Point cardBox = new Point(cardMaxImageWidth(showContextMenu), cardMaxImageHeight(showContextMenu));
         //baseBox <= scaleBox <= cardBox;
 
         //Point scaledBox = new Point(baseBox.x, baseBox.y);
@@ -899,7 +907,7 @@ public class ThreadViewer {
         return scaledBox;
     }
 
-    public static int cardMaxImageWidth() {
+    public static int cardMaxImageWidth(boolean showContextMenu) {
         int naiveMax;
         //if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
             naiveMax = displayMetrics.widthPixels - cardPaddingPx - cardPaddingPx;
@@ -907,10 +915,12 @@ public class ThreadViewer {
         //    naiveMax = displayMetrics.widthPixels - cardPaddingPx - cardPaddingPx;
             //naiveMax = displayMetrics.widthPixels / 2 - cardPaddingPx - cardPaddingPx;
         naiveMax -= boardTabletViewWidthPx;
+        if (!showContextMenu) // when on fragment
+            naiveMax -= fragmentMarginWidthPx;
         return naiveMax;
     }
 
-    public static int   cardMaxImageHeight() {
+    public static int cardMaxImageHeight(boolean showContextMenu) {
         int naiveMax;
         //if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
             naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
@@ -918,6 +928,8 @@ public class ThreadViewer {
         //    naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
             //naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
         //naiveMax -= boardTabletViewWidthPx;
+        if (!showContextMenu) // when on fragment
+            naiveMax -= fragmentMarginHeightPx;
         return naiveMax;
     }
 

@@ -193,7 +193,8 @@ public class ThreadListener {
                     isDark
                             ? R.drawable.stub_image_background_dark
                             : R.drawable.stub_image_background,
-                    expandedImageListener
+                    expandedImageListener,
+                    true
                     )
             );
             expander.displayImage();

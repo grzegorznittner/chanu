@@ -58,9 +58,10 @@ public class ThreadImageExpander {
     private long threadNo;
     private String boardCode;
     private View.OnClickListener expandedImageListener;
+    private boolean showContextMenu = true;
 
     public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor, boolean withProgress, int stub,
-                               View.OnClickListener expandedImageListener) {
+                               View.OnClickListener expandedImageListener, boolean showContextMenu) {
         this.viewHolder = viewHolder;
         this.withProgress = withProgress;
         this.stub = stub;
@@ -85,6 +86,7 @@ public class ThreadImageExpander {
         } else {
         	fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
         }
+        this.showContextMenu = showContextMenu;
         if (DEBUG) Log.i(TAG, "postUrl=" + postImageUrl + " postSize=" + postW + "x" + postH);
     }
 
@@ -121,7 +123,7 @@ public class ThreadImageExpander {
     }
 
     public void displayImage() {
-        targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
+        targetSize = ThreadViewer.sizeHeaderImage(postW, postH, showContextMenu);
         if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
         setImageDimensions(viewHolder, targetSize);
 
