@@ -283,6 +283,7 @@ class PositionController {
     private static final float SCALE_SHRINK_FACTOR = 0.95f;
 
     public void scaleBy(float s, float focusX, float focusY) {
+        /*
         // We want to keep the focus point (on the bitmap) the same as when
         // we begin the scale guesture, that is,
         //
@@ -303,12 +304,39 @@ class PositionController {
                 + " focusX=" + focusX + " focusY=" + focusY);
         if (inDeltaScale == outDeltaScale)
             return;
-
-        //int x = Math.round(mFocusBitmapX - (focusX - mViewW / 2f) / s);
-        //int y = Math.round(mFocusBitmapY - (focusY - mViewH / 2f) / s);
         int x = Math.round(mFocusBitmapX - (focusX - mViewW / 2f) / outScale);
         int y = Math.round(mFocusBitmapY - (focusY - mViewH / 2f) / outScale);
         startAnimation(x, y, outScale, ANIM_KIND_SCALE);
+        */
+
+        int targetX = Math.round(mFocusBitmapX - (focusX - mViewW / 2f) / s);
+        int targetY = Math.round(mFocusBitmapY - (focusY - mViewH / 2f) / s);
+        float scale = s;
+
+        //if (targetX == mCurrentX && targetY == mCurrentY
+        //        && scale == mCurrentScale) return;
+        /*
+        mFromX = mCurrentX;
+        mFromY = mCurrentY;
+        mFromScale = mCurrentScale;
+
+        mToX = targetX;
+        mToY = targetY;
+        mToScale = s;
+        */
+        mCurrentX = targetX;
+        mCurrentY = targetY;
+        mCurrentScale = s;
+        if (DEBUG) Log.v(TAG, "Exception: scaleBy s=" + s + " (" + targetX + ", " + targetY + ")");
+        //mToScale = Utils.clamp(scale, 0.6f * mScaleMin, 1.4f * mScaleMax);
+        //mCurrentScale = mToScale;
+
+        if (mViewer != null) {
+            mViewer.setPosition(mCurrentX, mCurrentY, mCurrentScale);
+            mViewer.invalidate();
+        }
+
+        //startAnimation(targetX, targetY, s, ANIM_KIND_SCALE);
     }
 
     public void endScale() {

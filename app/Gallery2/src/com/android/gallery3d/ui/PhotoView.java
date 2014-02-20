@@ -533,6 +533,7 @@ public class PhotoView extends GLView {
             return true;
         }
 
+        /*
         @Override
         public void onLongPress(MotionEvent e) {
             if (mTransitionMode != TRANS_NONE) return;
@@ -551,6 +552,7 @@ public class PhotoView extends GLView {
             }
             return;
         }
+        */
     }
 
     private class MyScaleListener
@@ -558,11 +560,13 @@ public class PhotoView extends GLView {
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            float scale = detector.getScaleFactor();
-            if (DEBUG) Log.v(TAG, "onScale() scale=" + scale);
-            if (Float.isNaN(scale) || Float.isInfinite(scale)
+            float s = mPositionController.getCurrentScale();
+            float f = detector.getScaleFactor();
+            float t = s * f;
+            if (DEBUG) Log.v(TAG, "onScale() s=" + mPositionController.getCurrentScale() + " f=" + f + " newScale=" + t);
+            if (Float.isNaN(t) || Float.isInfinite(t)
                     || mTransitionMode != TRANS_NONE) return true;
-            mPositionController.scaleBy(scale,
+            mPositionController.scaleBy(t,
                     detector.getFocusX(), detector.getFocusY());
             return true;
         }
@@ -570,6 +574,7 @@ public class PhotoView extends GLView {
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
             if (mTransitionMode != TRANS_NONE) return false;
+            if (DEBUG) Log.v(TAG, "onScaleBegin() s=" + mPositionController.getCurrentScale());
             mPositionController.beginScale(
                 detector.getFocusX(), detector.getFocusY());
             return true;
@@ -577,6 +582,7 @@ public class PhotoView extends GLView {
 
         @Override
         public void onScaleEnd(ScaleGestureDetector detector) {
+            if (DEBUG) Log.v(TAG, "onScaleEnd() s=" + mPositionController.getCurrentScale());
             mPositionController.endScale();
             snapToNeighborImage();
         }
