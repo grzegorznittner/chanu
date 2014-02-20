@@ -52,7 +52,9 @@ public class DialogDetailsView implements DetailsViewContainer {
     private final DetailsSource mSource;
     private int mIndex;
     private Dialog mDialog;
-    private CloseListener mListener;
+    private DialogInterface.OnClickListener mClickListener;
+    private int mClickListenerStringId;
+    private CloseListener mCloseListener;
 
     public DialogDetailsView(GalleryActivity activity, DetailsSource source) {
         mContext = activity;
@@ -96,23 +98,31 @@ public class DialogDetailsView implements DetailsViewContainer {
         ListView detailsList = (ListView) LayoutInflater.from(mContext.getAndroidContext()).inflate(
                 R.layout.details_list, null, false);
         detailsList.setAdapter(mAdapter);
-        mDialog = new AlertDialog.Builder((Activity) mContext)
+        AlertDialog.Builder builder = new AlertDialog.Builder((Activity) mContext)
             .setView(detailsList)
-            .setTitle(title)
-                /*
-            .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+            .setTitle(title);
+        if (mClickListener != null) {
+            builder.setPositiveButton(mClickListenerStringId, mClickListener)
+                    .setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            mDialog.dismiss();
+                        }
+                    });
+        }
+        else {
+            builder.setNeutralButton(R.string.close, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     mDialog.dismiss();
                 }
-            })
-            */
-            .create();
+            });
+        }
+        mDialog = builder.create();
         mDialog.setCanceledOnTouchOutside(true);
 
         mDialog.setOnDismissListener(new OnDismissListener() {
             public void onDismiss(DialogInterface dialog) {
-                if (mListener != null) {
-                    mListener.onClose();
+                if (mCloseListener != null) {
+                    mCloseListener.onClose();
                 }
             }
         });
@@ -247,6 +257,11 @@ public class DialogDetailsView implements DetailsViewContainer {
     }
 
     public void setCloseListener(CloseListener listener) {
-        mListener = listener;
+        mCloseListener = listener;
+    }
+
+    public void setClickListener(int stringId, DialogInterface.OnClickListener listener) {
+        mClickListenerStringId = stringId;
+        mClickListener = listener;
     }
 }

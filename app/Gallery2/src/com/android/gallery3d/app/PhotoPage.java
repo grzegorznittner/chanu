@@ -24,6 +24,7 @@ import android.app.ActionBar.OnMenuVisibilityListener;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -61,13 +62,11 @@ import com.android.gallery3d.ui.SelectionManager;
 import com.android.gallery3d.ui.SynchronizedHandler;
 import com.android.gallery3d.ui.UserInteractionListener;
 import com.android.gallery3d.util.GalleryUtils;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.GalleryViewActivity;
-import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.activity.VideoViewActivity;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.LastActivity;
+import com.chanapps.four.gallery.ChanImage;
 import com.chanapps.four.gallery3d.R;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -77,7 +76,7 @@ public class PhotoPage extends ActivityState
         implements PhotoView.PhotoTapListener, FilmStripView.Listener,
         UserInteractionListener {
     private static final String TAG = "PhotoPage";
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     private static final int MSG_HIDE_BARS = 1;
 
@@ -288,7 +287,7 @@ public class PhotoPage extends ActivityState
                 if (!mModel.isEmpty()) {
                     MediaItem photo = mModel.getCurrentMediaItem();
                     if (photo != null) updateCurrentPhoto(photo);
-                    if (DEBUG) Log.i(TAG, "    photo updated " + photo.getPath());
+                    if (DEBUG) Log.i(TAG, "photo updated " + photo.getPath());
                 } else if (mIsActive) {
                     mActivity.getStateManager().finishState(PhotoPage.this);
                 }
@@ -351,16 +350,11 @@ public class PhotoPage extends ActivityState
     }
 
     private void updateCurrentPhoto(final MediaItem photo) {
-        if (DEBUG) Log.w(TAG, "updateCurrentPhoto photo: " + photo.getPath() + ", uri: " + photo.getPlayUri());
+        if (DEBUG) Log.w(TAG, "updateCurrentPhoto photo=" + photo + " path=" + photo.getPath() + ", uri: " + photo.getPlayUri());
         hideOrPlayAnimGif(photo);
-        if (mCurrentPhoto == photo) {
-            updateDetails();
-            updateMenuOperations();
-            updateSharedIntent();
-            return;
-        }
-        mCurrentPhoto = photo;
-        if (mCurrentPhoto == null) return;
+        if (mCurrentPhoto != photo)
+            mCurrentPhoto = photo;
+        if (photo == null) return;
         updateDetails();
         updateMenuOperations();
         setTitle(photo.getName());
@@ -370,10 +364,26 @@ public class PhotoPage extends ActivityState
     }
 
     private void updateDetails() {
-        if (mCurrentPhoto == null)
+        if (mCurrentPhoto == null || mDetailsHelper == null)
             return;
-        if (mShowDetails)
-            mDetailsHelper.reloadDetails(mModel.getCurrentIndex());
+        mDetailsHelper.reloadDetails(mModel.getCurrentIndex());
+        if (DEBUG) Log.w(TAG, "updateCurrentPhoto mDetailsHelper=" + mDetailsHelper);
+        /* can't get go-directly-to-post activity working yet
+        if (mCurrentPhoto instanceof ChanImage && mDetailsHelper != null) {
+            ChanImage image = (ChanImage)mCurrentPhoto;
+            final ChanActivityId aid = image.getChanActivityId();
+            if (aid != null)
+                mDetailsHelper.setClickListener(R.string.picasa_posts, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String boardCode = aid.boardCode;
+                        long threadNo = aid.threadNo;
+                        long postNo = aid.postNo;
+                        ThreadActivity.startActivity(mActivity.getAndroidContext(), boardCode, threadNo, postNo, "");
+                    }
+                });
+        }
+        */
     }
 
     private void updateMenuOperations() {
@@ -599,7 +609,8 @@ public class PhotoPage extends ActivityState
 
     private void hideDetails() {
         mShowDetails = false;
-        mDetailsHelper.hide();
+        if (mDetailsHelper != null)
+            mDetailsHelper.hide();
     }
 
     private void showDetails(int index) {
@@ -612,7 +623,8 @@ public class PhotoPage extends ActivityState
                 }
             });
         }
-        mDetailsHelper.reloadDetails(index);
+        //mDetailsHelper.reloadDetails(index);
+        updateDetails();
         mDetailsHelper.show();
     }
 

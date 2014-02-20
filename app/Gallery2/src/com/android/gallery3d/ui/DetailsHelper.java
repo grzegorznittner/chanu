@@ -15,6 +15,7 @@
  */
 package com.android.gallery3d.ui;
 
+import android.content.DialogInterface;
 import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.data.MediaDetails;
@@ -41,6 +42,7 @@ public class DetailsHelper {
     public interface DetailsViewContainer {
         public void reloadDetails(int indexHint);
         public void setCloseListener(CloseListener listener);
+        public void setClickListener(int stringId, DialogInterface.OnClickListener listener);
         public void show();
         public void hide();
     }
@@ -60,6 +62,10 @@ public class DetailsHelper {
 
     public void reloadDetails(int indexHint) {
         mContainer.reloadDetails(indexHint);
+    }
+
+    public void setClickListener(int stringId, DialogInterface.OnClickListener listener) {
+        mContainer.setClickListener(stringId, listener);
     }
 
     public void setCloseListener(CloseListener listener) {
