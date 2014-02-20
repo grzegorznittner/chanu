@@ -127,7 +127,6 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	public void onApplicationStart(Context context) {
 		if (DEBUG) Log.d(TAG, "onApplicationStart called");
 		usageCounter++;
-		CleanUpService.startService(context);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
         if (DEBUG) Log.i(TAG, "onApplicationStart scheduling global alarm");
         WidgetProviderUtils.scheduleGlobalAlarm(context);
@@ -215,7 +214,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
         } else if (data.threadNo == 0) {
 			// board fetching
             BoardParserService.startService(service.getApplicationContext(), data.boardCode, data.pageNo, data.priority, data.secondaryThreadNo);
-            CleanUpService.startService(service.getApplicationContext());
+            //CleanUpService.startService(service.getApplicationContext());
 		} else if (data.postNo == 0) {
 			// thread fetching
             ThreadParserService.startService(service.getApplicationContext(), data.boardCode, data.threadNo, data.priority);
