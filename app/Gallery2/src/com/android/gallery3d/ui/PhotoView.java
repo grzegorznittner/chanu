@@ -525,15 +525,14 @@ public class PhotoView extends GLView {
             // We need to ignore the next UP event.
             mIgnoreUpEvent = true;
             if (scale <= 1.0f || controller.isAtMinimalScale()) {
-                controller.zoomIn(
-                        e.getX(), e.getY(), Math.max(1.5f, scale * 1.5f));
+                float newScale = controller.getScaleMax();
+                controller.zoomIn(e.getX(), e.getY(), newScale);
             } else {
                 controller.resetToFullView();
             }
             return true;
         }
 
-        /*
         @Override
         public void onLongPress(MotionEvent e) {
             if (mTransitionMode != TRANS_NONE) return;
@@ -541,9 +540,9 @@ public class PhotoView extends GLView {
             float scale = controller.getCurrentScale();
             // onDoubleTap happened on the second ACTION_DOWN.
             // We need to ignore the next UP event.
-            //mIgnoreUpEvent = true;
-            // if (scale <= 1.0f || controller.isAtMinimalScale()) {
-            if (scale <= 1.0f) {
+            mIgnoreUpEvent = true;
+            if (scale <= 1.0f || controller.isAtMinimalScale()) {
+            //if (scale <= 1.0f) {
                 // Convert the tap position to image coordinate
                 float newScale = controller.getScaleMax();
                 controller.zoomIn(e.getX(), e.getY(), newScale);
@@ -552,7 +551,6 @@ public class PhotoView extends GLView {
             }
             return;
         }
-        */
     }
 
     private class MyScaleListener
