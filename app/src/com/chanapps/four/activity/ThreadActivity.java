@@ -101,7 +101,7 @@ public class ThreadActivity
             ((ThreadActivity)from).switchThreadInternal(boardCode, threadNo, postNo, query);
             return;
         }
-        if (postNo <= 0)
+        if (postNo <= 0 || postNo == threadNo)
             from.startActivity(createIntent(from, boardCode, threadNo, query));
         else
             from.startActivity(createIntent(from, boardCode, threadNo, postNo, query));
