@@ -64,11 +64,11 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     }
 
     private static void updateAndFetch(Context context) {
-        if (!ChanBoard.hasWatchlist(context) && !WidgetProviderUtils.hasWidgets(context)) {
-            if (DEBUG) Log.i(TAG, "updateAndFetch no watchlist or widgets, cancelling global alarm");
-            cancelGlobalAlarm(context);
-            return;
-        }
+        //if (!ChanBoard.hasWatchlist(context) && !WidgetProviderUtils.hasWidgets(context)) {
+        //    if (DEBUG) Log.i(TAG, "updateAndFetch no watchlist or widgets, cancelling global alarm");
+        //    cancelGlobalAlarm(context);
+        //    return;
+        //}
         WidgetProviderUtils.updateAll(context);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context); // always check since state may have changed
         NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
