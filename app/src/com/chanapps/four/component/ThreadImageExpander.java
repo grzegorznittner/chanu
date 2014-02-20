@@ -221,6 +221,7 @@ public class ThreadImageExpander {
     ImageLoadingListener expandedImageLoadingListener = new ImageLoadingListener() {
         @Override
         public void onLoadingStarted(String imageUri, View view) {
+            displayClickEffect();
         }
 
         @Override
@@ -229,7 +230,6 @@ public class ThreadImageExpander {
             if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
             if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
                 viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-            displayClickEffect();
         }
 
         @Override
