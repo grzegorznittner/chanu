@@ -340,11 +340,11 @@
   <string name="tutorial_intro_desc">स्वागत है</string>
   <string name="tutorial_all">चानू एक फोर्चान का ब्राउज़र है,फोर्चान एक फोरम है जहाँ पर दुनिया के सभी लोग छवियाँ/चित्र पोस्ट करके उन पर टिप्पणी करते हैं।\n\n शुरुवात करने के लिए क्लिक करें। </string>
   <string name="board_type_japanese_culture">जापानी संस्कृति</string>
-  <string name="board_a">अनिमे \'और माँगा </string>
+  <string name="board_a">अनिमे और माँगा </string>
   <string name="board_c">अनिमे/प्यारा</string>
   <string name="board_w">अनिमे/वॉलपेपर</string>
   <string name="board_m">मेका</string>
-  <string name="board_cgl">कस्प्ले \'और ईजीएल </string>
+  <string name="board_cgl">कस्प्ले और ईजीएल </string>
   <string name="board_cm">प्यारा/पुरुष</string>
   <string name="board_n">परिवहन</string>
   <string name="board_jp">ओटाकु संस्कृति</string>
@@ -353,23 +353,23 @@
   <string name="board_v">वीडियो गेम</string>
   <string name="board_vg">वीडियो गेम जनरल</string>
   <string name="board_vr">पुराने गेम </string>
-  <string name="board_co">कॉमिक्स \'और कार्टून</string>
+  <string name="board_co">कॉमिक्स और कार्टून</string>
   <string name="board_g">प्रौद्योगिकी</string>
-  <string name="board_tv">टेलीविजन \'और फिल्म</string>
+  <string name="board_tv">टेलीविजन और फिल्म</string>
   <string name="board_k">हतियार </string>
   <string name="board_o">ऑटो</string>
-  <string name="board_an">पशु \'और प्रकृति</string>
+  <string name="board_an">पशु और प्रकृति</string>
   <string name="board_tg">पारंपरिक खेल</string>
   <string name="board_sp">स्पोर्ट्स</string>
   <string name="board_asp">वैकल्पिक स्पोर्ट्स</string>
-  <string name="board_sci">विज्ञान \'और गणित</string>
+  <string name="board_sci">विज्ञान और गणित</string>
   <string name="board_int">अंतर्राष्‍ट्रीय</string>
   <string name="board_out">बाहर</string>
   <string name="board_type_creative">रचनात्मक</string>
   <string name="board_i">ओेकाकी </string>
-  <string name="board_po">पेपरक्राफ्ट \'और ओरिगामी </string>
+  <string name="board_po">पेपरक्राफ्ट और ओरिगामी </string>
   <string name="board_p">फोटोग्राफ़ी</string>
-  <string name="board_ck">खाना \'और पाक कला</string>
+  <string name="board_ck">खाना और पाक कला</string>
   <string name="board_ic">कलाकृति/आलोचना</string>
   <string name="board_wg">वॉलपेपर/सामान्य</string>
   <string name="board_mu">संगीत</string>
@@ -378,7 +378,7 @@
   <string name="board_3">३डीसीजी </string>
   <string name="board_gd">ग्राफिक डिजाइन</string>
   <string name="board_diy">खुद से करो </string>
-  <string name="board_wsg">काम सुरक्षित गिफ</string>
+  <string name="board_wsg">काम सुरक्षित जिफ</string>
   <string name="board_type_adult">वयस्क</string>
   <string name="board_s">सेक्सी सुंदर महिलाऐं </string>
   <string name="board_hc">कट्टर</string>
@@ -390,7 +390,7 @@
   <string name="board_y">याओरी </string>
   <string name="board_t">टोर्रेन्ट्स </string>
   <string name="board_hr">उच्च रेसोलुशन </string>
-  <string name="board_gif">एनिमेटेड गिफ </string>
+  <string name="board_gif">एनिमेटेड जिफ</string>
   <string name="board_type_other">अन्य</string>
   <string name="board_q">फोर्चान प्रतिक्रिया</string>
   <string name="board_trv">यात्रा</string>
@@ -406,7 +406,7 @@
   <string name="board_r9k">रोबोट९००१ </string>
   <string name="board_pol">राजनैतिक रूप से गलत</string>
   <string name="board_s4s">गंदगी जो फोर्चान कहती  हैं</string>
-  <string name="board_soc">कैमरा \'और मिलाप </string>
+  <string name="board_soc">कैमरा और मिलाप </string>
   <string name="board_watch">थ्रेड वॉचलिस्ट </string>
   <string name="board_favorites">पसंदीदा बोर्ड्स </string>
   <string name="board_popular">प्रसिद्ध थ्रेड्स </string>
@@ -419,9 +419,7 @@
   <string name="board_desc_adv">पूछो और आपको प्राप्त होगा</string>
   <string name="board_desc_an">पालतू जानवर और  पौधे</string>
   <string name="board_desc_asp">बी एम् एक्स , स्कीइंग, पैराशूटिंग</string>
-  <string name="board_desc_b">अराजकतावादी अज्ञातकृत
-	
-</string>
+  <string name="board_desc_b">अराजकतावादी अज्ञातक</string>
   <string name="board_desc_c">बीवी और अन्य</string>
   <string name="board_desc_cgl">वेशभूषा और लोलिता</string>
   <string name="board_desc_ck">व्यंजनों और बरतन</string>
@@ -540,6 +538,6 @@
   <string name="pref_share_image_url">शेयर छवि यूआरएल के माध्यम से</string>
   <string name="pref_share_image_url_summ_on">छवि  के बजाय यूआरएल साझा करें</string>
   <string name="pref_share_image_url_summ_off">छवि यूआरएल के बजाय फ़ाइल साझा करें</string>
-  <string name="board_biz">व्यापार \'और वित्त</string>
+  <string name="board_biz">व्यापार और वित्त</string>
   <string name="board_desc_biz">अमीर बनो या कोशिश करते मरो </string>
 </resources>
