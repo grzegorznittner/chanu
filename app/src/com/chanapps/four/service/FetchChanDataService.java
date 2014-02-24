@@ -16,11 +16,14 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import android.util.Pair;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.*;
@@ -319,6 +322,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 thread.lastFetched = 0;
             } else {
                 if (thread.isDead && thread.posts.length == thread.replies) {
+                    updateAfterDeadThread();
                     if (DEBUG) Log.i(TAG, "Dead thread retrieved from storage, therefore service is terminating");
                     return;
                 }
@@ -355,7 +359,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                     thread.posts[0].isDead = true;
                 if (DEBUG) Log.i(TAG, "After handleBoard dead thread calling storeThreadData for /" + thread.board + "/" + thread.no);
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
-
+                updateAfterDeadThread();
                 NetworkProfileManager.instance().failedFetchingData(this, Failure.DEAD_THREAD);
                 return;
             } else if (contentType == null || !contentType.contains("json")) {
@@ -393,6 +397,16 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 			closeConnection(tc);
 		}
 	}
+
+    private void updateAfterDeadThread() throws IOException {
+        Context context = getBaseContext();
+        if (PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true)) {
+            ChanFileStorage.cleanDeadWatchedThreads(context);
+            BoardActivity.refreshWatchlist(context);
+        }
+    }
 
 	@Override
 	public ChanActivityId getChanActivityId() {

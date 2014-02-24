@@ -86,8 +86,22 @@ public class BoardViewer {
         setCountryFlag(viewHolder, cursor);
         setIcons(viewHolder, flags, isDark);
         setImage(viewHolder, cursor, groupBoardCode, flags, columnWidth, columnHeight, options, titleTypeface);
+        clearLastReplyImages(viewHolder);
         setLastReplies(viewHolder, cursor, options);
         return true;
+    }
+
+    protected static void clearLastReplyImages(BoardViewHolder viewHolder) {
+        if (viewHolder.grid_item_thread_thumb_1 != null)
+            viewHolder.grid_item_thread_thumb_1.setVisibility(View.GONE);
+        if (viewHolder.grid_item_thread_thumb_2 != null)
+            viewHolder.grid_item_thread_thumb_2.setVisibility(View.GONE);
+        if (viewHolder.grid_item_thread_thumb_3 != null)
+            viewHolder.grid_item_thread_thumb_3.setVisibility(View.GONE);
+        if (viewHolder.grid_item_thread_thumb_4 != null)
+            viewHolder.grid_item_thread_thumb_4.setVisibility(View.GONE);
+        if (viewHolder.grid_item_thread_thumb_5 != null)
+            viewHolder.grid_item_thread_thumb_5.setVisibility(View.GONE);
     }
 
     protected static boolean setItem(BoardViewHolder viewHolder,

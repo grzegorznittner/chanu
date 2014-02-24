@@ -42,11 +42,16 @@
                     non-clickable: android:foreground="@drawable/null_selector_bg"
                     clickable: android:foreground="@drawable/thread_list_selector_bg"
                     -->
-                    <FrameLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper" android:layout_marginRight="0dp">
+                    <FrameLayout style="@style/ThreadListItemImageWrapper"
+                                 android:id="@+id/list_item_image_wrapper"
+                                 android:layout_marginRight="0dp">
                         <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
                     </FrameLayout>
                     <!-- <View style="@style/ThreadListItemLeftSpacer" android:id="@+id/list_item_left_spacer"/> -->
-                    <LinearLayout style="@style/ThreadListItemBarAgoWrapper" android:id="@+id/list_item_ago_wrapper" android:layout_marginLeft="@dimen/ThreadListHeader_padding" android:layout_toRightOf="@+id/list_item_image_wrapper">
+                    <LinearLayout style="@style/ThreadListItemBarAgoWrapper"
+                                  android:id="@+id/list_item_ago_wrapper"
+                                  android:layout_marginLeft="@dimen/ThreadListHeader_padding"
+                                  android:layout_toRightOf="@+id/list_item_image_wrapper">
                         <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
                         <TextView style="@style/ThreadListItemBarAgo" android:id="@+id/list_item_header_bar_ago"/>
                     </LinearLayout>
@@ -105,7 +110,7 @@
 
         <FrameLayout style="@style/ThreadListHeaderImageSection" android:id="@+id/list_item_image_expanded_wrapper">
             <ImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image_header"/>
-            <ImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded"/>
+            <ImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded" android:visibility="gone"/>
             <WebView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview" android:visibility="gone"/>
             <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
             <View style="@style/ThreadListHeaderImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
@@ -177,8 +182,8 @@
 
         <LinearLayout style="@style/ThreadListHeaderNumSection">
 
-            <FrameLayout style="@style/ThreadListHeaderNumWrap"
-                         android:background="@drawable/thread_list_selector_bg">
+            <FrameLayout style="@style/ThreadListHeaderNumWrap">
+                         <!-- android:background="@drawable/thread_list_selector_bg"> -->
                 <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
                     <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_replies_text"/>
                     <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_replies_label"/>
@@ -187,8 +192,8 @@
 
             <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
 
-            <FrameLayout style="@style/ThreadListHeaderNumWrap"
-                            android:background="@drawable/thread_list_selector_bg">
+            <FrameLayout style="@style/ThreadListHeaderNumWrap">
+                           <!-- android:background="@drawable/thread_list_selector_bg"> -->
                 <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
                     <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
                     <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_images_label"/>

@@ -931,6 +931,10 @@ public class ChanFileStorage {
         }
         if (updateWatchlist) {
             storeBoardData(context, watchlist);
+            if (PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+                ChanFileStorage.cleanDeadWatchedThreads(context);
             BoardActivity.refreshWatchlist(context);
         }
     }

@@ -142,12 +142,6 @@ public class PurchaseActivity extends Activity implements ChanIdentifiedActivity
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(this, null);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
-            case R.id.settings_menu:
-                return SettingsActivity.startActivity(this);
-            case R.id.send_feedback_menu:
-                return SendFeedback.email(this);
-            case R.id.about_menu:
-                return AboutActivity.startActivity(this);
             default:
                 return super.onOptionsItemSelected(item);
         }

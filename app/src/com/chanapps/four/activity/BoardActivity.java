@@ -52,7 +52,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     protected static final String UPDATE_BOARD_ACTION = "updateBoardAction";
     protected static final String UPDATE_ABBREV_ACTION = "updateAbbrevAction";
@@ -933,6 +933,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             // retry load if maybe data wasn't there yet
             if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)
                     || boardCode.equals(ChanBoard.FAVORITES_BOARD_CODE)) {
+                if (DEBUG) Log.i(TAG, "onLoadFinished showing empty text");
                 if (data == null || data.getCount() < 1)
                     showEmptyText();
                 else
@@ -977,7 +978,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (emptyText == null)
             return;
         BoardType boardType = BoardType.valueOfBoardCode(boardCode);
-        int emptyStringId = (boardType != null) ? boardType.emptyStringId(): R.string.board_empty_default;
+        int emptyStringId = (boardType != null) ? boardType.emptyStringId() : R.string.board_empty_default;
         emptyText.setText(emptyStringId);
         emptyText.setVisibility(View.VISIBLE);
     }
@@ -1309,7 +1310,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setHiddenThreadsMenuAsync(menu);
             setFavoritesMenuAsync(menu);
         }
-        menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
 
         return super.onPrepareOptionsMenu(menu);
     }

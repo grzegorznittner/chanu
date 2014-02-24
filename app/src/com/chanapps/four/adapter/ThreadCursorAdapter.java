@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanPost;
@@ -86,6 +88,20 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
         ThreadViewHolder viewHolder = new ThreadViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);
+        WebView wv = viewHolder.list_item_image_expanded_webview;
+        if (wv != null) {
+            wv.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    if (view != null)
+                        view.setVisibility(View.VISIBLE);
+                }
+            });
+            wv.setBackgroundColor(0x000000);
+            wv.getRootView().setBackgroundColor(0x000000);
+            wv.getSettings().setJavaScriptEnabled(false);
+            wv.getSettings().setBuiltInZoomControls(false);
+        }
         return v;
     }
 

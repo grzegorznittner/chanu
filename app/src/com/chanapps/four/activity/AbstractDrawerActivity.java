@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
@@ -30,9 +31,24 @@ abstract public class
         implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
-    protected int mDrawerArrayId;
+    protected static final String ROW_ID = "rowid";
+    protected static final String TEXT = "text";
+    protected static final String DRAWABLE_ID = "drawableid";
+
+    protected static final String[] adapterFrom = {
+            ROW_ID,
+            TEXT,
+            DRAWABLE_ID
+    };
+
+    protected static final int[] adapterTo = {
+            R.id.drawer_list_item,
+            R.id.drawer_list_item_text,
+            R.id.drawer_list_item_icon
+    };
+
     protected String[] mDrawerArray;
     protected ListView mDrawerList;
     protected DrawerLayout mDrawerLayout;
@@ -74,31 +90,23 @@ abstract public class
         return super.allAdaptersSet() && mDrawerAdapter != null;
     }
 
-    protected static final String ROW_ID = "rowid";
-    protected static final String TEXT = "text";
-    protected static final String DRAWABLE_ID = "drawableid";
-
-    protected static final String[] adapterFrom = {
-            ROW_ID,
-            TEXT,
-            DRAWABLE_ID
-    };
-
-    protected static final int[] adapterTo = {
-            R.id.drawer_list_item,
-            R.id.drawer_list_item_text,
-            R.id.drawer_list_item_icon
-    };
-
     protected void loadDrawerArray() {
-        mDrawerArrayId = R.array.long_drawer_array;
-        List<String> drawer = new ArrayList<String>(Arrays.asList(getResources().getStringArray(mDrawerArrayId)));
+        List<String> drawer = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.long_drawer_array)));
         loadFavorites(drawer);
         loadWatchlist(drawer);
+        loadFooter(drawer);
         mDrawerArray = drawer.toArray(new String[drawer.size()]);
         Handler callbackHandler = getChanHandler();
         if (callbackHandler != null)
             callbackHandler.post(setAdaptersCallback);
+    }
+
+    protected void loadFooter(List<String> drawer) {
+        boolean hasPurchased = BillingComponent.getInstance(this).hasProkey();
+        int drawerId = hasPurchased ? R.array.long_drawer_array_footer_purchased : R.array.long_drawer_array_footer;
+        List<String> items = new ArrayList<String>(Arrays.asList(getResources().getStringArray(drawerId)));
+        drawer.add("");
+        drawer.addAll(items);
     }
 
     protected void loadFavorites(List<String> drawer) {
@@ -147,7 +155,18 @@ abstract public class
             for (int i = 0; i < mDrawerArray.length; i++) {
                 String drawerText = mDrawerArray[i];
                 BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
-                int drawableId = type == null ? 0 : type.drawableId();
+                int drawableId;
+                if (type != null)
+                    drawableId = type.drawableId();
+                else if (getString(R.string.settings_menu).equals(drawerText))
+                    drawableId = R.drawable.gear;
+                else if (getString(R.string.send_feedback_menu).equals(drawerText))
+                    drawableId = R.drawable.speech_bubble_ellipsis;
+                else if (getString(R.string.purchase_menu).equals(drawerText))
+                    drawableId = R.drawable.money_bag;
+                else
+                    drawableId = 0;
+                if (DEBUG) Log.i(TAG, "row=" + i + " text=" + drawerText + " drawableId=" + drawableId);
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put(ROW_ID, "" + i);
                 map.put(TEXT, drawerText);
@@ -171,6 +190,17 @@ abstract public class
     };
 
     protected SimpleAdapter.ViewBinder mViewBinder = new SimpleAdapter.ViewBinder() {
+        protected int pickSelector(BoardType type) {
+            int selector;
+            if (type != null && type.boardCode() != null && boardCode != null && type.boardCode().equals(boardCode))
+                selector = R.drawable.drawer_list_selector_checked_bg;
+
+            else if (getApplicationContext() != null && ThemeSelector.instance(getApplicationContext()).isDark())
+                selector = R.drawable.drawer_list_selector_inverse_bg_dark;
+            else
+                selector = R.drawable.drawer_list_selector_inverse_bg;
+            return selector;
+        }
         public boolean setViewValue(View view, Object data, String textRepresentation) {
             switch (view.getId()) {
                 case R.id.drawer_list_item:
@@ -178,16 +208,9 @@ abstract public class
                     int pos = Integer.valueOf((String)data);
                     Map<String, String> item = (Map<String, String>)mDrawerAdapter.getItem(pos);
                     String drawerText = item.get(TEXT);
+                    int drawableId = Integer.valueOf(item.get(DRAWABLE_ID));
                     BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
-
-                    // set checked state
-                    int selector;
-                    if (type != null && type.boardCode() != null && boardCode != null && type.boardCode().equals(boardCode))
-                        selector = R.drawable.drawer_list_selector_checked_bg;
-                    else if (getApplicationContext() != null && ThemeSelector.instance(getApplicationContext()).isDark())
-                        selector = R.drawable.drawer_list_selector_inverse_bg_dark;
-                    else
-                        selector = R.drawable.drawer_list_selector_inverse_bg;
+                    int selector = pickSelector(type);
                     FrameLayout child = (FrameLayout)view.findViewById(R.id.frame_child);
                     Drawable selectorDrawable = getLayoutInflater().getContext().getResources().getDrawable(selector);
                     child.setForeground(selectorDrawable);
@@ -198,20 +221,10 @@ abstract public class
                     TextView title = (TextView)view.findViewById(R.id.drawer_list_item_title);
                     TextView detail = (TextView)view.findViewById(R.id.drawer_list_item_detail);
                     View divider = view.findViewById(R.id.drawer_list_item_divider);
-                    if (type == null) {
-                        title.setText("");
-                        detail.setText(drawerText);
-                        text.setText("");
-                        title.setVisibility(View.GONE);
-                        detail.setVisibility(View.VISIBLE);
-                        icon.setVisibility(View.GONE);
-                        text.setVisibility(View.GONE);
-                        title.setVisibility(View.VISIBLE);
-                        divider.setVisibility(View.GONE);
-                    }
-                    else if (//type == BoardType.META ||
-                            (type == BoardType.FAVORITES && hasFavorites) ||
-                            (type == BoardType.WATCHLIST && hasWatchlist)) {
+
+                    if (//type == BoardType.META ||
+                            (type != null && type == BoardType.FAVORITES && hasFavorites) ||
+                                    (type != null && type == BoardType.WATCHLIST && hasWatchlist)) {
                         title.setText(drawerText);
                         detail.setText("");
                         text.setText("");
@@ -221,7 +234,7 @@ abstract public class
                         detail.setVisibility(View.GONE);
                         divider.setVisibility(View.VISIBLE);
                     }
-                    else {
+                    else if (type != null) {
                         title.setText("");
                         detail.setText("");
                         text.setText(drawerText);
@@ -230,6 +243,38 @@ abstract public class
                         title.setVisibility(View.GONE);
                         divider.setVisibility(View.GONE);
                         detail.setVisibility(View.GONE);
+                    }
+                    else if (drawableId > 0) {
+                        title.setText("");
+                        detail.setText("");
+                        text.setText(drawerText);
+                        icon.setVisibility(View.VISIBLE);
+                        text.setVisibility(View.VISIBLE);
+                        title.setVisibility(View.GONE);
+                        divider.setVisibility(View.GONE);
+                        detail.setVisibility(View.GONE);
+                    }
+                    else if (drawerText.isEmpty()) {
+                        title.setText("");
+                        detail.setText("");
+                        text.setText("");
+                        title.setVisibility(View.GONE);
+                        detail.setVisibility(View.GONE);
+                        icon.setVisibility(View.GONE);
+                        text.setVisibility(View.GONE);
+                        title.setVisibility(View.GONE);
+                        divider.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        title.setText("");
+                        detail.setText(drawerText);
+                        text.setText("");
+                        title.setVisibility(View.GONE);
+                        detail.setVisibility(View.VISIBLE);
+                        icon.setVisibility(View.GONE);
+                        text.setVisibility(View.GONE);
+                        title.setVisibility(View.VISIBLE);
+                        divider.setVisibility(View.GONE);
                     }
 
                     // set text color
@@ -304,20 +349,6 @@ abstract public class
     @Override
     public void closeSearch() {}
 
-    /*
-    @Override
-    public void setProgress(final boolean on) {
-        Handler handler = getChanHandler();
-        if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    setProgressBarIndeterminateVisibility(on);
-                }
-            });
-    }
-    */
-
     abstract public boolean isSelfDrawerMenu(String boardAsMenu);
 
     protected ListView.OnItemClickListener drawerClickListener = new AdapterView.OnItemClickListener() {
@@ -332,64 +363,6 @@ abstract public class
             if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu + " complete");
         }
     };
-
-    /*
-    protected boolean handleSelectItem(String boardAsMenu) {
-        if (DEBUG) Log.i(TAG, "handleSelectItem(\"" + boardAsMenu + "\")");
-        if (isSelfBoard(boardAsMenu)) {
-            if (DEBUG) Log.i(TAG, "self board, returning");
-            return false;
-        }
-        BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
-        if (boardType != null) {
-            //if (boardType == BoardType.META) {
-            //    if (DEBUG) Log.i(TAG, "meta category board not clickable, exiting");
-            //    return false;
-            //}
-            String boardTypeCode = boardType.boardCode();
-            if (boardTypeCode.equals(boardCode)) {
-                if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
-                return false;
-            }
-            if (boardType == BoardType.META || boardType == BoardType.LATEST_IMAGES) {
-                if (DEBUG) Log.i(TAG, "matched unsupported board type /" + boardTypeCode + "/, exiting");
-                return false;
-            }
-            if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
-            //if (ChanBoard.isTopBoard(boardTypeCode))
-            //    mDrawerAdapter.notifyDataSetChanged();
-            BoardActivity.startActivity(this, boardTypeCode, "");
-            if (this instanceof BoardSelectorActivity) // don't finish single task activity
-                ; //mDrawerAdapter.notifyDataSetChanged();
-            else
-                finish();
-            return true;
-        }
-        Pattern p = Pattern.compile(BOARD_CODE_PATTERN);
-        Matcher m = p.matcher(boardAsMenu);
-        if (!m.matches()) {
-            if (DEBUG) Log.i(TAG, "matched nothing, bailing");
-            return false;
-        }
-        String boardCodeForJump = m.group(1);
-        if (boardCodeForJump == null || boardCodeForJump.isEmpty() || isSelfBoard(boardCodeForJump)) {
-            if (DEBUG) Log.i(TAG, "null match, bailing");
-            return false;
-        }
-        if (boardCodeForJump.equals(boardCode)) {
-            if (DEBUG) Log.i(TAG, "matched same board code, no jump done");
-            return false;
-        }
-        Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
-        if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/, starting");
-        startActivity(intent);
-        if (this instanceof BoardSelectorActivity) // don't finish single task activity
-            ; //mDrawerAdapter.notifyDataSetChanged();
-        else
-            finish();
-        return true;
-    }
-    */
 
     @Override
     protected void onResume() {

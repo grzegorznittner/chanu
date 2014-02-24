@@ -21,15 +21,21 @@
             />
 
 
-    <item android:id="@+id/board_rules_menu"
-          android:title="@string/board_rules_menu"
-          android:icon="@drawable/action_help"
+    <item android:id="@+id/clean_watchlist_menu"
+          android:title="@string/pref_clean_watchlist"
+          android:icon="@drawable/content_remove"
+          android:visible="false"
+            />
+    <item android:id="@+id/clear_watchlist_menu"
+          android:title="@string/pref_clear_watchlist"
+          android:icon="@drawable/content_discard"
           android:visible="false"
             />
 
-    <item android:id="@+id/global_rules_menu"
-          android:title="@string/global_rules_menu"
-          android:icon="@drawable/action_about"
+    <item android:id="@+id/clear_favorites_menu"
+          android:title="@string/pref_clear_favorites"
+          android:icon="@drawable/content_discard"
+          android:visible="false"
             />
 
     <item android:id="@+id/view_options_menu"
@@ -41,22 +47,6 @@
                   android:icon="@drawable/device_access_brightness_high"
                     />
 
-            <item android:id="@+id/clean_watchlist_menu"
-                  android:title="@string/pref_clean_watchlist"
-                  android:icon="@drawable/content_remove"
-                  android:visible="false"
-                    />
-            <item android:id="@+id/clear_watchlist_menu"
-                  android:title="@string/pref_clear_watchlist"
-                  android:icon="@drawable/content_discard"
-                  android:visible="false"
-                    />
-
-            <item android:id="@+id/clear_favorites_menu"
-                  android:title="@string/pref_clear_favorites"
-                  android:icon="@drawable/content_discard"
-                  android:visible="false"
-                    />
             <item android:id="@+id/view_as_grid_menu"
                   android:title="@string/view_as_grid_menu"
                   android:icon="@drawable/collections_view_as_grid"
@@ -134,21 +124,15 @@
           android:icon="@drawable/geomicons_heart"
             />
 
-    <item android:id="@+id/settings_menu"
-          android:title="@string/settings_menu"
-          android:icon="@drawable/action_settings"
-            />
-    <item android:id="@+id/send_feedback_menu"
-          android:title="@string/send_feedback_menu"
+    <item android:id="@+id/board_rules_menu"
+          android:title="@string/board_rules_menu"
           android:icon="@drawable/action_help"
-            />
-    <item android:id="@+id/purchase_menu"
-          android:title="@string/purchase_menu"
-          android:icon="@drawable/device_access_new_account"
-            />
-    <item android:id="@+id/about_menu"
-          android:title="@string/about_activity"
-          android:icon="@drawable/action_about"
           android:visible="false"
             />
+
+    <item android:id="@+id/global_rules_menu"
+          android:title="@string/global_rules_menu"
+          android:icon="@drawable/action_about"
+            />
+
 </menu>

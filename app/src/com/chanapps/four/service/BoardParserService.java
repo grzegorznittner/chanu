@@ -13,6 +13,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import android.preference.PreferenceManager;
+import com.chanapps.four.activity.BoardActivity;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonNode;
@@ -267,6 +270,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         	}
         }
 	}
+
     /*
 	private void setActionBarSubtitle() {
 		final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();

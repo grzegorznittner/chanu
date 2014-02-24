@@ -452,16 +452,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (menu == null)
-            return super.onPrepareOptionsMenu(menu);
-        MenuItem item = menu.findItem(R.id.purchase_menu);
-        if (item != null)
-            item.setVisible(!BillingComponent.getInstance(this).hasProkey());
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	GLRoot root = getGLRoot();
         root.lockRenderThread();
@@ -496,14 +486,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     url = ChanThread.threadUrl(this, boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
-            case R.id.settings_menu:
-                return SettingsActivity.startActivity(this);
-            case R.id.send_feedback_menu:
-                return SendFeedback.email(this);
-            case R.id.purchase_menu:
-                return PurchaseActivity.startActivity(this);
-            case R.id.about_menu:
-                return AboutActivity.startActivity(this);
             default:
             	return getStateManager().itemSelected(item);
         }        

@@ -659,7 +659,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         setupShareActionProviderOPMenu(menu);
         if (getActivity() != null) {
             ((ThreadActivity)getActivity()).createSearchView(menu);
-            menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(getActivity()).hasProkey());
         }
         super.onPrepareOptionsMenu(menu);
     }

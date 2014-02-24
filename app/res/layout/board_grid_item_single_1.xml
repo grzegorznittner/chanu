@@ -22,6 +22,7 @@
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
                 android:background="@drawable/board_grid_selector_bg"
+                android:visibility="gone"
                 />
         <TextView
                 android:id="@+id/grid_item_thread_subject_1"

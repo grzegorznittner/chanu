@@ -42,6 +42,7 @@ public class ThreadImageExpander {
 
     public static final String WEBVIEW_BLANK_URL = "about:blank";
     private static final int BIG_IMAGE_SIZE_BYTES = 1024 * 250; // more than 250kb, show in web view
+    private static final int BYTES_PER_PIXEL = 4; // Bitmap.Config.ARGB_8888;
     //private static final double MAX_EXPANDED_SCALE = 1.5;
 
     private ThreadViewHolder viewHolder;
@@ -129,7 +130,7 @@ public class ThreadImageExpander {
 
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
 
-        viewHolder.isWebView = isAnimatedGif();
+        viewHolder.isWebView = isAnimatedGif() || isBigImage(targetSize);
         if (viewHolder.isWebView)
             displayWebView();
         else
@@ -140,8 +141,10 @@ public class ThreadImageExpander {
         return ChanImage.isAnimatedGif(postExt, fsize, postW, postH);
     }
 
-    protected boolean isBigImage() {
-        return fsize > BIG_IMAGE_SIZE_BYTES;
+    protected boolean isBigImage(Point targetSize) {
+        int targetSizeBytes = targetSize.x * targetSize.y * BYTES_PER_PIXEL;
+        return fsize > BIG_IMAGE_SIZE_BYTES
+                || targetSizeBytes > BIG_IMAGE_SIZE_BYTES;
     }
 
     protected void displayWebView() {
@@ -159,9 +162,9 @@ public class ThreadImageExpander {
         WebView v = viewHolder.list_item_image_expanded_webview;
         if (v == null)
             return;
+        //v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
         v.setVisibility(View.INVISIBLE);
-        v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
-        v.setWebViewClient(webViewClient);
+        //v.setWebViewClient(webViewClient);
 
         float maxWidth = postW > 1 ? postW : 250;
         float maxHeight = postH > 1 ? postH: 250;
@@ -170,15 +173,18 @@ public class ThreadImageExpander {
         int scale = (int)Math.min(Math.ceil(itemWidth * 100 / maxWidth), Math.ceil(itemWidth * 100 / maxWidth));
         v.setInitialScale(scale);
         if (DEBUG) Log.i(TAG, "postSize=" + postW + "x" + postH + " targetSize=" + itemWidth + "x" + itemHeight + " scale=" + scale);
+        /*
         v.getRootView().setBackgroundColor(0x000000);
         v.setBackgroundColor(0x000000);
         v.getSettings().setJavaScriptEnabled(false);
         v.getSettings().setBuiltInZoomControls(false);
+        */
         if (DEBUG) Log.i(TAG, "Loading anim gif webview url=" + postImageUrl);
         displayClickEffect();
         v.loadUrl(postImageUrl);
     }
 
+    /*
     protected WebViewClient webViewClient = new WebViewClient() {
         @Override
         public void onPageFinished(WebView view, String url) {
@@ -186,6 +192,7 @@ public class ThreadImageExpander {
                 view.setVisibility(View.VISIBLE);
         }
     };
+    */
 
     protected void displayImageView() {
         if (viewHolder.list_item_image_expanded_wrapper != null)

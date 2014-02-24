@@ -1046,11 +1046,6 @@ public class PostReplyActivity
             case R.id.post_reply_send_menu:
                 validateAndSendReply();
                 return true;
-            case R.id.settings_menu:
-                if (DEBUG) Log.i(TAG, "Starting settings activity");
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

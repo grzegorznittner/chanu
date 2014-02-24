@@ -175,12 +175,6 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.purchase_menu).setVisible(!BillingComponent.getInstance(this).hasProkey());
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -197,12 +191,6 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(this, null);
                 ActivityDispatcher.launchUrlInBrowser(this, url);
-            case R.id.send_feedback_menu:
-                return SendFeedback.email(this);
-            case R.id.purchase_menu:
-                return PurchaseActivity.startActivity(this);
-            case R.id.about_menu:
-                return AboutActivity.startActivity(this);
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -185,22 +185,6 @@ abstract public class
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.settings_menu:
-                return SettingsActivity.startActivity(this);
-            case R.id.send_feedback_menu:
-                return SendFeedback.email(this);
-            case R.id.purchase_menu:
-                return PurchaseActivity.startActivity(this);
-            case R.id.about_menu:
-                return AboutActivity.startActivity(this);
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public void refresh() {
     }
 
@@ -255,6 +239,8 @@ abstract public class
             return false;
         if (getString(R.string.send_feedback_menu).equals(boardAsMenu))
             return SendFeedback.email(this);
+        if (getString(R.string.settings_menu).equals(boardAsMenu))
+            return SettingsActivity.startActivity(this);
         if (getString(R.string.purchase_menu).equals(boardAsMenu))
             return PurchaseActivity.startActivity(this);
         if (getString(R.string.about_activity).equals(boardAsMenu))
