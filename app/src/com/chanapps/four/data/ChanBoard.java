@@ -699,8 +699,8 @@ public class ChanBoard {
     			newThreads++;
     		}
     	}
-        if (newThreads > 0 && isFavoriteBoard(context, link))
-            NotificationComponent.notifyNewThreads(context, link, newThreads, firstNewThread);
+        //if (newThreads > 0 && isFavoriteBoard(context, link))
+        //    NotificationComponent.notifyNewThreads(context, link, newThreads, firstNewThread);
         if (DEBUG) Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
     }
 

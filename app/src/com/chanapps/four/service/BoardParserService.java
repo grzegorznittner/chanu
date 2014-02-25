@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import android.preference.PreferenceManager;
 import com.chanapps.four.activity.BoardActivity;
@@ -258,18 +255,55 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     }
 
 	private void updateBoardData(List<ChanThread> threads, boolean firstLoad) {
-		if (board != null) {
-        	synchronized (board) {
-        		board.defData = false;
-        		if (firstLoad) {
-        			board.threads = threads.toArray(new ChanThread[0]);
-        		} else {
-        			board.loadedThreads = threads.toArray(new ChanThread[0]);
-        		}
-        		board.updateCountersAfterLoad(getBaseContext());
-        	}
+		if (board == null)
+            return;
+
+        final Context context = getBaseContext();
+        final String boardCode = board.link;
+        final Set<Long> threadNos = new HashSet<Long>();
+
+        synchronized (board) {
+            board.defData = false;
+            if (firstLoad) {
+                board.threads = threads.toArray(new ChanThread[0]);
+                board.loadedThreads = threads.toArray(new ChanThread[0]);
+            } else {
+                board.loadedThreads = threads.toArray(new ChanThread[0]);
+            }
+            board.updateCountersAfterLoad(context);
+            // create a map for lookup of watched threads
+            for (ChanThread thread : board.loadedThreads) {
+                threadNos.add(thread.no);
+            }
         }
-	}
+
+        updateWatchlist(context, boardCode, threadNos);
+    }
+
+    protected void updateWatchlist(final Context context, final String boardCode, final Set<Long> threadNos) {
+        // mark watched threads no longer in board as dead
+        boolean atLeastOne = false;
+        ChanBoard watchlist = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        for (ChanThread thread : watchlist.threads) {
+            if (boardCode.equals(thread.board) && !threadNos.contains(thread.no)) {
+                thread.isDead = true;
+                atLeastOne = true;
+            }
+        }
+
+        // remove watched threads no longer in board (and thus dead)
+        if (atLeastOne) {
+            try {
+                if (PreferenceManager.getDefaultSharedPreferences(context)
+                        .getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+                    ChanFileStorage.cleanDeadWatchedThreads(context);
+            }
+            catch (IOException e) {
+                Log.e(TAG, "Exception cleaning dead threads for /" + boardCode + "/", e);
+            }
+            BoardActivity.refreshWatchlist(context);
+        }
+    }
 
     /*
 	private void setActionBarSubtitle() {

@@ -1237,7 +1237,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
-            menu.findItem(R.id.nsfw_menu).setVisible(false);
+            menu.findItem(R.id.nsfw_menu).setVisible(true);
             menu.findItem(R.id.blocklist_menu).setVisible(true);
         }
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
@@ -1281,7 +1281,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.show_hidden_threads_menu).setVisible(false);
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(false);
-            menu.findItem(R.id.nsfw_menu).setVisible(false);
+            menu.findItem(R.id.nsfw_menu).setVisible(true);
             menu.findItem(R.id.blocklist_menu).setVisible(true);
         }
         else if (board.isVirtualBoard()) {
@@ -1322,7 +1322,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             menu.findItem(R.id.sort_order_menu).setVisible(true);
             menu.findItem(R.id.use_abbrev_boards_menu).setVisible(false);
             menu.findItem(R.id.hide_last_replies_menu).setVisible(true);
-            menu.findItem(R.id.nsfw_menu).setVisible(false);
+            menu.findItem(R.id.nsfw_menu).setVisible(true);
             menu.findItem(R.id.blocklist_menu).setVisible(true);
             setHiddenThreadsMenuAsync(menu);
             setFavoritesMenuAsync(menu);
