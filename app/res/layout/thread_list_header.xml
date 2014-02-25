@@ -108,11 +108,13 @@
 
         </FrameLayout>
 
-        <FrameLayout style="@style/ThreadListHeaderImageSection" android:id="@+id/list_item_image_expanded_wrapper">
+        <FrameLayout style="@style/ThreadListHeaderImageSection">
             <ImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image_header"/>
-            <ImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded" android:visibility="gone"/>
-            <WebView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview" android:visibility="gone"/>
-            <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
+            <!-- <ImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded" android:visibility="gone"/> -->
+            <FrameLayout style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_wrapper" android:visibility="gone">
+                <WebView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview"/>
+            </FrameLayout>
+            <!-- <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/> -->
             <View style="@style/ThreadListHeaderImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
         </FrameLayout>
 

@@ -3,6 +3,7 @@ package com.chanapps.four.viewer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -64,6 +65,7 @@ public class ThreadViewer {
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
     private static int cardPaddingPx = 0;
+    private static int actionBarHeightPx = 0;
     private static ImageLoader imageLoader = null;
     private static DisplayImageOptions expandedDisplayImageOptions = null;
     private static DisplayImageOptions thumbDisplayImageOptions = null;
@@ -79,6 +81,12 @@ public class ThreadViewer {
                 : R.drawable.stub_image_background;
         Resources res = context.getResources();
         cardPaddingPx = res.getDimensionPixelSize(R.dimen.BoardGridView_spacing);
+
+        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
+                new int[] { android.R.attr.actionBarSize });
+        actionBarHeightPx = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+
         boardTabletViewWidthPx = res.getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width);
         fragmentMarginWidthPx = res.getDimensionPixelSize(R.dimen.dialogFragmentMarginWidth);
         fragmentMarginHeightPx = res.getDimensionPixelSize(R.dimen.dialogFragmentMarginHeight);
@@ -923,7 +931,7 @@ public class ThreadViewer {
     public static int cardMaxImageHeight(boolean showContextMenu) {
         int naiveMax;
         //if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
-            naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
+            naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx - actionBarHeightPx;
         //else // landscape
         //    naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
             //naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
@@ -1164,13 +1172,13 @@ public class ThreadViewer {
     private static boolean toggleExpandedWebViewItem(ThreadViewHolder viewHolder) {
         if (viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) {
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
-            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+            //viewHolder.list_item_image_expanded.setVisibility(View.GONE);
             viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
             viewHolder.list_item_image_wrapper.setVisibility(View.VISIBLE);
             return false;
         }
         else {
-            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+            //viewHolder.list_item_image_expanded.setVisibility(View.GONE);
             viewHolder.list_item_image_expanded_webview.setVisibility(View.VISIBLE);
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
             viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
@@ -1186,7 +1194,7 @@ public class ThreadViewer {
     }
 
     private static boolean toggleExpandedImageViewHeader(ThreadViewHolder viewHolder) {
-        if (viewHolder.list_item_image_expanded.getVisibility() == View.VISIBLE) {
+        if (viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) {
             toggleExpandedImageViewItem(viewHolder);
             viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
             ViewGroup.LayoutParams params = viewHolder.list_item_image_header.getLayoutParams();
@@ -1210,13 +1218,13 @@ public class ThreadViewer {
     private static boolean toggleExpandedImageViewItem(ThreadViewHolder viewHolder) {
         if (viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) {
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
-            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+            //viewHolder.list_item_image_expanded.setVisibility(View.GONE);
             viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
             viewHolder.list_item_image_wrapper.setVisibility(View.VISIBLE);
             return false;
         }
         else {
-            viewHolder.list_item_image_expanded.setVisibility(View.VISIBLE);
+            //viewHolder.list_item_image_expanded.setVisibility(View.VISIBLE);
             viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
             viewHolder.list_item_image_wrapper.setVisibility(View.GONE);

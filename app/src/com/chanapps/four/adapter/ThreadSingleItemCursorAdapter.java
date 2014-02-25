@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.viewer.ThreadViewHolder;
@@ -43,6 +45,20 @@ public class ThreadSingleItemCursorAdapter extends ThreadCursorAdapter {
                     ? R.color.PaletteDarkCardBg
                     : R.color.PaletteCardBg;
             inner.setBackgroundResource(bg);
+        }
+        WebView wv = viewHolder.list_item_image_expanded_webview;
+        if (wv != null) {
+            wv.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    if (view != null)
+                        view.setVisibility(View.VISIBLE);
+                }
+            });
+            wv.setBackgroundColor(0x000000);
+            wv.getRootView().setBackgroundColor(0x000000);
+            wv.getSettings().setJavaScriptEnabled(false);
+            wv.getSettings().setBuiltInZoomControls(false);
         }
         return v;
     }

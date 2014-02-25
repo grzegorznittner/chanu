@@ -31,7 +31,7 @@ abstract public class
         implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected static final String ROW_ID = "rowid";
     protected static final String TEXT = "text";

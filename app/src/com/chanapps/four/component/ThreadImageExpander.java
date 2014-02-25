@@ -92,33 +92,27 @@ public class ThreadImageExpander {
     }
 
     static public void setImageDimensions(ThreadViewHolder viewHolder, Point targetSize) {
-        ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded.getLayoutParams();
-        if (params == null) {
-            if (DEBUG) Log.i(TAG, "setImageDimensions() null params, exiting");
-            return;
-        }
-        params.width = targetSize.x;
-        params.height = targetSize.y;
-        if (DEBUG) Log.i(TAG, "setImageDimensions() to " + params.width + "x" + params.height);
+        //ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded.getLayoutParams();
+        if (DEBUG) Log.i(TAG, "setImageDimensions() to " + targetSize.x + "x" + targetSize.y);
         if (viewHolder.list_item_image_expanded_click_effect != null) {
             ViewGroup.LayoutParams params2 = viewHolder.list_item_image_expanded_click_effect.getLayoutParams();
             if (params2 != null) {
-                params2.width = params.width;
-                params2.height = params.height;
+                params2.width = targetSize.x;
+                params2.height = targetSize.y;
             }
         }
         if (viewHolder.list_item_image_expanded_webview != null) {
             ViewGroup.LayoutParams params3 = viewHolder.list_item_image_expanded_webview.getLayoutParams();
             if (params3 != null) {
-                params3.width = params.width;
-                params3.height = params.height;
+                params3.width = targetSize.x;
+                params3.height = targetSize.y;
             }
         }
         if (viewHolder.list_item_image_expanded_wrapper != null) {
             ViewGroup.LayoutParams params4 = viewHolder.list_item_image_expanded_wrapper.getLayoutParams();
             if (params4 != null) {
                 //params3.width = params.width; always match width
-                params4.height = params.height;
+                params4.height = targetSize.y;
             }
         }
     }
@@ -129,14 +123,17 @@ public class ThreadImageExpander {
         setImageDimensions(viewHolder, targetSize);
 
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
-
+        /*
         viewHolder.isWebView = isAnimatedGif() || isBigImage(targetSize);
         if (viewHolder.isWebView)
             displayWebView();
         else
             displayImageView();
+        */
+        viewHolder.isWebView = true;
+        displayWebView();
     }
-
+    /*
     protected boolean isAnimatedGif() {
         return ChanImage.isAnimatedGif(postExt, fsize, postW, postH);
     }
@@ -146,14 +143,16 @@ public class ThreadImageExpander {
         return fsize > BIG_IMAGE_SIZE_BYTES
                 || targetSizeBytes > BIG_IMAGE_SIZE_BYTES;
     }
-
+    */
     protected void displayWebView() {
         if (viewHolder.list_item_image_expanded_wrapper != null)
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
+        /*
         if (viewHolder.list_item_expanded_progress_bar != null)
             viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
         if (viewHolder.list_item_image_expanded != null)
             viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+        */
         if (viewHolder.list_item_image_wrapper != null)
             viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
         if (viewHolder.list_item_image_header != null)
@@ -194,15 +193,16 @@ public class ThreadImageExpander {
     };
     */
 
+    /*
     protected void displayImageView() {
         if (viewHolder.list_item_image_expanded_wrapper != null)
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
         if (viewHolder.list_item_expanded_progress_bar != null)
             viewHolder.list_item_expanded_progress_bar.setVisibility(withProgress ? View.VISIBLE : View.GONE);
-        if (viewHolder.list_item_image_expanded_webview != null)
-            viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
         if (viewHolder.list_item_image_expanded != null)
             viewHolder.list_item_image_expanded.setVisibility(View.VISIBLE);
+        if (viewHolder.list_item_image_expanded_webview != null)
+            viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
         if (viewHolder.list_item_image_header != null)
             viewHolder.list_item_image_header.setVisibility(View.GONE);
         int width = targetSize.x; // may need to adjust to avoid out of mem
@@ -224,6 +224,7 @@ public class ThreadImageExpander {
                 .displayImage(postImageUrl, viewHolder.list_item_image_expanded,
                         expandedDisplayImageOptions, expandedImageLoadingListener);
     }
+    */
 
     ImageLoadingListener expandedImageLoadingListener = new ImageLoadingListener() {
         @Override
@@ -235,15 +236,15 @@ public class ThreadImageExpander {
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             String reason = failReason.toString();
             if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
-            if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-                viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
         }
 
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
             if (DEBUG) Log.v(TAG, "onLoadingComplete uri=" + imageUri);
-            if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-                viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
             displayClickEffect();
             if (viewHolder.list_item_image_expansion_target != null) {
                 //viewHolder.list_item_image_expansion_target.setOnClickListener(null);
@@ -256,8 +257,8 @@ public class ThreadImageExpander {
 
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
-            if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-                viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
         }
     };
 
@@ -279,13 +280,16 @@ public class ThreadImageExpander {
     */
 
     private boolean shouldExpandImage() {
+        /*
         if (viewHolder.list_item_image_expanded != null
                 && viewHolder.list_item_image_expanded.getVisibility() != View.GONE
                 && viewHolder.list_item_image_expanded.getHeight() > 0) {
             if (DEBUG) Log.i(TAG, "Image already expanded, skipping");
             return false;
         }
-        else if (viewHolder.list_item_image_expanded_webview != null
+        else
+        */
+        if (viewHolder.list_item_image_expanded_webview != null
                 && viewHolder.list_item_image_expanded_webview.getVisibility() != View.GONE
                 && viewHolder.list_item_image_expanded_webview.getHeight() > 0) {
             if (DEBUG) Log.i(TAG, "Image webview already expanded, skipping");
