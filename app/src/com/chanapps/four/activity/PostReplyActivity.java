@@ -151,6 +151,9 @@ public class PostReplyActivity
     protected String replyText = "";
     protected String quoteText = "";
 
+    public static void startActivity(Context from, ChanActivityId aid) {
+        startActivity(from, aid.boardCode, aid.threadNo, aid.postNo, aid.text, aid.quoteText);
+    }
     public static void startActivity(Context context, String boardCode, long threadNo, long postNo,
                                      String replyText, String quoteText) {
         Intent intent = createIntent(context, boardCode, threadNo, postNo, replyText, quoteText);
@@ -1167,8 +1170,9 @@ public class PostReplyActivity
 
     @Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.POST_REPLY_ACTIVITY, boardCode, threadNo, postNo,
-                messageText != null ? messageText.getText().toString() : "");
+		ChanActivityId aid = new ChanActivityId(LastActivity.POST_REPLY_ACTIVITY, boardCode, threadNo, postNo, replyText);
+        aid.quoteText = quoteText;
+        return aid;
 	}
 
 	@Override

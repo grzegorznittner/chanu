@@ -20,7 +20,7 @@ import com.google.analytics.tracking.android.ExceptionReporter;
 
 public class FourChannerApp extends GalleryAppImpl {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String TAG = FourChannerApp.class.getSimpleName();
 
     public synchronized DataManager getDataManager() {

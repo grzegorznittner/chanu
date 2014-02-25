@@ -11,6 +11,7 @@ import android.widget.GridView;
 import com.chanapps.four.component.AdComponent;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 
 /**
@@ -24,6 +25,10 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
 
     public static final String TAG = BoardSelectorActivity.class.getSimpleName();
     public static final boolean DEBUG = false;
+
+    public static void startActivity(Context from) {
+        startActivity(from, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
+    }
 
     @Override
     public void switchBoard(String boardCode, String query) {
@@ -70,6 +75,11 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
         //    ((GridView)absListView).setNumColumns(R.integer.BoardGridViewSmall_numColumns);
         //}
         // the views handle this already
+    }
+
+    @Override
+    public ChanActivityId getChanActivityId() {
+        return new ChanActivityId(LastActivity.BOARD_SELECTOR_ACTIVITY, boardCode, query);
     }
 
 }

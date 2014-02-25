@@ -29,6 +29,7 @@ public class ChanActivityId implements Serializable {
     public int position = 0;
     public GalleryViewActivity.ViewType viewType = null;
     public String text = "";
+    public String quoteText = "";
     public String threadUpdateMessage = null;
     public boolean priority = false;
 

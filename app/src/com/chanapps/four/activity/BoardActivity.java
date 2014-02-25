@@ -95,6 +95,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
     */
 
+    public static void startActivity(Context from) {
+        startActivity(from, ChanBoard.DEFAULT_BOARD_CODE, "");
+    }
+
+    public static void startActivity(Context from, ChanActivityId aid) {
+        startActivity(from, aid.boardCode, aid.text);
+    }
+
     public static void startActivity(Context from, String boardCode, String query) {
         if (from instanceof ChanIdentifiedActivity) {
             ((ChanIdentifiedActivity)from).switchBoard(boardCode, query);
@@ -911,6 +919,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
             if (args != null && args.getBoolean(BACKGROUND_REFRESH, false)) {
                 if (DEBUG) Log.i(TAG, "onCreateLoader background refresh, bypassing progress indicator");
+            }
+            else if (
+                    ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode) ||
+                    ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode) ||
+                    ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
+            )
+            {
+                if (DEBUG) Log.i(TAG, "onCreateLoader foreground refresh non-loadable boards, bypassing progress indicator");
+                setProgress(false);
             }
             else {
                 if (DEBUG) Log.i(TAG, "onCreateLoader foreground refresh, starting progress indicator");

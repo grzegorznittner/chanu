@@ -37,6 +37,10 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
 
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
 
     public static final String TAG = "GalleryViewActivity";
@@ -74,6 +78,16 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private ChanThread thread;
     private ProgressBar progressBar;
 
+    public static void startActivity(Context from, ChanActivityId aid) {
+        startActivity(from, aid.boardCode, aid.threadNo, aid.postNo);
+    }
+
+    public static void startActivity(Context from, String boardCode, long threadNo, long postId) {
+        Intent intent = createIntent(from, boardCode, threadNo, postId, ViewType.PHOTO_VIEW);
+        if (DEBUG) Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
+        from.startActivity(intent);
+    }
+
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
@@ -81,12 +95,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
         final long threadNo = resto <= 0 ? postId : resto;
         startActivity(from, boardCode, threadNo, postId);
-    }
-
-    public static void startActivity(Context from, String boardCode, long threadNo, long postId) {
-        Intent intent = createIntent(from, boardCode, threadNo, postId, ViewType.PHOTO_VIEW);
-        if (DEBUG) Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
-        from.startActivity(intent);
     }
 
     public static Intent createIntent(Context from, String boardCode, long threadNo, long postId, ViewType viewType) {
@@ -179,21 +187,62 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         setFromIntent(intent);
     }
 
+    protected ViewType topViewType() {
+        ActivityState state = getStateManager().getTopState();
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState activityState=" + state);
+        ViewType v;
+        if (state instanceof PhotoPage)
+            v = ViewType.PHOTO_VIEW;
+        else if (state instanceof AlbumPage)
+            v = ViewType.ALBUM_VIEW;
+        else if (state instanceof AlbumSetPage)
+            v = ViewType.OFFLINE_ALBUMSET_VIEW;
+        else
+            v = ViewType.ALBUM_VIEW;
+        return v;
+    }
+
     @Override
     protected void onRestoreInstanceState(Bundle bundle) {
         viewType = ViewType.valueOf(bundle.getString(VIEW_TYPE));
         boardCode = bundle.getString(ChanBoard.BOARD_CODE);
         threadNo = bundle.getLong(ChanThread.THREAD_NO, 0);
         postNo = bundle.getLong(ChanPost.POST_NO, 0);
+        getStateManager().restoreFromState(bundle);
+        if (DEBUG) Log.i(TAG, "onRestoreInstanceState() restoring from /" + boardCode + "/" + threadNo + "#p" + postNo);
     }
+
+    protected static final String MEDIA_ITEM_PATH = "media-item-path";
+    protected static final String PATH_PATTERN_STR = "/.*\\/([0-9]+)$/";
+    protected static final Pattern PATH_PATTERN = Pattern.compile(PATH_PATTERN_STR);
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
+        postNo = topPostNo();
+        viewType = topViewType();
+        getStateManager().saveState(bundle);
+
         bundle.putString(VIEW_TYPE, viewType.toString());
         bundle.putString(ChanBoard.BOARD_CODE, boardCode);
         bundle.putLong(ChanThread.THREAD_NO, threadNo);
         bundle.putLong(ChanPost.POST_NO, postNo);
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState() saved to /" + boardCode + "/" + threadNo + "#p" + postNo);
         ActivityDispatcher.store(this);
+    }
+
+    protected long topPostNo() {
+        ActivityState state = getStateManager().getTopState();
+        if (state == null)
+            return 0;
+        Bundle b = state.getData();
+        String path = (String)b.get(MEDIA_ITEM_PATH);
+        if (path == null || path.isEmpty())
+            return 0;
+        int i = path.lastIndexOf("/");
+        if (i == -1 || (++i + 1) >= path.length())
+            return 0;
+        String postNoStr = path.substring(i);
+        return Long.valueOf(postNoStr);
     }
 
     protected void setFromIntent(Intent intent) {

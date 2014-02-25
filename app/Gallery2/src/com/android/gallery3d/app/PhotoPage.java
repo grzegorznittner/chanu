@@ -361,6 +361,10 @@ public class PhotoPage extends ActivityState
         mPhotoView.showVideoPlayIcon(
                 photo.getMediaType() == MediaObject.MEDIA_TYPE_VIDEO);
         updateSharedIntent();
+        final Path itemPath = photo.getPath();
+        if (itemPath != null && !itemPath.toString().isEmpty())
+            mData.putString(KEY_MEDIA_ITEM_PATH, itemPath.toString());
+
     }
 
     private void updateDetails() {

@@ -15,12 +15,12 @@ import android.util.Log;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.ChanIdentifiedService;
+import com.android.gallery3d.app.GalleryActivity;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.service.profile.MobileProfile;
 import com.chanapps.four.service.profile.NetworkProfile;
@@ -128,6 +128,41 @@ public class NetworkProfileManager {
         }
     }
 
+    public void startLastActivity(Context context) {
+        LastActivity activity = currentActivityId != null && currentActivityId.activity != null
+                ? currentActivityId.activity
+                : null;
+        if (activity == null) {
+            if (DEBUG) Log.i(TAG, "startLastActivity() starting default all boards activity");
+            BoardSelectorActivity.startActivity(context);
+            return;
+        }
+
+        if (DEBUG) Log.i(TAG, "startLastActivity() starting last activity id=" + currentActivityId);
+        switch(activity) {
+            case BOARD_SELECTOR_ACTIVITY:
+                BoardSelectorActivity.startActivity(context, currentActivityId);
+                break;
+            case BOARD_ACTIVITY:
+                BoardActivity.startActivity(context, currentActivityId);
+                break;
+            case THREAD_ACTIVITY:
+                ThreadActivity.startActivity(context, currentActivityId);
+                break;
+            case GALLERY_ACTIVITY:
+                GalleryViewActivity.startActivity(context, currentActivityId);
+                break;
+            case POST_REPLY_ACTIVITY:
+                PostReplyActivity.startActivity(context, currentActivityId);
+                break;
+            case SETTINGS_ACTIVITY:
+            case PURCHASE_ACTIVITY:
+            case ABOUT_ACTIVITY:
+            default:
+                BoardSelectorActivity.startActivity(context);
+        }
+    }
+
     public void activityChange(final ChanIdentifiedActivity newActivity) {
 		if (DEBUG) Log.i(TAG, "activityChange to newActivityId=" + newActivity.getChanActivityId() + " receiver=" + receiver
                 + " lastActivity=" + currentActivity);
@@ -145,6 +180,8 @@ public class NetworkProfileManager {
         userStats.registerActivity(newActivity);
 
         switch(currentActivityId.activity) {
+            case BOARD_SELECTOR_ACTIVITY:
+                break;
             case BOARD_ACTIVITY:
                 // NOTE: moved refresh logic to board activity
                // if (lastActivity == null || !currentActivityId.boardCode.equals(lastActivity.boardCode)) {
@@ -194,24 +231,27 @@ public class NetworkProfileManager {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		}
         if (DEBUG) Log.i(TAG, "activeProfile=" + activeProfile);
-		switch(currentActivityId.activity) {
-		case BOARD_ACTIVITY:
-			activeProfile.onBoardRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
-			break;
-		case THREAD_ACTIVITY:
-			activeProfile.onThreadRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode, currentActivityId.threadNo);
-			break;
-		case GALLERY_ACTIVITY:
-			activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);
-			break;
-		case POST_REPLY_ACTIVITY:
-			break;
-		case SETTINGS_ACTIVITY:
-			break;
-		default:
-			Log.e(TAG, "Not handled activity type: " + currentActivityId.activity, new Exception("Check stack trace!"));
-		}
-	}
+        switch(currentActivityId.activity) {
+            case BOARD_SELECTOR_ACTIVITY:
+                activeProfile.onBoardRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
+                break;
+            case BOARD_ACTIVITY:
+                activeProfile.onBoardRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
+                break;
+            case THREAD_ACTIVITY:
+                activeProfile.onThreadRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode, currentActivityId.threadNo);
+                break;
+            case GALLERY_ACTIVITY:
+                activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);
+                break;
+            case POST_REPLY_ACTIVITY:
+                break;
+            case SETTINGS_ACTIVITY:
+                break;
+            default:
+                Log.e(TAG, "Not handled activity type: " + currentActivityId.activity, new Exception("Check stack trace!"));
+        }
+    }
 	
 	/**
 	 * Replaces currently viewed data with the one fetched recently
@@ -228,13 +268,14 @@ public class NetworkProfileManager {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		}
 
-		switch(currentActivityId.activity) {
-		case BOARD_ACTIVITY:
-			activeProfile.onUpdateViewData(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
-			break;
-		default:
-			// we only support update view data for board view
-		}
+        switch(currentActivityId.activity) {
+            case BOARD_SELECTOR_ACTIVITY:
+            case BOARD_ACTIVITY:
+                activeProfile.onUpdateViewData(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
+                break;
+            default:
+                // we only support update view data for board view
+        }
 	}
 	public void finishedImageDownload(ChanIdentifiedService service, int time, int size) {
 		service = checkService(service);

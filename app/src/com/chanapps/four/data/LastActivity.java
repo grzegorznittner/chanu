@@ -8,6 +8,7 @@ package com.chanapps.four.data;
 * To change this template use File | Settings | File Templates.
 */
 public enum LastActivity {
+    BOARD_SELECTOR_ACTIVITY,
     BOARD_ACTIVITY,
     THREAD_ACTIVITY,
     GALLERY_ACTIVITY,

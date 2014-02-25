@@ -336,6 +336,15 @@ abstract public class
     protected void onResume() {
         super.onResume();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ this=" + this);
+        if (DEBUG) Log.i(TAG, "onCreate isTaskRoot()=" + isTaskRoot() + " intent=" + getIntent());
+        if (!isTaskRoot()) {
+            final Intent intent = getIntent();
+            final String intentAction = intent.getAction();
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) &&
+                    intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
+                finish();
+            }
+        }
     }
 
     @Override
