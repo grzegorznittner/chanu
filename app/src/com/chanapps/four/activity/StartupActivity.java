@@ -5,10 +5,15 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.NetworkProfileManager;
 
 public class StartupActivity extends Activity {
@@ -16,8 +21,11 @@ public class StartupActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (needStartApp()) {
+        Uri data = getIntent() != null ? getIntent().getData() : null;
+        if (data != null) {
+            dispatchUri(data);
+        }
+        else if (needStartApp()) {
             NetworkProfileManager.instance().startLastActivity(this);
         }
 
@@ -52,4 +60,43 @@ public class StartupActivity extends Activity {
 
         return true;
     }
+
+
+    // 0 seg "" - home
+    // 1 seg "" - home
+    // 1 seg "[a-z0-9]+" - board
+    // 3 seg "[a-z0-9]+", "res", "([0-9]+).*" - thread
+    private void dispatchUri(Uri data) {
+        List<String> params = data.getPathSegments();
+        if (params == null || params.size() == 0 || params.get(0) == null || params.get(0).trim().isEmpty()) {
+            dispatchBoardSelector();
+        }
+        else if (params.size() == 1 && params.get(0).trim().matches("[a-z0-9]+")) {
+            dispatchBoard(params.get(0).trim());
+        }
+        else if (params.size() == 3
+                && params.get(0).trim().matches("[a-z0-9]+")
+                && params.get(1).trim().matches("res")
+                && params.get(2).trim().matches("[0-9]+.*")
+                ) {
+            dispatchThread(params.get(0).trim(), params.get(2).trim());
+        }
+        else {
+            dispatchBoardSelector();
+        }
+    }
+
+    private void dispatchBoardSelector() {
+        startActivity(BoardSelectorActivity.createIntent(getBaseContext(), ChanBoard.ALL_BOARDS_BOARD_CODE, ""));
+    }
+
+    private void dispatchBoard(String boardCode) {
+        startActivity(BoardActivity.createIntent(getBaseContext(), boardCode, ""));
+    }
+
+    private void dispatchThread(String boardCode, String threadStr) {
+        startActivity(ThreadActivity.createIntent(getBaseContext(), boardCode, Long.valueOf(threadStr), ""));
+
+    }
+
 }

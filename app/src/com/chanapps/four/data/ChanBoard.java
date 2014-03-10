@@ -18,7 +18,7 @@ import com.chanapps.four.service.NetworkProfileManager;
 public class ChanBoard {
 
 	public static final String TAG = ChanBoard.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;

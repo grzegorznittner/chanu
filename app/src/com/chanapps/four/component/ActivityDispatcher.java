@@ -6,6 +6,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -132,9 +134,22 @@ public class ActivityDispatcher {
     */
 
     public static void launchUrlInBrowser(Context context, String url) {
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        context.startActivity(i);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+        boolean isIntentSafe = activities != null && activities.size() > 0;
+        boolean showChooser = isIntentSafe && activities != null && activities.size() > 1;
+        if (showChooser) {
+            Intent chooser = Intent.createChooser(intent, context.getString(R.string.dialog_choose));
+            context.startActivity(chooser);
+        }
+        else if (isIntentSafe) {
+            context.startActivity(intent);
+        }
+        else {
+            Log.e(TAG, "error: no application found for url=[" + url + "]");
+        }
     }
 
     public static void exitApplication(Context context) {

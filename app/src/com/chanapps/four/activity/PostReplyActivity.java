@@ -304,8 +304,15 @@ public class PostReplyActivity
 
         passStatusText.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (!isPassEnabled() && isPassAvailable())
+                if (isPassEnabled())
+                    disablePass();
+                else
                     showPassFragment();
+                /*
+                if (!isPassEnabled() && isPassAvailable())
+                if (isPassAvailable())
+                    showPassFragment();
+                    */
             }
         });
 

@@ -201,8 +201,10 @@ public class ChanBlocklist {
             compileTestPattern();
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         Set<String> blocks = blocklist.get(blockType);
-        if (DEBUG) Log.i(TAG, "saveBlocklist() type=" + blockType + " blocks=" + blocks);
-        editor.putStringSet(blockType.blockPref(), blocks).apply();
+        Set<String> copy = new HashSet<String>(blocks.size());
+        copy.addAll(blocks);
+        if (DEBUG) Log.i(TAG, "saveBlocklist() type=" + blockType + " blocks=" + copy);
+        editor.putStringSet(blockType.blockPref(), copy).apply();
     }
 
     private static void compileTestPattern() {

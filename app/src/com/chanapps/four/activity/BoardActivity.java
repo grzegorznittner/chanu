@@ -52,7 +52,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     protected static final String UPDATE_BOARD_ACTION = "updateBoardAction";
     protected static final String UPDATE_ABBREV_ACTION = "updateAbbrevAction";
@@ -579,8 +579,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 @Override
                 public void run() {
                     ChanBlocklist.add(BoardActivity.this, ChanBlocklist.BlockType.THREAD, uniqueId);
-                    if (c == null || adapter != null)
-                        adapter.notifyDataSetChanged();
+                    if (adapter != null && handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
                 }
             }).start();
             return new EnhancedListView.Undoable() {
@@ -705,20 +710,33 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         */
 
-        if (scheduleRecreate) { // used to support configuration change when coming back to board from another activity
-            scheduleRecreate = false;
-            recreateListViewPreservingPosition();
-        }
-        else if (isAlreadyLoaded()) {
-            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " already loaded");
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting loader");
-            startLoaderAsync();
-        }
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting activity change");
-        activityChangeAsync();
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChanBoard board = ChanFileStorage.loadBoardData(BoardActivity.this, boardCode);
+                final boolean isCurrent = board != null && board.isCurrent();
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (scheduleRecreate) { // used to support configuration change when coming back to board from another activity
+                                scheduleRecreate = false;
+                                recreateListViewPreservingPosition();
+                            }
+                            else if (isCurrent && isAlreadyLoaded()) {
+                                if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " already loaded");
+                            }
+                            else {
+                                if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting loader");
+                                startLoaderAsync();
+                            }
+                            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " starting activity change");
+                            activityChangeAsync();
+                            if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " complete");
+                        }
+                    });
+            }
+        }).start();
     }
 
     protected void startLoaderAsync() {
@@ -734,10 +752,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     Log.e(TAG, "startLoaderAsync() exception loading board", e);
                 }
 
-                if (board == null) {
-                    Log.e(TAG, "startLoaderAsync() couldn't load board /" + boardCode + "/");
-                }
-                else if (board.defData && !board.isMetaBoard()) { // meta boards are always defdata
+                final boolean isCurrent = board != null && !board.defData && board.isCurrent();
+                if (DEBUG) Log.i(TAG, "startLoaderAsync() /" + boardCode + "/ isCurrent=" + isCurrent);
+                //if (board == null) {
+                //    Log.e(TAG, "startLoaderAsync() couldn't load board /" + boardCode + "/");
+                //}
+                if (!isCurrent && !board.isMetaBoard()) { // meta boards are always defdata
                     if (DEBUG) Log.i(TAG, "startLoaderAsync() defdata, waiting for load of board /" + boardCode + "/");
                     if (handler != null)
                         handler.post(new Runnable() {
