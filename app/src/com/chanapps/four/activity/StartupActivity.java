@@ -87,7 +87,7 @@ public class StartupActivity extends Activity {
     }
 
     private void dispatchBoardSelector() {
-        startActivity(BoardSelectorActivity.createIntent(getBaseContext(), ChanBoard.ALL_BOARDS_BOARD_CODE, ""));
+        startActivity(BoardSelectorActivity.createIntent(getBaseContext(), ChanBoard.defaultBoardCode(this), ""));
     }
 
     private void dispatchBoard(String boardCode) {

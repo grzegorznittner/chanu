@@ -143,7 +143,7 @@ public class ThreadActivity
             setFromIntent(getIntent());
         if (DEBUG) Log.i(TAG, "createViews() /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
         if (boardCode == null || boardCode.isEmpty())
-            boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
+            boardCode = ChanBoard.defaultBoardCode(this);
         if (threadNo <= 0)
             redirectToBoard();
 

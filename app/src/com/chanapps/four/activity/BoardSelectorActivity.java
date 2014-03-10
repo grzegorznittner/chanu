@@ -27,7 +27,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
     public static final boolean DEBUG = false;
 
     public static void startActivity(Context from) {
-        startActivity(from, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
+        startActivity(from, ChanBoard.defaultBoardCode(from), "");
     }
 
     @Override

@@ -130,7 +130,7 @@ public class NotificationComponent {
     }
 
     private static Notification makeNotification(Context context, String contentText) {
-        Intent intent = BoardActivity.createIntent(context, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
+        Intent intent = BoardActivity.createIntent(context, ChanBoard.defaultBoardCode(context), "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification notification = new NotificationCompat.Builder(context)

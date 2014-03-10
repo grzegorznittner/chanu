@@ -95,10 +95,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
     */
 
-    public static void startActivity(Context from) {
-        startActivity(from, ChanBoard.DEFAULT_BOARD_CODE, "");
-    }
-
     public static void startActivity(Context from, ChanActivityId aid) {
         startActivity(from, aid.boardCode, aid.text);
     }
@@ -144,7 +140,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     public static Intent createIntent(Context context, String boardCode, String query) {
-        String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.ALL_BOARDS_BOARD_CODE : boardCode;
+        String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.defaultBoardCode(context) : boardCode;
         Class activityClass = ChanBoard.isTopBoard(boardCode)
                 ? BoardSelectorActivity.class
                 : BoardActivity.class;
@@ -156,43 +152,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         return intent;
     }
 
-    public void addToFavorites(final Context context, final Handler handler, final String boardCode) {
-        if (DEBUG) Log.i(TAG, "addToFavorites /" + boardCode + "/");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int msgId;
-                try {
-                    final ChanThread thread = ChanBoard.makeFavoritesThread(context, boardCode);
-                    if (thread == null) {
-                        Log.e(TAG, "Couldn't add board /" + boardCode + "/ to favorites");
-                        msgId = R.string.board_not_added_to_favorites;
-                    }
-                    else {
-                        ChanFileStorage.addFavoriteBoard(context, thread);
-                        refreshFavorites(context);
-                        //setFavoritesMenuAsync();
-                        msgId = R.string.board_added_to_favorites;
-                        if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/ to favorites");
-                    }
-                }
-                catch (IOException e) {
-                    msgId = R.string.board_not_added_to_favorites;
-                    Log.e(TAG, "Exception adding /" + boardCode + "/ to favorites", e);
-                }
-                final int stringId = msgId;
-                if (handler != null)
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-            }
-        }).start();
-    }
-
-    public static void addToFavoritesNoMenuUpdate(final Context context, final Handler handler, final String boardCode) {
+    public static void addToFavorites(final Context context, final Handler handler, final String boardCode) {
         if (DEBUG) Log.i(TAG, "addToFavorites /" + boardCode + "/");
         new Thread(new Runnable() {
             @Override
@@ -757,7 +717,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 //if (board == null) {
                 //    Log.e(TAG, "startLoaderAsync() couldn't load board /" + boardCode + "/");
                 //}
-                if (!isCurrent && !board.isMetaBoard()) { // meta boards are always defdata
+                if (!isCurrent && !board.isTopBoard()) { // meta boards are always defdata
                     if (DEBUG) Log.i(TAG, "startLoaderAsync() defdata, waiting for load of board /" + boardCode + "/");
                     if (handler != null)
                         handler.post(new Runnable() {

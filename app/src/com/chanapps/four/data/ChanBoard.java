@@ -722,6 +722,10 @@ public class ChanBoard {
         return false;
     }
 
+    public boolean isTopBoard() {
+        return isTopBoard(link);
+    }
+
     public boolean isMetaBoard() {
         return isMetaBoard(link);
     }
