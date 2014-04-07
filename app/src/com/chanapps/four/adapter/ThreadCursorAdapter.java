@@ -2,16 +2,12 @@ package com.chanapps.four.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.MediaController;
-import android.widget.ProgressBar;
-import android.widget.VideoView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanPost;
@@ -92,78 +88,21 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
         ThreadViewHolder viewHolder = new ThreadViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);
-        initWebView(viewHolder);
-        initVideoView(viewHolder);
-        return v;
-    }
-
-    protected void initWebView(ThreadViewHolder viewHolder) {
-        WebView v = viewHolder.list_item_image_expanded_webview;
-        if (v != null) {
-            final ProgressBar p = viewHolder.list_item_expanded_progress_bar;
-            v.setWebViewClient(new WebViewClient() {
+        WebView wv = viewHolder.list_item_image_expanded_webview;
+        if (wv != null) {
+            wv.setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    if (p != null) {
-                        p.setVisibility(View.GONE);
-                    }
-                    if (view != null) {
+                    if (view != null)
                         view.setVisibility(View.VISIBLE);
-                    }
-                }
-                @Override
-                public void onReceivedError(WebView view, int errorCode,
-                                            String description, String failingUrl) {
-                    if (p != null) {
-                        p.setVisibility(View.GONE);
-                    }
                 }
             });
-            v.setBackgroundColor(0x000000);
-            v.getRootView().setBackgroundColor(0x000000);
-            v.getSettings().setJavaScriptEnabled(false);
-            v.getSettings().setBuiltInZoomControls(false);
+            wv.setBackgroundColor(0x000000);
+            wv.getRootView().setBackgroundColor(0x000000);
+            wv.getSettings().setJavaScriptEnabled(false);
+            wv.getSettings().setBuiltInZoomControls(false);
         }
-    }
-
-    protected void initVideoView(ThreadViewHolder viewHolder) {
-        VideoView v = viewHolder.list_item_image_expanded_videoview;
-        if (v != null) {
-            final ProgressBar p = viewHolder.list_item_expanded_progress_bar;
-            //MediaController m = new MediaController(v.getContext());
-            //m.setAnchorView(v);
-            //v.setMediaController(m);
-            v.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    if (p != null) {
-                        p.setVisibility(View.GONE);
-                    }
-                    mp.setLooping(true);
-                    mp.start();
-                }
-            });
-            v.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    if (p != null) {
-                        p.setVisibility(View.GONE);
-                    }
-                    return false;
-                }
-            });
-            /*
-            v.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.setLooping(true);
-                    mp.start();
-                }
-            });
-            */
-            v.setBackgroundColor(0x000000);
-            v.getRootView().setBackgroundColor(0x000000);
-        }
+        return v;
     }
 
     @Override

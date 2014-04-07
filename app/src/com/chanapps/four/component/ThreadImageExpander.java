@@ -3,7 +3,6 @@ package com.chanapps.four.component;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -11,9 +10,6 @@ import android.view.ViewGroup;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.MediaController;
-import android.widget.ProgressBar;
-import android.widget.VideoView;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
@@ -42,7 +38,7 @@ import java.net.URI;
 public class ThreadImageExpander {
 
     private static final String TAG = ThreadImageExpander.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final String WEBVIEW_BLANK_URL = "about:blank";
     private static final int BIG_IMAGE_SIZE_BYTES = 1024 * 250; // more than 250kb, show in web view
@@ -99,31 +95,24 @@ public class ThreadImageExpander {
         //ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded.getLayoutParams();
         if (DEBUG) Log.i(TAG, "setImageDimensions() to " + targetSize.x + "x" + targetSize.y);
         if (viewHolder.list_item_image_expanded_click_effect != null) {
-            ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded_click_effect.getLayoutParams();
-            if (params != null) {
-                params.width = targetSize.x;
-                params.height = targetSize.y;
+            ViewGroup.LayoutParams params2 = viewHolder.list_item_image_expanded_click_effect.getLayoutParams();
+            if (params2 != null) {
+                params2.width = targetSize.x;
+                params2.height = targetSize.y;
             }
         }
         if (viewHolder.list_item_image_expanded_webview != null) {
-            ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded_webview.getLayoutParams();
-            if (params != null) {
-                params.width = targetSize.x;
-                params.height = targetSize.y;
-            }
-        }
-        if (viewHolder.list_item_image_expanded_videoview != null) {
-            ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded_videoview.getLayoutParams();
-            if (params != null) {
-                params.width = targetSize.x;
-                params.height = targetSize.y;
+            ViewGroup.LayoutParams params3 = viewHolder.list_item_image_expanded_webview.getLayoutParams();
+            if (params3 != null) {
+                params3.width = targetSize.x;
+                params3.height = targetSize.y;
             }
         }
         if (viewHolder.list_item_image_expanded_wrapper != null) {
-            ViewGroup.LayoutParams params = viewHolder.list_item_image_expanded_wrapper.getLayoutParams();
-            if (params != null) {
+            ViewGroup.LayoutParams params4 = viewHolder.list_item_image_expanded_wrapper.getLayoutParams();
+            if (params4 != null) {
                 //params3.width = params.width; always match width
-                params.height = targetSize.y;
+                params4.height = targetSize.y;
             }
         }
     }
@@ -141,22 +130,9 @@ public class ThreadImageExpander {
         else
             displayImageView();
         */
-        if (isVideo()) {
-            viewHolder.isVideoView = true;
-            viewHolder.isWebView = false;
-            displayVideoView();
-        }
-        else {
-            viewHolder.isVideoView = false;
-            viewHolder.isWebView = true;
-            displayWebView();
-        }
+        viewHolder.isWebView = true;
+        displayWebView();
     }
-
-    protected boolean isVideo() {
-        return ChanImage.isVideo(postExt, fsize, postW, postH);
-    }
-
     /*
     protected boolean isAnimatedGif() {
         return ChanImage.isAnimatedGif(postExt, fsize, postW, postH);
@@ -169,7 +145,6 @@ public class ThreadImageExpander {
     }
     */
     protected void displayWebView() {
-        if (DEBUG) Log.i(TAG, "displayWebView()");
         if (viewHolder.list_item_image_expanded_wrapper != null)
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
         /*
@@ -182,15 +157,11 @@ public class ThreadImageExpander {
             viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
         if (viewHolder.list_item_image_header != null)
             viewHolder.list_item_image_header.setVisibility(View.GONE);
-        if (viewHolder.list_item_image_expanded_videoview != null)
-            viewHolder.list_item_image_expanded_videoview.setVisibility(View.GONE);
 
         WebView v = viewHolder.list_item_image_expanded_webview;
         if (v == null)
             return;
         //v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
-        if (viewHolder.list_item_expanded_progress_bar != null)
-            viewHolder.list_item_expanded_progress_bar.setVisibility(View.VISIBLE);
         v.setVisibility(View.INVISIBLE);
         //v.setWebViewClient(webViewClient);
 
@@ -210,43 +181,6 @@ public class ThreadImageExpander {
         if (DEBUG) Log.i(TAG, "Loading anim gif webview url=" + postImageUrl);
         displayClickEffect();
         v.loadUrl(postImageUrl);
-    }
-
-    protected void displayVideoView() {
-        if (DEBUG) Log.i(TAG, "displayVideoView()");
-        if (viewHolder.list_item_image_expanded_wrapper != null)
-            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
-        if (viewHolder.list_item_image_wrapper != null)
-            viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
-        if (viewHolder.list_item_image_header != null)
-            viewHolder.list_item_image_header.setVisibility(View.GONE);
-        if (viewHolder.list_item_image_expanded_webview != null)
-            viewHolder.list_item_image_expanded_webview.setVisibility(View.GONE);
-
-        VideoView v = viewHolder.list_item_image_expanded_videoview;
-        if (v == null)
-            return;
-        //v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
-        //v.setWebViewClient(webViewClient);
-        /*
-        float maxWidth = postW > 1 ? postW : 250;
-        float maxHeight = postH > 1 ? postH: 250;
-        float itemWidth = targetSize.x;
-        float itemHeight = targetSize.y;
-        int scale = (int)Math.min(Math.ceil(itemWidth * 100 / maxWidth), Math.ceil(itemWidth * 100 / maxWidth));
-        v.setInitialScale(scale);
-        if (DEBUG) Log.i(TAG, "postSize=" + postW + "x" + postH + " targetSize=" + itemWidth + "x" + itemHeight + " scale=" + scale);
-        */
-        if (DEBUG) Log.i(TAG, "Loading videoview url=" + postImageUrl);
-        displayClickEffect();
-        Uri videoUri = Uri.parse(postImageUrl);
-        final ProgressBar p = viewHolder.list_item_expanded_progress_bar;
-        if (p != null) {
-            p.setVisibility(View.VISIBLE);
-        }
-        v.setVideoURI(videoUri);
-        v.setVisibility(View.VISIBLE);
-        //v.start();
     }
 
     /*
@@ -359,12 +293,6 @@ public class ThreadImageExpander {
                 && viewHolder.list_item_image_expanded_webview.getVisibility() != View.GONE
                 && viewHolder.list_item_image_expanded_webview.getHeight() > 0) {
             if (DEBUG) Log.i(TAG, "Image webview already expanded, skipping");
-            return false;
-        }
-        else if (viewHolder.list_item_image_expanded_videoview != null
-                && viewHolder.list_item_image_expanded_videoview.getVisibility() != View.GONE
-                && viewHolder.list_item_image_expanded_videoview.getHeight() > 0) {
-            if (DEBUG) Log.i(TAG, "Image videoview already expanded, skipping");
             return false;
         }
         else {

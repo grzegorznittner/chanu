@@ -387,17 +387,6 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     	return false;
     }
 
-    private boolean isVideo() {
-        return isVideo(ext, fsize, w, h);
-    }
-
-    static public boolean isVideo(String ext, int fsize, int w, int h) {
-    	if (".webm".equals(ext)) {
-            return fsize > 0 && w > 0 && h > 0;
-    	}
-    	return false;
-    }
-
     @Override
 	public Uri getPlayUri() {
     	File localFile = new File (localImagePath);

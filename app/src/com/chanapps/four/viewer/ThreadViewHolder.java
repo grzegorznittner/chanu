@@ -28,7 +28,6 @@ public class ThreadViewHolder {
     public ViewGroup list_item_image_expansion_target;
     //public ImageView list_item_image_expanded;
     public WebView list_item_image_expanded_webview;
-    public VideoView list_item_image_expanded_videoview;
     //public View list_item_num_comments_spinner;
     //public View list_item_num_images_spinner;
     //public ImageView list_item_image_spinner;
@@ -36,7 +35,7 @@ public class ThreadViewHolder {
     public ViewGroup list_item_header_bar_chat_wrapper;
     public ViewGroup list_item_header_bar_overflow_wrapper;
     public ViewGroup list_item_subject_icons;
-    public ProgressBar list_item_expanded_progress_bar;
+    //public ProgressBar list_item_expanded_progress_bar;
     public ViewGroup list_item_header_wrapper;
     public ViewGroup list_item_image_expanded_wrapper;
     public ViewGroup list_item_image_wrapper;
@@ -58,7 +57,6 @@ public class ThreadViewHolder {
     public View list_item_num_vertical_border;
     public View list_item_right_menu_spacer;
     public boolean isWebView;
-    public boolean isVideoView;
 
     public ThreadViewHolder(View item) {
         list_item = (ViewGroup)item;
@@ -74,7 +72,6 @@ public class ThreadViewHolder {
         list_item_image_expansion_target = (ViewGroup)item.findViewById(R.id.list_item_image_expansion_target);
         //list_item_image_expanded = (ImageView)item.findViewById(R.id.list_item_image_expanded);
         list_item_image_expanded_webview = (WebView)item.findViewById(R.id.list_item_image_expanded_webview);
-        list_item_image_expanded_videoview = (VideoView)item.findViewById(R.id.list_item_image_expanded_videoview);
         //list_item_num_comments_spinner = item.findViewById(R.id.list_item_num_comments_spinner);
         //list_item_num_images_spinner = item.findViewById(R.id.list_item_num_images_spinner);
         //list_item_image_spinner = (ImageView)item.findViewById(R.id.list_item_image_spinner);
@@ -82,7 +79,7 @@ public class ThreadViewHolder {
         list_item_header_bar_chat_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_bar_chat_wrapper);
         list_item_header_bar_overflow_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_bar_overflow_wrapper);
         list_item_subject_icons = (ViewGroup)item.findViewById(R.id.list_item_subject_icons);
-        list_item_expanded_progress_bar = (ProgressBar)item.findViewById(R.id.list_item_expanded_progress_bar);
+        //list_item_expanded_progress_bar = (ProgressBar)item.findViewById(R.id.list_item_expanded_progress_bar);
         list_item_header_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_wrapper);
         list_item_image_expanded_wrapper = (ViewGroup)item.findViewById(R.id.list_item_image_expanded_wrapper);
         list_item_image_wrapper = (ViewGroup)item.findViewById(R.id.list_item_image_wrapper);
