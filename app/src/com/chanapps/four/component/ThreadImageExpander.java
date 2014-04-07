@@ -3,6 +3,7 @@ package com.chanapps.four.component;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.view.ViewGroup;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.VideoView;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
@@ -186,6 +189,8 @@ public class ThreadImageExpander {
         if (v == null)
             return;
         //v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
+        if (viewHolder.list_item_expanded_progress_bar != null)
+            viewHolder.list_item_expanded_progress_bar.setVisibility(View.VISIBLE);
         v.setVisibility(View.INVISIBLE);
         //v.setWebViewClient(webViewClient);
 
@@ -235,10 +240,13 @@ public class ThreadImageExpander {
         if (DEBUG) Log.i(TAG, "Loading videoview url=" + postImageUrl);
         displayClickEffect();
         Uri videoUri = Uri.parse(postImageUrl);
+        final ProgressBar p = viewHolder.list_item_expanded_progress_bar;
+        if (p != null) {
+            p.setVisibility(View.VISIBLE);
+        }
         v.setVideoURI(videoUri);
         v.setVisibility(View.VISIBLE);
-        v.
-        v.start();
+        //v.start();
     }
 
     /*
@@ -353,7 +361,7 @@ public class ThreadImageExpander {
             if (DEBUG) Log.i(TAG, "Image webview already expanded, skipping");
             return false;
         }
-        if (viewHolder.list_item_image_expanded_videoview != null
+        else if (viewHolder.list_item_image_expanded_videoview != null
                 && viewHolder.list_item_image_expanded_videoview.getVisibility() != View.GONE
                 && viewHolder.list_item_image_expanded_videoview.getHeight() > 0) {
             if (DEBUG) Log.i(TAG, "Image videoview already expanded, skipping");

@@ -162,7 +162,8 @@ public class ThreadListener {
                     && viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE
                     && (
                     //viewHolder.list_item_image_expanded.getVisibility() == View.VISIBLE ||
-                    viewHolder.list_item_image_expanded_webview.getVisibility() == View.VISIBLE
+                    viewHolder.list_item_image_expanded_webview.getVisibility() == View.VISIBLE ||
+                    viewHolder.list_item_image_expanded_videoview.getVisibility() == View.VISIBLE
                         )
                     ) {
                 if (DEBUG) Log.i(TAG, "header already expanded, collapsing");

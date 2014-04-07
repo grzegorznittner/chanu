@@ -113,9 +113,9 @@
             <!-- <ImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded" android:visibility="gone"/> -->
             <FrameLayout style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_wrapper" android:visibility="gone">
                 <WebView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview"/>
-                <VideoView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview" android:visibility="gone"/>
+                <VideoView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_videoview" android:visibility="gone"/>
             </FrameLayout>
-            <!-- <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/> -->
+            <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar" android:visibility="gone"/>
             <View style="@style/ThreadListHeaderImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
         </FrameLayout>
 

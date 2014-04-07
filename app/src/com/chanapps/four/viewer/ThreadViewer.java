@@ -685,7 +685,7 @@ public class ThreadViewer {
         ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
         if (DEBUG) Log.i(TAG, "displayHeaderImage() size=" + imageSize.x + "x" + imageSize.y);
         //}
-        //else {
+        //else {                         F
         //    imageSize = sizeItemImage(tn_w, tn_h);
         //    if (params != null) {
         //        params.width = imageSize.x;
