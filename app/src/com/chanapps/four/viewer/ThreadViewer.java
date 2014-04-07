@@ -60,7 +60,7 @@ public class ThreadViewer {
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
@@ -1136,6 +1136,8 @@ public class ThreadViewer {
             return false;
         if (viewHolder.isWebView)
             return toggleExpandedWebView(viewHolder);
+        else if (viewHolder.isVideoView)
+            return toggleExpandedVideoView(viewHolder);
         else
             return toggleExpandedImageView(viewHolder);
     }
@@ -1146,11 +1148,19 @@ public class ThreadViewer {
         else
             return toggleExpandedWebViewItem(viewHolder);
     }
+    
+    private static boolean toggleExpandedVideoView(ThreadViewHolder viewHolder) {
+        if (viewHolder.list_item_image_header != null)
+            return toggleExpandedVideoViewHeader(viewHolder);
+        else
+            return toggleExpandedVideoViewItem(viewHolder);
+    }
 
     private static boolean toggleExpandedWebViewHeader(ThreadViewHolder viewHolder) {
+        toggleExpandedWebViewItem(viewHolder);
+        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+        boolean wasVisible;
         if (viewHolder.list_item_image_expanded_webview.getVisibility() == View.VISIBLE) {
-            toggleExpandedWebViewItem(viewHolder);
-            viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
             ViewGroup.LayoutParams params = viewHolder.list_item_image_header.getLayoutParams();
             if (params != null) {
                 Point imageSize = new Point(params.width, params.height);
@@ -1158,18 +1168,39 @@ public class ThreadViewer {
                 ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
                 if (DEBUG) Log.i(TAG, "sizedHeader " + params.width + "x" + params.height);
             }
-            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
-            return false;
+            wasVisible = false;
         }
         else {
-            toggleExpandedWebViewItem(viewHolder);
-            viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
-            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+            wasVisible = true;
         }
-        return true;
+        viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+        return wasVisible;
+    }
+
+    private static boolean toggleExpandedVideoViewHeader(ThreadViewHolder viewHolder) {
+        if (DEBUG) Log.i(TAG, "toggleExpandedVideoViewHeader()");
+        toggleExpandedVideoViewItem(viewHolder);
+        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+        boolean wasVisible;
+        if (viewHolder.list_item_image_expanded_videoview.getVisibility() == View.VISIBLE) {
+            ViewGroup.LayoutParams params = viewHolder.list_item_image_header.getLayoutParams();
+            if (params != null) {
+                Point imageSize = new Point(params.width, params.height);
+                sizeView(viewHolder.list_item_image_header, imageSize);
+                ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
+                if (DEBUG) Log.i(TAG, "sizedHeader " + params.width + "x" + params.height);
+            }
+            wasVisible = false;
+        }
+        else {
+            wasVisible = true;
+        }
+        viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+        return wasVisible;
     }
 
     private static boolean toggleExpandedWebViewItem(ThreadViewHolder viewHolder) {
+        if (DEBUG) Log.i(TAG, "toggleExpandedVideoViewItem()");
         if (viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) {
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
             //viewHolder.list_item_image_expanded.setVisibility(View.GONE);
@@ -1180,6 +1211,23 @@ public class ThreadViewer {
         else {
             //viewHolder.list_item_image_expanded.setVisibility(View.GONE);
             viewHolder.list_item_image_expanded_webview.setVisibility(View.VISIBLE);
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
+            viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+            return true;
+        }
+    }
+
+    private static boolean toggleExpandedVideoViewItem(ThreadViewHolder viewHolder) {
+        if (viewHolder.list_item_image_expanded_wrapper.getVisibility() == View.VISIBLE) {
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
+            //viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+            viewHolder.list_item_image_expanded_videoview.setVisibility(View.GONE);
+            viewHolder.list_item_image_wrapper.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else {
+            //viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+            viewHolder.list_item_image_expanded_videoview.setVisibility(View.VISIBLE);
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
             viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
             return true;

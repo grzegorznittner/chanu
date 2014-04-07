@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.VideoView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanPost;
@@ -88,6 +89,12 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
         ThreadViewHolder viewHolder = new ThreadViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);
+        initWebView(viewHolder);
+        initVideoView(viewHolder);
+        return v;
+    }
+
+    protected void initWebView(ThreadViewHolder viewHolder) {
         WebView wv = viewHolder.list_item_image_expanded_webview;
         if (wv != null) {
             wv.setWebViewClient(new WebViewClient() {
@@ -102,7 +109,14 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
             wv.getSettings().setJavaScriptEnabled(false);
             wv.getSettings().setBuiltInZoomControls(false);
         }
-        return v;
+    }
+
+    protected void initVideoView(ThreadViewHolder viewHolder) {
+        VideoView wv = viewHolder.list_item_image_expanded_videoview;
+        if (wv != null) {
+            wv.setBackgroundColor(0x000000);
+            wv.getRootView().setBackgroundColor(0x000000);
+        }
     }
 
     @Override
