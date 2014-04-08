@@ -136,6 +136,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         checkNSFW();
         if (mDrawerAdapter != null)
             mDrawerAdapter.notifyDataSetInvalidated();
+
+        /* move spinner to right board */
+        mIgnoreMode = true;
+        selectActionBarNavigationItem();
+
         if (DEBUG) Log.i(TAG, "switchBoard end /" + boardCode + "/ q=" + query);
     }
 

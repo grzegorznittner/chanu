@@ -26,7 +26,7 @@ abstract public class
         AbstractBoardSpinnerActivity
         extends FragmentActivity
         implements ChanIdentifiedActivity,
-        ThemeSelector.ThemeActivity                       //422 passport bliestift am banhoff 9:30-12:30 nachmichtags pukntlich 899-4152 ara flan freitag
+        ThemeSelector.ThemeActivity
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
     protected static final boolean DEBUG = false;
@@ -119,10 +119,10 @@ abstract public class
         mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mIgnoreMode = true;
-        selectActionBarNavigationItem();
-        bindSpinnerListener();
-        mIgnoreMode = false;
+        //mIgnoreMode = true;
+        //selectActionBarNavigationItem();
+        //bindSpinnerListener();
+        //mIgnoreMode = false;
         //if (DEBUG) Log.i(TAG, "setSpinnerAdapter() before bind listener");
         //if (DEBUG) Log.i(TAG, "setSpinnerAdapter() after bind listener");
         if (DEBUG) Log.i(TAG, "setSpinnerAdapter() end");
@@ -144,6 +144,10 @@ abstract public class
 
     protected void bindSpinnerListener() {
         actionBar.setListNavigationCallbacks(mSpinnerAdapter, spinnerNavigationListener);
+    }
+
+    protected void unbindSpinnerListener() {
+        actionBar.setListNavigationCallbacks(mSpinnerAdapter, null);
     }
 
     @Override
@@ -206,16 +210,17 @@ abstract public class
 
     abstract public boolean isSelfDrawerMenu(String boardAsMenu);
 
-    protected ActionBar.OnNavigationListener spinnerNavigationListener = new ActionBar.OnNavigationListener() {
+    private ActionBar.OnNavigationListener spinnerNavigationListener = new ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
             if (mIgnoreMode) {
+                mIgnoreMode = false;
                 return true;
             }
             String item = mSpinnerAdapter.getItem(itemPosition);
             if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] this=" + this + " calling handleSelectItem");
             boolean handle = handleSelectItem(item);
-            if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=" + item + " returned handleSelectItem=" + handle);
+            if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] returned handleSelectItem=" + handle);
             return handle;
         }
     };
@@ -294,8 +299,6 @@ abstract public class
         }
         if (DEBUG) Log.i(TAG, "matched thread /" + boardCodeForJump + "/" + threadNoForJump + ", starting");
 
-        /* move spinner to right board */
-        //mIgnoreMode = true;
         if (DEBUG) Log.i(TAG, "starting /" + boardCodeForJump + "/" + threadNoForJump + " from this=" + this);
         ThreadActivity.startActivity(this, boardCodeForJump, threadNoForJump, "");
         //mIgnoreMode = false;
@@ -352,6 +355,16 @@ abstract public class
                 finish();
             }
         }
+        mIgnoreMode = true;
+        bindSpinnerListener();
+        selectActionBarNavigationItem();
+        //mIgnoreMode = false;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindSpinnerListener();
     }
 
     @Override
@@ -384,7 +397,7 @@ abstract public class
             if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ not found defaulted pos=" + pos);
         }
         actionBar.setSelectedNavigationItem(pos);
-        if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ pos=" + pos + " end");
+        if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ set pos=" + pos + " end");
     }
 
     @Override

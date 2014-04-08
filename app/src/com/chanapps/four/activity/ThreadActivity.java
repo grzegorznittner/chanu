@@ -1184,6 +1184,10 @@ public class ThreadActivity
         setFromIntent(intent);
         NetworkProfileManager.instance().activityChange(this);
 
+        /* move spinner to right board */
+        mIgnoreMode = true;
+        selectActionBarNavigationItem();
+
         if (!oldBoardCode.equals(boardCode)) { // recreate pager
             if (DEBUG) Log.i(TAG, "switchThreadInternal new board redisplayPager() /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
             redisplayPager(boardCode, threadNo, query, "");
@@ -1197,8 +1201,6 @@ public class ThreadActivity
             showThread(threadNo);
         }
         if (DEBUG) Log.i(TAG, "switchThreadInternal end /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
-        //loadDrawerArray();
-        //mDrawerAdapter.notifyDataSetInvalidated();
     }
 
 
