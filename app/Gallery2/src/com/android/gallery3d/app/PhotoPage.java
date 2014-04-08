@@ -313,7 +313,7 @@ public class PhotoPage extends ActivityState
     }
 
     private void hideOrPlayAnimGif(MediaItem photo, long version) {
-        if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
+        if (playableAnimGif(photo)) {
             if (DEBUG) Log.w(TAG, "Playing anim gif");
             if (!isAnimatedGifVisible())
                 playAnimatedGif(photo, version);
@@ -324,6 +324,9 @@ public class PhotoPage extends ActivityState
         }
     }
 
+    private boolean playableAnimGif(MediaItem photo) {
+        return photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0;
+    }
 
     private void getDefaultMediaSet(final Path itemPath) {
         // Get default media set by the URI
@@ -633,18 +636,16 @@ public class PhotoPage extends ActivityState
     }
 
     public void onSingleTapUp(int x, int y) {
-        hideOrPlayAnimGif(mModel.getCurrentMediaItem());
-        onUserInteractionTap();
-/*
         MediaItem item = mModel.getCurrentMediaItem();
         if (item == null) {
             // item is not ready, ignore
             return;
         }
 
-        boolean playVideo =
-                (item.getSupportedOperations() & MediaItem.SUPPORT_PLAY) != 0;
+        boolean playGif = playableAnimGif(item);
+        boolean playVideo = (item.getSupportedOperations() & MediaItem.SUPPORT_PLAY) != 0;
 
+        /*
         if (playVideo) {
             // determine if the point is at center (1/6) of the photo view.
             // (The position of the "play" icon is at center (1/6) of the photo)
@@ -653,17 +654,23 @@ public class PhotoPage extends ActivityState
             playVideo = (Math.abs(x - w / 2) * 12 <= w)
                     && (Math.abs(y - h / 2) * 12 <= h);
         }
+        */
 
-        if (playVideo) {
-            playVideo((Activity) mActivity, item.getPlayUri(), item.getPath());
+        if (playGif) {
+            hideOrPlayAnimGif(item);
+        }
+        else if (playVideo) {
+            hideAnimatedGif();
+            playVideo((Activity) mActivity, item.getPlayUri(), item.getPath(), item.getMimeType());
         } else {
+            hideAnimatedGif();
             onUserInteractionTap();
         }
-        */
     }
 
-    public static void playVideo(Activity activity, Uri uri, Path path) {
+    public static void playVideo(Activity activity, Uri uri, Path path, String mimeType) {
         try {
+            /*
             String title = null;
             String[] parts = path.split();
             if (parts.length == 3) {
@@ -671,14 +678,14 @@ public class PhotoPage extends ActivityState
             } else if (parts.length == 4) {
                 title = "/" + parts[1] + "/" + parts[2] + ":" + parts[3];
             }
-
-            Intent intent = new Intent(activity.getBaseContext(), VideoViewActivity.class);
-            intent.putExtra(ImageDownloadService.IMAGE_URL, uri.toString());
             intent.putExtra(Intent.EXTRA_TITLE, title);
-            activity.startActivity(intent);
+            */
+            //Toast.makeText(activity, "play video uri=" + uri + " mimeType=" + mimeType, Toast.LENGTH_SHORT).show();
+            ChanImage.startViewer(activity, uri, mimeType);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(activity, activity.getString(R.string.video_err), Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private void hideAnimatedGif() {

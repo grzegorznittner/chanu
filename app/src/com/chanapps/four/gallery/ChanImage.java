@@ -11,8 +11,16 @@ import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.List;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.text.Html;
+import android.widget.Toast;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ThreadImageExpander;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -91,7 +99,54 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.imageName();
         mApplication = Utils.checkNotNull(application);
         String extNoDot = post.ext != null && post.ext.startsWith(".") ? post.ext.substring(1) : post.ext;
-        contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extNoDot);
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extNoDot);
+        if (mimeType != null) {
+            contentType = mimeType;
+        }
+        else {
+            contentType = pickMimeType(extNoDot);
+        }
+    }
+
+    private String pickMimeType(String ext) {
+        if ("webm".equals(ext)) {
+            return "video/webm";
+        }
+        else {
+            return "image/" + ext;
+        }
+    }
+
+    public static boolean isCallable(Context context, Intent intent) {
+        List<ResolveInfo> list = context.getPackageManager() == null
+                ? null
+                : context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list != null && list.size() > 0;
+    }
+
+    public static void startViewer(Activity activity, Uri uri, String mimeType) {
+        if (activity == null) {
+            return;
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.setDataAndType(uri, mimeType);
+        if (!isCallable(activity, intent)) {
+            Log.e(TAG, "no handler for mimeType=" + mimeType + " url=" + uri);
+            Toast.makeText(activity, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        activity.startActivity(intent);
+    }
+
+    public static String videoMimeType(String ext) {
+        String mimeType;
+        if (ext == null || ext.isEmpty()) {
+            mimeType = "video/*";
+        }
+        else {
+            mimeType = "video/" + ext.replaceFirst("\\.", "");
+        }
+        return mimeType;
     }
 
     @Override
@@ -362,6 +417,12 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         if (isAnimatedGif()) {
         	supported |= SUPPORT_ANIMATED_GIF;
         }
+        else if (".gif".equals(ext)) {
+            supported |= SUPPORT_FULL_IMAGE;
+        }
+        else if (isVideo()) {
+            supported |= SUPPORT_PLAY;
+        }
         return supported;
     }
 
@@ -371,7 +432,12 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
     @Override
     public int getMediaType() {
-		return MEDIA_TYPE_IMAGE;
+        if (isVideo()) {
+            return MEDIA_TYPE_VIDEO;
+        }
+        else {
+            return MEDIA_TYPE_IMAGE;
+        }
     }
     
     private boolean isAnimatedGif() {
@@ -401,7 +467,10 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     @Override
 	public Uri getPlayUri() {
     	File localFile = new File (localImagePath);
-    	if (localFile.exists() && isAnimatedGif()) {
+    	if (isVideo()) {
+            return Uri.parse(url);
+        }
+        else if (localFile.exists() && isAnimatedGif()) {
     		return Uri.fromFile(localFile);
     	} else {
     		return null;

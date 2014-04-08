@@ -2,9 +2,6 @@ package com.chanapps.four.component;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -14,26 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
-import com.chanapps.four.activity.GalleryViewActivity;
-import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.gallery.ChanImage;
-import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.viewer.ThreadViewHolder;
 import com.chanapps.four.viewer.ThreadViewer;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.io.File;
 import java.net.URI;
-import java.util.List;
 
 /**
 * Created with IntelliJ IDEA.
@@ -294,13 +282,6 @@ public class ThreadImageExpander {
         }
     }
 
-    private boolean isCallable(Context context, Intent intent) {
-        List<ResolveInfo> list = context.getPackageManager() == null
-                ? null
-                : context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return list != null && list.size() > 0;
-    }
-
     private void setVideoListener() {
         viewHolder.list_item_image_expanded_click_effect.setOnClickListener(videoListener);
     }
@@ -313,25 +294,9 @@ public class ThreadImageExpander {
                 return;
             }
             Activity a = c instanceof Activity ? (Activity)c : null;
-            if (a == null) {
-                return;
-            }
-            String mimeType;
-            if (postExt == null || postExt.isEmpty()) {
-                mimeType = "video/*";
-            }
-            else {
-                mimeType = "video/" + postExt.replaceFirst("\\.", "");
-            }
+            String mimeType = ChanImage.videoMimeType(postExt);
             Uri uri = Uri.parse(postImageUrl);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.setDataAndType(uri, mimeType);
-            if (!isCallable(c, intent)) {
-                Log.e(TAG, "no handler for mimeType=" + mimeType + " url=" + uri);
-                Toast.makeText(c, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            a.startActivity(intent);
+            ChanImage.startViewer(a, uri, mimeType);
         }
     };
 

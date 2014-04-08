@@ -181,7 +181,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
                     (item.getSupportedOperations() & MediaItem.SUPPORT_PLAY) != 0;
                 if (playVideo) {
                     // Play the video.
-                    PhotoPage.playVideo((Activity) mActivity, item.getPlayUri(), item.getPath());
+                    PhotoPage.playVideo((Activity) mActivity, item.getPlayUri(), item.getPath(), item.getMimeType());
                 } else {
                     // Get into the PhotoPage.
                     Bundle data = new Bundle();

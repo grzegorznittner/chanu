@@ -25,6 +25,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
+import android.widget.Toast;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.PositionRepository.Position;
