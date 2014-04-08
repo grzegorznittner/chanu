@@ -1,9 +1,12 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +42,9 @@ public class SettingsFragment
 
     protected static final boolean DEBUG = false;
     protected static final String TAG = SettingsFragment.class.getSimpleName();
+
+    protected static final int STARTUP_INTENT = 0x80134148; // magic number
+    protected static final int RESTART_DELAY_MS = 250;
 
     protected Preference downloadLocationButton;
 
@@ -126,6 +132,20 @@ public class SettingsFragment
         });
         File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
         downloadLocationButton.setSummary(downloadFolder.getAbsolutePath());
+
+        Preference forceEnglish = findPreference(SettingsActivity.PREF_FORCE_ENGLISH);
+
+        forceEnglish.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                //Toast.makeText(getActivity(), "onChange", Toast.LENGTH_SHORT).show();
+                restartApp();
+                return true;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
+
+    };
+
 
         /*
         Preference.OnPreferenceClickListener namesListener = new Preference.OnPreferenceClickListener() {
@@ -218,9 +238,27 @@ public class SettingsFragment
         Preference theme = findPreference(SettingsActivity.PREF_THEME);
         theme.setOnPreferenceChangeListener(themeListener);
         */
+
+    private void restartApp() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Context context = getActivity();
+                if (context == null) {
+                    return;
+                }
+                Intent mStartActivity = new Intent(context, StartupActivity.class);
+                int mPendingIntentId = STARTUP_INTENT;
+                PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, mStartActivity,
+                        PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + RESTART_DELAY_MS, mPendingIntent);
+                System.exit(0);
+            }
+        }, RESTART_DELAY_MS);
     }
 
-/*
+    /*
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         boolean passEnabled = prefs.getBoolean(SettingsActivity.PREF_PASS_ENABLED, false);
         int stringId = validatePass(prefs);
@@ -258,6 +296,7 @@ public class SettingsFragment
         ensureHandler().sendEmptyMessageDelayed(0, 1000);
     }
 */
+
     public Handler ensureHandler() {
         if (handler == null)
             handler = new ReloadPrefsHandler(this);

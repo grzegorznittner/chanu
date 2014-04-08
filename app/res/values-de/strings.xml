@@ -71,6 +71,8 @@
   <string name="play_thread_menu">Automatisches scrollen starten</string>
   <string name="play_thread_stop_menu">Automatisches scrollen stoppen</string>
   <string name="refresh_board_menu">Aktualisieren</string>
+  <string name="jump_menu">Springen</string>
+  <string name="scroll_to_top_menu">Zum Oben springen</string>
   <string name="scroll_to_bottom_menu">Zum Ende springen</string>
   <string name="new_thread_menu">Neuer Thread</string>
   <string name="board_thread_gallery_menu">Galerie</string>

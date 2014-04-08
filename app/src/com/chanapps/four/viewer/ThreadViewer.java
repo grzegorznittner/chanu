@@ -254,9 +254,9 @@ public class ThreadViewer {
         TextView numRepliesLabel = viewHolder.list_item_num_replies_label;
         TextView numImagesLabel = viewHolder.list_item_num_images_label;
         View cmtWrapper = viewHolder.list_item_num_replies;
-        //View arrow = viewHolder.list_item_num_comments_spinner;
+        View cmtWrapperTop = viewHolder.list_item_num_replies_top;
         View imgWrapper = viewHolder.list_item_num_images;
-        //View spinner = viewHolder.list_item_num_images_spinner;
+        View imgWrapperTop = viewHolder.list_item_num_images_top;
         if (numReplies != null) {
             FontSize.sizeTextView(numReplies);
             numReplies.setText(String.valueOf(r));
@@ -273,34 +273,24 @@ public class ThreadViewer {
             FontSize.sizeTextView(numImagesLabel);
             numImagesLabel.setText(numImagesLabel.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
         }
-        if (cmtWrapper != null) {
-            if (r >= 0 && commentsOnClickListener != null && cursor.getCount() > 1) {
-                cmtWrapper.setOnClickListener(commentsOnClickListener);
-                cmtWrapper.setClickable(true);
-                //if (arrow != null)
-                //    arrow.setVisibility(View.VISIBLE);
-            }
-            else {
-                cmtWrapper.setOnClickListener(null);
-                cmtWrapper.setClickable(false);
-                //if (arrow != null)
-                //    arrow.setVisibility(View.GONE);
-            }
+
+        int n = r >= 0 && cursor.getCount() > 1 ? r : 0;
+        setWrapperListener(cmtWrapper, commentsOnClickListener, n);
+        setWrapperListener(cmtWrapperTop, commentsOnClickListener, n);
+        setWrapperListener(imgWrapper, imagesOnClickListener, i);
+        setWrapperListener(imgWrapperTop, imagesOnClickListener, i);
+    }
+
+    static protected void setWrapperListener(View v, View.OnClickListener l, int n) {
+        if (v == null) {
+            return;
         }
-        if (imgWrapper != null) {
-            if (i >= 0 && imagesOnClickListener != null) {
-                imgWrapper.setOnClickListener(imagesOnClickListener);
-                imgWrapper.setClickable(true);
-                //if (spinner != null)
-                //    spinner.setVisibility(View.VISIBLE);
-            }
-            else {
-                imgWrapper.setOnClickListener(null);
-                imgWrapper.setClickable(false);
-                //if (spinner != null)
-                //    spinner.setVisibility(View.GONE);
-            }
+        if (l == null || n <= 0) {
+            v.setOnClickListener(null);
+            v.setClickable(false);
         }
+        v.setOnClickListener(l);
+        v.setClickable(true);
     }
 
     static protected void displayHeaderCountFields(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
@@ -1126,6 +1116,19 @@ public class ThreadViewer {
                 GalleryViewActivity.startAlbumViewActivity(context, boardCode, threadNo);
             }
         };
+    }
+
+    public static void jumpToTop(final AbsListView absListView, final Handler handler) {
+        if (absListView == null)
+            return;
+        Adapter adapter = absListView.getAdapter();
+        if (handler != null && adapter != null && adapter.getCount() > 0)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    absListView.setSelection(0);
+                }
+            });
     }
 
     public static void jumpToBottom(final AbsListView absListView, final Handler handler) {

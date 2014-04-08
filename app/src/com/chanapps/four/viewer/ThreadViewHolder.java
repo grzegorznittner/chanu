@@ -40,7 +40,9 @@ public class ThreadViewHolder {
     public ViewGroup list_item_image_expanded_wrapper;
     public ViewGroup list_item_image_wrapper;
     public ViewGroup list_item_num_images;
+    public ViewGroup list_item_num_images_top;
     public ViewGroup list_item_num_replies;
+    public ViewGroup list_item_num_replies_top;
     public TextView list_item_exif_text;
     public TextView list_item_header;
     public TextView list_item_header_bar_ago;
@@ -84,7 +86,9 @@ public class ThreadViewHolder {
         list_item_image_expanded_wrapper = (ViewGroup)item.findViewById(R.id.list_item_image_expanded_wrapper);
         list_item_image_wrapper = (ViewGroup)item.findViewById(R.id.list_item_image_wrapper);
         list_item_num_images = (ViewGroup)item.findViewById(R.id.list_item_num_images);
+        list_item_num_images_top = (ViewGroup)item.findViewById(R.id.list_item_num_images_top);
         list_item_num_replies = (ViewGroup)item.findViewById(R.id.list_item_num_replies);
+        list_item_num_replies_top = (ViewGroup)item.findViewById(R.id.list_item_num_replies_top);
         list_item_exif_text = (TextView)item.findViewById(R.id.list_item_exif_text);
         list_item_header = (TextView)item.findViewById(R.id.list_item_header);
         list_item_header_bar_ago = (TextView)item.findViewById(R.id.list_item_header_bar_ago);

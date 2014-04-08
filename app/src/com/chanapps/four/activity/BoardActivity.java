@@ -1017,10 +1017,19 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             case R.id.refresh_menu:
                 onRefresh();
                 return true;
-            case R.id.scroll_to_bottom_menu:
-                int n = adapter.getCount() - 1;
+            case R.id.scroll_to_top_menu:
+                int n = 0;
                 if (DEBUG) Log.i(TAG, "jumping to item n=" + n);
-                absListView.setSelection(n);
+                if (adapter != null && adapter.getCount() > 0) {
+                    absListView.setSelection(n);
+                }
+                return true;
+            case R.id.scroll_to_bottom_menu:
+                n = adapter.getCount() - 1;
+                if (DEBUG) Log.i(TAG, "jumping to item n=" + n);
+                if (adapter != null && adapter.getCount() > 0) {
+                    absListView.setSelection(n);
+                }
                 return true;
             case R.id.new_thread_menu:
                 ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);

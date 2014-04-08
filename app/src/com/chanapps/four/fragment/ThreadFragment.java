@@ -775,6 +775,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             case R.id.watch_remove_thread_menu:
                 removeFromWatchlist();
                 return true;
+            case R.id.scroll_to_top_menu:
+                jumpToTop();
+                return true;
             case R.id.scroll_to_bottom_menu:
                 jumpToBottom();
                 return true;
@@ -1630,6 +1633,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.thread_menu, menu);
         super.onCreateOptionsMenu(menu, menuInflater);
+    }
+
+    protected void jumpToTop() {
+        ThreadViewer.jumpToTop(absListView, handler);
     }
 
     protected void jumpToBottom() {

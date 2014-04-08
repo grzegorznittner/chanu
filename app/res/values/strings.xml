@@ -82,6 +82,8 @@
     <string name="play_thread_menu">Play thread</string>
     <string name="play_thread_stop_menu">Stop thread</string>
     <string name="refresh_board_menu">Refresh</string>
+    <string name="jump_menu">Jump</string>
+    <string name="scroll_to_top_menu">Jump to top</string>
     <string name="scroll_to_bottom_menu">Jump to bottom</string>
     <string name="new_thread_menu">New thread</string>
     <string name="board_thread_gallery_menu">Gallery</string>
@@ -1350,6 +1352,9 @@ We will remove anything that remotely breaks this rule.</p>
     <string name="pref_background_data_summ_on">Background data enabled when on mobile data plan</string>
     <string name="pref_background_data_summ_off">Background data disabled when on mobile data plan</string>
     <string name="hide">Hide</string>
+    <string name="pref_force_english">Force English</string>
+    <string name="pref_force_english_summ_on">Use English regardless of phone language</string>
+    <string name="pref_force_english_summ_off">Use language of phone, if available</string>
     <string name="pref_download_nomedia">Hide Downloads</string>
     <string name="pref_download_nomedia_summ_on">Downloaded images are hidden from the gallery</string>
     <string name="pref_download_nomedia_summ_off">Downloaded images are visible in the gallery</string>

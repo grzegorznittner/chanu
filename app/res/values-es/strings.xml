@@ -71,7 +71,9 @@
   <string name="play_thread_menu">Iniciar hilo</string>
   <string name="play_thread_stop_menu">Para hilo</string>
   <string name="refresh_board_menu">Actualizar</string>
-  <string name="scroll_to_bottom_menu">Ir al final</string>
+    <string name="jump_menu">Ir</string>
+    <string name="scroll_to_top_menu">Ir al inicio</string>
+    <string name="scroll_to_bottom_menu">Ir al final</string>
   <string name="new_thread_menu">Nuevo hilo</string>
   <string name="board_thread_gallery_menu">Galería</string>
   <string name="board_add_to_favorites_menu">Añadir a \"Favoritos\"</string>

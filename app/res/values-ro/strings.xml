@@ -83,6 +83,8 @@
     <string name="play_thread_menu">Afișează fir de discuții</string>
     <string name="play_thread_stop_menu">Oprește fir de discuții</string>
     <string name="refresh_board_menu">Reîncarcă</string>
+    <string name="jump_menu">Sari</string>
+    <string name="scroll_to_top_menu">Sari la începutul</string>
     <string name="scroll_to_bottom_menu">Sari la final</string>
     <string name="new_thread_menu">Fir nou de discuții</string>
     <string name="board_thread_gallery_menu">Galerie</string>

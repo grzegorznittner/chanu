@@ -71,6 +71,8 @@
   <string name="play_thread_menu">Attiva la discussione</string>
   <string name="play_thread_stop_menu">Ferma la discussione</string>
   <string name="refresh_board_menu">Aggiorna</string>
+    <string name="jump_menu">Salta</string>
+    <string name="scroll_to_top_menu">Salta alla prima</string>
   <string name="scroll_to_bottom_menu">Salta al pulsante</string>
   <string name="new_thread_menu">Nuova discussione</string>
   <string name="board_thread_gallery_menu">Galleria</string>

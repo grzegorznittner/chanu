@@ -184,8 +184,8 @@
 
         <LinearLayout style="@style/ThreadListHeaderNumSection">
 
-            <FrameLayout style="@style/ThreadListHeaderNumWrap">
-                         <!-- android:background="@drawable/thread_list_selector_bg"> -->
+            <FrameLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_replies_top"
+                         android:background="@drawable/thread_list_selector_bg">
                 <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
                     <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_replies_text"/>
                     <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_replies_label"/>
@@ -194,8 +194,8 @@
 
             <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
 
-            <FrameLayout style="@style/ThreadListHeaderNumWrap">
-                           <!-- android:background="@drawable/thread_list_selector_bg"> -->
+            <FrameLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_images_top"
+                         android:background="@drawable/thread_list_selector_bg">
                 <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
                     <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
                     <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_images_label"/>

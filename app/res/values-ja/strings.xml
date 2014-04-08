@@ -95,7 +95,9 @@
   <string name="play_thread_menu">スレッドを再生</string>
   <string name="play_thread_stop_menu">スレッドを止める</string>
   <string name="refresh_board_menu">更新</string>
-  <string name="scroll_to_bottom_menu">一番下までジャンプ</string>
+    <string name="jump_menu">ジャンプ</string>
+    <string name="scroll_to_top_menu">トップにジャンプ</string>
+    <string name="scroll_to_bottom_menu">一番下までジャンプ</string>
   <string name="new_thread_menu">新規スレッド</string>
   <string name="board_thread_gallery_menu">ギャラリー</string>
   <string name="board_add_to_favorites_menu">お気に入りに追加</string>

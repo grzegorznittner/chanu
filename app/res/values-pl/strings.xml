@@ -72,7 +72,9 @@
   <string name="play_thread_menu">Czytaj wątek</string>
   <string name="play_thread_stop_menu">Zatrzymaj czytanie wątku</string>
   <string name="refresh_board_menu">Odśwież</string>
-  <string name="scroll_to_bottom_menu">skocz na koniec</string>
+    <string name="jump_menu">Przesuń</string>
+    <string name="scroll_to_top_menu">Przesuń do góry</string>
+  <string name="scroll_to_bottom_menu">Przesuń w dół</string>
   <string name="new_thread_menu">Nowy wątek</string>
   <string name="board_thread_gallery_menu">Galeria</string>
   <string name="board_add_to_favorites_menu">Dodaj do ulubionych</string>

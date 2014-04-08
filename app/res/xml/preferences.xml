@@ -284,6 +284,14 @@
                 android:defaultValue="false"
                 />
 
+        <CheckBoxPreference
+                android:key="pref_force_english"
+                android:title="@string/pref_force_english"
+                android:summaryOn="@string/pref_force_english_summ_on"
+                android:summaryOff="@string/pref_force_english_summ_off"
+                android:defaultValue="false"
+                />
+
         <Preference
                 android:key="pref_download_location"
                 android:title="@string/pref_download_location"

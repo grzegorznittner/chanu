@@ -72,6 +72,8 @@
   <string name="play_thread_menu">Rolar tópico</string>
   <string name="play_thread_stop_menu">Parar tópico</string>
   <string name="refresh_board_menu">Atualizar</string>
+  <string name="jump_menu">Pular</string>
+  <string name="scroll_to_top_menu">Pular para o início</string>
   <string name="scroll_to_bottom_menu">Pular para o final</string>
   <string name="new_thread_menu">Novo assunto</string>
   <string name="board_thread_gallery_menu">Galeria</string>

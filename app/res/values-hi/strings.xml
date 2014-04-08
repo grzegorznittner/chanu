@@ -71,7 +71,9 @@
   <string name="play_thread_menu">थ्रेड को प्ले करे </string>
   <string name="play_thread_stop_menu">थ्रेड को रोको</string>
   <string name="refresh_board_menu">रीफ्रेश करें</string>
-  <string name="scroll_to_bottom_menu">निचले भाग पर जाओ </string>
+    <string name="jump_menu">कूद</string>
+    <string name="scroll_to_top_menu">शीर्ष करने के लिए कूद</string>
+    <string name="scroll_to_bottom_menu">निचले भाग पर जाओ </string>
   <string name="new_thread_menu">नया थ्रेड</string>
   <string name="board_thread_gallery_menu">गैलरी</string>
   <string name="board_add_to_favorites_menu">पसंदीदा में जोड़ें</string>
