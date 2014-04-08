@@ -229,6 +229,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
+        scheduleAutoUpdate();
     }
 
     @Override
@@ -236,6 +237,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         super.onPause();
         if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/" + threadNo);
         saveViewPositionAsync();
+        if (handler != null)
+            handler.removeCallbacks(autoUpdateRunnable); // deschedule any current updates
         handler = null;
     }
 
@@ -417,7 +420,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public void run() {
             if (DEBUG) Log.i(TAG, "autoUpdateRunnable preparing refresh /" + boardCode + "/" + threadNo);
-            if (NetworkProfileManager.instance().getActivity() != getActivity()) {
+            if (NetworkProfileManager.instance().getActivityId() != getChanActivityId()) {
                 if (DEBUG) Log.i(TAG, "autoUpdateRunnable no longer foreground, cancelling update /" + boardCode + "/" + threadNo);
                 return;
             }
