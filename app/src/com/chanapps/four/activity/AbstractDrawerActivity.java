@@ -166,7 +166,7 @@ abstract public class
                     drawableId = R.drawable.money_bag;
                 else
                     drawableId = 0;
-                if (DEBUG) Log.i(TAG, "row=" + i + " text=" + drawerText + " drawableId=" + drawableId);
+                if (DEBUG) Log.v(TAG, "row=" + i + " text=" + drawerText + " drawableId=" + drawableId);
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put(ROW_ID, "" + i);
                 map.put(TEXT, drawerText);
@@ -287,7 +287,7 @@ abstract public class
                     text.setTextColor(getResources().getColor(textColor));
                     */
 
-                    if (DEBUG) Log.i(TAG, "mViewBinder:setViewValue() item pos=" + pos
+                    if (DEBUG) Log.v(TAG, "mViewBinder:setViewValue() item pos=" + pos
                             + " checked=" + (selector == R.drawable.drawer_list_selector_checked_bg) + " type=" + type
                             + " text=" + text + " item=" + item);
 

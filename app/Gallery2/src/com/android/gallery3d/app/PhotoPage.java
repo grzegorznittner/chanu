@@ -875,8 +875,10 @@ public class PhotoPage extends ActivityState
         if (mMenu == null)
             return;
         MenuItem shareItem = mMenu.findItem(R.id.action_share);
-        if (shareItem == null)
+        if (shareItem == null) {
             mShareActionProvider = null;
+            return;
+        }
         mShareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
         shareItem.setOnMenuItemClickListener(shareActionItemListener);
         if (DEBUG) Log.i(TAG, "setupshareActionProvider() mShareActionProvider=" + mShareActionProvider);

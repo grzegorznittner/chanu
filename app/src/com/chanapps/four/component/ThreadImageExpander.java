@@ -1,5 +1,10 @@
 package com.chanapps.four.component;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -10,6 +15,7 @@ import android.view.ViewGroup;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
@@ -27,6 +33,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.io.File;
 import java.net.URI;
+import java.util.List;
 
 /**
 * Created with IntelliJ IDEA.
@@ -46,7 +53,10 @@ public class ThreadImageExpander {
     //private static final double MAX_EXPANDED_SCALE = 1.5;
 
     private ThreadViewHolder viewHolder;
+    private String thumbUrl = null;
     private String postImageUrl = null;
+    private int thumbW = 0;
+    private int thumbH = 0;
     private int postW = 0;
     private int postH = 0;
     private String fullImagePath = null;
@@ -60,6 +70,7 @@ public class ThreadImageExpander {
     private String boardCode;
     private View.OnClickListener expandedImageListener;
     private boolean showContextMenu = true;
+    private boolean isVideo = false;
 
     public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor, boolean withProgress, int stub,
                                View.OnClickListener expandedImageListener, boolean showContextMenu) {
@@ -77,11 +88,13 @@ public class ThreadImageExpander {
         fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
         Uri uri = ChanFileStorage.getHiddenLocalImageUri(viewHolder.list_item.getContext(), boardCode, postNo, postExt);
 
+        thumbW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
+        thumbH = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
         postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
         postH = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_H));
         postImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
+        thumbUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (postImageUrl != null && postImageUrl.endsWith(".gif")) {
-        	String thumbUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         	File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
         	fullImagePath = thumbFile != null ? thumbFile.getAbsolutePath() : null;
         } else {
@@ -118,11 +131,14 @@ public class ThreadImageExpander {
     }
 
     public void displayImage() {
-        targetSize = ThreadViewer.sizeHeaderImage(postW, postH, showContextMenu);
-        if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
+        viewHolder.isWebView = true;
+        isVideo = ChanImage.isVideo(postExt, fsize, postW, postH);
+        int width = isVideo ? thumbW : postW;
+        int height = isVideo ? thumbH : postH;
+        targetSize = ThreadViewer.sizeHeaderImage(width, height, showContextMenu);
+        if (DEBUG) Log.i(TAG, "inputSize=" + width + "x" + height + " targetSize=" + targetSize.x + "x" + targetSize.y);
         setImageDimensions(viewHolder, targetSize);
-
-        if (DEBUG) Log.i(TAG, "Set expanded image to visible");
+        displayWebView(width, height);
         /*
         viewHolder.isWebView = isAnimatedGif() || isBigImage(targetSize);
         if (viewHolder.isWebView)
@@ -130,8 +146,6 @@ public class ThreadImageExpander {
         else
             displayImageView();
         */
-        viewHolder.isWebView = true;
-        displayWebView();
     }
     /*
     protected boolean isAnimatedGif() {
@@ -144,7 +158,7 @@ public class ThreadImageExpander {
                 || targetSizeBytes > BIG_IMAGE_SIZE_BYTES;
     }
     */
-    protected void displayWebView() {
+    protected void displayWebView(int width, int height) {
         if (viewHolder.list_item_image_expanded_wrapper != null)
             viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
         /*
@@ -165,22 +179,27 @@ public class ThreadImageExpander {
         v.setVisibility(View.INVISIBLE);
         //v.setWebViewClient(webViewClient);
 
-        float maxWidth = postW > 1 ? postW : 250;
-        float maxHeight = postH > 1 ? postH: 250;
+        if (DEBUG) Log.i(TAG, "Loading anim gif webview url=" + postImageUrl);
+        int scale = calcScale(width, height);
+        v.setInitialScale(scale);
+        displayClickEffect();
+        if (DEBUG) Log.i(TAG, "displayWebView() imageSize=" + width + "x" + height
+                + " targetSize=" + targetSize.x + "x" + targetSize.y
+                + " scale=" + scale);
+
+        if (isVideo) {
+            v.loadUrl(thumbUrl);
+        }
+        else {
+            v.loadUrl(postImageUrl);
+        }
+    }
+    private int calcScale(int width, int height) {
+        float maxWidth = width > 1 ? width : 250;
+        float maxHeight = height > 1 ? height : 250;
         float itemWidth = targetSize.x;
         float itemHeight = targetSize.y;
-        int scale = (int)Math.min(Math.ceil(itemWidth * 100 / maxWidth), Math.ceil(itemWidth * 100 / maxWidth));
-        v.setInitialScale(scale);
-        if (DEBUG) Log.i(TAG, "postSize=" + postW + "x" + postH + " targetSize=" + itemWidth + "x" + itemHeight + " scale=" + scale);
-        /*
-        v.getRootView().setBackgroundColor(0x000000);
-        v.setBackgroundColor(0x000000);
-        v.getSettings().setJavaScriptEnabled(false);
-        v.getSettings().setBuiltInZoomControls(false);
-        */
-        if (DEBUG) Log.i(TAG, "Loading anim gif webview url=" + postImageUrl);
-        displayClickEffect();
-        v.loadUrl(postImageUrl);
+        return (int)Math.min(Math.ceil(itemWidth * 100 / maxWidth), Math.ceil(itemWidth * 100 / maxWidth));
     }
 
     /*
@@ -266,8 +285,58 @@ public class ThreadImageExpander {
         if (viewHolder.list_item_image_expanded_click_effect != null) {
             viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
             //viewHolder.list_item_image_expanded_click_effect.setOnClickListener(collapseImageListener);
-            viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
+            if (isVideo) {
+                setVideoListener();
+            }
+            else {
+                setGalleryListener();
+            }
         }
+    }
+
+    private boolean isCallable(Context context, Intent intent) {
+        List<ResolveInfo> list = context.getPackageManager() == null
+                ? null
+                : context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list != null && list.size() > 0;
+    }
+
+    private void setVideoListener() {
+        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(videoListener);
+    }
+
+    private View.OnClickListener videoListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Context c = viewHolder.list_item != null ? viewHolder.list_item.getContext() : null;
+            if (c == null) {
+                return;
+            }
+            Activity a = c instanceof Activity ? (Activity)c : null;
+            if (a == null) {
+                return;
+            }
+            String mimeType;
+            if (postExt == null || postExt.isEmpty()) {
+                mimeType = "video/*";
+            }
+            else {
+                mimeType = "video/" + postExt.replaceFirst("\\.", "");
+            }
+            Uri uri = Uri.parse(postImageUrl);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.setDataAndType(uri, mimeType);
+            if (!isCallable(c, intent)) {
+                Log.e(TAG, "no handler for mimeType=" + mimeType + " url=" + uri);
+                Toast.makeText(c, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            a.startActivity(intent);
+        }
+    };
+
+    private void setGalleryListener() {
+        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
     }
 
     /*

@@ -43,6 +43,7 @@ abstract public class
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
 
     protected boolean mShowNSFW = false;
+    protected boolean mIgnoreMode = false;
 
     protected ActionBar actionBar;
     protected String[] mSpinnerArray;
@@ -118,8 +119,10 @@ abstract public class
         mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        bindSpinnerListener();
+        mIgnoreMode = true;
         selectActionBarNavigationItem();
+        bindSpinnerListener();
+        mIgnoreMode = false;
         //if (DEBUG) Log.i(TAG, "setSpinnerAdapter() before bind listener");
         //if (DEBUG) Log.i(TAG, "setSpinnerAdapter() after bind listener");
         if (DEBUG) Log.i(TAG, "setSpinnerAdapter() end");
@@ -141,10 +144,6 @@ abstract public class
 
     protected void bindSpinnerListener() {
         actionBar.setListNavigationCallbacks(mSpinnerAdapter, spinnerNavigationListener);
-    }
-
-    protected void unbindSpinnerListener() {
-        actionBar.setListNavigationCallbacks(mSpinnerAdapter, null);
     }
 
     @Override
@@ -210,6 +209,9 @@ abstract public class
     protected ActionBar.OnNavigationListener spinnerNavigationListener = new ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+            if (mIgnoreMode) {
+                return true;
+            }
             String item = mSpinnerAdapter.getItem(itemPosition);
             if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] this=" + this + " calling handleSelectItem");
             boolean handle = handleSelectItem(item);
@@ -291,7 +293,12 @@ abstract public class
             return false;
         }
         if (DEBUG) Log.i(TAG, "matched thread /" + boardCodeForJump + "/" + threadNoForJump + ", starting");
+
+        /* move spinner to right board */
+        //mIgnoreMode = true;
+        if (DEBUG) Log.i(TAG, "starting /" + boardCodeForJump + "/" + threadNoForJump + " from this=" + this);
         ThreadActivity.startActivity(this, boardCodeForJump, threadNoForJump, "");
+        //mIgnoreMode = false;
         return true;
     }
 
@@ -307,7 +314,7 @@ abstract public class
             if (DEBUG) Log.i(TAG, "null board match, bailing");
             return false;
         }
-        if (boardCodeForJump.equals(boardCode)) { // && threadNo <= 0) {
+        if (boardCodeForJump.equals(boardCode) && !(this instanceof ThreadActivity)) {// && threadNo <= 0) { // && threadNo <= 0) {
             if (DEBUG) Log.i(TAG, "matched same board code, no jump done");
             return false;
         }

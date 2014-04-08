@@ -2,12 +2,14 @@ package com.chanapps.four.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanPost;
@@ -88,23 +90,44 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
         ThreadViewHolder viewHolder = new ThreadViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);
-        WebView wv = viewHolder.list_item_image_expanded_webview;
-        if (wv != null) {
-            wv.setWebViewClient(new WebViewClient() {
+        initWebView(viewHolder);
+        return v;
+    }
+
+    protected void initWebView(ThreadViewHolder viewHolder) {
+        WebView v = viewHolder.list_item_image_expanded_webview;
+        if (v != null) {
+            final ProgressBar p = viewHolder.list_item_expanded_progress_bar;
+            v.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    if (p != null) {
+                        p.setVisibility(View.VISIBLE);
+                    }
+                }
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     if (view != null)
                         view.setVisibility(View.VISIBLE);
+                    if (p != null) {
+                        p.setVisibility(View.GONE);
+                    }
+                }
+                @Override
+                public void onReceivedError(WebView view, int errorCode,
+                                            String description, String failingUrl) {
+                    if (p != null) {
+                        p.setVisibility(View.GONE);
+                    }
                 }
             });
-            wv.setBackgroundColor(0x000000);
-            wv.getRootView().setBackgroundColor(0x000000);
-            wv.getSettings().setJavaScriptEnabled(false);
-            wv.getSettings().setBuiltInZoomControls(false);
+            v.setBackgroundColor(0x000000);
+            v.getRootView().setBackgroundColor(0x000000);
+            v.getSettings().setJavaScriptEnabled(false);
+            v.getSettings().setBuiltInZoomControls(false);
         }
-        return v;
     }
-
+    
     @Override
     public int getViewTypeCount() {
         return TYPE_MAX_COUNT;

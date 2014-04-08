@@ -46,20 +46,7 @@ public class ThreadSingleItemCursorAdapter extends ThreadCursorAdapter {
                     : R.color.PaletteCardBg;
             inner.setBackgroundResource(bg);
         }
-        WebView wv = viewHolder.list_item_image_expanded_webview;
-        if (wv != null) {
-            wv.setWebViewClient(new WebViewClient() {
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    if (view != null)
-                        view.setVisibility(View.VISIBLE);
-                }
-            });
-            wv.setBackgroundColor(0x000000);
-            wv.getRootView().setBackgroundColor(0x000000);
-            wv.getSettings().setJavaScriptEnabled(false);
-            wv.getSettings().setBuiltInZoomControls(false);
-        }
+        initWebView(viewHolder);
         return v;
     }
 

@@ -114,7 +114,7 @@
             <FrameLayout style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_wrapper" android:visibility="gone">
                 <WebView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded_webview"/>
             </FrameLayout>
-            <!-- <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/> -->
+            <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
             <View style="@style/ThreadListHeaderImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
         </FrameLayout>
 

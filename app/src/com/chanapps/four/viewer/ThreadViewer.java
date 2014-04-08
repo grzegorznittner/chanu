@@ -27,7 +27,9 @@ import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FontSize;
+import com.chanapps.four.gallery.ChanImage;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
@@ -56,7 +58,7 @@ import java.util.regex.Pattern;
 public class ThreadViewer {
 
     //public static final double MAX_HEADER_SCALE = 1.5;
-    public static final double MAX_HEADER_SCALE = 1.2;
+    public static final double MAX_HEADER_SCALE = 2.0;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
@@ -749,18 +751,28 @@ public class ThreadViewer {
             return false;
         else if (context.getString(R.string.pref_autoload_images_always_value).equals(autoloadType))
             return true;
-        else if (context.getString(R.string.pref_autoload_images_auto_value).equals(autoloadType))
-            return shouldAutoloadBySizeAndNetwork(cursor);
+        //else if (context.getString(R.string.pref_autoload_images_auto_value).equals(autoloadType))
+        //    return shouldAutoloadBySizeAndNetwork(cursor);
         else
-            return shouldAutoloadBySizeAndNetwork(cursor);
+            return shouldAutoloadBySizeTypeAndNetwork(cursor);
     }
 
-    static private boolean shouldAutoloadBySizeAndNetwork(final Cursor cursor) {
+    static private boolean shouldAutoloadBySizeTypeAndNetwork(final Cursor cursor) {
         //int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
         //int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
         //if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
         //return (fsize <= maxAutoloadFSize);
-        return NetworkProfileManager.instance().getCurrentProfile().getConnectionType() == NetworkProfile.Type.WIFI;
+        boolean onWifi = NetworkProfileManager.instance().getCurrentProfile().getConnectionType() == NetworkProfile.Type.WIFI;
+        boolean isVideo = isVideo(cursor);
+        return onWifi || isVideo;
+    }
+
+    static private boolean isVideo(final Cursor cursor) {
+        String postExt = cursor.getString(cursor.getColumnIndex(ChanThread.POST_EXT));
+        int fsize = cursor.getInt(cursor.getColumnIndex(ChanThread.POST_FSIZE));
+        int postW = cursor.getInt(cursor.getColumnIndex(ChanThread.POST_W));
+        int postH = cursor.getInt(cursor.getColumnIndex(ChanThread.POST_H));
+        return ChanImage.isVideo(postExt, fsize, postW, postH);
     }
 
     static private boolean displayCachedExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
@@ -1148,9 +1160,10 @@ public class ThreadViewer {
     }
 
     private static boolean toggleExpandedWebViewHeader(ThreadViewHolder viewHolder) {
+        toggleExpandedWebViewItem(viewHolder);
+        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+        boolean wasHidden = true;
         if (viewHolder.list_item_image_expanded_webview.getVisibility() == View.VISIBLE) {
-            toggleExpandedWebViewItem(viewHolder);
-            viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
             ViewGroup.LayoutParams params = viewHolder.list_item_image_header.getLayoutParams();
             if (params != null) {
                 Point imageSize = new Point(params.width, params.height);
@@ -1158,15 +1171,10 @@ public class ThreadViewer {
                 ThreadImageExpander.setImageDimensions(viewHolder, imageSize);
                 if (DEBUG) Log.i(TAG, "sizedHeader " + params.width + "x" + params.height);
             }
-            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
-            return false;
+            wasHidden = false;
         }
-        else {
-            toggleExpandedWebViewItem(viewHolder);
-            viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
-            viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
-        }
-        return true;
+        viewHolder.list_item_image_header.setVisibility(View.VISIBLE);
+        return wasHidden;
     }
 
     private static boolean toggleExpandedWebViewItem(ThreadViewHolder viewHolder) {

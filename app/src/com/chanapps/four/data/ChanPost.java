@@ -1072,7 +1072,13 @@ public class ChanPost implements Serializable {
     }
 
     public static MatrixCursor buildMatrixCursor(int capacity) {
-        return new MatrixCursor(POST_COLUMNS, capacity);
+        try {
+            return new MatrixCursor(POST_COLUMNS, capacity);
+        }
+        catch (OutOfMemoryError e) {
+            Log.e(TAG, "Couldn't allocate cursor size=" + capacity, e);
+        }
+        return new MatrixCursor(POST_COLUMNS);
     }
 
     public Object[] makeRow(Context context, String query, int i, byte[] backlinksBlob, byte[] repliesBlob, byte[] sameIdsBlob) {

@@ -35,7 +35,7 @@ public class ThreadViewHolder {
     public ViewGroup list_item_header_bar_chat_wrapper;
     public ViewGroup list_item_header_bar_overflow_wrapper;
     public ViewGroup list_item_subject_icons;
-    //public ProgressBar list_item_expanded_progress_bar;
+    public ProgressBar list_item_expanded_progress_bar;
     public ViewGroup list_item_header_wrapper;
     public ViewGroup list_item_image_expanded_wrapper;
     public ViewGroup list_item_image_wrapper;
@@ -79,7 +79,7 @@ public class ThreadViewHolder {
         list_item_header_bar_chat_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_bar_chat_wrapper);
         list_item_header_bar_overflow_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_bar_overflow_wrapper);
         list_item_subject_icons = (ViewGroup)item.findViewById(R.id.list_item_subject_icons);
-        //list_item_expanded_progress_bar = (ProgressBar)item.findViewById(R.id.list_item_expanded_progress_bar);
+        list_item_expanded_progress_bar = (ProgressBar)item.findViewById(R.id.list_item_expanded_progress_bar);
         list_item_header_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_wrapper);
         list_item_image_expanded_wrapper = (ViewGroup)item.findViewById(R.id.list_item_image_expanded_wrapper);
         list_item_image_wrapper = (ViewGroup)item.findViewById(R.id.list_item_image_wrapper);

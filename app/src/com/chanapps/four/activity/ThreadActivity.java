@@ -91,7 +91,7 @@ public class ThreadActivity
         startActivity(from, aid.boardCode, aid.threadNo, aid.postNo, aid.text);
     }
 
-    public static void startActivity(Context from, String boardCode, long threadNo, String query) {
+    public static void  startActivity(Context from, String boardCode, long threadNo, String query) {
         startActivity(from, boardCode, threadNo, 0, query);
     }
 

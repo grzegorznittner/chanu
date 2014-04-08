@@ -369,7 +369,7 @@ public class ChanFileStorage {
             }
         }
         ChanBoard board = prepareDefaultBoardData(context, boardCode);
-        if (!board.isVirtualBoard())
+        if (board != null && !board.isVirtualBoard())
             addMissingWatchedThreads(context, board);
         return board;
     }
