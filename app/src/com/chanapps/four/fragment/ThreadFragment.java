@@ -975,8 +975,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 + (u == null ? "" : u);
         if (itemText == null)
             itemText = "";
-        String postRef = postNo == resto ? " (OP)" : "";
-        String postPrefix = ">>" + postNo + postRef + "\n";
+        String postPrefix = ">>" + postNo + "\n";
         String text = postPrefix + ChanPost.quoteText(itemText, resto);
         if (DEBUG) Log.i(TAG, "Selected itemText=" + itemText + " resulting quoteText=" + text);
         return text;

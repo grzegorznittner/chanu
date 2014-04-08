@@ -76,6 +76,9 @@ public class ChanPost implements Serializable {
     public static final int FLAG_HAS_HEAD  = 0x10000;
     public static final int FLAG_IS_STICKY = 0x20000;
 
+    private static final String HIGHLIGHT_COLOR = "#aaa268";
+    private static final String LINK_COLOR = "#33b5e5";
+
     public static String planifyText(String text) {
         return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "");
     }
@@ -288,9 +291,7 @@ public class ChanPost implements Serializable {
                 l++;
             }
         }
-        String p = o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
-        String q = p.replaceAll(">>" + resto, ">>" + resto + " (OP)");
-        return q;
+        return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
     public String combinedSubCom() {
@@ -319,6 +320,13 @@ public class ChanPost implements Serializable {
                 .trim();
     }
 
+    private String highlightOP(String text) {
+        return text.replaceAll(">>" + resto,
+                ">>"
+                        + resto
+                        + "<font color=\"" + LINK_COLOR + "\"><u> (OP)</u></font>");
+    }
+
     public String[] textComponents(String query) {
         String subText = sanitizeText(sub, false);
         String comText = sanitizeText(com, false);
@@ -327,7 +335,8 @@ public class ChanPost implements Serializable {
 
         if (resto > 0) {
             if (DEBUG) Log.v(TAG, "default combinedSubCom=" + subject + " message=" + message);
-            return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
+            String msg = highlightOP(message);
+            return highlightComponents(cleanSubject(subject), cleanMessage(msg), query);
         }
 
         if (!subject.isEmpty() || message.isEmpty()) { // we have a combinedSubCom or can't extract from message
@@ -375,8 +384,6 @@ public class ChanPost implements Serializable {
     private String[] highlightComponents(String subject, String message, String query) {
         return new String[] { highlightComponent(subject, query), highlightComponent(message, query) };
     }
-
-    private static final String HIGHLIGHT_COLOR = "#aaa268";
 
     private String highlightComponent(String component, String query) {
         if (query.isEmpty())
@@ -431,6 +438,7 @@ public class ChanPost implements Serializable {
                 .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
                 .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "");  // exif info
         text = textViewFilter(text, collapseNewlines);
+
         long end = System.currentTimeMillis();
         if (DEBUG) Log.v(TAG, "Regexp: " + (end - start) + "ms");
 
