@@ -339,6 +339,7 @@ abstract public class
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item))
             return true;
+        closeDrawer();
         return super.onOptionsItemSelected(item);
     }
 
@@ -355,7 +356,7 @@ abstract public class
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (DEBUG) Log.i(TAG, "onItemClick parent=" + parent + " view=" + view + " pos=" + position + " id=" + id);
-            mDrawerLayout.closeDrawer(mDrawerList);
+            closeDrawer();
             HashMap<String, String> item = (HashMap<String, String>)parent.getItemAtPosition(position);
             String boardAsMenu = item.get(TEXT);
             if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu + " calling handleSelectItem");
@@ -363,6 +364,13 @@ abstract public class
             if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu + " complete");
         }
     };
+
+    @Override
+    protected void closeDrawer() {
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(mDrawerList);
+        }
+    }
 
     @Override
     protected void onResume() {

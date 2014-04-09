@@ -2,6 +2,7 @@ package com.chanapps.four.activity;
 
 import android.app.ActivityManager;
 
+import android.os.Build;
 import android.util.Pair;
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
@@ -280,10 +281,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	protected void onResume () {
 		super.onResume();
 		if (DEBUG) Log.i(TAG, "onResume");
-	}
-	
-	public void onWindowFocusChanged (boolean hasFocus) {
-		if (DEBUG) Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
 
     @Override
@@ -744,4 +741,21 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     public void switchBoard(String boardCode, String query) {}
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (Build.VERSION.SDK_INT >= 18) {
+            if (hasFocus) {
+                int uiOptions = getWindow().getDecorView().getSystemUiVisibility();
+                int newUiOptions = uiOptions;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+                //newUiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+                getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+            }
+        }
+    }
 }

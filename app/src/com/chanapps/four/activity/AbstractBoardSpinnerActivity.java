@@ -3,11 +3,14 @@ package com.chanapps.four.activity;
 import android.app.ActionBar;
 import android.content.*;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import com.chanapps.four.component.AdComponent;
@@ -210,6 +213,8 @@ abstract public class
 
     abstract public boolean isSelfDrawerMenu(String boardAsMenu);
 
+    abstract protected void closeDrawer();
+
     private ActionBar.OnNavigationListener spinnerNavigationListener = new ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -220,6 +225,9 @@ abstract public class
             String item = mSpinnerAdapter.getItem(itemPosition);
             if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] this=" + this + " calling handleSelectItem");
             boolean handle = handleSelectItem(item);
+            if (handle) {
+                closeDrawer();
+            }
             if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] returned handleSelectItem=" + handle);
             return handle;
         }
@@ -402,5 +410,23 @@ abstract public class
 
     @Override
     public void switchBoard(String boardCode, String query) {}
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (Build.VERSION.SDK_INT >= 18) {
+            if (hasFocus) {
+                int uiOptions = getWindow().getDecorView().getSystemUiVisibility();
+                int newUiOptions = uiOptions;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                newUiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+                //newUiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+                getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+            }
+        }
+    }
 
 }
