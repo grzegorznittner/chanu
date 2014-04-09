@@ -158,6 +158,9 @@ abstract public class
         super.onStart();
         (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         checkNSFW();
+        mIgnoreMode = true;
+        bindSpinnerListener();
+        selectActionBarNavigationItem();
     }
 
     protected void checkNSFW() {
@@ -182,6 +185,7 @@ abstract public class
     @Override
     protected void onStop() {
         super.onStop();
+        //unbindSpinnerListener();
     }
 
     @Override
@@ -363,16 +367,6 @@ abstract public class
                 finish();
             }
         }
-        mIgnoreMode = true;
-        bindSpinnerListener();
-        selectActionBarNavigationItem();
-        //mIgnoreMode = false;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unbindSpinnerListener();
     }
 
     @Override
@@ -404,13 +398,19 @@ abstract public class
             pos = 0;
             if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ not found defaulted pos=" + pos);
         }
-        actionBar.setSelectedNavigationItem(pos);
+        if (actionBar.getSelectedNavigationIndex() != pos) {
+            actionBar.setSelectedNavigationItem(pos);
+        }
+        else {
+            mIgnoreMode = false;
+        }
         if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ set pos=" + pos + " end");
     }
 
     @Override
     public void switchBoard(String boardCode, String query) {}
 
+    /*
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -428,5 +428,6 @@ abstract public class
             }
         }
     }
+    */
 
 }

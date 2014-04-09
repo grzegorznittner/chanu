@@ -872,6 +872,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (absListView != null && absListView instanceof EnhancedListView)
             ((EnhancedListView)absListView).discardUndo();
         AnalyticsComponent.onStop(this);
+        setProgress(false);
     }
 
     @Override
@@ -914,9 +915,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 if (DEBUG) Log.i(TAG, "onCreateLoader foreground refresh non-loadable boards, bypassing progress indicator");
                 setProgress(false);
             }
+            //else if (ChanBoard.boardNeedsRefresh(BoardActivity.this, boardCode, false)) {
+            //    setProgress(true);
+            //}
             else {
                 if (DEBUG) Log.i(TAG, "onCreateLoader foreground refresh, starting progress indicator");
                 setProgress(true);
+                //setProgress(false);
             }
             boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
             cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, "", abbrev, true, boardSortType);

@@ -241,7 +241,7 @@ public class ThreadActivity
                 Toast.makeText(getActivityContext(), R.string.thread_not_found, Toast.LENGTH_SHORT).show();
             }
         }
-        setProgress(false);
+        //setProgress(false);
     }
 
     protected void redirectToBoard() { // backup in case we are missing stuff
@@ -384,7 +384,7 @@ public class ThreadActivity
                             @Override
                             public void run() {
                                 Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
-                                setProgress(false);
+                                //setProgress(false);
                             }
                         });
                 }
@@ -395,7 +395,7 @@ public class ThreadActivity
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                setProgress(true);
+                                //setProgress(true);
                             }
                         });
                     FetchChanDataService.scheduleBoardFetch(ThreadActivity.this, boardCode, true, false);
@@ -641,8 +641,8 @@ public class ThreadActivity
                         if (refreshFragmentAtPosition(boardCode, threadNo, i, msg))
                             found = true;
                     }
-                    if (!found)
-                        setProgress(false);
+                    //if (!found)
+                    //    setProgress(false);
                 }
             });
     }

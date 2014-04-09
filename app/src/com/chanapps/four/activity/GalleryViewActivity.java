@@ -741,6 +741,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     public void switchBoard(String boardCode, String query) {}
 
+    /*
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -758,4 +759,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             }
         }
     }
+    */
+
 }
