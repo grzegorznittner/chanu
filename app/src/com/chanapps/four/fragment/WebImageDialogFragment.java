@@ -118,6 +118,7 @@ public class WebImageDialogFragment extends DialogFragment {
         fullImageUri = ChanFileStorage.getHiddenLocalImageUri(urlTextView.getContext(), boardCode, threadNo, postExt);
         fullImagePath = (new File(URI.create(fullImageUri.toString()))).getAbsolutePath();
         DisplayImageOptions options = (new DisplayImageOptions.Builder())
+                .cacheInMemory()
                 .cacheOnDisc()
                 .showStubImage(R.drawable.stub_image_background)
                 .resetViewBeforeLoading()

@@ -898,6 +898,7 @@ public class PostReplyActivity
             }
             if (DEBUG) Log.i(TAG, "Setting preview image to uri=" + imageUri);
             DisplayImageOptions options = (new DisplayImageOptions.Builder())
+                    .cacheInMemory()
                     .cacheOnDisc()
                     .showStubImage(R.drawable.stub_image_background)
                     .resetViewBeforeLoading()

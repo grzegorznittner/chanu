@@ -97,7 +97,7 @@ public class ThreadViewer {
         expandedDisplayImageOptions = createExpandedDisplayImageOptions(null);
         thumbDisplayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
-                //.cacheInMemory()
+                .cacheInMemory()
                 .imageScaleType(ImageScaleType.NONE)
                 //.resetViewBeforeLoading()
                 //.showStubImage(stub)
@@ -107,7 +107,7 @@ public class ThreadViewer {
     private static DisplayImageOptions createExpandedDisplayImageOptions(ImageSize imageSize) {
         return new DisplayImageOptions.Builder()
                 .cacheOnDisc()
-                //.cacheInMemory()
+                .cacheInMemory()
                 .imageSize(imageSize)
                 .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
                 .showStubImage(stub)
