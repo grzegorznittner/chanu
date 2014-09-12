@@ -139,4 +139,12 @@ public class SpinnerVisibilitySetter {
             mActivity.setProgressBarIndeterminateVisibility(mVisible);
         }
     }
+
+	public static void removeInstance(GalleryActivity activity) {
+		synchronized(sInstanceMap) {
+            if (sInstanceMap.get(activity) != null) {
+                sInstanceMap.remove(activity);
+            }
+        }
+	}
 }

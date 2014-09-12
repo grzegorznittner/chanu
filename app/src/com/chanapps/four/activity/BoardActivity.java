@@ -260,6 +260,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateHideLastRepliesReceived, new IntentFilter(UPDATE_HIDE_LAST_REPLIES_ACTION));
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateFastScrollReceived, new IntentFilter(UPDATE_FAST_SCROLL_ACTION));
     }
+    
+    protected void teardownReceivers() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateBoardReceived);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateAbbrevReceived);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateCatalogReceived);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateHideLastRepliesReceived);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateFastScrollReceived);
+    }
 
     protected void initGridViewOptions() {
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
@@ -874,7 +882,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (cursorLoader != null)
             getSupportLoaderManager().destroyLoader(LOADER_ID);
 		handler = null;
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateBoardReceived);
+        teardownReceivers();
 	}
 
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {

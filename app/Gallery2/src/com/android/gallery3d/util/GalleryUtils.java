@@ -19,6 +19,7 @@ package com.android.gallery3d.util;
 import android.os.Build;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.gallery3d.R;
+import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.app.PackagesMonitor;
 import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.MediaItem;
@@ -372,4 +373,8 @@ public class GalleryUtils {
         int h = item.getHeight();
         return (h > 0 && w / h >= 2);
     }
+
+	public static void removeActivity(GalleryActivity activity) {
+		SpinnerVisibilitySetter.removeInstance(activity);
+	}
 }

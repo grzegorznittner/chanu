@@ -364,6 +364,8 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
         if (mAlbumDataAdapter != null) {
             mAlbumDataAdapter.setLoadingListener(null);
         }
+        
+        GalleryUtils.removeActivity(mActivity);
     }
 
     private void initializeViews() {
