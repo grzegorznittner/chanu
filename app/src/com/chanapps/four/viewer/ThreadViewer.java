@@ -554,7 +554,7 @@ public class ThreadViewer {
         }
     }
 
-    static private String markupHtml(String in) {
+    static public String markupHtml(String in) {
         String out = in
                 .replaceFirst(QUOTE_RE_FIRST, QUOTE_RE_FIRST_REPLACE)
                 .replaceAll(QUOTE_RE_MID, QUOTE_RE_MID_REPLACE)
