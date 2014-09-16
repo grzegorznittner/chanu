@@ -9,6 +9,9 @@ Applications:
 test-app - test application.
 
 ### How to build application
+#### Branch
+1.  git checkout ui-experimental
+
 #### Terminal
 1.  Set ```ANDROID_HOME``` env variable to your android-sdk folder
 2.  Add ```$ANDROID_HOME/tools``` and ```$ANDROID_HOME/platform-tools``` to the ```PATH```
