@@ -539,8 +539,6 @@ public class ThreadViewer {
 
     static private final String QUOTE_RE = "((?<!<b|/|<br|u|>>|^>)>[^<>]+?(?=<br/?>)|(?<!<b|/|<br|u|>>|^>)>[^<>]+)";
     static private final String QUOTE_RE_REPLACE = "<font color=\"#7a9441\">$1</font>"; // #7a9441
-    static private final String QUOTE_RE_MID = "(<br/?>)(>[^<>]*)";
-    static private final String QUOTE_RE_MID_REPLACE = "$1<font color=\"#7a9441\">$2</font>"; // #7a9441
     static private final Pattern POST_PATTERN = Pattern
             .compile("(>>(\\d+))( \\(OP\\))?");
     // static private final Pattern REPLY_PATTERN =
