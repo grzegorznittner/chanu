@@ -240,9 +240,6 @@ Esse número foi gerado para você, mas você pode mudá-lo se quiser.</string>
   <string name="pref_use_friendly_ids">Usar Ids amigáveis</string>
   <string name="pref_use_friendly_ids_summ_on">Ids dos posts têm nomes legíveis</string>
   <string name="pref_use_friendly_ids_summ_off">Ids dos posts são deixados inalterados</string>
-  <string name="pref_use_google_analytics">Google Analytics</string>
-  <string name="pref_use_google_analytics_summ_on">Enviar dados de uso anônimos</string>
-  <string name="pref_use_google_analytics_summ_off">Não enviar dados de uso anônimos</string>
   <string name="pref_use_https">Segurança</string>
   <string name="pref_use_https_summ_on">Usar HTTPS para todas as conexões</string>
   <string name="pref_use_https_summ_off">Não usar HTTPS para todas as conexões</string>

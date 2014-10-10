@@ -240,9 +240,6 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="pref_use_friendly_ids">Benutze einfachere IDs</string>
   <string name="pref_use_friendly_ids_summ_on">Beitrags-IDs haben lesbare Namen</string>
   <string name="pref_use_friendly_ids_summ_off">Beitrags-IDs bleiben unverändert</string>
-  <string name="pref_use_google_analytics">Google Analytics</string>
-  <string name="pref_use_google_analytics_summ_on">Sende anonyme Nutzungsstatistiken</string>
-  <string name="pref_use_google_analytics_summ_off">Sende keine anonymen Nutzungsstatistiken</string>
   <string name="pref_use_https">Sicherheit</string>
   <string name="pref_use_https_summ_on">Verwenden HTTPS für alle Verbindungen</string>
   <string name="pref_use_https_summ_off">Nicht verwenden HTTPS für alle Verbindungen</string>

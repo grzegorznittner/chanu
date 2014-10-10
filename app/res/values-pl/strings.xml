@@ -242,9 +242,6 @@ Tablice uznawane jako NSFW (ryzykowne w pracy) są domyślnie ukryte. Te tablice
   <string name="pref_use_friendly_ids">Użyj przyjaznych ID</string>
   <string name="pref_use_friendly_ids_summ_on">Identyfikatory wpisów mają czytelne nazwy</string>
   <string name="pref_use_friendly_ids_summ_off">Identyfikatory wpisów pozostają bez zmian</string>
-  <string name="pref_use_google_analytics">Google Analytics</string>
-  <string name="pref_use_google_analytics_summ_on">Wyślij anonimowe dane o użyciu</string>
-  <string name="pref_use_google_analytics_summ_off">Nie wysyłaj anonimowych danych o użyciu</string>
   <string name="pref_use_https">Zabezpieczenia</string>
   <string name="pref_use_https_summ_on">Użyj HTTPS dla wszystkich połączeń</string>
   <string name="pref_use_https_summ_off">Nie używaj HTTPS dla wszystkich połączeń</string>

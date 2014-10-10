@@ -290,9 +290,6 @@
   <string name="pref_use_friendly_ids">フレンドリーIDを使用</string>
   <string name="pref_use_friendly_ids_summ_on">ポストIDに読める名前があります</string>
   <string name="pref_use_friendly_ids_summ_off">ポストIDを変更しない</string>
-  <string name="pref_use_google_analytics">Google アナリティクス</string>
-  <string name="pref_use_google_analytics_summ_on">匿名で使用データを送信する</string>
-  <string name="pref_use_google_analytics_summ_off">匿名で使用データを送信しない</string>
   <string name="pref_use_https">セキュリティ</string>
   <string name="pref_use_https_summ_on">全ての接続でHTTPSを使用する</string>
   <string name="pref_use_https_summ_off">全ての接続でHTTPSを使用しない</string>

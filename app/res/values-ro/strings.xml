@@ -275,9 +275,6 @@
     <string name="pref_use_friendly_ids">Use Friendly Ids</string>
     <string name="pref_use_friendly_ids_summ_on">Post Ids have readable names</string>
     <string name="pref_use_friendly_ids_summ_off">Post Ids are left unchanged</string>
-    <string name="pref_use_google_analytics">Google Analytics</string>
-    <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
-    <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
     <string name="pref_use_https">Security</string>
     <string name="pref_use_https_summ_on">Use HTTPS for all connections</string>
     <string name="pref_use_https_summ_off">Don\'t use HTTPS for all connections</string>

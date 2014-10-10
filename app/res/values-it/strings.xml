@@ -244,9 +244,6 @@ o è illegale visualizzare il contenuto limitato nella tua giurisdizione.
   <string name="pref_use_friendly_ids">Usa ID Amichevoli</string>
   <string name="pref_use_friendly_ids_summ_on">Gi ID dei messaggi hanno nomi leggibili</string>
   <string name="pref_use_friendly_ids_summ_off">Gli ID dei messaggi sono rimasti invariati</string>
-  <string name="pref_use_google_analytics">Google Analytics</string>
-  <string name="pref_use_google_analytics_summ_on">Invia dati di utilizzo anonimi</string>
-  <string name="pref_use_google_analytics_summ_off">Non inviare dati di utilizzo anonimi</string>
   <string name="pref_use_https">Sicurezza</string>
   <string name="pref_use_https_summ_on">Usa HTTPS per tutte le connessioni</string>
   <string name="pref_use_https_summ_off">Non usare HTTPS per tutte le connessioni</string>

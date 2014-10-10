@@ -241,9 +241,6 @@
   <string name="pref_use_friendly_ids">सुपाठ्य आइडी </string>
   <string name="pref_use_friendly_ids_summ_on">पोस्ट पढ़ने योग्य नाम है</string>
   <string name="pref_use_friendly_ids_summ_off">पोस्ट आईड को नहीं बदला गया </string>
-  <string name="pref_use_google_analytics">गूगल विश्लेषिकी</string>
-  <string name="pref_use_google_analytics_summ_on">अनाम उपयोग डेटा भेजें</string>
-  <string name="pref_use_google_analytics_summ_off">अनाम उपयोग डेटा न भेजें</string>
   <string name="pref_use_https">सुरक्षा</string>
   <string name="pref_use_https_summ_on">सभी कनेक्शन्स के लिए एच-टी-टी-पी-एस  का उपयोग करें</string>
   <string name="pref_use_https_summ_off">सभी कनेक्शन्स के लिए एच-टी-टी-पी-एस का उपयोग न करें</string>
