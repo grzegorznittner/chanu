@@ -18,8 +18,6 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
 
-import java.util.List;
-
 /**
  * User: mpop
  * Date: 11/20/12

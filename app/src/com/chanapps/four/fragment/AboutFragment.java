@@ -1,14 +1,10 @@
 package com.chanapps.four.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.util.Log;
-import android.widget.Toast;
-import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;

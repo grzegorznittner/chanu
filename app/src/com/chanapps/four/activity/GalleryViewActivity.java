@@ -2,11 +2,9 @@ package com.chanapps.four.activity;
 
 import android.app.ActivityManager;
 
-import android.os.Build;
 import android.util.Pair;
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.SendFeedback;
 import com.chanapps.four.data.*;
 
 import android.content.Context;
@@ -36,8 +34,6 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
 
-import java.util.Arrays;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {

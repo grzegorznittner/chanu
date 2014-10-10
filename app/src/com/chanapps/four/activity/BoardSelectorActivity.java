@@ -1,13 +1,9 @@
 package com.chanapps.four.activity;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.widget.GridView;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;

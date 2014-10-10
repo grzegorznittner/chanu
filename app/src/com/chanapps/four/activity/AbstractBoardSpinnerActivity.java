@@ -2,15 +2,10 @@ package com.chanapps.four.activity;
 
 import android.app.ActionBar;
 import android.content.*;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import com.chanapps.four.component.SendFeedback;

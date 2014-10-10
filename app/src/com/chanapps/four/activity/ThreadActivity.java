@@ -7,7 +7,6 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.*;
 import android.database.Cursor;

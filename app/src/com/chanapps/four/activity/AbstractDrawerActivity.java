@@ -1,9 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,8 +18,6 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanThread;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("unchecked")
 abstract public class
