@@ -16,7 +16,6 @@
 
 package com.android.gallery3d.ui;
 
-import android.nfc.Tag;
 import com.android.gallery3d.common.Utils;
 
 import android.content.Context;

@@ -29,7 +29,6 @@ import java.nio.FloatBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.microedition.khronos.opengles.GL11;
-import javax.security.auth.login.LoginException;
 
 // NinePatchTexture is a texture backed by a NinePatch resource.
 //

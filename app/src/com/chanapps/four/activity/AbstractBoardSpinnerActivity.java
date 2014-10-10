@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
-import com.chanapps.four.component.AdComponent;
 import com.chanapps.four.component.SendFeedback;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
@@ -156,7 +155,6 @@ abstract public class
     @Override
     protected void onStart() {
         super.onStart();
-        (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         checkNSFW();
         mIgnoreMode = true;
         bindSpinnerListener();
@@ -260,8 +258,6 @@ abstract public class
             return SendFeedback.email(this);
         if (getString(R.string.settings_menu).equals(boardAsMenu))
             return SettingsActivity.startActivity(this);
-        if (getString(R.string.purchase_menu).equals(boardAsMenu))
-            return PurchaseActivity.startActivity(this);
         if (getString(R.string.about_activity).equals(boardAsMenu))
             return AboutActivity.startActivity(this);
         return false;

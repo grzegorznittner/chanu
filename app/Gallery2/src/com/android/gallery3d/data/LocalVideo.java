@@ -16,7 +16,6 @@
 
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.util.UpdateHelper;
@@ -27,10 +26,7 @@ import com.android.gallery3d.util.ThreadPool.JobContext;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;

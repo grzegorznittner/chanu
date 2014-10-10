@@ -1,14 +1,8 @@
 package com.chanapps.four.component;
 
-import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
-import android.view.View;
-import android.widget.GridView;
-import com.chanapps.four.activity.R;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,9 +1,6 @@
 package com.chanapps.four.component;
 
-import android.app.Activity;
-import android.app.Service;
 import android.content.*;
-import android.hardware.*;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;

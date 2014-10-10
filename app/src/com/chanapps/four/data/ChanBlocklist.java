@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
-import android.widget.Toast;
 import com.chanapps.four.activity.SettingsActivity;
 import org.apache.commons.lang3.StringUtils;
 

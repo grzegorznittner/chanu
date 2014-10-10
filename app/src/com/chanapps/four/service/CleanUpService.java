@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.webkit.WebView;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.CacheSizePreference;
 import com.chanapps.four.data.*;

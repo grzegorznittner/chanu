@@ -20,7 +20,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import com.chanapps.four.gallery3d.R;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;

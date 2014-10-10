@@ -27,7 +27,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Base service class based on IntentService class

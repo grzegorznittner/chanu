@@ -23,7 +23,6 @@ import android.net.Uri;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 
 public class UriSource extends MediaSource {
     @SuppressWarnings("unused")

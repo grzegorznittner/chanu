@@ -32,9 +32,7 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Video;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 
 // LocalAlbumSet lists all image or video albums in the local storage.
 // The path should be "/local/image", "local/video" or "/local/all"

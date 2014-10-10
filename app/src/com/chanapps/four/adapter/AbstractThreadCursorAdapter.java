@@ -2,7 +2,6 @@ package com.chanapps.four.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import com.chanapps.four.data.ChanBlocklist;
 import com.chanapps.four.data.ChanThread;
 
 /**

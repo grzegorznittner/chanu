@@ -10,7 +10,6 @@ import android.util.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.AlphanumComparator;
-import com.chanapps.four.component.NotificationComponent;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;

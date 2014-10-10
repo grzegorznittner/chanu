@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.GridView;
-import com.chanapps.four.component.AdComponent;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;

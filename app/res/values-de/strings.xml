@@ -257,10 +257,6 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="pref_cache_category_summ">Größe des Speichers zur Speicherung von Threads und Bildern</string>
   <string name="pref_clear_cache">Cache leeren</string>
   <string name="pref_clear_cache_summ">Entferne alle zwischengespeicherten Bilder und Inhalte</string>
-  <string name="pref_purchase_prokey">Pro-Key erwerben</string>
-  <string name="pref_purchase_prokey_summ">Werde die Werbung los</string>
-  <string name="pref_installed_prokey">Pro-Key installiert</string>
-  <string name="pref_installed_prokey_summ">Für alle deine Geräte wurde die Anzeige von Werbung deaktiviert</string>
   <string name="pref_cache_size">Größe des Caches</string>
   <string name="pref_cache_size_summ">Größe des Caches anpassen</string>
   <string name="pref_clean_watchlist">Entfernen tote Threads</string>
@@ -331,7 +327,6 @@ Boards, die als NSFW (not safe for work, nicht sicher für die Arbeit) klassifiz
   <string name="widget_configure_config">Button für die Konfiguration anzeigen</string>
   <string name="widget_loading">Lade...</string>
   <string name="send_feedback_menu">Feedback geben</string>
-  <string name="purchase_menu">Kaufen</string>
   <string name="network_profile_health_bad">Die Internetverbindung ist langsam</string>
   <string name="mobile_profile_health_status">Konnte nicht laden, die Netzwerkverbindung ist %1$s</string>
   <string name="mobile_profile_fetch_dead_thread">Thread ist tot</string>

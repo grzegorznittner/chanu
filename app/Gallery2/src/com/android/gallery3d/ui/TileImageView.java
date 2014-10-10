@@ -25,7 +25,6 @@ import android.graphics.RectF;
 import android.graphics.Bitmap.Config;
 
 import com.android.gallery3d.app.GalleryContext;
-import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.DecodeUtils;
 import com.android.gallery3d.util.Future;

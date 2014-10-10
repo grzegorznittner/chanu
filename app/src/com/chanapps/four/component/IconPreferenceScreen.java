@@ -15,7 +15,6 @@ import android.preference.Preference;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.loader.ChanImageLoader;
 

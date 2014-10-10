@@ -3,7 +3,6 @@
  */
 package com.chanapps.four.service;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.util.Log;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
-import com.android.gallery3d.app.GalleryActivity;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.ChanFileStorage;

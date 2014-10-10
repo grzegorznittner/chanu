@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.chanapps.four.activity.R;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 

@@ -1,6 +1,5 @@
 package com.chanapps.four.service.profile;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 

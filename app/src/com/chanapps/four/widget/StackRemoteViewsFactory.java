@@ -3,18 +3,13 @@ package com.chanapps.four.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
-import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.loader.ChanImageLoader;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

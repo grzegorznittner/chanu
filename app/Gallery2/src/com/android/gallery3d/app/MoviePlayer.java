@@ -35,11 +35,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.MediaController;
 import android.widget.VideoView;
 
 import java.io.ByteArrayInputStream;

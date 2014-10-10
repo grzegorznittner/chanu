@@ -17,8 +17,6 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.AboutFragment;
 
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: johnarleyburns
@@ -31,8 +29,6 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     protected static final boolean DEBUG = false;
     public static final String TAG = AboutActivity.class.getSimpleName();
     public static final String PREF_PURCHASE_CATEGORY = "pref_about_developer_category";
-    public static final String PREF_PURCHASE_PROKEY = "pref_purchase_prokey";
-    public static final String PREF_INSTALLED_PROKEY = "pref_installed_prokey";
     public static final int PURCHASE_REQUEST_CODE = 1987;
 
     protected int themeId;
@@ -71,14 +67,12 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     protected void onStart() {
         super.onStart();
         handler = new Handler();
-        AnalyticsComponent.onStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         handler = null;
-        AnalyticsComponent.onStop(this);
     }
 
     @Override
@@ -157,7 +151,6 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
             Toast.makeText(this, R.string.purchase_error, Toast.LENGTH_SHORT).show();
             return;
         }
-        BillingComponent.getInstance(getApplicationContext()).processPurchaseResponse(data, new Handler());
     }
 
     @Override

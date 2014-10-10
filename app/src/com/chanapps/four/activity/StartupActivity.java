@@ -5,15 +5,11 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
-import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.NetworkProfileManager;
 
 public class StartupActivity extends Activity {

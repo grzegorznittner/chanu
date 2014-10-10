@@ -117,13 +117,11 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     @Override
     public void onStart() {
         super.onStart();
-        AnalyticsComponent.onStart(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        AnalyticsComponent.onStop(this);
     }
 
     @Override

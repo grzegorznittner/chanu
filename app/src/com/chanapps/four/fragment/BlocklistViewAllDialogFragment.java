@@ -1,6 +1,5 @@
 package com.chanapps.four.fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -9,23 +8,14 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.Selection;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Pair;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.chanapps.four.activity.BoardActivity;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.EnhancedListView;
-import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBlocklist;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.viewer.ThreadViewer;
 
 import java.util.*;

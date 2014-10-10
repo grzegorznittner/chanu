@@ -29,7 +29,6 @@ import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.FutureListener;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;

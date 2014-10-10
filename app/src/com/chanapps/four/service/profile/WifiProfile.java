@@ -4,12 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
-import com.chanapps.four.service.FetchChanDataService;
-import com.chanapps.four.service.NetworkProfileManager;
 
 
 public class WifiProfile extends MobileProfile {

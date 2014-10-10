@@ -10,7 +10,6 @@ package com.chanapps.four.component;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.Checkable;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;

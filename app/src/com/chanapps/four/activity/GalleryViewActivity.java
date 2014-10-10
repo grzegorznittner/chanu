@@ -6,8 +6,6 @@ import android.os.Build;
 import android.util.Pair;
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.AnalyticsComponent;
-import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.component.SendFeedback;
 import com.chanapps.four.data.*;
 
@@ -266,7 +264,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 		if (DEBUG) Log.i(TAG, "onStart");
         postHandler = new Handler();
         loadDataAsync();
-        AnalyticsComponent.onStart(this);
     }
 
     @Override
@@ -274,7 +271,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     	super.onStop();
     	if (DEBUG) Log.i(TAG, "onStop");
         postHandler = null;
-        AnalyticsComponent.onStop(this);
     }
 
     @Override

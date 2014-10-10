@@ -334,7 +334,6 @@ public class ThreadActivity
             createAbsListView();
         createPagerAsync();
         loadDrawerArray();
-        AnalyticsComponent.onStart(this);
     }
 
     protected void createPagerAsync() {
@@ -515,7 +514,6 @@ public class ThreadActivity
             getSupportLoaderManager().destroyLoader(LOADER_ID);
         }
         setProgress(false);
-        AnalyticsComponent.onStop(this);
     }
 
     @Override

@@ -18,7 +18,6 @@ package com.nostra13.universalimageloader.core;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +25,6 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
-import android.nfc.Tag;
 import org.apache.commons.io.IOUtils;
 
 import android.graphics.Bitmap;

@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.loader.ChanImageLoader;
 
 import java.util.Arrays;
@@ -167,13 +166,11 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
     @Override
     public void onStart() {
         super.onStart();
-        AnalyticsComponent.onStart(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        AnalyticsComponent.onStop(this);
     }
 
 }

@@ -8,12 +8,9 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.AlphanumComparator;
 import com.chanapps.four.data.*;
 

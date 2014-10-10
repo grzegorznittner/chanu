@@ -8,7 +8,6 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.fragment.PickShareBoardDialogFragment;
 
@@ -107,13 +106,11 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
     @Override
     public void onStart() {
         super.onStart();
-        AnalyticsComponent.onStart(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        AnalyticsComponent.onStop(this);
     }
 
 }

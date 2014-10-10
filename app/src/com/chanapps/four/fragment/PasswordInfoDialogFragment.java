@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.task.DeletePostTask;
 
 /**
 * Created with IntelliJ IDEA.

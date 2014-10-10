@@ -1,31 +1,25 @@
 package com.chanapps.four.fragment;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.util.Log;
-import android.util.Pair;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
-import com.chanapps.four.activity.*;
-import com.chanapps.four.component.BillingComponent;
-import com.chanapps.four.data.ChanBlocklist;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanPost;
 
-import java.io.File;
-import java.util.List;
+import com.chanapps.four.activity.AboutActivity;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.activity.StartupActivity;
+import com.chanapps.four.data.ChanFileStorage;
 
 
 /**

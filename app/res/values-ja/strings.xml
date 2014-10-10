@@ -307,11 +307,6 @@
   <string name="pref_cache_category_summ">スレッドと画像の保管用スペース</string>
   <string name="pref_clear_cache">キャッシュをクリア</string>
   <string name="pref_clear_cache_summ">全てのキャッシュ済データと画像を削除</string>
-  <string name="pref_purchase_prokey">プロキーを購入</string>
-  <string name="pref_purchase_prokey_summ">1度の購入で全デバイスを広告フリー化</string>
-  <string name="pref_installed_prokey">プロキーをインストール済み</string>
-  <string name="pref_installed_prokey_summ">全デバイスで広告なし
-</string>
   <string name="pref_cache_size">キャッシュサイズ</string>
   <string name="pref_cache_size_summ">キャッシュサイズ調整</string>
   <string name="pref_clean_watchlist">無効なスレッドを削除</string>
@@ -402,7 +397,6 @@
   <string name="widget_configure_config">設定ボタンを表示</string>
   <string name="widget_loading">読み込み中…</string>
   <string name="send_feedback_menu">フィードバックを送信</string>
-  <string name="purchase_menu">購入</string>
   <string name="network_profile_health_bad">インターネット接続が低速です</string>
   <string name="mobile_profile_health_status">ネットワーク%1$s 読み込めませんでした</string>
   <string name="mobile_profile_fetch_dead_thread">スレッドが無効です</string>
@@ -597,7 +591,6 @@
   <string name="refresh_favorites">バックグラウンドでボードを更新中…</string>
   <string name="refresh_watchlist">バックグラウンドでスレッドを更新中…</string>
   <string name="pref_use_abbrev_boards">短縮されたボード</string>
-  <string name="pref_autoload_images_nothumbs">サムネイルなし</string>
   <string name="pref_background_data">バックグラウンドのデータ</string>
   <string name="pref_background_data_summ_on">バックグラウンドのデータはモバイルデータプランで有効になります
 </string>

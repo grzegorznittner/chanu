@@ -52,11 +52,6 @@
             >
 
         <Preference
-                android:key="pref_purchase_prokey"
-                android:title="@string/pref_purchase_prokey"
-                android:summary="@string/pref_purchase_prokey_summ" />
-
-        <Preference
                 android:key="pref_about_store_chanapps"
                 android:title="@string/pref_about_store_chanapps"
                 android:summary="@string/pref_about_store_chanapps_sum"

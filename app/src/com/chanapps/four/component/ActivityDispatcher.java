@@ -14,9 +14,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 import com.chanapps.four.activity.*;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-
 import java.util.List;
 
 /**

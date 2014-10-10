@@ -22,22 +22,17 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.Path;
-import com.android.gallery3d.picasasource.PicasaSource;
-import com.android.gallery3d.settings.GallerySettings;
 import com.android.gallery3d.ui.ActionModeHandler;
 import com.android.gallery3d.ui.ActionModeHandler.ActionModeListener;
 import com.android.gallery3d.ui.AlbumSetView;
@@ -55,7 +50,6 @@ import com.android.gallery3d.ui.SelectionManager;
 import com.android.gallery3d.ui.SlotView;
 import com.android.gallery3d.ui.StaticBackground;
 import com.android.gallery3d.util.Future;
-import com.android.gallery3d.util.GalleryUtils;
 
 public class AlbumSetPage extends ActivityState implements
         SelectionManager.SelectionListener, GalleryActionBar.ClusterRunner,

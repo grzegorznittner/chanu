@@ -17,8 +17,6 @@ import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 import org.apache.commons.io.IOUtils;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;

@@ -10,10 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ResourceCursorAdapter;
-import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.*;
-import com.chanapps.four.fragment.ThreadFragment;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>

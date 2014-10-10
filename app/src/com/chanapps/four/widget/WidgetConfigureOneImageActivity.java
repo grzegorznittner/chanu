@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.loader.ChanImageLoader;
 
 /**
@@ -90,13 +89,11 @@ public class WidgetConfigureOneImageActivity extends AbstractWidgetConfigureActi
     @Override
     public void onStart() {
         super.onStart();
-        AnalyticsComponent.onStart(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        AnalyticsComponent.onStop(this);
     }
 
 }

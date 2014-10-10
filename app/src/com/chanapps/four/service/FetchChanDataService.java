@@ -10,16 +10,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-
-import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import android.util.Pair;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;

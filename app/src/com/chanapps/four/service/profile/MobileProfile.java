@@ -1,7 +1,6 @@
 package com.chanapps.four.service.profile;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,12 +8,10 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import android.widget.Toast;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
-import com.chanapps.four.service.CleanUpService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 import com.chanapps.four.service.NetworkProfileManager;

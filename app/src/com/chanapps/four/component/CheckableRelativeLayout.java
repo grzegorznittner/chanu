@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.Checkable;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.chanapps.four.activity.R;
 

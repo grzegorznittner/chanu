@@ -21,7 +21,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -36,15 +35,11 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.chanapps.four.activity.R;
-import com.chanapps.four.loader.ChanImageLoader;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.viewer.ThreadViewHolder;
