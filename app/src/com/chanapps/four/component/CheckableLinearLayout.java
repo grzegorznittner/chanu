@@ -10,12 +10,9 @@ package com.chanapps.four.component;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.StatFs;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.Checkable;
 import android.widget.LinearLayout;
-import com.chanapps.four.activity.R;
 
 public class CheckableLinearLayout extends LinearLayout implements Checkable {
 

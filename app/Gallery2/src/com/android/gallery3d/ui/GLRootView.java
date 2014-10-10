@@ -18,7 +18,6 @@ package com.android.gallery3d.ui;
 
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.widget.TextView;
 import com.android.gallery3d.anim.CanvasAnimation;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.util.GalleryUtils;

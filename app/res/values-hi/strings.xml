@@ -241,9 +241,6 @@
   <string name="pref_use_friendly_ids">सुपाठ्य आइडी </string>
   <string name="pref_use_friendly_ids_summ_on">पोस्ट पढ़ने योग्य नाम है</string>
   <string name="pref_use_friendly_ids_summ_off">पोस्ट आईड को नहीं बदला गया </string>
-  <string name="pref_use_google_analytics">गूगल विश्लेषिकी</string>
-  <string name="pref_use_google_analytics_summ_on">अनाम उपयोग डेटा भेजें</string>
-  <string name="pref_use_google_analytics_summ_off">अनाम उपयोग डेटा न भेजें</string>
   <string name="pref_use_https">सुरक्षा</string>
   <string name="pref_use_https_summ_on">सभी कनेक्शन्स के लिए एच-टी-टी-पी-एस  का उपयोग करें</string>
   <string name="pref_use_https_summ_off">सभी कनेक्शन्स के लिए एच-टी-टी-पी-एस का उपयोग न करें</string>
@@ -258,10 +255,6 @@
   <string name="pref_cache_category_summ">थ्रेड्स और चित्रों को रखने की जगह </string>
   <string name="pref_clear_cache">कैश साफ़ करें</string>
   <string name="pref_clear_cache_summ">सभी कैश्ड डेटा और छवियों को निकालना</string>
-  <string name="pref_purchase_prokey">खरीदो प्रोकी </string>
-  <string name="pref_purchase_prokey_summ">जाओ विज्ञापन-मुक्त, खरीद केवल एक बार, सभी उपकरणों सक्षम बनाता है</string>
-  <string name="pref_installed_prokey">प्रोकी  स्थापित</string>
-  <string name="pref_installed_prokey_summ">कोई विज्ञापन नहीं दिखाए गए हैं, सभी उपकरणों के लिए सक्षम होना चाहिए</string>
   <string name="pref_cache_size">कैश का आकार</string>
   <string name="pref_cache_size_summ">कैश का आकार समायोजित करें</string>
   <string name="pref_clean_watchlist">ख़तम हुए थ्रेड्स को निकालो </string>
@@ -333,7 +326,6 @@
   <string name="widget_configure_config">कॉन्फ़िगर बटन दिखाओ </string>
   <string name="widget_loading">लोड हो रहा है...</string>
   <string name="send_feedback_menu">प्रतिक्रिया भेजें</string>
-  <string name="purchase_menu">खरीदो </string>
   <string name="network_profile_health_bad">धीमी गति से इंटरनेट कनेक्शन</string>
   <string name="mobile_profile_health_status">नेटवर्क %1$s लोड नहीं कर सका</string>
   <string name="mobile_profile_fetch_dead_thread">थ्रेड ख़तम हो गया </string>

@@ -14,11 +14,7 @@ import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.UserStatistics;
-import com.chanapps.four.service.NetworkProfileManager;
-
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 /**
 * Created with IntelliJ IDEA.

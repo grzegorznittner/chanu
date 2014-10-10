@@ -11,7 +11,6 @@ import android.util.Log;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.NetworkProfileManager;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.http.impl.cookie.DateUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 

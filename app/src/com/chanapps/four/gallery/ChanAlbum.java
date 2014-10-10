@@ -6,7 +6,6 @@ package com.chanapps.four.gallery;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.nfc.Tag;
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaSet;

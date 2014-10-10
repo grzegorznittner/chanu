@@ -17,11 +17,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 public class StringResourceDialog extends Dialog {
 
     private static final String TAG = StringResourceDialog.class.getSimpleName();

@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.*;
 import android.content.res.Configuration;
@@ -21,10 +20,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
-import android.util.Xml;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -35,7 +32,6 @@ import com.chanapps.four.adapter.BoardNarrowCursorAdapter;
 import com.chanapps.four.adapter.BoardSmallCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -46,7 +42,6 @@ import com.chanapps.four.viewer.BoardViewer;
 import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
-import org.xmlpull.v1.XmlPullParser;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
@@ -132,7 +127,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         createAbsListView();
         setupBoardTitle();
         startLoaderAsync();
-        (new AdComponent(this, findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         checkNSFW();
         if (mDrawerAdapter != null)
             mDrawerAdapter.notifyDataSetInvalidated();
@@ -655,7 +649,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (handler == null)
             handler = new Handler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
-        AnalyticsComponent.onStart(this);
     }
 
     @Override
@@ -871,7 +864,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     	handler = null;
         if (absListView != null && absListView instanceof EnhancedListView)
             ((EnhancedListView)absListView).discardUndo();
-        AnalyticsComponent.onStop(this);
         setProgress(false);
     }
 
@@ -1556,6 +1548,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     }
 
+    @TargetApi(16)
     protected void displayTitleBar(String title, int lightIconId, int darkIconId) {
         if (DEBUG) Log.i(TAG, "displayTitleBar /" + boardCode + "/ title=" + title + " boardTitleBar=" + boardTitleBar);
         if (boardTitleBar == null)

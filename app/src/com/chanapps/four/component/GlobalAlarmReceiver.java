@@ -19,8 +19,6 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.widget.WidgetProviderUtils;
 
-import java.io.IOException;
-
 /**
  * Created with IntelliJ IDEA.
  * User: johnarleyburns

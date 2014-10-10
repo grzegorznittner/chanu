@@ -4,7 +4,6 @@
 package com.chanapps.four.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,12 +31,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
-import android.os.Environment;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -45,7 +41,6 @@ import com.android.gallery3d.data.Path;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.activity.SettingsActivity.DownloadImages;
 import com.chanapps.four.gallery.ChanOffLineSource;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;

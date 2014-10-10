@@ -16,11 +16,9 @@
 
 package com.android.gallery3d.app;
 
-import android.content.Context;
 import android.os.Handler;
 import com.android.gallery3d.ui.GLRoot;
 import com.android.gallery3d.ui.PositionRepository;
-import com.chanapps.four.activity.ChanActivityId;
 
 public interface GalleryActivity extends GalleryContext {
     public StateManager getStateManager();

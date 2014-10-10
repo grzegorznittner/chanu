@@ -3,10 +3,7 @@ package com.chanapps.four.loader;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -14,10 +11,6 @@ import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import android.widget.AbsListView;
-import android.widget.GridView;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 
 public class ThreadCursorLoader extends BoardCursorLoader {

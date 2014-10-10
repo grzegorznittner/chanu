@@ -240,9 +240,6 @@
   <string name="pref_use_friendly_ids">Использование дружественных идентификаторы</string>
   <string name="pref_use_friendly_ids_summ_on">ID сообщений читаемы</string>
   <string name="pref_use_friendly_ids_summ_off">Пост идентификаторы остаются неизменными</string>
-  <string name="pref_use_google_analytics">Google Analytics</string>
-  <string name="pref_use_google_analytics_summ_on">Отправлять анонимную информацию об использовании</string>
-  <string name="pref_use_google_analytics_summ_off">Не отправлять анонимную информацию об использовании</string>
   <string name="pref_use_https">Безопасность</string>
   <string name="pref_use_https_summ_on">Использование HTTPS для всех подключений</string>
   <string name="pref_use_https_summ_off">Не использовать HTTPS для всех соединений</string>
@@ -257,10 +254,6 @@
   <string name="pref_cache_category_summ">Размер памяти для хранения тем и изображений</string>
   <string name="pref_clear_cache">Очистить кэш</string>
   <string name="pref_clear_cache_summ">Удалить все кэшированные данные и изображения</string>
-  <string name="pref_purchase_prokey">Купить Prokey</string>
-  <string name="pref_purchase_prokey_summ">Избавьтесь от рекламы с помощью одноразовой покупки, распространяется на все Ваши устройства</string>
-  <string name="pref_installed_prokey">Prokey установлен</string>
-  <string name="pref_installed_prokey_summ">Объявления не показываются, активно на всех устройствах</string>
   <string name="pref_cache_size">Размер кэша</string>
   <string name="pref_cache_size_summ">Изменить размер кеша</string>
   <string name="pref_clean_watchlist">Удалить \"умершие\" темы</string>
@@ -331,7 +324,6 @@
   <string name="widget_configure_config">Отобразить кнопку настроек</string>
   <string name="widget_loading">Идет загрузка...</string>
   <string name="send_feedback_menu">Отправить отзыв</string>
-  <string name="purchase_menu">Покупка</string>
   <string name="network_profile_health_bad">Медленное подключение к Интернету</string>
   <string name="mobile_profile_health_status">Не удалось загрузить сеть %1$s</string>
   <string name="mobile_profile_fetch_dead_thread">Тема \"умерла\"</string>

@@ -237,9 +237,6 @@
   <string name="pref_use_friendly_ids">Use identidades amistosas</string>
   <string name="pref_use_friendly_ids_summ_on">Las publicaciones Ids tienen nombres legibles</string>
   <string name="pref_use_friendly_ids_summ_off">Las publicaciones Ids quedan sin cambios</string>
-  <string name="pref_use_google_analytics">Google Analytics</string>
-  <string name="pref_use_google_analytics_summ_on">Enviar los datos de uso anónimos</string>
-  <string name="pref_use_google_analytics_summ_off">No enviar los datos de uso anónimos</string>
   <string name="pref_use_https">Seguridad</string>
   <string name="pref_use_https_summ_on">Uso de HTTPS para todas las conexiones</string>
   <string name="pref_use_https_summ_off">No utilice HTTPS para todas las conexiones</string>
@@ -254,10 +251,6 @@
   <string name="pref_cache_category_summ">Espacio para almacenar hilos e imágenes</string>
   <string name="pref_clear_cache">Limpiar caché</string>
   <string name="pref_clear_cache_summ">Eliminar todos los datos almacenados en caché e imágenes</string>
-  <string name="pref_purchase_prokey">Compra Prokey</string>
-  <string name="pref_purchase_prokey_summ">Cómprela una sola vez y se librará de la publicidad en todos sus dispositivos</string>
-  <string name="pref_installed_prokey">Prokey instalada</string>
-  <string name="pref_installed_prokey_summ">Los anuncios no son mostrados, habilitado para todos los dispositivos</string>
   <string name="pref_cache_size">Tamaño de la caché</string>
   <string name="pref_cache_size_summ">Ajustar el tamaño de la caché</string>
   <string name="pref_clean_watchlist">Eliminar los hilos muertos</string>
@@ -328,7 +321,6 @@
   <string name="widget_configure_config">Mostrar Botón \"Configurar\"</string>
   <string name="widget_loading">Cargando...</string>
   <string name="send_feedback_menu">Enviar comentarios</string>
-  <string name="purchase_menu">Comprar</string>
   <string name="network_profile_health_bad">Conexión a Internet lenta</string>
   <string name="mobile_profile_health_status">No se pudo cargar la red \"%1$s\"</string>
   <string name="mobile_profile_fetch_dead_thread">El Hilo está inactivo</string>

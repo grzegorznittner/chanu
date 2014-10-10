@@ -272,9 +272,6 @@
     <string name="pref_use_friendly_ids">Use Friendly Ids</string>
     <string name="pref_use_friendly_ids_summ_on">Post Ids have readable names</string>
     <string name="pref_use_friendly_ids_summ_off">Post Ids are left unchanged</string>
-    <string name="pref_use_google_analytics">Google Analytics</string>
-    <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
-    <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
     <string name="pref_use_https">Security</string>
     <string name="pref_use_https_summ_on">Use HTTPS for all connections</string>
     <string name="pref_use_https_summ_off">Don\'t use HTTPS for all connections</string>
@@ -289,10 +286,6 @@
     <string name="pref_cache_category_summ">Space to use for storing threads and images</string>
     <string name="pref_clear_cache">Clear Cache</string>
     <string name="pref_clear_cache_summ">Remove all cached data and images</string>
-    <string name="pref_purchase_prokey">Purchase Prokey</string>
-    <string name="pref_purchase_prokey_summ">Go ad-free, purchase only once, enables all devices</string>
-    <string name="pref_installed_prokey">Prokey Installed</string>
-    <string name="pref_installed_prokey_summ">No ads are shown, enabled for all devices</string>
     <string name="pref_cache_size">Cache size</string>
     <string name="pref_cache_size_summ">Adjust cache size</string>
     <string name="pref_clean_watchlist">Remove dead threads</string>
@@ -369,7 +362,6 @@
 
     <!-- Help and about_dialog -->
     <string name="send_feedback_menu">Send Feedback</string>
-    <string name="purchase_menu">Purchase</string>
 
     <!-- fetch and network services -->
     <string name="network_profile_health_bad">Internet connection slow</string>

@@ -1,5 +1,6 @@
 package com.chanapps.four.viewer;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -654,6 +655,7 @@ public class BoardViewer {
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xaa;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
+    @TargetApi(16)
     protected static void setAlpha(ImageView iv, int alpha) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             deprecatedSetAlpha(iv, alpha);

@@ -4,7 +4,6 @@ import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.util.GalleryUtils;
 
 import android.content.Context;
-import android.hardware.usb.UsbDevice;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.mtp.MtpObjectInfo;

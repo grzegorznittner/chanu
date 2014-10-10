@@ -41,12 +41,6 @@
     <string-array name="long_drawer_array_footer">
         <item>@string/settings_menu</item>
         <item>@string/send_feedback_menu</item>
-        <item>@string/purchase_menu</item>
-    </string-array>
-
-    <string-array name="long_drawer_array_footer_purchased">
-        <item>@string/settings_menu</item>
-        <item>@string/send_feedback_menu</item>
     </string-array>
 
     <string-array name="pref_download_images_entries">

@@ -16,7 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.util.GalleryUtils;
 
 import android.content.Intent;

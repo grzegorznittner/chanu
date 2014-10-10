@@ -1,9 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +11,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
@@ -21,8 +18,6 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanThread;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("unchecked")
 abstract public class
@@ -102,10 +97,7 @@ abstract public class
     }
 
     protected void loadFooter(List<String> drawer) {
-        boolean hasPurchased = BillingComponent.getInstance(this).hasProkey();
-        int drawerId = hasPurchased ? R.array.long_drawer_array_footer_purchased : R.array.long_drawer_array_footer;
-        List<String> items = new ArrayList<String>(Arrays.asList(getResources().getStringArray(drawerId)));
-        drawer.add("");
+        List<String> items = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.long_drawer_array_footer)));
         drawer.addAll(items);
     }
 
@@ -162,8 +154,6 @@ abstract public class
                     drawableId = R.drawable.gear;
                 else if (getString(R.string.send_feedback_menu).equals(drawerText))
                     drawableId = R.drawable.speech_bubble_ellipsis;
-                else if (getString(R.string.purchase_menu).equals(drawerText))
-                    drawableId = R.drawable.money_bag;
                 else
                     drawableId = 0;
                 if (DEBUG) Log.v(TAG, "row=" + i + " text=" + drawerText + " drawableId=" + drawableId);

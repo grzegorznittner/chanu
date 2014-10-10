@@ -1,12 +1,9 @@
 package com.chanapps.four.viewer;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
-import android.widget.AbsListView;
-import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
@@ -15,8 +12,6 @@ import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.fragment.ThreadPopupDialogFragment;
-
-import java.util.HashSet;
 
 /**
  * Created with IntelliJ IDEA.

@@ -36,12 +36,6 @@
                 android:title="@string/dialog_authorize"/>
 
         <Preference
-                android:key="pref_pass_purchase_button"
-                android:title="@string/purchase_menu"
-                android:hint="@string/pref_pass_purchase_hint"
-                />
-
-        <Preference
                 android:key="pref_pass_close_button"
                 android:title="@string/dialog_cancel"/>
 

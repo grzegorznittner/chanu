@@ -1,6 +1,5 @@
 package com.chanapps.four.component;
 
-import android.app.Activity;
 import android.view.KeyEvent;
 import android.widget.AbsListView;
 

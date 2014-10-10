@@ -7,7 +7,6 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.*;
 import android.database.Cursor;
@@ -334,7 +333,6 @@ public class ThreadActivity
             createAbsListView();
         createPagerAsync();
         loadDrawerArray();
-        AnalyticsComponent.onStart(this);
     }
 
     protected void createPagerAsync() {
@@ -515,7 +513,6 @@ public class ThreadActivity
             getSupportLoaderManager().destroyLoader(LOADER_ID);
         }
         setProgress(false);
-        AnalyticsComponent.onStop(this);
     }
 
     @Override

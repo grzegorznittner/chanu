@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Parcel;
@@ -29,8 +28,6 @@ import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.TextView;
-
 import java.io.Closeable;
 import java.io.InterruptedIOException;
 import java.util.Random;

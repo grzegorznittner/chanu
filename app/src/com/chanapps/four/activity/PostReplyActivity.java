@@ -1,6 +1,5 @@
 package com.chanapps.four.activity;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.*;
 import android.database.Cursor;
@@ -639,7 +638,6 @@ public class PostReplyActivity
         //    NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.POST);
         if ((!isPassEnabled() || !isPassAvailable()) && recaptchaButton.getDrawable() == null)
             refresh();
-        AnalyticsComponent.onStart(this);
     }
 
     protected void setViews() {
@@ -673,7 +671,6 @@ public class PostReplyActivity
         handler = null;
         if (!exitingOnSuccess)
             saveBundleToPrefs(saveStateToBundle(new Bundle()));
-        AnalyticsComponent.onStop(this);
     }
 
     @Override

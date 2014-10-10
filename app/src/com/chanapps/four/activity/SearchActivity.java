@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import com.android.gallery3d.ui.Log;
-import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.service.NetworkProfileManager;
 
 /**
@@ -127,13 +126,11 @@ public class SearchActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        AnalyticsComponent.onStart(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        AnalyticsComponent.onStop(this);
     }
 
 }

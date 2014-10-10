@@ -242,9 +242,6 @@ Tablice uznawane jako NSFW (ryzykowne w pracy) są domyślnie ukryte. Te tablice
   <string name="pref_use_friendly_ids">Użyj przyjaznych ID</string>
   <string name="pref_use_friendly_ids_summ_on">Identyfikatory wpisów mają czytelne nazwy</string>
   <string name="pref_use_friendly_ids_summ_off">Identyfikatory wpisów pozostają bez zmian</string>
-  <string name="pref_use_google_analytics">Google Analytics</string>
-  <string name="pref_use_google_analytics_summ_on">Wyślij anonimowe dane o użyciu</string>
-  <string name="pref_use_google_analytics_summ_off">Nie wysyłaj anonimowych danych o użyciu</string>
   <string name="pref_use_https">Zabezpieczenia</string>
   <string name="pref_use_https_summ_on">Użyj HTTPS dla wszystkich połączeń</string>
   <string name="pref_use_https_summ_off">Nie używaj HTTPS dla wszystkich połączeń</string>
@@ -259,10 +256,6 @@ Tablice uznawane jako NSFW (ryzykowne w pracy) są domyślnie ukryte. Te tablice
   <string name="pref_cache_category_summ">Przestrzeń dla przechowywania wątków i obrazów</string>
   <string name="pref_clear_cache">Wyczyść pamięć podręczną</string>
   <string name="pref_clear_cache_summ">Usuń wszystkie buforowane dane i zdjęcia</string>
-  <string name="pref_purchase_prokey">Zakup Prokey</string>
-  <string name="pref_purchase_prokey_summ">Wyłącz reklamy, kup raz i aktywuj wszystkie swoje urządzenia</string>
-  <string name="pref_installed_prokey">Prokey zainstalowany</string>
-  <string name="pref_installed_prokey_summ">Nie pokazujemy reklam, włączono dla wszystkich twoich urządzeń</string>
   <string name="pref_cache_size">Rozmiar pamięci podręcznej</string>
   <string name="pref_cache_size_summ">Dopasuj rozmiar pamięci podręcznej</string>
   <string name="pref_clean_watchlist">Usuń martwe wątki</string>
@@ -333,7 +326,6 @@ Tablice uznawane jako NSFW (ryzykowne w pracy) są domyślnie ukryte. Te tablice
   <string name="widget_configure_config">Pokaż przycisk Konfiguruj</string>
   <string name="widget_loading">Wcztywanie...</string>
   <string name="send_feedback_menu">Prześlij opinię</string>
-  <string name="purchase_menu">Zakup</string>
   <string name="network_profile_health_bad">Powolne połączenie internetowe</string>
   <string name="mobile_profile_health_status">Sieć %1$s nie można wczytać danych</string>
   <string name="mobile_profile_fetch_dead_thread">Wątek jest martwy</string>

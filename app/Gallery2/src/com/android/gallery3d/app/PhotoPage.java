@@ -24,7 +24,6 @@ import android.app.ActionBar.OnMenuVisibilityListener;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -68,7 +67,6 @@ import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.gallery.ChanImage;
 import com.chanapps.four.gallery3d.R;
-import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 

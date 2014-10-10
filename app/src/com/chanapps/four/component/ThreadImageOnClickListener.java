@@ -2,10 +2,7 @@ package com.chanapps.four.component;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.nfc.Tag;
 import android.view.View;
-import android.widget.Toast;
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.data.ChanPost;

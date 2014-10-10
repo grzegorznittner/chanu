@@ -20,7 +20,6 @@ import android.content.pm.ResolveInfo;
 import android.text.Html;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.component.ThreadImageExpander;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
