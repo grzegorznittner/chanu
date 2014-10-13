@@ -30,16 +30,4 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>Gallery2_src</name>
-			<type>2</type>
-			<location>/Users/grzegorznittner/projects/4channer/app/Gallery2/src</location>
-		</link>
-		<link>
-			<name>src_pd</name>
-			<type>2</type>
-			<location>/Users/grzegorznittner/projects/4channer/app/Gallery2/src_pd</location>
-		</link>
-	</linkedResources>
 </projectDescription>

@@ -3,5 +3,6 @@ android:
         components:
                 - android-19
 script:
+        - mkdir Gallery2/src
         - cd app
         - ant debug -v
