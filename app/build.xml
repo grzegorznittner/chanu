@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="4channer" default="help">
 
+	<!-- the build fails without the Gallery2/src directory there.  Since we moved our
+	     source to the app project we need to create one -->
+    <mkdir dir="../Gallery2/src" />
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
          Version Control Systems. -->

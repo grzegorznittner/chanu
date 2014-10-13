@@ -1,0 +1,7 @@
+language: android
+android:
+        components:
+                - android-19
+script:
+        - cd app
+        - ant debug
