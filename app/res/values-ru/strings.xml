@@ -3,6 +3,7 @@
 <resources>
   <string name="app_name">Chanu</string>
   <string name="thread_activity">Тема</string>
+  <string name="purchase_menu">Покупка</string>
   <string name="board_activity">Доска</string>
   <string name="about_activity">О программе</string>
   <string name="thread_post_image">Изображение темы</string>
