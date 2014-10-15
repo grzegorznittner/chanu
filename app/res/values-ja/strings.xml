@@ -3,6 +3,7 @@
 <resources>
   <string name="thread_activity">スレッド</string>
   <string name="board_activity">ボード</string>
+  <string name="purchase_menu">購入</string>
   <string name="about_activity">説明</string>
   <string name="thread_post_image">スレッド画像
 </string>

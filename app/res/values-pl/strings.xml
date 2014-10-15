@@ -3,6 +3,7 @@
 <resources>
   <string name="app_name">Chanu</string>
   <string name="thread_activity">Wątek</string>
+  <string name="purchase_menu">Zakup</string>
   <string name="board_activity">Tablica</string>
   <string name="about_activity">O aplikacji</string>
   <string name="thread_post_image">Zdjęcie na wątek</string>

@@ -3,6 +3,7 @@
     <!-- titles -->
     <string name="thread_activity">Thread</string>
     <string name="board_activity">Board</string>
+    <string name="purchase_menu">Purchase</string>
     <string name="about_activity">About</string>
     <string name="thread_post_image">Thread Image</string>
     <string name="thread_post_image_expanded">Expanded Thread Image</string>
