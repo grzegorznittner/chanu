@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/yate/chanu.svg)](https://travis-ci.org/yate/chanu)
+[![Build Status](https://travis-ci.org/grzegorznittner/chanu.svg)](https://travis-ci.org/grzegorznittner/chanu)
 
 4channer - 4chan android app
 ========
