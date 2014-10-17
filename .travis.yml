@@ -12,5 +12,4 @@ deploy:
   file: app/bin/chanu-debug.apk
   on:
     repo: grzegorznittner/chanu
-    tags: true
     all_branches: true
