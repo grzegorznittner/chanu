@@ -5,7 +5,6 @@ android:
 script:
 - cd app
 - ant debug
-before_deploy: git fetch --tags
 deploy:
   provider: releases
   api_key:
@@ -13,4 +12,5 @@ deploy:
   file: app/bin/chanu-debug.apk
   on:
     repo: grzegorznittner/chanu
+    tags: true
     all_branches: true
