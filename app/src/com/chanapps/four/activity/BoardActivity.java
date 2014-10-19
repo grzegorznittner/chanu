@@ -109,7 +109,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (ChanBoard.isTopBoard(boardCode)) {
             if (DEBUG) Log.i(TAG, "board to board selector, finishing board activity");
             Intent intent = BoardActivity.createIntent(this, boardCode, query);
-            finish();
             startActivity(intent);
         }
         else {
@@ -689,7 +688,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                                 scheduleRecreate = false;
                                 recreateListViewPreservingPosition();
                             }
-                            else if (isCurrent && isAlreadyLoaded()) {
+                            if (isCurrent && isAlreadyLoaded()) {
                                 if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query + " already loaded");
                             }
                             else {

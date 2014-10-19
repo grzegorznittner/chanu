@@ -252,7 +252,6 @@ public class ThreadActivity
         Intent intent = BoardActivity.createIntent(this, boardCode, "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finish();
     }
 
     @Override
@@ -1114,7 +1113,6 @@ public class ThreadActivity
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
-        finish();
     }
 
     @Override
@@ -1172,8 +1170,9 @@ public class ThreadActivity
     @Override
     public void switchBoard(String boardCode, String query) {
         Intent intent = BoardActivity.createIntent(this, boardCode, query);
-        finish();
-        startActivity(intent);
+        if (!this.boardCode.equals(boardCode)) {
+            startActivity(intent);
+        }
     }
 
     protected void switchThreadInternal(String boardCode, long threadNo, long postNo, String query) { // for when we are already in this class
