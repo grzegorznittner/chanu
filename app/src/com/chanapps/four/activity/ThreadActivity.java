@@ -169,6 +169,10 @@ public class ThreadActivity
         LocalBroadcastManager.getInstance(this).registerReceiver(onUpdateFastScrollReceived,
                 new IntentFilter(UPDATE_FAST_SCROLL_ACTION));
     }
+    
+    protected void teardownReceivers() {
+    	LocalBroadcastManager.getInstance(this).unregisterReceiver(onUpdateFastScrollReceived);
+    }
 
     protected void createPager(final ChanBoard board) { // must be called on UI thread
         if (DEBUG) Log.i(TAG, "createPager /" + (board == null ? null : board.link) + "/ q=" + query);
@@ -513,6 +517,7 @@ public class ThreadActivity
             getSupportLoaderManager().destroyLoader(LOADER_ID);
         }
         setProgress(false);
+        teardownReceivers();
     }
 
     @Override

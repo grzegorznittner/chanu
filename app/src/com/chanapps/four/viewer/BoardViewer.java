@@ -62,6 +62,7 @@ public class BoardViewer {
         //        : R.drawable.stub_image_background;
         displayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.NONE)
+                .cacheInMemory()
                 .cacheOnDisc()
                 .build();
     }
