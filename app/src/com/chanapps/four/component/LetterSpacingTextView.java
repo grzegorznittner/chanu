@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class LetterSpacingTextView extends TextView {
 
-    private float letterSpacing = LetterSpacing.NORMAL;
+    private float textSpacing = TextSpacing.NORMAL;
     private CharSequence originalText = "";
 
 
@@ -32,12 +32,12 @@ public class LetterSpacingTextView extends TextView {
         super(context, attrs, defStyle);
     }
 
-    public float getLetterSpacing() {
-        return letterSpacing;
+    public float getTextSpacing() {
+        return textSpacing;
     }
 
-    public void setLetterSpacing(float letterSpacing) {
-        this.letterSpacing = letterSpacing;
+    public void setTextSpacing(float textSpacing) {
+        this.textSpacing = textSpacing;
         applyLetterSpacing();
     }
 
@@ -63,13 +63,13 @@ public class LetterSpacingTextView extends TextView {
         SpannableString finalText = new SpannableString(builder.toString());
         if(builder.toString().length() > 1) {
             for(int i = 1; i < builder.toString().length(); i+=2) {
-                finalText.setSpan(new ScaleXSpan((letterSpacing+1)/10), i, i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                finalText.setSpan(new ScaleXSpan((textSpacing+1)/10), i, i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
         super.setText(finalText, BufferType.SPANNABLE);
     }
 
-    public class LetterSpacing {
+    public class TextSpacing {
         public final static float NORMAL = 0;
     }
 }
