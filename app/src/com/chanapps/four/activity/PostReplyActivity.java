@@ -21,7 +21,6 @@ import android.webkit.MimeTypeMap;
 import android.widget.*;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.multipartmime.*;
@@ -34,6 +33,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -902,6 +903,7 @@ public class PostReplyActivity
                     .cacheOnDisc()
                     .showStubImage(R.drawable.stub_image_background)
                     .resetViewBeforeLoading()
+                    .displayer(new FadeInBitmapDisplayer(100))
                     .fullSizeImageLocation(imageUri.toString())
                     .imageSize(new ImageSize(300, 300))
                     .build();

@@ -39,6 +39,8 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
 import org.xml.sax.XMLReader;
 
 import java.io.File;
@@ -99,6 +101,7 @@ public class ThreadViewer {
                 .cacheOnDisc()
                 .cacheInMemory()
                 .imageScaleType(ImageScaleType.NONE)
+                .displayer(new FadeInBitmapDisplayer(100))
                 //.resetViewBeforeLoading()
                 //.showStubImage(stub)
                 .build();
@@ -109,6 +112,7 @@ public class ThreadViewer {
                 .cacheOnDisc()
                 .cacheInMemory()
                 .imageSize(imageSize)
+                .displayer(new FadeInBitmapDisplayer(100))
                 .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
                 .showStubImage(stub)
                 .resetViewBeforeLoading()
