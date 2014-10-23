@@ -1,5 +1,19 @@
 package com.chanapps.four.fragment;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -20,13 +34,43 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
-import android.view.*;
-import android.widget.*;
-import com.chanapps.four.activity.*;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.ResourceCursorAdapter;
+import android.widget.ShareActionProvider;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.chanapps.four.activity.BoardActivity;
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.GalleryViewActivity;
+import com.chanapps.four.activity.PostReplyActivity;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadCursorAdapter;
-import com.chanapps.four.component.*;
-import com.chanapps.four.data.*;
+import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.PreferenceDialogs;
+import com.chanapps.four.component.ThemeSelector;
+import com.chanapps.four.component.ThreadViewable;
+import com.chanapps.four.component.URLFormatComponent;
+import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -38,12 +82,6 @@ import com.chanapps.four.viewer.ThreadViewer;
 import com.chanapps.four.widget.WidgetProviderUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -1599,6 +1637,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         boardSearchResultsBar.setVisibility(View.VISIBLE);
     }
 
+    @TargetApi(16)
     protected void displayTitleBar(String title, int lightIconId, int darkIconId) {
         if (boardTitleBar == null)
             return;
