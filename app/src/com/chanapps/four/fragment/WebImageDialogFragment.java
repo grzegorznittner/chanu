@@ -25,6 +25,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import java.io.File;
 import java.net.URI;
@@ -122,6 +123,7 @@ public class WebImageDialogFragment extends DialogFragment {
                 .cacheOnDisc()
                 .showStubImage(R.drawable.stub_image_background)
                 .resetViewBeforeLoading()
+                .displayer(new FadeInBitmapDisplayer(100))
                 .fullSizeImageLocation(fullImagePath)
                 .imageSize(new ImageSize(300, 300))
                 .build();

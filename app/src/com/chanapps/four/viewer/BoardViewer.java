@@ -27,6 +27,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
 import org.xml.sax.XMLReader;
 
 /**
@@ -64,6 +66,7 @@ public class BoardViewer {
                 .imageScaleType(ImageScaleType.NONE)
                 .cacheInMemory()
                 .cacheOnDisc()
+                .displayer(new FadeInBitmapDisplayer(100))
                 .build();
     }
 
@@ -331,7 +334,7 @@ public class BoardViewer {
         if (titleTypeface != null)
             tv.setTypeface(titleTypeface);
         if (tv instanceof LetterSpacingTextView)
-            ((LetterSpacingTextView) tv).setLetterSpacing(BOARD_CODE_LETTER_SPACING);
+            ((LetterSpacingTextView) tv).setTextSpacing(BOARD_CODE_LETTER_SPACING);
         tv.setText(boardCodeTitle);
     }
 

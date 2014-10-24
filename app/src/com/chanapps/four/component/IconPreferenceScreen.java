@@ -17,6 +17,9 @@ import android.view.View;
 import android.widget.ImageView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.loader.ChanImageLoader;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class IconPreferenceScreen extends Preference {
 
@@ -42,7 +45,10 @@ public class IconPreferenceScreen extends Preference {
         int resourceId = typedArray.getResourceId(R.styleable.IconPreferenceScreen_icon, 0);
         if (imageView != null && resourceId > 0) {
             String uri = "drawable://" + resourceId;
-            ChanImageLoader.getInstance(context).displayImage(uri, imageView);
+            DisplayImageOptions options = (new DisplayImageOptions.Builder())
+                    .cacheInMemory()
+                    .build();
+            ChanImageLoader.getInstance(context).displayImage(uri, imageView, options);
         }
     }
 
