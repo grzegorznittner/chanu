@@ -773,6 +773,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             ((ThreadActivity)activity).navigateUp();
         else if (activity instanceof BoardActivity)
             ((BoardActivity)activity).navigateUp();
+        else
+            activity.finish();
     }
 
     protected void setActivityIdToFragment() {

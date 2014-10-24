@@ -1103,16 +1103,13 @@ public class ThreadActivity
         Pair<Integer, ActivityManager.RunningTaskInfo> p = ActivityDispatcher.safeGetRunningTasks(this);
         int numTasks = p.first;
         ActivityManager.RunningTaskInfo task = p.second;
-        if (numTasks == 0
-                || (numTasks == 1
-                && task != null
-                && task.topActivity != null
-                && task.topActivity.getClassName().equals(getClass().getName()))) {
+        if (numTasks == 0 || (numTasks == 1 && task != null && task.topActivity != null && task.topActivity.getClassName().equals(getClass().getName()))) {
             if (DEBUG) Log.i(TAG, "no valid up task found, creating new one");
             Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
+        finish();
     }
 
     @Override
