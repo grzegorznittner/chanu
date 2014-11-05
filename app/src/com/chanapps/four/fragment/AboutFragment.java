@@ -1,10 +1,14 @@
 package com.chanapps.four.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
+
+import com.android.gallery3d.app.PackagesMonitor;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
@@ -49,9 +53,11 @@ public class AboutFragment extends PreferenceFragment
         if (DEBUG) Log.i(TAG, "versionPreference");
         Preference p = findPreference(pref);
         try {
-            String version = getString(R.string.versionName);
-            String yyyymmdd = getString(R.string.versionDate);
-            Date d = DateUtils.parseDate(yyyymmdd, VERSION_DATE_FORMAT);
+            PackageInfo info = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+            
+            String version = info.versionName;
+            Date d = new Date(info.lastUpdateTime);
+            
             String dateStr = DateFormat.getDateInstance(DateFormat.MEDIUM).format(d);
             String title = String.format(getString(R.string.pref_about_application_version), version);
             String summary = String.format(getString(R.string.pref_about_application_version_sum), dateStr);
