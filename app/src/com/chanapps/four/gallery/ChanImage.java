@@ -1,5 +1,6 @@
 package com.chanapps.four.gallery;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,24 +14,23 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.text.Html;
-import android.widget.Toast;
-import com.chanapps.four.activity.R;
-import org.apache.commons.io.IOUtils;
-
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.BitmapRegionDecoder;
 import android.net.Uri;
+import android.text.Html;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.Utils;
@@ -41,6 +41,7 @@ import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
@@ -339,7 +340,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
         private Bitmap downloadFullImageAsThumb() {
             Bitmap bitmap = null;
-            FileInputStream io = null;
+            InputStream io = null;
             try {
             	File localImageFile = new File(localImagePath);
             	if (localImageFile.exists()) {
@@ -351,7 +352,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
             	if (".gif".equals(ext)) {
             		GifDecoder decoder = new GifDecoder();
-            		io = new FileInputStream(localImageFile);
+            		io = new BufferedInputStream(new FileInputStream(localImageFile));
             		int status = decoder.read(io);
             		if (DEBUG) Log.w(TAG, "Status " + (status == 0 ? "OK" : status == 1 ? "FORMAT_ERROR" : "OPEN_ERROR") + " for file " + localImageFile.getName());
             		if (status == 0) {
@@ -360,7 +361,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
             		} else if (status == 1) {
             			Options options = getBitmapOptions(localImageFile);
             			IOUtils.closeQuietly(io);
-            			io = new FileInputStream(localImageFile);
+            			io = new BufferedInputStream(new FileInputStream(localImageFile));
             			bitmap = BitmapFactory.decodeStream(io, null, options);
             			if (DEBUG) Log.w(TAG, localImageFile.getName() + (bitmap == null ? " not" : "") + " loaded via BitmapFactory");
             		}
@@ -396,7 +397,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     		InputStream is = null;
     		OutputStream os = null;
     		try {
-    			is = downloader.getStreamFromNetwork(thumbUrl, null);
+    			is = new BufferedInputStream(downloader.getStreamFromNetwork(thumbUrl, null));
     			os = new BufferedOutputStream(new FileOutputStream(targetFile));
 				IOUtils.copy(is, os);
     		} finally {
@@ -549,7 +550,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 		// decode image size
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
-		InputStream imageStream = new FileInputStream(imageFile);
+		InputStream imageStream = new BufferedInputStream(new FileInputStream(imageFile));
 		try {
 			BitmapFactory.decodeStream(imageStream, null, options);
 			int scale = 1;
@@ -578,7 +579,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 		options.inJustDecodeBounds = true;
 		InputStream imageStream = null;
 		try {
-			imageStream = new FileInputStream(imageFile);
+			imageStream = new BufferedInputStream(new FileInputStream(imageFile));
 			BitmapFactory.decodeStream(imageStream, null, options);
 			width = options.outWidth;
 			height = options.outHeight;

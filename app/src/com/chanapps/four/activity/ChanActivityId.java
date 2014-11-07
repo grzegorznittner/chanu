@@ -3,13 +3,21 @@
  */
 package com.chanapps.four.activity;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Base64;
 import android.util.Log;
-import com.chanapps.four.data.LastActivity;
 
-import java.io.*;
+import com.chanapps.four.data.LastActivity;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -202,7 +210,7 @@ public class ChanActivityId implements Serializable {
 
     public static ChanActivityId deserialize(String s) {
         byte[] data = Base64.decode(s, Base64.DEFAULT);
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+        InputStream bais = new BufferedInputStream(new ByteArrayInputStream(data));
         ObjectInputStream ois = null;
         try {
             ois = new ObjectInputStream(bais);

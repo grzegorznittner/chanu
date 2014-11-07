@@ -84,17 +84,17 @@ public class ChanPost implements Serializable {
     }
 
     public static String join(List<String> list, String delimiter) {
-        String text = "";
+        StringBuilder text = new StringBuilder();
         boolean first = true;
         for (String item : list) {
             if (first) {
-                text += item;
+                text.append(item);
                 first = false;
                 continue;
             }
-            text += delimiter + item;
+            text.append(delimiter + item);
         }
-        return text;
+        return text.toString();
     }
 
     public static int countLines(String s) {
@@ -826,7 +826,7 @@ public class ChanPost implements Serializable {
         if (b == null || b.length == 0)
             return null;
         try {
-            ByteArrayInputStream bais = new ByteArrayInputStream(b);
+            InputStream bais =new BufferedInputStream(new ByteArrayInputStream(b));
             ObjectInputStream ois = new ObjectInputStream(bais);
             HashSet<?> hashSet = (HashSet<?>)ois.readObject();
             return hashSet;

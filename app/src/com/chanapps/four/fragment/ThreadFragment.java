@@ -658,11 +658,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     };
 
     private String replyText(long postNos[]) {
-        String replyText = "";
+        StringBuilder replyText = new StringBuilder();
         for (long postNo : postNos) {
-            replyText += ">>" + postNo + "\n";
+            replyText.append(">>").append(postNo).append("\n");
         }
-        return replyText;
+        return replyText.toString();
     }
 
     private void postReply(String replyText, String quotesText) {

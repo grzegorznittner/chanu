@@ -3,6 +3,7 @@
  */
 package com.chanapps.four.service;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -165,7 +166,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             	// long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));
                 InputStream is = null;
                 try {
-                    is = tc.getInputStream();
+                    is = new BufferedInputStream(tc.getInputStream());
                     String response = IOUtils.toString(is);
                     IOUtils.closeQuietly(is);
                     closeConnection(tc);

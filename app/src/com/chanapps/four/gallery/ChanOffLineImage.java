@@ -1,5 +1,6 @@
 package com.chanapps.four.gallery;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -134,7 +135,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 
 			InputStream imageStream;
 			try {
-			    imageStream = new FileInputStream(imageFile);
+			    imageStream = new BufferedInputStream(new FileInputStream(imageFile));
 			}
 			catch (Exception e) {
 			    Log.e(TAG, "Couldn't load image file " + imageFile, e);
@@ -152,7 +153,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 						height = dstBmp.getHeight();
 					} else if (status == 1) {
 						IOUtils.closeQuietly(imageStream);
-						imageStream = new FileInputStream(imageFile);
+						imageStream = new BufferedInputStream(new FileInputStream(imageFile));
 						dstBmp = BitmapFactory.decodeStream(imageStream, null, options);
 						Log.w(TAG, imageFile.getName() + (dstBmp == null ? " not" : "") + " loaded via BitmapFactor");
 					}
@@ -191,7 +192,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 
             InputStream imageStream;
             try {
-                imageStream = new FileInputStream(imageFile);
+                imageStream = new BufferedInputStream(new FileInputStream(imageFile));
             }
             catch (Exception e) {
                 Log.e(TAG, "Couldn't open image file " + imageFile, e);
@@ -285,7 +286,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 		options.inJustDecodeBounds = true;
 		InputStream imageStream = null;
 		try {
-			imageStream = new FileInputStream(imageFile);
+			imageStream = new BufferedInputStream(new FileInputStream(imageFile));
 			BitmapFactory.decodeStream(imageStream, null, options);
 			width = options.outWidth;
 			height = options.outHeight;
