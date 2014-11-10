@@ -1,7 +1,9 @@
 package com.chanapps.four.data;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -9,13 +11,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import android.util.Log;
 import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * A persistent cookie store which implements the Apache HttpClient
@@ -145,20 +147,20 @@ public class PersistentCookieStore implements CookieStore {
     }
 
     public String dump() {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (Cookie cookie : getCookies()) {
             SerializableCookie serializableCookie = new SerializableCookie(cookie);
             String c = encodeCookie(serializableCookie);
-            s += ("".equals(s) ? "" : ", ") + c;
+            s.append("".equals(s) ? "" : ", ").append(c);
         }
-        return s;
+        return s.toString();
     }
 
     protected static final String TAG = PersistentCookieStore.class.getSimpleName();
 
     protected Cookie decodeCookie(String cookieStr) {
         byte[] bytes = hexStringToByteArray(cookieStr);
-        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        InputStream is = new BufferedInputStream(new ByteArrayInputStream(bytes));
         Cookie cookie = null;
         try {
             ObjectInputStream ois = new ObjectInputStream(is);

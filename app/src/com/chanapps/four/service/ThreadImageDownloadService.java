@@ -3,6 +3,8 @@
  */
 package com.chanapps.four.service;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,9 +24,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.chanapps.four.component.NotificationComponent;
-import com.chanapps.four.data.*;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -41,6 +40,13 @@ import com.android.gallery3d.data.Path;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.NotificationComponent;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.DownloadImageTargetType;
+import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.gallery.ChanOffLineSource;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
@@ -405,8 +411,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			conn.setReadTimeout(fetchParams.readTimeout * 2);
 			conn.setConnectTimeout(fetchParams.connectTimeout);
 			
-			in = conn.getInputStream();
-			out = new FileOutputStream(targetFile);
+			in = new BufferedInputStream(conn.getInputStream());
+			out = new BufferedOutputStream(new FileOutputStream(targetFile));
 			int fileLength = IOUtils.copy(in, out);
 			long endTime = Calendar.getInstance().getTimeInMillis();
 			NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);

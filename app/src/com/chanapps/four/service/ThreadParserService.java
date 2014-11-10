@@ -109,7 +109,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
                 NetworkProfileManager.instance().failedParsingData(this, Failure.MISSING_DATA);
 				return;
 			}
-			parseThread(new BufferedReader(new FileReader(threadFile)));
+			parseThread(threadFile);
 
 			if (DEBUG) Log.i(TAG, "Parsed thread " + boardCode + "/" + threadNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
@@ -138,7 +138,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
 
     String threadUpdateMessage = null;
 
-	protected void parseThread(BufferedReader in) throws IOException {
+	protected void parseThread(File in) throws IOException {
     	if (DEBUG) Log.i(TAG, "starting parsing thread " + boardCode + "/" + threadNo);
 
     	List<ChanPost> posts = new ArrayList<ChanPost>();

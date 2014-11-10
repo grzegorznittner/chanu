@@ -224,14 +224,14 @@ public class ChanFileStorage {
         }
     }
 
-    public static long storeBoardFile(Context context, String boardName, int page, Reader reader) throws IOException {
+    public static long storeBoardFile(Context context, String boardName, int page, BufferedInputStream stream) throws IOException {
         File boardFile = getBoardFile(context, boardName, page);
-        FileWriter writer = null;
+        BufferedWriter writer = null;
         try {
-            writer = new FileWriter(boardFile, false);
-            IOUtils.copy(reader, writer);
+            writer = new BufferedWriter(new FileWriter(boardFile, false));
+            IOUtils.copy(stream, writer);
         } finally {
-            IOUtils.closeQuietly(reader);
+            IOUtils.closeQuietly(stream);
             writer.flush();
             IOUtils.closeQuietly(writer);
         }
@@ -250,14 +250,14 @@ public class ChanFileStorage {
         }
     }
 
-    public static long storeThreadFile(Context context, String boardName, long threadNo, Reader reader) throws IOException {
+    public static long storeThreadFile(Context context, String boardName, long threadNo, BufferedInputStream stream) throws IOException {
         File threadFile = getThreadFile(context, boardName, threadNo);
-        FileWriter writer = null;
+        BufferedWriter writer = null;
         try {
-            writer = new FileWriter(threadFile, false);
-            IOUtils.copy(reader, writer);
+            writer = new BufferedWriter(new FileWriter(threadFile, false));
+            IOUtils.copy(stream, writer);
         } finally {
-            IOUtils.closeQuietly(reader);
+            IOUtils.closeQuietly(stream);
             writer.flush();
             IOUtils.closeQuietly(writer);
         }

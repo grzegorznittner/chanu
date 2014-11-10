@@ -3,17 +3,16 @@
  */
 package com.chanapps.four.service;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import android.preference.PreferenceManager;
-import com.chanapps.four.activity.BoardActivity;
-import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.*;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -26,10 +25,18 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.JacksonNonBlockingObjectMapperFactory;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
 /**
@@ -41,6 +48,13 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     protected static final String TAG = BoardParserService.class.getSimpleName();
     private static final boolean DEBUG = false;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 200;
+    
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    
+    static {
+        MAPPER.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        MAPPER.setDateFormat(new SimpleDateFormat("MMM d, yyyy h:mm:ss aaa")); // "Jan 15, 2013 10:16:20 AM"
+    }
 
     private String boardCode;
     private boolean boardCatalog;
@@ -100,12 +114,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     }
     */
     public static ObjectMapper getJsonMapper() {
-        JacksonNonBlockingObjectMapperFactory factory = new JacksonNonBlockingObjectMapperFactory();
-        ObjectMapper mapper = factory.createObjectMapper();
-    	mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    	// "Jan 15, 2013 10:16:20 AM"
-    	mapper.setDateFormat(new SimpleDateFormat("MMM d, yyyy h:mm:ss aaa"));
-    	return mapper;
+        return MAPPER;
     }
 
     @Override
@@ -123,9 +132,9 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 
             File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
             if (boardCatalog) {
-            	parseBoardCatalog(new BufferedReader(new FileReader(boardFile)));
+            	parseBoardCatalog(boardFile);
             } else {
-            	parseBoard(new BufferedReader(new FileReader(boardFile)));
+            	parseBoard(boardFile);
             }
             if (board != null)
                 board.lastFetched = Calendar.getInstance().getTimeInMillis();
@@ -155,7 +164,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 		}
 	}
 
-    private void parseBoard(BufferedReader in) throws IOException {
+    private void parseBoard(File in) throws IOException {
 //    	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
     	List<ChanPost> threads = new ArrayList<ChanPost>();
     	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
@@ -203,7 +212,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 
-    private void parseBoardCatalog(BufferedReader in) throws IOException {
+    private void parseBoardCatalog(File in) throws IOException {
     	List<ChanThread> threads = new ArrayList<ChanThread>();
     	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
     	boolean firstLoad = false;

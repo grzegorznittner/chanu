@@ -1,21 +1,21 @@
 package com.chanapps.four.fragment;
 
-import android.content.Context;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 
-import com.android.gallery3d.app.PackagesMonitor;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
-import org.apache.commons.lang3.time.DateUtils;
-
-import java.text.DateFormat;
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,9 +54,17 @@ public class AboutFragment extends PreferenceFragment
         Preference p = findPreference(pref);
         try {
             PackageInfo info = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+            ApplicationInfo appInfo = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
             
             String version = info.versionName;
-            Date d = new Date(info.lastUpdateTime);
+            
+            ZipFile zf = new ZipFile(appInfo.sourceDir);
+            ZipEntry ze = zf.getEntry("classes.dex");
+            long time = ze.getTime();
+            
+            Date d = new Date(time);
+            
+            zf.close();
             
             String dateStr = DateFormat.getDateInstance(DateFormat.MEDIUM).format(d);
             String title = String.format(getString(R.string.pref_about_application_version), version);

@@ -1,23 +1,31 @@
 package com.chanapps.four.data;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
-import android.util.Log;
-import com.chanapps.four.component.URLFormatComponent;
-import com.chanapps.four.service.NetworkProfileManager;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import android.content.Context;
 import android.database.MatrixCursor;
+import android.util.Log;
 
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.URLFormatComponent;
+import com.chanapps.four.service.NetworkProfileManager;
 
 public class ChanThread extends ChanPost {
 
@@ -361,7 +369,7 @@ public class ChanThread extends ChanPost {
         if (b == null || b.length == 0)
             return null;
         try {
-            ByteArrayInputStream bais = new ByteArrayInputStream(b);
+            InputStream bais = new BufferedInputStream(new ByteArrayInputStream(b));
             ObjectInputStream ois = new ObjectInputStream(bais);
             ChanPost[] list = (ChanPost[])ois.readObject();
             return list;

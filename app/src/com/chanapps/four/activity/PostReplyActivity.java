@@ -861,10 +861,10 @@ public class PostReplyActivity
         //return MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
 
         // just find the image bounds first pass
-        InputStream in = getContentResolver().openInputStream(imageUri);
+        InputStream in = new BufferedInputStream(getContentResolver().openInputStream(imageUri));
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        Bitmap previewBitmap = BitmapFactory.decodeStream(in, null, options); // this just sets options, returns null
+        BitmapFactory.decodeStream(in, null, options); // this just sets options, returns null
         MaxAxis axis = (options.outWidth >= options.outHeight) ? MaxAxis.WIDTH : MaxAxis.HEIGHT;
         if (DEBUG) Log.i(TAG, "Initial size: " + options.outWidth + "x" + options.outHeight);
         int scale = 1;
@@ -882,7 +882,7 @@ public class PostReplyActivity
         }
 
         // second pass actually scale the preview image
-        InputStream inScale = getContentResolver().openInputStream(imageUri);
+        InputStream inScale = new BufferedInputStream(getContentResolver().openInputStream(imageUri));
         BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
         scaleOptions.inSampleSize = scale;
         Bitmap b = BitmapFactory.decodeStream(inScale, null, scaleOptions);
@@ -1320,7 +1320,7 @@ public class PostReplyActivity
                         String suffix = MimeTypeMap.getFileExtensionFromUrl(imageUrl);
                         String fileName = prefix + "." + suffix;
                         file = new File(getExternalCacheDir(), fileName);
-                        in = getContentResolver().openInputStream(imageUri);
+                        in = new BufferedInputStream(getContentResolver().openInputStream(imageUri));
                         FileUtils.copyInputStreamToFile(in, file);
 
                     }

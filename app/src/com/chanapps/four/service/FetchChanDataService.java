@@ -3,13 +3,15 @@
  */
 package com.chanapps.four.service;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.zip.GZIPInputStream;
+
 import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
@@ -21,7 +23,10 @@ import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
-import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
@@ -253,8 +258,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             }
             else {
                 board.lastFetched = new Date().getTime();
-                long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo,
-                        new InputStreamReader(tc.getInputStream()));
+                long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new BufferedInputStream(tc.getInputStream()));
             	long fetchTime = board.lastFetched - startTime;
                 long storeTime = new Date().getTime() - board.lastFetched;
                 
@@ -364,7 +368,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             }
             else {
                 if (DEBUG) Log.i(TAG, "Fetch succeeded, storing thread file");
-                long fileSize = ChanFileStorage.storeThreadFile(getBaseContext(), boardCode, threadNo, new InputStreamReader(tc.getInputStream()));
+                long fileSize = ChanFileStorage.storeThreadFile(getBaseContext(), boardCode, threadNo, new BufferedInputStream(tc.getInputStream()));
                 int fetchTime = (int)(new Date().getTime() - startTime);
                 final ChanActivityId activityId = getChanActivityId();
                 final Context context = getApplicationContext();
