@@ -605,7 +605,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void bindPullToRefresh() {
         if (mPullToRefreshAttacher == null) {
             PullToRefreshAttacher.Options options = new PullToRefreshAttacher.Options();
-            options.refreshScrollDistance = 0.1f;
             mPullToRefreshAttacher = new PullToRefreshAttacher(this, options);
         }
         mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
