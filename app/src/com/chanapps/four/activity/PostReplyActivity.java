@@ -1277,7 +1277,7 @@ public class PostReplyActivity
             partsList.add(new StringPart("pwd", password, charset));
             if (!usePass) {
                 partsList.add(new StringPart("recaptcha_challenge_field", getRecaptchaChallenge(), charset));
-                partsList.add(new StringPart("recaptcha_response_field", getRecaptchaResponse(), charset));
+                partsList.add(new StringPart("g-recaptcha-response", getRecaptchaResponse(), charset));
             }
             if (hasSpoiler()) {
                 partsList.add(new StringPart("spoiler", "on", charset));
