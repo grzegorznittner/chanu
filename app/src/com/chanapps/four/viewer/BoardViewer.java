@@ -2,9 +2,11 @@ package com.chanapps.four.viewer;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.*;
@@ -183,7 +185,9 @@ public class BoardViewer {
                 + (t != null && !t.isEmpty() ? t : "");
         if (DEBUG) Log.i(TAG, "setSubject tv=" + tv + " u=" + u);
         if (!u.isEmpty()) {
-            Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(u, null, spoilerTagHandler));
+            String html = ThreadViewer.markupHtml(u);
+            Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(html, null, spoilerTagHandler));
+            
             tv.setText(spannable);
             tv.setVisibility(View.VISIBLE);
         }
