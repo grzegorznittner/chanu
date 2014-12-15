@@ -7,11 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arley
- * Date: 10/30/12
- * Time: 5:51 PM
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: arley Date: 10/30/12 Time: 5:51 PM To
+ * change this template use File | Settings | File Templates.
  */
 public class Captcha {
 
@@ -19,7 +16,11 @@ public class Captcha {
     private String imageUrl;
 
     private static final Pattern IMG_REG = Pattern.compile("(<img .*src\\=\")([^\"]*)");
-    private static final Pattern CHAL_REG = Pattern.compile("(id=\"recaptcha_challenge_field\" value=\")([^\"]*)");
+    private static final Pattern CHAL_REG = Pattern.compile("(name=\"c\" value=\")([^\"]*)");
+
+    public Captcha() {
+
+    }
 
     public Captcha(Context context, String page) {
         Matcher challengeMatch = CHAL_REG.matcher(page);
@@ -29,8 +30,7 @@ public class Captcha {
 
         if (bChal && bImg) {
             challenge = challengeMatch.group(2);
-            imageUrl = String.format(
-                    URLFormatComponent.getUrl(context, URLFormatComponent.GOOGLE_RECAPTCHA_API_URL_FORMAT), imageMatch.group(2));
+            imageUrl = String.format(URLFormatComponent.getUrl(context, URLFormatComponent.GOOGLE_RECAPTCHA_API_URL_FORMAT), imageMatch.group(2));
         }
     }
 
@@ -42,4 +42,11 @@ public class Captcha {
         return imageUrl;
     }
 
+    public void setChallenge(String challenge) {
+        this.challenge = challenge;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
