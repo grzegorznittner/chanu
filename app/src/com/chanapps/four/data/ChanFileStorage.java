@@ -200,7 +200,6 @@ public class ChanFileStorage {
                 updateWatchedThread(context, board);
             }
             if (DEBUG) Log.i(TAG, "updating board /" + board.link + "/" + (threadNo > -1 ? threadNo : ""));
-            BoardActivity.updateBoard(context, board.link, threadNo);
         } else {
             Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
         }

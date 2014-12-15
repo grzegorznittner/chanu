@@ -12,9 +12,12 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.Captcha;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
@@ -24,11 +27,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arley
- * Date: 11/8/12
- * Time: 2:27 PM
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: arley Date: 11/8/12 Time: 2:27 PM To change
+ * this template use File | Settings | File Templates.
  */
 public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
 
@@ -37,6 +37,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
     private static final boolean DEBUG = false;
 
     private Context context = null;
+    private Captcha captcha;
     private ImageView recaptchaButton = null;
     private ImageView recaptchaLoading = null;
     private String recaptchaChallenge = null;
@@ -45,6 +46,14 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
 
     public LoadCaptchaTask(Context context, ImageView recaptchaButton, ImageView recaptchaLoading, boolean changeBgColor) {
         this.context = context;
+        this.recaptchaButton = recaptchaButton;
+        this.recaptchaLoading = recaptchaLoading;
+        this.changeBgColor = changeBgColor;
+    }
+
+    public LoadCaptchaTask(Context context, Captcha captcha, ImageView recaptchaButton, ImageView recaptchaLoading, boolean changeBgColor) {
+        this.context = context;
+        this.captcha = captcha;
         this.recaptchaButton = recaptchaButton;
         this.recaptchaLoading = recaptchaLoading;
         this.changeBgColor = changeBgColor;
@@ -91,8 +100,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         } catch (Exception e) {
             Log.e(TAG, "Error getting recaptcha url", e);
             return R.string.post_reply_captcha_error;
-        }
-        finally {
+        } finally {
             if (client != null) {
                 client.close();
             }
@@ -105,12 +113,10 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
             if (imageUrl == null || imageUrl.isEmpty()) {
                 Log.e(TAG, "Null image url found in response=" + captchaResponse);
                 return R.string.post_reply_captcha_error;
-            }
-            else if (challenge == null || challenge.isEmpty()) {
+            } else if (challenge == null || challenge.isEmpty()) {
                 Log.e(TAG, "Null challenge found in response=" + captchaResponse);
                 return R.string.post_reply_captcha_error;
-            }
-            else {
+            } else {
                 if (DEBUG) Log.i(TAG, "Found recaptcha imageUrl=" + imageUrl + " challenge=" + challenge);
                 recaptchaChallenge = challenge;
                 InputStream is = new URL(imageUrl).openStream();
@@ -120,8 +126,15 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
                     return R.string.post_reply_captcha_error;
                 }
                 boolean invert = ThemeSelector.instance(context).isDark();
-                if (changeBgColor)
-                    recaptchaBitmap = colorMap(recaptchaBitmap, invert);
+                if (changeBgColor) recaptchaBitmap = colorMap(recaptchaBitmap, invert);
+
+                synchronized (captcha) {
+                    if (this.captcha != null) {
+                        this.captcha.setChallenge(captcha.getChallenge());
+                        this.captcha.setImageUrl(captcha.getImageUrl());
+                    }
+                }
+
                 return 0;
             }
         } catch (Exception e) {
@@ -135,8 +148,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         if (DEBUG) Log.i(TAG, "Captcha load task cancelled");
         recaptchaLoading.clearAnimation();
         recaptchaLoading.setVisibility(View.GONE);
-        if (recaptchaBitmap != null)
-            recaptchaBitmap.recycle();
+        if (recaptchaBitmap != null) recaptchaBitmap.recycle();
         recaptchaButton.setImageResource(R.drawable.captcha);
         recaptchaButton.setVisibility(View.VISIBLE);
         Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
@@ -149,10 +161,8 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         if (result == 0) {
             recaptchaButton.setImageBitmap(recaptchaBitmap);
             recaptchaButton.setVisibility(View.VISIBLE);
-        }
-        else {
-            if (recaptchaBitmap != null)
-                recaptchaBitmap.recycle();
+        } else {
+            if (recaptchaBitmap != null) recaptchaBitmap.recycle();
             recaptchaButton.setImageResource(R.drawable.captcha);
             recaptchaButton.setVisibility(View.VISIBLE);
             Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
@@ -171,10 +181,8 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         int width = src.getWidth();
 
         // scan through every pixel
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 // get one pixel
                 pixelColor = src.getPixel(x, y);
                 // saving alpha channel
@@ -183,21 +191,17 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
                 int g = Color.green(pixelColor);
                 int b = Color.blue(pixelColor);
                 if (r >= CUTOFF && g >= CUTOFF && b >= CUTOFF) { // bg color
-                    int bgId = invert
-                            ? com.chanapps.four.activity.R.color.DarkPaletteCardListBg
-                            : com.chanapps.four.activity.R.color.PaletteCardListBg;
+                    int bgId = invert ? com.chanapps.four.activity.R.color.DarkPaletteCardListBg : com.chanapps.four.activity.R.color.PaletteCardListBg;
                     int bgColor = context.getResources().getColor(bgId);
                     R = Color.red(bgColor);
                     G = Color.green(bgColor);
                     B = Color.blue(bgColor);
-                }
-                else if (invert) {
+                } else if (invert) {
                     // inverting byte for each R/G/B channel
                     R = 255 - r;
                     G = 255 - g;
                     B = 255 - b;
-                }
-                else {
+                } else {
                     R = r;
                     G = g;
                     B = b;
