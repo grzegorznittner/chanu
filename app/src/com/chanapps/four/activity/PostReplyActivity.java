@@ -958,13 +958,70 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (validMsg != null) {
             Toast.makeText(getApplicationContext(), validMsg, Toast.LENGTH_SHORT).show();
         } else {
-            closeKeyboard();
-            PostReplyTask postReplyTask = new PostReplyTask();
-            PostingReplyDialogFragment dialogFragment = new PostingReplyDialogFragment(postReplyTask, threadNo);
-            dialogFragment.show(getSupportFragmentManager(), PostingReplyDialogFragment.TAG);
-            if (!postReplyTask.isCancelled()) {
-                postReplyTask.execute(dialogFragment);
-            }
+            AsyncTask<Context, Void, Boolean> getCaptchaRespone = new AsyncTask<Context, Void, Boolean>() {
+
+                @Override
+                protected Boolean doInBackground(Context... params) {
+                    AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+                    HttpPost post = new HttpPost(URLFormatComponent.getUrl(params[0], URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_URL));
+
+                    Part[] parts = { new StringPart("c", captcha.getChallenge()), new StringPart("response", getRecaptchaResponse().replace(" ", "+")) };
+
+                    MultipartEntity entity = new MultipartEntity(parts);
+                    post.setEntity(entity);
+
+                    try {
+                        HttpResponse httpResponse = client.execute(post);
+
+                        BufferedReader r = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+                        StringBuilder s = new StringBuilder();
+                        String line;
+                        while ((line = r.readLine()) != null) {
+                            if (DEBUG) Log.i(TAG, "Response Line:" + line);
+                            s.append(line);
+                        }
+                        String response = s.toString();
+
+                        Matcher m = Pattern.compile("<textarea.*?>(.*)<\\/textarea>").matcher(response);
+
+                        if (m.find()) {
+                            setgRecaptchaResponse(m.group(1));
+                        } else {
+                            return false;
+                        }
+
+                    } catch (ClientProtocolException e) {
+                        Log.e(TAG, e.toString());
+                    } catch (IOException e) {
+                        Log.e(TAG, e.toString());
+                    } finally {
+                        if (client != null) {
+                            client.close();
+                        }
+                    }
+                    
+                    return true;
+                }
+
+                @Override
+                protected void onPostExecute(Boolean result) {
+                    // we have the captcha result stored in the gRecaptchaResponse, pass that into the reply
+                    if (!result) {
+                        Toast.makeText(getApplicationContext(), "Invalid CAPTCHA entered.", Toast.LENGTH_SHORT).show();
+                        reloadCaptcha();
+                        return;
+                    }
+                    
+                    closeKeyboard();
+                    PostReplyTask postReplyTask = new PostReplyTask();
+                    PostingReplyDialogFragment dialogFragment = new PostingReplyDialogFragment(postReplyTask, threadNo);
+                    dialogFragment.show(getSupportFragmentManager(), PostingReplyDialogFragment.TAG);
+                    if (!postReplyTask.isCancelled()) {
+                        postReplyTask.execute(dialogFragment);
+                    }
+                }
+            };
+            getCaptchaRespone.execute(this);
         }
     }
 
@@ -995,74 +1052,20 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                navigateUp();
-                return true;
-            case R.id.post_reply_quote_menu:
-                insertQuote();
-                return true;
+        case android.R.id.home:
+            navigateUp();
+            return true;
+        case R.id.post_reply_quote_menu:
+            insertQuote();
+            return true;
             /*
-            case R.id.post_reply_exit_menu:
-                finish();
-                return true;
-            */
-            case R.id.post_reply_send_menu:
-                AsyncTask<Context, Void, Integer> getCaptchaRespone = new AsyncTask<Context, Void, Integer>() {
-
-                    @Override
-                    protected Integer doInBackground(Context... params) {
-                        AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-                        HttpPost post = new HttpPost(URLFormatComponent.getUrl(params[0], URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_URL));
-                        
-                        Part[] parts = {
-                                new StringPart("c", captcha.getChallenge()),
-                                new StringPart("response", getRecaptchaResponse().replace(" ", "+"))
-                        };
-                        
-                        MultipartEntity entity = new MultipartEntity(parts);
-                        post.setEntity(entity);
-                        
-                        try {
-                            HttpResponse httpResponse = client.execute(post);
-                            
-                            BufferedReader r = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-                            StringBuilder s = new StringBuilder();
-                            String line;
-                            while ((line = r.readLine()) != null) {
-                                if (DEBUG) Log.i(TAG, "Response Line:" + line);
-                                s.append(line);
-                            }
-                            String response = s.toString();
-                            
-                            Matcher m = Pattern.compile("<textarea.*?>(.*)<\\/textarea>").matcher(response);
-                            
-                            if (m.find()) {
-                                setgRecaptchaResponse(m.group(1));
-                            }
-                            
-                            
-                        } catch (ClientProtocolException e) {
-                            Log.e(TAG, e.toString());
-                        } catch (IOException e) {
-                            Log.e(TAG, e.toString());
-                        } finally {
-                            if (client != null) {
-                                client.close();
-                            }
-                        }
-
-                        return null;
-                    }
-                    
-                    @Override
-                    protected void onPostExecute(Integer result) {
-                        validateAndSendReply();
-                    }
-                };
-                getCaptchaRespone.execute(this);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+             * case R.id.post_reply_exit_menu: finish(); return true;
+             */
+        case R.id.post_reply_send_menu:
+            validateAndSendReply();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
         }
     }
 
