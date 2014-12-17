@@ -900,7 +900,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (validMsg != null) {
             Toast.makeText(getApplicationContext(), validMsg, Toast.LENGTH_SHORT).show();
         } else {
-            AsyncTask<Context, Void, Boolean> getCaptchaRespone = new AsyncTask<Context, Void, Boolean>() {
+            AsyncTask<Context, Void, Boolean> getCaptchaResponse = new AsyncTask<Context, Void, Boolean>() {
 
                 @Override
                 protected Boolean doInBackground(Context... params) {
@@ -967,7 +967,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                     }
                 }
             };
-            getCaptchaRespone.execute(this);
+            getCaptchaResponse.execute(this);
         }
     }
 
@@ -1062,10 +1062,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     public String getRecaptchaResponse() {
-        String t = recaptchaText.getText().toString();
-        if (t.indexOf(" ") == -1) // autodoubling for quick entry
-        t = t + " " + t;
-        return t;
+    	return recaptchaText.getText().toString();
     }
 
     private String validatePost() {
