@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThemeSelector;
+import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.Captcha;
 
 import org.apache.http.HttpResponse;
@@ -109,7 +110,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         try {
             Captcha captcha = new Captcha(context, captchaResponse);
             String challenge = captcha.getChallenge();
-            String imageUrl = captcha.getImageUrl();
+            String imageUrl = captcha.getImageUrl() + "&k=" + URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_ID;
             if (imageUrl == null || imageUrl.isEmpty()) {
                 Log.e(TAG, "Null image url found in response=" + captchaResponse);
                 return R.string.post_reply_captcha_error;

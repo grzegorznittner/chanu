@@ -39,7 +39,8 @@ public class URLFormatComponent {
     public static final String GITHUB_ABPTR_URL = "//github.com/chrisbanes/ActionBar-PullToRefresh";
     public static final String GITHUB_CHAN_API_URL = "//github.com/4chan/4chan-API";
     public static final String GITHUB_UIL_URL = "//github.com/nostra13/Android-Universal-Image-Loader";
-    public static final String GOOGLE_CHANU_RECAPTCHA_URL = "//www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc";
+    public static final String GOOGLE_CHANU_RECAPTCHA_ID = "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc";
+    public static final String GOOGLE_CHANU_RECAPTCHA_URL = "//www.google.com/recaptcha/api/fallback?k=" + GOOGLE_CHANU_RECAPTCHA_ID;
     public static final String GOOGLE_CODE_COLOR_PICKER_URL = "//code.google.com/p/color-picker-view/";
     public static final String GOOGLE_IMAGE_SEARCH_URL = "//www.google.com/imghp";
     public static final String GOOGLE_MAPS_URL_FORMAT = "//maps.google.com/maps?f=q&q=(%f,%f)";
