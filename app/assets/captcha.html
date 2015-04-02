@@ -1,0 +1,24 @@
+<html>
+<head>
+<script type="text/javascript">
+	var dataCallback = function(res) {
+		CaptchaCallback.captchaEntered(res);
+	};
+	
+	var onloadCallback = function() {
+		grecaptcha.render('html_element', {
+			'sitekey' : '6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc',
+			'callback' : dataCallback
+		});
+	};
+</script>
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
+</head>
+<body>
+	<form name="myform" action="" method="post">
+		<div style="width: 304px; margin: auto;">
+			<div id="html_element"></div>
+		</div>
+	</form>
+</body>
+</html>

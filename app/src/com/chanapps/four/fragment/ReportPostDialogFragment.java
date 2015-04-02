@@ -11,11 +11,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.component.URLFormatComponent;
-import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.ReportPostTask;
 
 /**
@@ -37,7 +43,6 @@ public class ReportPostDialogFragment extends DialogFragment {
     private ImageButton recaptchaButton;
     private ImageView recaptchaLoading;
     private TextView reportPostBugWarning;
-    private LoadCaptchaTask loadCaptchaTask;
 
     public ReportPostDialogFragment(){}
 
@@ -125,16 +130,16 @@ public class ReportPostDialogFragment extends DialogFragment {
                     Toast.makeText(getActivity(), R.string.post_reply_enter_captcha, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
+                /*String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
                 if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
                     Toast.makeText(getActivity(), R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
                     return;
-                }
+                }*/
 
                 closeKeyboard();
                 ReportPostTask reportPostTask = new ReportPostTask(
                         (ChanIdentifiedActivity)getActivity(), boardCode, threadNo, postNos,
-                        reportType, reportTypeIndex, recaptchaChallenge, recaptchaResponse);
+                        reportType, reportTypeIndex, "", recaptchaResponse);
                 ReportingPostDialogFragment dialogFragment = new ReportingPostDialogFragment(reportPostTask);
                 dialogFragment.show(getActivity().getSupportFragmentManager(), ReportingPostDialogFragment.TAG);
                 if (!reportPostTask.isCancelled())
@@ -158,8 +163,8 @@ public class ReportPostDialogFragment extends DialogFragment {
     public void reloadCaptcha() {
         reportRecaptchaResponse.setText("");
         reportRecaptchaResponse.setHint(R.string.post_reply_recaptcha_hint);
-        loadCaptchaTask = new LoadCaptchaTask(getActivity(), recaptchaButton, recaptchaLoading, false);
-        loadCaptchaTask.execute(URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_URL));
+//        loadCaptchaTask = new LoadCaptchaTask(getActivity(), recaptchaButton, recaptchaLoading, false);
+//        loadCaptchaTask.execute(URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_URL));
     }
 
 }
