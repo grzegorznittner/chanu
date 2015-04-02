@@ -396,7 +396,7 @@
     <dimen name="PostReplyRecaptcha.marginLeft">20dp</dimen>
     <dimen name="PostReplyRecaptcha.marginRight">20dp</dimen>
     <dimen name="PostReplyRecaptcha.marginBottom">8dp</dimen>
-    <dimen name="PostReplyRecaptcha.layoutHeight">80dp</dimen>
+    <dimen name="PostReplyRecaptcha.layoutHeight">200dp</dimen>
     <dimen name="PostReplyButton.marginLeft">16dp</dimen>
     <dimen name="PostReplyButton.marginRight">16dp</dimen>
     <dimen name="PostReplyButton.marginBottom">8dp</dimen>
