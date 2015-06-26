@@ -36,11 +36,9 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
     public static final String TAG = ReportPostTask.class.getSimpleName();
     public static final boolean DEBUG = false;
 
-    private ChanIdentifiedActivity refreshableActivity = null;
     private String boardCode = null;
     private long[] postNos = {};
     private int reportTypeIndex;
-    private String recaptchaChallenge;
     private String recaptchaResponse;
     private Context context = null;
     private ReportingPostDialogFragment dialogFragment = null;
@@ -48,15 +46,12 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
     public ReportPostTask(ChanIdentifiedActivity refreshableActivity,
                           String boardCode, long threadNo, long[] postNos,
                           String reportType, int reportTypeIndex,
-                          String recaptchaChallenge,
                           String recaptchaResponse)
     {
-        this.refreshableActivity = refreshableActivity;
         this.context = refreshableActivity.getBaseContext();
         this.boardCode = boardCode;
         this.postNos = postNos;
         this.reportTypeIndex = reportTypeIndex;
-        this.recaptchaChallenge = recaptchaChallenge;
         this.recaptchaResponse = recaptchaResponse;
     }
 
@@ -104,12 +99,8 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
         partsList.add(new StringPart("mode", "report", PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("cat", reportTypeCode(reportTypeIndex), PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("board", boardCode, PartBase.ASCII_CHARSET));
-// known 4chan bug: can't report multiple posts
-//        for (long postNo : postNos)
-//            partsList.add(new StringPart("no", Long.toString(postNo), PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("no", Long.toString(postNos[0]), PartBase.ASCII_CHARSET));
-        partsList.add(new StringPart("recaptcha_challenge_field", recaptchaChallenge, PartBase.ASCII_CHARSET));
-        partsList.add(new StringPart("recaptcha_response_field", recaptchaResponse, PartBase.ASCII_CHARSET));
+        partsList.add(new StringPart("g-recaptcha-response", recaptchaResponse, PartBase.ASCII_CHARSET));
         Part[] parts = partsList.toArray(new Part[partsList.size()]);
         if (DEBUG)
             dumpPartsList(partsList);
