@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.CaptchaView;
+import com.chanapps.four.component.CaptchaView.CaptchaCallback;
 import com.chanapps.four.task.ReportPostTask;
 
 /**
@@ -39,9 +42,7 @@ public class ReportPostDialogFragment extends DialogFragment {
     private long threadNo = 0;
     private long[] postNos = {};
     private Spinner reportTypeSpinner;
-    private EditText reportRecaptchaResponse;
-    private ImageButton recaptchaButton;
-    private ImageView recaptchaLoading;
+    private CaptchaView recaptchaView;
     private TextView reportPostBugWarning;
 
     public ReportPostDialogFragment(){}
@@ -74,14 +75,7 @@ public class ReportPostDialogFragment extends DialogFragment {
                 android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         reportTypeSpinner.setAdapter(adapter);
-        reportRecaptchaResponse = (EditText)view.findViewById(R.id.report_post_recaptcha_response);
-        recaptchaButton = (ImageButton)view.findViewById(R.id.report_post_recaptcha_imgview);
-        recaptchaButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                reloadCaptcha();
-            }
-        });
-        recaptchaLoading = (ImageView)view.findViewById(R.id.report_post_recaptcha_loading);
+        recaptchaView = (CaptchaView) view.findViewById(R.id.report_recaptcha_webview);
         reportPostBugWarning = (TextView)view.findViewById(R.id.report_post_bug_warning);
         if (postNos.length > 1) {
             String s = String.format(getString(R.string.report_post_bug_warning), postNos[0]);
@@ -91,7 +85,7 @@ public class ReportPostDialogFragment extends DialogFragment {
         else {
             reportPostBugWarning.setVisibility(View.GONE);
         }
-        reloadCaptcha();
+        recaptchaView.initCaptcha();
         AlertDialog dialog = builder.create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.report_post), (DialogInterface.OnClickListener)null);
         return dialog;
@@ -125,27 +119,21 @@ public class ReportPostDialogFragment extends DialogFragment {
                     return;
                 }
                 int reportTypeIndex = reportTypeSpinner.getSelectedItemPosition();
-                String recaptchaResponse = reportRecaptchaResponse.getText().toString();
+                String recaptchaResponse = recaptchaView.getCaptchaResponse();
                 if ("".equals(recaptchaResponse)) {
                     Toast.makeText(getActivity(), R.string.post_reply_enter_captcha, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                /*String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
-                if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
-                    Toast.makeText(getActivity(), R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
-                    return;
-                }*/
 
                 closeKeyboard();
                 ReportPostTask reportPostTask = new ReportPostTask(
                         (ChanIdentifiedActivity)getActivity(), boardCode, threadNo, postNos,
-                        reportType, reportTypeIndex, "", recaptchaResponse);
+                        reportType, reportTypeIndex, recaptchaResponse);
                 ReportingPostDialogFragment dialogFragment = new ReportingPostDialogFragment(reportPostTask);
                 dialogFragment.show(getActivity().getSupportFragmentManager(), ReportingPostDialogFragment.TAG);
                 if (!reportPostTask.isCancelled())
                     reportPostTask.execute(dialogFragment);
                 dismiss();
-                //mode.finish();
             }
         });
     }
@@ -159,12 +147,4 @@ public class ReportPostDialogFragment extends DialogFragment {
             imm.hideSoftInputFromWindow(windowToken, 0);
         }
     }
-
-    public void reloadCaptcha() {
-        reportRecaptchaResponse.setText("");
-        reportRecaptchaResponse.setHint(R.string.post_reply_recaptcha_hint);
-//        loadCaptchaTask = new LoadCaptchaTask(getActivity(), recaptchaButton, recaptchaLoading, false);
-//        loadCaptchaTask.execute(URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_CHANU_RECAPTCHA_URL));
-    }
-
 }
