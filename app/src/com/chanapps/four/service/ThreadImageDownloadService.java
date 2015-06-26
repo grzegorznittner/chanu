@@ -420,9 +420,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 					+ targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
 			return fileLength;
 		} catch(Exception e) {
-            Log.e(TAG, "Failed to download image: " + post.tim);
-            return -1;
-        } finally {
+		    Log.e(TAG, "Failed to download image: " + post.tim);
+		    return -1;
+		} finally {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(out);
 			closeConnection(conn);
