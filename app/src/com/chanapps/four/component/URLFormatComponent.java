@@ -31,7 +31,7 @@ public class URLFormatComponent {
     public static final String CHAN_SPOILER_IMAGE_URL_FORMAT = "//s.4cdn.org/image/spoiler-%s.png";
     public static final String CHAN_SPOILER_NUMBERED_IMAGE_URL_FORMAT = "//s.4cdn.org/image/spoiler-%s%d.png";
     public static final String CHAN_THREAD_URL_FORMAT = "//a.4cdn.org/%s/res/%d.json";
-    public static final String CHAN_THUMBS_URL_FORMAT = "//0.t.4cdn.org/%s/thumb/%ds.jpg";
+    public static final String CHAN_THUMBS_URL_FORMAT = "//t.4cdn.org/%s/thumb/%ds.jpg";
     public static final String CHAN_WEB_BOARD_URL_FORMAT = "//boards.4chan.org/%s/";
     public static final String CHAN_WEB_POST_URL_FORMAT = "//boards.4chan.org/%s/res/%d#p%d";
     public static final String CHAN_WEB_THREAD_URL_FORMAT = "//boards.4chan.org/%s/res/%d";
