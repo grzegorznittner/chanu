@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- dummy layout, use <include> to import -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/BoardGridImageSizeHalf"
+            android:layout_marginTop="@dimen/BoardGridItemHeight"
+            >
+        -->
+    <View
+            style="@style/ThreadListHeaderNumHorizontalBorder"
+            android:layout_marginTop="@dimen/BoardGridItemHeight4"
+            />
+    <ImageView
+            android:id="@+id/grid_item_thread_thumb_5"
+            android:layout_marginTop="@dimen/BoardGridItemHeight4"
+            android:layout_width="@dimen/BoardGridImageSizeHalf"
+            android:layout_height="@dimen/BoardGridImageSizeHalf"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/thread_post_image"
+            android:background="@drawable/board_grid_selector_bg"
+            android:visibility="gone"
+            />
+    <TextView
+            android:id="@+id/grid_item_thread_subject_5"
+            android:layout_marginTop="@dimen/BoardGridItemHeight4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/grid_item_thread_thumb_5"
+            android:layout_toLeftOf="@+id/grid_item_country_flag_5"
+            android:paddingLeft="@dimen/BoardGridView.spacing"
+            android:paddingRight="@dimen/BoardGridView.rightSpacing"
+            android:paddingTop="@dimen/BoardGridView.topSpacing"
+            android:textColor="?themedCardSubjectTextColor"
+            android:textSize="@dimen/BoardGridLargeSubject"
+            android:maxLines="@integer/BoardGridView.Half.maxLines"
+            />
+    <ImageView
+            android:id="@+id/grid_item_country_flag_5"
+            android:layout_marginTop="@dimen/BoardGridItemHeight4"
+            android:layout_width="@dimen/BoardGridItemIconWidth"
+            android:layout_height="@dimen/BoardGridImageSizeHalfMinusSpacing"
+            android:layout_marginRight="@dimen/BoardGridView.spacing"
+            android:scaleType="fitEnd"
+            android:layout_alignParentRight="true"
+            android:gravity="bottom|right"
+            android:contentDescription="@string/thread_country_flag"
+            />
+</merge>

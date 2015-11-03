@@ -1,0 +1,22 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/grid_item"
+             android:layout_width="match_parent"
+             android:layout_height="@dimen/BoardGridItemHeightOuter3"
+        >
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/grid_item"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/BoardGridItemHeight3"
+                    android:background="?themedLargeCardBackground"
+                    android:foreground="@drawable/board_grid_selector_bg"
+            >
+
+        <include layout="@layout/board_grid_item_single"/>
+        <include layout="@layout/board_grid_item_single_1"/>
+        <include layout="@layout/board_grid_item_single_2"/>
+        <include layout="@layout/board_grid_item_single_3"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

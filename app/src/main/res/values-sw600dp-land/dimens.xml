@@ -1,0 +1,21 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+
+    <dimen name="BoardGridViewTablet_image_width">112dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width">304dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width_afterPadding">304dp</dimen>
+    <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
+
+    <dimen name="tutorial_overlay_paddingTop">170dp</dimen>
+    <dimen name="tutorial_overlay_subject_paddingTop">254dp</dimen>
+    <integer name="tutorial_overlay_border_cols">2</integer>
+
+    <integer name="BoardGridView.numColumns">3</integer>
+    <integer name="BoardGridViewSmall.numColumns">6</integer>
+
+    <bool name="BoardGridView.abbrev">true</bool>
+    <bool name="narrow_tablet">true</bool>
+
+    <dimen name="ad_layout_height">90dp</dimen>
+
+    <integer name="PostReplyComment_minLines">11</integer>
+</resources>

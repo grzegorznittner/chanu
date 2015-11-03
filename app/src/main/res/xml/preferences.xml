@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:chanapps="http://chanapps.com">
+
+    <!-- posting -->
+    <!--
+    <com.chanapps.four.component.YesNoPreference
+            android:key="pref_show_nsfw_boards"
+            android:title="@string/pref_show_nsfw_boards"
+            android:summary="@string/pref_show_nsfw_boards_summ_off"
+            android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
+            android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
+            android:dialogMessage="@string/pref_show_nsfw_boards_summ_message"
+            android:positiveButtonText="@string/pref_show_nsfw_boards_summ_pos"
+            android:negativeButtonText="@string/pref_show_nsfw_boards_summ_neg"
+            android:defaultValue="false"
+            />
+    -->
+    <!--
+    <PreferenceScreen
+            android:key="pref_view_options"
+            android:title="@string/pref_view_options"
+            >
+        -->
+        <!--
+                    android:summary="@string/pref_view_options_summ"
+        -->
+        <!--
+        <CheckBoxPreference
+                android:key="pref_use_catalog"
+                android:title="@string/catalog_menu"
+                android:defaultValue="false" />
+        -->
+        <!--
+        android:summaryOn="@string/view_as_grid_menu"
+                 android:summaryOff="@string/view_as_list_menu"
+                 -->
+        <!--
+        <CheckBoxPreference
+                android:key="pref_use_abbrev_boards"
+                android:title="@string/pref_use_abbrev_boards"
+                android:defaultValue="false" />
+       -->
+        <!--
+        <CheckBoxPreference
+                android:key="pref_hide_last_replies"
+                android:title="@string/pref_hide_last_replies"
+                android:defaultValue="false" />
+        -->
+
+    <!--
+        <CheckBoxPreference
+                android:key="pref_use_volume_scroll"
+                android:title="@string/pref_use_volume_scroll"
+                android:defaultValue="false" />
+
+        <CheckBoxPreference
+                android:key="pref_use_fast_scroll"
+                android:title="@string/pref_use_fast_scroll"
+                android:defaultValue="false" />
+
+        <ListPreference
+                android:key="pref_theme"
+                android:title="@string/pref_theme_title"
+                android:entries="@array/pref_theme_entries"
+                android:entryValues="@array/pref_theme_entry_values"
+                android:defaultValue="@string/pref_theme_default_value" />
+    -->
+        <!--
+        <ListPreference
+                android:key="pref_font_size"
+                android:title="@string/font_size_menu"
+                android:entries="@array/font_sizes"
+                android:entryValues="@array/font_sizes"
+                android:defaultValue="@string/font_size_medium" />
+        -->
+        <!--
+        <ListPreference
+                android:key="pref_board_sort_type"
+                android:title="@string/sort_order_menu"
+                android:entries="@array/sort_order_types"
+                android:entryValues="@array/sort_order_types"
+                android:defaultValue="@string/sort_order_bump_order" />
+        -->
+        <!--
+        <ListPreference
+                android:key="pref_autoload_images"
+                android:title="@string/pref_autoload_images_title"
+                android:entries="@array/pref_autoload_images_entries"
+                android:entryValues="@array/pref_autoload_images_entry_values"
+                android:defaultValue="@string/pref_autoload_images_auto_value" />
+        -->
+        <!--
+                        android:summary="@string/pref_autoload_images_summary"
+        -->
+    <!-- </PreferenceScreen> -->
+
+    <!--
+    <PreferenceScreen
+            android:key="pref_cache_category"
+            android:title="@string/pref_cache_category"
+            >
+        -->
+        <!--
+                    android:summary="@string/pref_cache_category_summ"
+        -->
+
+    <CheckBoxPreference
+            android:key="pref_notifications"
+            android:title="@string/pref_notifications"
+            android:summaryOn="@string/pref_notifications_summ_on"
+            android:summaryOff="@string/pref_notifications_summ_off"
+            android:defaultValue="true" />
+
+    <CheckBoxPreference
+            android:key="pref_autoupdate_threads"
+            android:title="@string/pref_autoupdate_threads"
+            android:summaryOn="@string/pref_autoupdate_threads_summ_on"
+            android:summaryOff="@string/pref_autoupdate_threads_summ_off"
+            android:defaultValue="true" />
+
+    <CheckBoxPreference
+            android:key="pref_background_data_on_mobile"
+            android:title="@string/pref_background_data"
+            android:summaryOn="@string/pref_background_data_summ_on"
+            android:summaryOff="@string/pref_background_data_summ_off"
+            android:defaultValue="false" />
+
+    <com.chanapps.four.component.CacheSizePreference
+                android:key="pref_cache_size"
+                android:title="@string/pref_cache_size"
+                android:summary="@string/pref_cache_size_summ"
+                chanapps:min="32"
+                chanapps:unitsLeft=""
+                chanapps:unitsRight="MB"
+                />
+
+        <Preference
+                android:key="pref_clear_cache"
+                android:title="@string/pref_clear_cache"
+                android:summary="@string/pref_clear_cache_summ" />
+
+    <!-- </PreferenceScreen> -->
+
+    <!--
+    <PreferenceScreen
+            android:key="pref_user_category"
+            android:title="@string/pref_user_category"
+            android:persistent="true">
+
+        <EditTextPreference
+                android:key="pref_user_name"
+                android:title="@string/pref_user_name"
+                android:hint="@string/post_reply_name_hint"
+                android:summary="@string/pref_user_name_summ"
+                android:inputType="textPersonName"
+                android:maxLength="100"
+                android:visibility="gone"
+                />
+
+        <EditTextPreference
+                android:key="pref_user_email"
+                android:title="@string/pref_user_email"
+                android:hint="@string/post_reply_email_hint"
+                android:summary="@string/pref_user_email_summ"
+                android:inputType="textEmailAddress"
+                android:maxLength="100"
+                android:visibility="gone"
+                />
+
+        <EditTextPreference
+                android:key="pref_user_password"
+                android:title="@string/pref_user_password"
+                android:hint="@string/post_reply_password_hint"
+                android:summary="@string/pref_user_password_summ"
+                android:inputType="textVisiblePassword|numberPassword"
+                android:maxLength="8"
+                android:visibility="gone"
+                />
+
+    </PreferenceScreen>
+    -->
+
+    <!-- pass -->
+<!--
+    <PreferenceScreen
+            android:key="pref_pass_category"
+            android:title="@string/pref_pass_category"
+            >
+-->
+<!--
+            android:summary="@string/pref_pass_category_summ"
+-->
+    <!--
+        <EditTextPreference
+                android:key="pref_pass_token"
+                android:title="@string/pref_pass_token"
+                android:hint="@string/pref_pass_token_hint"
+                android:inputType="text|textCapCharacters|textNoSuggestions"
+                android:summary="@string/pref_pass_token_summ"
+                android:maxLength="10"
+                />
+
+        <EditTextPreference
+                android:key="pref_pass_pin"
+                android:title="@string/pref_pass_pin"
+                android:hint="@string/pref_pass_pin_hint"
+                android:summary="@string/pref_pass_pin_summ"
+                android:inputType="textVisiblePassword|numberPassword"
+                android:maxLength="6"
+                />
+
+    </PreferenceScreen>
+    -->
+    <!-- cache -->
+
+
+    <!-- customize -->
+    <!--
+    <PreferenceCategory
+            android:key="pref_advanced_category"
+            android:title="@string/pref_advanced_category">
+    -->
+
+    <PreferenceScreen
+            android:key="pref_advanced_category"
+            android:title="@string/pref_advanced_category"
+            >
+<!--
+            android:summary="@string/pref_advanced_category_summ"
+-->
+        <!--
+        <CheckBoxPreference
+                android:key="pref_start_with_favorites"
+                android:title="@string/pref_start_with_favorites"
+                android:summaryOn="@string/pref_start_with_favorites_summ_on"
+                android:summaryOff="@string/pref_start_with_favorites_summ_off"
+                android:defaultValue="true" />
+        -->
+
+        <!--
+        <CheckBoxPreference
+                android:key="pref_use_friendly_ids"
+                android:title="@string/pref_use_friendly_ids"
+                android:summaryOn="@string/pref_use_friendly_ids_summ_on"
+                android:summaryOff="@string/pref_use_friendly_ids_summ_off"
+                android:defaultValue="true" />
+        -->
+
+        <CheckBoxPreference
+                android:key="pref_automatically_manage_watchlist"
+                android:title="@string/pref_automatically_manage_watchlist"
+                android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"
+                android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
+                android:defaultValue="true" />
+
+        <CheckBoxPreference
+                android:key="pref_use_https"
+                android:title="@string/pref_use_https"
+                android:summaryOn="@string/pref_use_https_summ_on"
+                android:summaryOff="@string/pref_use_https_summ_off"
+                android:defaultValue="true" />
+
+        <CheckBoxPreference
+                android:key="pref_share_image_url"
+                android:title="@string/pref_share_image_url"
+                android:summaryOn="@string/pref_share_image_url_summ_on"
+                android:summaryOff="@string/pref_share_image_url_summ_off"
+                android:defaultValue="false"
+                />
+
+        <CheckBoxPreference
+                android:key="pref_download_nomedia"
+                android:title="@string/pref_download_nomedia"
+                android:summaryOn="@string/pref_download_nomedia_summ_on"
+                android:summaryOff="@string/pref_download_nomedia_summ_off"
+                android:defaultValue="false"
+                />
+
+        <CheckBoxPreference
+                android:key="pref_force_english"
+                android:title="@string/pref_force_english"
+                android:summaryOn="@string/pref_force_english_summ_on"
+                android:summaryOff="@string/pref_force_english_summ_off"
+                android:defaultValue="false"
+                />
+
+        <Preference
+                android:key="pref_download_location"
+                android:title="@string/pref_download_location"
+                android:summary="@string/pref_download_location_summ"
+                />
+
+        <ListPreference
+                android:key="pref_download_images"
+                android:title="@string/pref_download_images_title"
+                android:summary="@string/pref_download_images_summary"
+                android:entries="@array/pref_download_images_entries"
+                android:entryValues="@array/pref_download_images_entry_values"
+                android:defaultValue="@string/pref_download_images_default_value"
+                />
+
+        <!--
+        <Preference
+                android:key="pref_blocklist_button"
+                android:title="@string/blocklist_title"
+                android:summary="@string/pref_blocklist_button_summ" />
+        -->
+
+        <Preference
+                android:key="pref_reset_to_defaults"
+                android:title="@string/pref_reset_to_defaults"
+                android:summary="@string/pref_reset_to_defaults_summ"
+                />
+
+    </PreferenceScreen>
+
+    <Preference
+            android:key="pref_about"
+            android:title="@string/about_activity"
+            />
+
+</PreferenceScreen>

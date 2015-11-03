@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:chanapps="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+
+<!-- posting -->
+
+    <com.chanapps.four.component.IconPreferenceScreen
+            android:title=""
+            android:summary=""
+            android:key="pref_about_icon"
+            chanapps:icon="@drawable/app_icon_with_text"/>
+
+    <!--
+    <Preference
+            android:key="pref_about_title"
+            android:title="@string/pref_about_title"
+            android:summary="@string/pref_about_title_sum"
+            />
+    -->
+
+
+    <PreferenceCategory
+            android:key="pref_about_application_category"
+            android:title="@string/pref_about_application_category"
+            android:persistent="true"
+            >
+
+        <Preference
+            android:key="pref_about_application_version"
+            android:title="@string/pref_about_application_version"
+            android:summary="@string/pref_about_application_version_sum"
+            />
+
+        <Preference
+            android:key="pref_about_application_rate"
+            android:title="@string/pref_about_application_rate"
+            android:summary="@string/pref_about_application_rate_sum"
+            />
+
+        <Preference
+                android:key="pref_about_application_gplus"
+                android:title="@string/pref_about_application_gplus"
+                android:summary="@string/pref_about_application_gplus_sum"
+                />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:key="pref_about_developer_category"
+            android:title="@string/pref_about_developer_category"
+            android:persistent="true"
+            >
+
+        <Preference
+                android:key="pref_about_store_chanapps"
+                android:title="@string/pref_about_store_chanapps"
+                android:summary="@string/pref_about_store_chanapps_sum"
+                />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:key="pref_about_data_category"
+            android:title="@string/pref_about_data_category"
+            android:persistent="true"
+            >
+
+        <Preference
+                android:key="pref_about_data_4chan"
+                android:title="@string/pref_about_data_4chan"
+                android:summary="@string/pref_about_data_4chan_sum"
+                />
+
+        <Preference
+                android:key="pref_about_data_uil"
+                android:title="@string/pref_about_data_uil"
+                android:summary="@string/pref_about_data_uil_sum"
+                />
+
+        <Preference
+                android:key="pref_about_data_pulltorefresh"
+                android:title="@string/pref_about_data_pulltorefresh"
+                android:summary="@string/pref_about_data_pulltorefresh_sum"
+                />
+
+        <Preference
+                android:key="pref_about_data_color"
+                android:title="@string/pref_about_data_color"
+                android:summary="@string/pref_about_data_color_sum"
+                />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:key="pref_about_translations_category"
+            android:title="@string/pref_about_translations_category"
+            android:persistent="true"
+            >
+
+        <Preference
+                android:key="pref_about_translations_de"
+                android:title="@string/pref_about_translations_de"
+                android:summary="@string/pref_about_translations_de_sum"
+                />
+
+    </PreferenceCategory>
+    
+</PreferenceScreen>

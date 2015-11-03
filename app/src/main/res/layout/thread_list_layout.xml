@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/thread_list_layout"
+        style="@style/ThreadListLayout"
+        >
+
+    <ListView
+            android:id="@+id/thread_list_view"
+            style="@style/ThreadListView"
+            />
+
+</RelativeLayout>

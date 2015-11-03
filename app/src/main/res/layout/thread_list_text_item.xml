@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.chanapps.four.component.CheckableFrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/ThreadListItemLayout"
+        android:id="@+id/list_item"
+        android:descendantFocusability="blocksDescendants"
+        >
+        <!--
+        android:paddingLeft="@dimen/BoardGridView.spacing"
+        android:paddingRight="@dimen/BoardGridView.spacing"
+        >
+        -->
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="?themedLargeCardBackground"
+            >
+
+        <FrameLayout style="@style/ThreadListItemBar">
+
+            <View style="@style/ThreadListItemBarBackground"/>
+
+            <View style="@style/ThreadListItemBarHighlightBackground"/>
+
+            <LinearLayout style="@style/ThreadListItemBarAgoWrapperTextOnly" android:id="@+id/list_item_ago_wrapper">
+                <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
+                <TextView style="@style/ThreadListItemBarAgo" android:id="@+id/list_item_header_bar_ago"/>
+            </LinearLayout>
+            <!--
+            <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
+                <FrameLayout
+                        android:id="@+id/list_item_header_bar_chat_wrapper"
+                        style="@style/ThreadListItemBarChat"
+                        android:foreground="@drawable/thread_list_direct_replies_overlay"
+                        >
+                    <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                </FrameLayout>
+                <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
+            </FrameLayout>
+
+            <FrameLayout style="@style/ThreadListItemBarOverflow" android:id="@+id/list_item_header_bar_overflow_wrapper">
+                <ImageView style="@style/ThreadListItemBarOverflowIcon" android:id="@+id/list_item_header_bar_overflow"/>
+            </FrameLayout>
+            -->
+            <LinearLayout style="@style/ThreadListItemRightMenuWrap">
+                <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
+                    <FrameLayout
+                            android:id="@+id/list_item_header_bar_chat_wrapper"
+                            style="@style/ThreadListItemBarChat"
+                            android:foreground="@drawable/thread_list_direct_replies_overlay"
+                            >
+                        <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                    </FrameLayout>
+                    <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
+                </FrameLayout>
+                <View style="@style/ThreadListItemRightMenuSpacer" android:id="@+id/list_item_right_menu_spacer"/>
+                <FrameLayout style="@style/ThreadListItemBarOverflow" android:id="@+id/list_item_header_bar_overflow_wrapper">
+                    <ImageView style="@style/ThreadListItemBarOverflowIcon" android:id="@+id/list_item_header_bar_overflow"/>
+                </FrameLayout>
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/ThreadListHeader_padding"
+                android:paddingRight="@dimen/ThreadListHeader_padding"
+                android:paddingTop="@dimen/ThreadListHeader_med_padding"
+                android:paddingBottom="@dimen/ThreadListHeader_med_padding"
+                android:orientation="vertical"
+                >
+            <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
+            <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
+            <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
+            <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
+            <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_exif_text"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.chanapps.four.component.CheckableFrameLayout>

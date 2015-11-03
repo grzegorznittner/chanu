@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/thread_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="0dp"
+        android:orientation="vertical">
+
+    <TextView android:id="@+id/title"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:minHeight="@dimen/ItemsDialogFragment_title_minHeight"
+              android:paddingLeft="@dimen/ItemsDialogFragment_title_paddingLeft"
+              android:paddingRight="@dimen/ItemsDialogFragment_title_paddingRight"
+              android:textColor="@color/blue_base"
+              android:textSize="@dimen/ItemsDialogFragment_title_textSize"
+              android:gravity="center_vertical|left" />
+    <View android:id="@+id/titleDivider"
+          android:layout_width="match_parent"
+          android:layout_height="2dp"
+          android:background="@color/blue_base" />
+
+    <ListView
+            android:id="@+id/items"
+            style="@style/ListViewTemplate"
+            android:dividerHeight="1dp"
+            />
+
+</LinearLayout>

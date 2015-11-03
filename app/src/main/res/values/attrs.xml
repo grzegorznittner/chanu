@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="TabWidget">
+
+        <!-- Drawable used to draw the divider between tabs. -->
+        <attr name="divider" format="reference"/>
+        <!-- Determines whether the strip under the tab indicators is drawn or not. -->
+        <attr name="tabStripEnabled" format="boolean"/>
+        <!-- Drawable used to draw the left part of the strip underneath the tabs. -->
+        <attr name="tabStripLeft" format="reference"/>
+        <!-- Drawable used to draw the right part of the strip underneath the tabs. -->
+        <attr name="tabStripRight" format="reference"/>
+        <!-- Layout used to organize each tab's content. -->
+        <attr name="tabLayout" format="reference"/>
+
+    </declare-styleable>
+
+    <declare-styleable name="StretchyImageView">
+    </declare-styleable>
+
+    <declare-styleable name="LetterSpacingTextView">
+    </declare-styleable>
+
+    <declare-styleable name="IconPreferenceScreen">
+        <attr name="icon" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="StaggeredGridView">
+        <attr name="drawSelectorOnTop" format="boolean" />
+        <attr name="numColumns" format="integer" />
+        <attr name="itemMargin" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="CheckableRelativeLayout">
+        <attr name="background" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="InverseCheckableRelativeLayout">
+        <attr name="checkedBackground" format="reference"/>
+        <attr name="inverseBackground" format="reference"/>
+        <attr name="inverseForeground" format="reference"/>
+    </declare-styleable>
+
+    <!--
+    <declare-styleable name="GalleryFrameLayout">
+
+    </declare-styleable>
+    -->
+
+    <attr name="themedCardChatIcon" format="reference"/>
+    <attr name="themedCardWebIcon" format="reference"/>
+    <attr name="themedCardLineBackground" format="reference|color"/>
+    <attr name="themedCardListBackground" format="reference|color"/>
+    <attr name="themedCardListBarBg" format="reference|color"/>
+    <attr name="themedCardListBarOverlayFg" format="reference|color"/>
+    <attr name="themedCardSubjectTextColor" format="reference|color"/>
+    <attr name="themedDrawerBackground" format="reference|color"/>
+    <attr name="themedBoardGridLayoutEmptyTextColor" format="reference|color"/>
+    <attr name="themedBoardGridTitleTextColor" format="reference|color"/>
+    <attr name="themedLargeCardBackground" format="reference|color"/>
+    <attr name="themedSmallCardBackground" format="reference|color"/>
+    <attr name="themedStubImageBackgroundColor" format="reference|color"/>
+    <attr name="themedHelpIcon" format="reference"/>
+    <attr name="themedDeadIcon" format="reference"/>
+    <attr name="themedClosedIcon" format="reference"/>
+    <attr name="themedStickyIcon" format="reference"/>
+    <attr name="yesNoPreferenceStyle" format="reference" />
+    <attr name="themedBoardGridTabletBackground" format="reference|color"/>
+    <attr name="themedNumRepliesIcon" format="reference" />
+    <attr name="themedNumImagesIcon" format="reference" />
+    <attr name="themedThreadHeaderImageBg" format="reference|color" />
+    <attr name="themedSpinnerTriangle" format="reference" />
+    <attr name="themedSpinnerArrow" format="reference" />
+    <attr name="themedBoardGridBoardCodeBg" format="reference|color" />
+    <attr name="themedWidgetConfigureButtonBg" format="reference|color" />
+    <attr name="themedBoardGridNumReplies" format="reference|color" />
+    <attr name="themedThreadCollapseImageIcon" format="reference" />
+
+</resources>

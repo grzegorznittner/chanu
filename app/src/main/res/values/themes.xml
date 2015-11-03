@@ -1,0 +1,67 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.Pastel">
+        <item name="themedCardChatIcon">@drawable/social_chat_light</item>
+        <item name="themedCardWebIcon">@drawable/location_web_site_light</item>
+        <item name="themedCardLineBackground">@color/PaletteThreadLine</item>
+        <item name="themedCardListBackground">@color/PaletteCardListBg</item>
+        <item name="themedCardListBarBg">@color/PaletteCardListBarBg</item>
+        <item name="themedCardListBarOverlayFg">@color/PaletteThreadListBarOverlayFg</item>
+        <item name="themedCardSubjectTextColor">@color/PaletteDarkGray</item>
+        <item name="themedDrawerBackground">@color/PaletteDrawerBg</item>
+        <item name="themedBoardGridLayoutEmptyTextColor">@color/PaletteBlack</item>
+        <item name="themedBoardGridTitleTextColor">@color/PaletteTitleText</item>
+        <item name="themedLargeCardBackground">@drawable/card_background_large</item>
+        <item name="themedSmallCardBackground">@drawable/card_background</item>
+        <item name="themedStubImageBackgroundColor">@color/PaletteImagePlaceholder</item>
+        <item name="themedHelpIcon">@drawable/action_about_light</item>
+        <item name="themedDeadIcon">@drawable/skull_light</item>
+        <item name="themedClosedIcon">@drawable/lock_light</item>
+        <item name="themedStickyIcon">@drawable/thumbtack_light</item>
+        <item name="yesNoPreferenceStyle">@style/Preference.DialogPreference.YesNoPreference</item>
+        <item name="themedBoardGridTabletBackground">@color/PaletteYellowWhite</item>
+        <item name="themedNumRepliesIcon">@drawable/social_chat_light</item>
+        <item name="themedNumImagesIcon">@drawable/content_picture</item>
+        <item name="themedThreadHeaderImageBg">@color/PaletteThreadHeaderImageBg</item>
+        <!-- <item name="themedSpinnerTriangle">@drawable/spinner_default_holo_light</item> -->
+        <item name="themedSpinnerTriangle">@drawable/expand</item>
+        <item name="themedSpinnerArrow">@drawable/arrow_down_alt</item>
+        <item name="themedBoardGridBoardCodeBg">@color/PaletteBoardGridBoardCodeBg</item>
+        <item name="themedWidgetConfigureButtonBg">@color/PaletteDarkGray</item>
+        <item name="themedBoardGridNumReplies">@color/PaletteBoardCodeText</item>
+        <item name="themedThreadCollapseImageIcon">@drawable/av_return_from_full_screen_light</item>
+    </style>
+
+    <style name="AppTheme.Dark" parent="Theme.Dark">
+        <item name="themedCardChatIcon">@drawable/social_chat</item>
+        <item name="themedCardWebIcon">@drawable/location_web_site</item>
+        <item name="themedCardLineBackground">@color/DarkPaletteThreadLine</item>
+        <item name="themedCardListBackground">@color/DarkPaletteCardListBg</item>
+        <item name="themedCardListBarBg">@color/DarkPaletteCardListBarBg</item>
+        <item name="themedCardListBarOverlayFg">@color/DarkPaletteThreadListBarOverlayFg</item>
+        <item name="themedCardSubjectTextColor">@color/PaletteWhite</item>
+        <item name="themedDrawerBackground">@color/DarkPaletteDrawerBg</item>
+        <item name="themedBoardGridLayoutEmptyTextColor">@color/PaletteWhite</item>
+        <item name="themedBoardGridTitleTextColor">@color/DarkPaletteBoardTitleTextColor</item>
+        <item name="themedLargeCardBackground">@drawable/dark_card_background_large</item>
+        <item name="themedSmallCardBackground">@drawable/dark_card_background</item>
+        <item name="themedStubImageBackgroundColor">@color/DarkPaletteImagePlaceholder</item>
+        <item name="themedHelpIcon">@drawable/action_about</item>
+        <item name="themedDeadIcon">@drawable/skull</item>
+        <item name="themedClosedIcon">@drawable/lock</item>
+        <item name="themedStickyIcon">@drawable/thumbtack</item>
+        <item name="yesNoPreferenceStyle">@style/Preference.Holo.DialogPreference.YesNoPreference</item>
+        <item name="themedBoardGridTabletBackground">@color/PaletteDarkYellowWhite</item>
+        <item name="themedNumRepliesIcon">@drawable/social_chat</item>
+        <item name="themedNumImagesIcon">@drawable/content_picture_light</item>
+        <item name="themedThreadHeaderImageBg">@color/DarkPaletteThreadHeaderImageBg</item>
+        <!-- <item name="themedSpinnerTriangle">@drawable/spinner_default_holo_dark</item> -->
+        <item name="themedSpinnerTriangle">@drawable/expand_light</item>
+        <item name="themedSpinnerArrow">@drawable/arrow_down_alt_light</item>
+        <item name="themedBoardGridBoardCodeBg">@color/DarkPaletteBoardGridBoardCodeBg</item>
+        <item name="themedWidgetConfigureButtonBg">@color/DarkPaletteBoardGridBoardCodeBg</item>
+        <item name="themedBoardGridNumReplies">@color/PaletteLightGray</item>
+        <item name="themedThreadCollapseImageIcon">@drawable/av_return_from_full_screen</item>
+    </style>
+
+</resources>

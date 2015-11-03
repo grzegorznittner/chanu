@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.chanapps.four.gallery.GalleryFrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/gallery_frame_layout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <com.android.gallery3d.ui.GLRootView
+            android:id="@+id/gl_root_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    <include layout="@layout/gifview" android:id="@+id/gifview"/>
+    <FrameLayout android:id="@+id/footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:visibility="gone"
+            />
+    <ProgressBar
+            android:id="@+id/full_screen_progress_bar"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"
+            android:visibility="gone"
+            />
+</com.chanapps.four.gallery.GalleryFrameLayout>

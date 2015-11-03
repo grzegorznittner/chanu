@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/search_menu"
+          android:title="@string/search_title"
+          android:icon="@drawable/action_search"
+          android:showAsAction="collapseActionView"
+          android:actionViewClass="android.widget.SearchView"/>
+    <item android:id="@+id/refresh_menu"
+          android:title="@string/refresh_board_menu"
+          android:icon="@drawable/navigation_refresh"
+            />
+    <item android:id="@+id/new_thread_menu"
+          android:title="@string/new_thread_menu"
+          android:icon="@drawable/content_new"
+            />
+    <item android:id="@+id/scroll_to_bottom_menu"
+          android:title="@string/scroll_to_bottom_menu"
+          android:icon="@drawable/av_next"
+          android:visible="false"
+            />
+
+
+    <item android:id="@+id/clean_watchlist_menu"
+          android:title="@string/pref_clean_watchlist"
+          android:icon="@drawable/content_remove"
+          android:visible="false"
+            />
+    <item android:id="@+id/clear_watchlist_menu"
+          android:title="@string/pref_clear_watchlist"
+          android:icon="@drawable/content_discard"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/board_add_to_favorites_menu"
+          android:title="@string/board_add_to_favorites_menu"
+          android:icon="@drawable/content_new"
+            />
+    <item android:id="@+id/favorites_remove_board_menu"
+          android:title="@string/favorites_remove_board_menu"
+          android:icon="@drawable/rating_important"
+            />
+    <item android:id="@+id/clear_favorites_menu"
+          android:title="@string/pref_clear_favorites"
+          android:icon="@drawable/content_discard"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/jump_menu"
+          android:title="@string/jump_menu"
+          android:icon="@drawable/content_import_export">
+        <menu>
+            <item android:id="@+id/scroll_to_top_menu"
+                  android:title="@string/scroll_to_top_menu"
+                  android:icon="@drawable/av_previous"
+                    />
+            <item android:id="@+id/scroll_to_bottom_menu"
+                  android:title="@string/scroll_to_bottom_menu"
+                  android:icon="@drawable/av_next"
+                    />
+        </menu>
+    </item>
+
+    <item android:id="@+id/view_options_menu"
+          android:title="@string/pref_view_options"
+          android:icon="@drawable/collections_view_as_grid">
+        <menu>
+            <item android:id="@+id/theme_menu"
+                  android:title="@string/pref_theme_title"
+                  android:icon="@drawable/device_access_brightness_high"
+                    />
+
+            <item android:id="@+id/view_as_grid_menu"
+                  android:title="@string/view_as_grid_menu"
+                  android:icon="@drawable/collections_view_as_grid"
+                    />
+            <item android:id="@+id/view_as_list_menu"
+                  android:title="@string/view_as_list_menu"
+                  android:icon="@drawable/collections_view_as_list"
+                  android:visible="false"
+                    />
+            <item android:id="@+id/sort_order_menu"
+                  android:title="@string/sort_order_menu"
+                  android:icon="@drawable/collections_sort_by_size"
+                    />
+            <item android:id="@+id/show_hidden_threads_menu"
+                  android:title="@string/show_hidden_threads"
+                  android:icon="@drawable/ic_action_undo"
+                    />
+            <item android:id="@+id/offline_board_view_menu"
+                  android:title="@string/offline_board_view_menu"
+                  android:icon="@drawable/device_access_storage"
+                  android:visible="false"
+                    />
+            <item android:id="@+id/offline_chan_view_menu"
+                  android:title="@string/offline_chan_view_menu"
+                  android:icon="@drawable/device_access_storage"
+                  android:visible="false"
+                    />
+
+            <item android:id="@+id/use_abbrev_boards_menu"
+                  android:title="@string/pref_use_abbrev_boards"
+                  android:icon="@drawable/av_return_from_full_screen"
+                  android:visible="false"
+                    />
+
+            <item android:id="@+id/hide_last_replies_menu"
+                  android:title="@string/pref_hide_last_replies"
+                  android:icon="@drawable/social_chat"
+                  android:visible="false"
+                  />
+
+            <item android:id="@+id/use_fast_scroll_menu"
+                  android:title="@string/pref_use_fast_scroll"
+                  android:icon="@drawable/content_import_export"
+                    />
+
+            <item android:id="@+id/use_volume_scroll_menu"
+                  android:title="@string/pref_use_volume_scroll"
+                  android:icon="@drawable/device_access_volume_on"
+                  />
+
+            <item android:id="@+id/blocklist_menu"
+                  android:title="@string/blocklist_title"
+                  android:icon="@drawable/collections_labels"
+                    />
+
+        </menu>
+    </item>
+
+    <item android:id="@+id/nsfw_menu"
+          android:title="@string/pref_show_nsfw_boards"
+          android:icon="@drawable/geomicons_heart"
+            />
+
+    <item android:id="@+id/board_rules_menu"
+          android:title="@string/board_rules_menu"
+          android:icon="@drawable/action_help"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/global_rules_menu"
+          android:title="@string/global_rules_menu"
+          android:icon="@drawable/action_about"
+            />
+
+    <item android:id="@+id/web_menu"
+          android:title="@string/direct_web_menu"
+          android:icon="@drawable/location_web_site"
+            />
+
+</menu>

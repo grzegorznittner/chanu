@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/search_menu"
+          android:title="@string/search_title"
+          android:icon="@drawable/action_search"
+          android:showAsAction="collapseActionView"
+          android:actionViewClass="android.widget.SearchView"/>
+    <item android:id="@+id/thread_share_menu"
+          android:icon="@drawable/ic_menu_share_holo_light"
+          android:title="@string/share_image"
+          android:enabled="true"
+          android:actionProviderClass="android.widget.ShareActionProvider"
+            />
+    <item android:id="@+id/refresh_menu"
+          android:title="@string/refresh_board_menu"
+          android:icon="@drawable/navigation_refresh"
+            />
+    <item android:id="@+id/post_reply_all_menu"
+          android:title="@string/post_reply_all_menu"
+          android:icon="@drawable/social_reply"
+            />
+    <item android:id="@+id/download_all_images_to_gallery_menu"
+          android:title="@string/download_all_images_to_gallery_menu"
+          android:icon="@drawable/av_download"
+            />
+
+    <item android:id="@+id/watch_thread_menu"
+          android:title="@string/watch_thread_menu"
+          android:icon="@drawable/rating_important"
+            />
+    <item android:id="@+id/watch_remove_thread_menu"
+          android:title="@string/watch_remove_thread_menu"
+          android:icon="@drawable/content_discard"
+          android:visible="false"
+            />
+    <item android:id="@+id/view_image_gallery_menu"
+          android:title="@string/view_image_gallery_menu"
+          android:icon="@drawable/content_picture_light"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/jump_menu"
+          android:title="@string/jump_menu"
+          android:icon="@drawable/content_import_export">
+        <menu>
+            <item android:id="@+id/scroll_to_top_menu"
+                  android:title="@string/scroll_to_top_menu"
+                  android:icon="@drawable/av_previous"
+                    />
+            <item android:id="@+id/scroll_to_bottom_menu"
+                  android:title="@string/scroll_to_bottom_menu"
+                  android:icon="@drawable/av_next"
+                    />
+        </menu>
+    </item>
+
+    <item android:id="@+id/view_options_menu"
+          android:title="@string/pref_view_options"
+          android:icon="@drawable/collections_view_as_grid">
+        <menu>
+
+            <item android:id="@+id/theme_menu"
+                  android:title="@string/pref_theme_title"
+                  android:icon="@drawable/device_access_brightness_high"
+                    />
+
+            <item android:id="@+id/font_size_menu"
+                  android:title="@string/font_size_menu"
+                  android:icon="@drawable/content_edit"
+                    />
+            <item android:id="@+id/autoload_images_menu"
+                  android:title="@string/pref_autoload_images_title"
+                  android:icon="@drawable/content_picture_light"
+                    />
+            <item android:id="@+id/use_fast_scroll_menu"
+                  android:title="@string/pref_use_fast_scroll"
+                  android:icon="@drawable/content_import_export"
+                    />
+
+            <item android:id="@+id/use_volume_scroll_menu"
+                  android:title="@string/pref_use_volume_scroll"
+                  android:icon="@drawable/device_access_volume_on"
+                    />
+
+            <item android:id="@+id/blocklist_menu"
+                  android:title="@string/blocklist_title"
+                  android:icon="@drawable/collections_labels"
+                    />
+
+        </menu>
+    </item>
+
+    <item android:id="@+id/web_menu"
+          android:title="@string/direct_web_menu"
+          android:icon="@drawable/location_web_site"
+            />
+
+    <item android:id="@+id/play_thread_menu"
+          android:title="@string/play_thread_menu"
+          android:icon="@drawable/av_play"
+            />
+</menu>

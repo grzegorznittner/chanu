@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+        android:id="@+id/board_grid_advert"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal|center_vertical"
+        android:background="@color/ad_background"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+        android:visibility="gone"
+        >
+
+    <!--
+           android:layout_height="@dimen/ad_layout_height"
+ <com.google.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            ads:adUnitId="ca-app-pub-7236482115239313/1314812382"
+            ads:adSize="SMART_BANNER"
+            ads:testDevices="42f758079ab89f7f"
+            ads:loadAdOnCreate="false"
+            />
+    -->
+    <!-- old id ads:adUnitId="a150e4b6d4be55e" -->
+   <!--
+    <com.mobclix.android.sdk.MobclixMMABannerXLAdView
+            android:layout_height="50dip"
+            android:layout_width="320dip"
+            android:layout_gravity="center"
+            />
+            -->
+
+    <LinearLayout
+            android:id="@+id/ad_purchase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/ad_layout_vertical_padding"
+            android:paddingBottom="@dimen/ad_layout_vertical_padding"
+            android:paddingLeft="@dimen/ad_layout_horizontal_padding"
+            android:paddingRight="64dp"
+            >
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/ad_text_color"
+                android:textStyle="bold"
+                android:textSize="@dimen/BoardTypeText"
+                android:text="@string/ad_upgrade"
+                />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/ad_text_color"
+                android:textSize="@dimen/BoardTypeText"
+                android:text="@string/ad_upgrade_sum"
+                />
+    </LinearLayout>
+
+    <FrameLayout
+            android:id="@+id/ad_dismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:paddingLeft="@dimen/ad_layout_horizontal_padding"
+            android:paddingRight="@dimen/ad_layout_horizontal_padding"
+            >
+        <ImageView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/content_remove"/>
+    </FrameLayout>
+
+</FrameLayout>

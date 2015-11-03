@@ -1,0 +1,78 @@
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/drawer_list_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_item_height"
+        android:paddingLeft="@dimen/drawer_padding_left"
+        android:paddingRight="@dimen/drawer_padding_right"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        >
+
+    <FrameLayout
+            android:id="@+id/frame_child"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:foreground="@drawable/drawer_list_selector_inverse_bg"
+            >
+
+        <RelativeLayout
+                android:layout_width="@dimen/drawer_icon_wrapper_width"
+                android:layout_height="match_parent"
+                android:paddingLeft="1dp"
+                >
+
+            <ImageView
+                    android:id="@+id/drawer_list_item_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_centerVertical="true"
+                    />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+    <TextView
+            android:id="@+id/drawer_list_item_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/frame_child"
+            android:layout_centerVertical="true"
+            android:textColor="@color/PaletteWhite"
+            android:textSize="18sp"/>
+
+    <TextView
+            android:id="@+id/drawer_list_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/drawer_list_item_divider"
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/PaletteDrawerDividerText"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:visibility="gone"
+            />
+
+    <TextView
+            android:id="@+id/drawer_list_item_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textColor="@color/PaletteWhite"
+            android:textSize="14sp"
+            android:visibility="gone"
+            android:maxLines="1"
+            />
+
+    <View
+            android:id="@+id/drawer_list_item_divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/PaletteDrawerDivider"
+            android:visibility="gone"
+            />
+
+</RelativeLayout>

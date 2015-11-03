@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="@dimen/widget_board_coverflow_image_height"
+        android:layout_width="@dimen/widget_board_coverflow_image_width"
+        >
+
+    <ImageView android:id="@+id/image_coverflow_item"
+               android:layout_height="@dimen/widget_board_coverflow_image_height"
+               android:layout_width="@dimen/widget_board_coverflow_image_width"
+               android:contentDescription="Thumbnail Image"
+               android:scaleType="centerCrop"
+            />
+
+</FrameLayout>

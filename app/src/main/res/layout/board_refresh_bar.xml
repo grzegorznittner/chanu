@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/board_refresh_bar"
+        style="@style/BoardRefreshBar"
+        android:layout_below="@+id/board_title_bar"
+        >
+
+    <TextView
+            android:id="@+id/board_refresh_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:textColor="@color/PaletteMedGray"
+            android:textStyle="bold"
+            android:textIsSelectable="false"/>
+
+    <ImageButton
+            android:id="@+id/board_refresh_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/board_ignore_button"
+            android:background="@color/PaletteTransparent"
+            android:src="@drawable/board_refresh_button_selector"
+            />
+
+    <ImageButton
+            android:id="@+id/board_ignore_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@color/PaletteTransparent"
+            android:src="@drawable/board_ignore_button_selector"
+            />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/PaletteLightGray"/>
+
+</RelativeLayout>

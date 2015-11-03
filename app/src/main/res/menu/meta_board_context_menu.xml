@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/board_add_to_favorites_menu"
+          android:title="@string/board_add_to_favorites_menu"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/favorites_remove_board_menu"
+          android:title="@string/favorites_remove_board_menu"
+          android:visible="false"
+            />
+</menu>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/thread_list_layout"
+        style="@style/ThreadListLayout"
+        >
+
+    <include layout="@layout/board_title_bar"/>
+
+    <include layout="@layout/board_search_results_bar"
+            />
+
+    <ListView
+            android:id="@+id/thread_list_view"
+            style="@style/ThreadListView"
+            android:layout_below="@+id/board_search_results_bar"
+    />
+
+</RelativeLayout>

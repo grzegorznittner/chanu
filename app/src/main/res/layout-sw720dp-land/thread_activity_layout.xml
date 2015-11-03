@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- The main content view -->
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?themedCardListBackground"
+            >
+
+        <ListView
+                android:id="@+id/board_grid_view_tablet"
+                style="@style/BoardGridViewTablet"
+                />
+
+        <com.chanapps.four.component.ControllableViewPager
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/board_grid_view_tablet"
+                />
+
+    </RelativeLayout>
+
+    <include layout="@layout/ad_section"
+            />
+
+</RelativeLayout>

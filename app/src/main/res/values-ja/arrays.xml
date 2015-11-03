@@ -1,0 +1,84 @@
+<resources>
+
+    <string-array name="report_post_types">
+        <item>@string/report_post_type_rule</item>
+        <item>@string/report_post_type_illegal</item>
+        <item>@string/report_post_type_spam</item>
+    </string-array>
+
+    <string-array name="pref_theme_entries">
+        <item>@string/pref_theme_light</item>
+        <item>@string/pref_theme_dark</item>
+        <!-- <item>@string/pref_theme_auto</item> -->
+    </string-array>
+
+    <string-array name="pref_theme_entry_values">
+        <item>@string/pref_theme_light_value</item>
+        <item>@string/pref_theme_dark_value</item>
+        <item>@string/pref_theme_auto_value</item>
+    </string-array>
+
+    <string-array name="pref_autoload_images_entries">
+        <item>@string/pref_autoload_images_nothumbs</item>
+        <item>@string/pref_autoload_images_never</item>
+        <item>@string/pref_autoload_images_always</item>
+        <item>@string/pref_theme_auto</item>
+    </string-array>
+
+    <string-array name="pref_autoload_images_entry_values">
+        <item>@string/pref_autoload_images_nothumbs_value</item>
+        <item>@string/pref_autoload_images_never_value</item>
+        <item>@string/pref_autoload_images_always_value</item>
+        <item>@string/pref_autoload_images_auto_value</item>
+    </string-array>
+
+    <string-array name="long_drawer_array">
+        <item>@string/board_all_boards</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_popular</item>
+    </string-array>
+
+    <string-array name="long_drawer_array_footer">
+        <item>@string/settings_menu</item>
+        <item>@string/send_feedback_menu</item>
+    </string-array>
+
+    <string-array name="pref_download_images_entries">
+        <item>@string/pref_download_images_standard</item>
+        <item>@string/pref_download_images_all_in_chanu_folder</item>
+        <item>@string/pref_download_images_per_board</item>
+        <item>@string/pref_download_images_per_thread</item>
+    </string-array>
+
+    <string-array name="pref_download_images_entry_values">
+        <item>@string/pref_download_images_standard_value</item>
+        <item>@string/pref_download_images_all_in_chanu_folder_value</item>
+        <item>@string/pref_download_images_per_board_value</item>
+        <item>@string/pref_download_images_per_thread_value</item>
+    </string-array>
+
+    <string-array name="sort_order_types">
+        <item>@string/sort_order_bump_order</item>
+        <item>@string/sort_order_reply_count</item>
+        <item>@string/sort_order_image_count</item>
+        <item>@string/sort_order_creation_date</item>
+    </string-array>
+
+    <string-array name="font_sizes">
+        <item>@string/font_size_tiny</item>
+        <item>@string/font_size_small</item>
+        <item>@string/font_size_medium</item>
+        <item>@string/font_size_large</item>
+        <item>@string/font_size_huge</item>
+    </string-array>
+
+    <string-array name="block_types">
+        <item>@string/block_type_text</item>
+        <item>@string/block_type_trip</item>
+        <item>@string/pref_user_name</item>
+        <item>@string/pref_user_email</item>
+        <item>@string/block_type_id</item>
+        <item>@string/thread_activity</item>
+    </string-array>
+
+</resources>

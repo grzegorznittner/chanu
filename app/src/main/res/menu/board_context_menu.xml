@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/board_thread_watch_menu"
+          android:title="@string/watch_thread_menu"
+            />
+
+    <item android:id="@+id/board_thread_watch_remove_menu"
+          android:title="@string/watch_remove_thread_menu"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/board_thread_gallery_menu"
+          android:title="@string/board_thread_gallery_menu"
+            />
+
+</menu>

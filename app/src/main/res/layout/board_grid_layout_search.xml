@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/board_grid_layout"
+        style="@style/BoardGridLayout"
+        >
+
+    <include layout="@layout/board_title_bar" android:id="@+id/board_title_bar"/>
+
+    <include layout="@layout/board_search_results_bar"
+             android:layout_below="@+id/board_title_bar"
+            />
+
+    <GridView
+            android:id="@+id/board_grid_view"
+            style="@style/BoardGridView"
+            android:layout_below="@+id/board_search_results_bar"
+            />
+
+    <TextView
+            android:id="@+id/board_grid_empty_text"
+            style="@style/BoardGridLayoutEmptyText"
+            />
+
+    <include layout="@layout/ad_section"
+             />
+
+</RelativeLayout>

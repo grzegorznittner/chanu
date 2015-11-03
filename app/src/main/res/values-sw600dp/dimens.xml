@@ -1,0 +1,390 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+    <!-- Font sizes -->
+    <dimen name="BoardTypeText">18sp</dimen>
+    <dimen name="WidgetConfigureOkButton">18sp</dimen>
+    <dimen name="BoardSelectorOverlay">16sp</dimen>
+    <dimen name="BoardGridBoardCode">@dimen/BoardTypeText</dimen>
+    <dimen name="BoardGridLargeSubject">16sp</dimen>
+    <dimen name="BoardGridSubject">14sp</dimen>
+    <dimen name="BoardGridInfo">14sp</dimen>
+    <dimen name="BoardGridSubjectHeader">42sp</dimen>
+    <dimen name="BoardGridSubjectHeaderAbbr">42sp</dimen>
+    <dimen name="BoardGridInfoHeader">16sp</dimen>
+    <dimen name="BoardGridAction">16sp</dimen>
+    <dimen name="BoardGridNumReplies">14sp</dimen>
+    <dimen name="BoardGridAbbrev">14sp</dimen>
+    <dimen name="BoardGridNumImages">14sp</dimen>
+    <dimen name="BoardGridTextImageOverlay">14sp</dimen>
+    <dimen name="BoardListTextImageTopOverlay">16sp</dimen>
+    <dimen name="BoardListTitle">16sp</dimen>
+    <dimen name="BoardListSubject">18sp</dimen>
+    <dimen name="BoardListHeadline">16sp</dimen>
+    <dimen name="ThreadListLayout">16sp</dimen>
+    <dimen name="ThreadListHeaderSubject">24sp</dimen>
+    <dimen name="ThreadListHeaderHead">16sp</dimen>
+    <dimen name="ThreadListHeaderNumLabel">22sp</dimen>
+    <dimen name="ThreadListHeaderLabel">14sp</dimen>
+    <dimen name="ThreadListHeaderExifText">16sp</dimen>
+    <dimen name="ThreadListHeaderFullText">16sp</dimen>
+    <dimen name="ThreadListHeaderTitle">16sp</dimen>
+    <dimen name="ThreadListItemSubject">16sp</dimen>
+    <dimen name="ThreadListItemHead">16sp</dimen>
+    <dimen name="ThreadListItemTitle">16sp</dimen>
+    <dimen name="ThreadListItemExifText">16sp</dimen>
+    <dimen name="ThreadListItemFullText">16sp</dimen>
+    <dimen name="PostReplyEditText">16sp</dimen>
+    <dimen name="PostReplyCheckbox">16sp</dimen>
+    <dimen name="PopupFullTextHeader">18sp</dimen>
+    <dimen name="PopupFullTextButton">18sp</dimen>
+    <dimen name="PopupFullTextView">18sp</dimen>
+    <dimen name="MessageText">16sp</dimen>
+
+    <!-- Padding & Margins -->
+    <dimen name="BoardGridItemSmallHeight">104dp</dimen>
+    <dimen name="BoardGridViewTablet_image_width">180dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width">0dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width_afterPadding">282dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_marginHeight_belowImage">160dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width_afterTextPadding">140dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_height_afterPadding">300dp</dimen>
+    <dimen name="BoardGridViewTablet_narrow_image_width">96dp</dimen>
+    <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
+    <dimen name="BoardTypeText_padding">8dp</dimen>
+
+    <dimen name="BoardSelectorOverlay_paddingTop">4dp</dimen>
+    <dimen name="BoardSelectorOverlay_paddingLeft">2dp</dimen>
+    <dimen name="BoardSelectorOverlay_paddingRight">2dp</dimen>
+    <dimen name="BoardSelectorOverlay_paddingBottom">4dp</dimen>
+
+    <dimen name="BoardGridOverlay_paddingTop">16dp</dimen>
+    <dimen name="BoardGridOverlay_paddingBottom">4dp</dimen>
+
+    <dimen name="BoardGridSubject_paddingTop">0dp</dimen>
+    <dimen name="BoardGridSubject_paddingLeft">4dp</dimen>
+    <dimen name="BoardGridSubject_paddingRight">4dp</dimen>
+    <dimen name="BoardGridSubject_paddingBottom">0dp</dimen>
+
+    <dimen name="BoardGridInfo_paddingTop">0dp</dimen>
+    <dimen name="BoardGridInfo_paddingLeft">4dp</dimen>
+    <dimen name="BoardGridInfo_paddingRight">4dp</dimen>
+    <dimen name="BoardGridInfo_paddingBottom">0dp</dimen>
+
+    <dimen name="BoardGridNumReplies_paddingLeft">2dp</dimen>
+    <dimen name="BoardGridNumReplies_paddingRight">2dp</dimen>
+
+    <dimen name="BoardGridAbbrev_paddingLeft">4dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingRight">4dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingTop">6dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingBottom">12dp</dimen>
+
+    <dimen name="BoardGridNumImages_paddingLeft">2dp</dimen>
+    <dimen name="BoardGridNumImages_paddingRight">2dp</dimen>
+
+    <dimen name="BoardGridTextImageOverlay_paddingBottom">2dp</dimen>
+
+    <dimen name="BoardSelectorGridCountryFlag_layout_width">16dp</dimen>
+    <dimen name="BoardSelectorGridCountryFlag_layout_height">11dp</dimen>
+    <dimen name="BoardSelectorGridCountryFlag_marginRight">11dp</dimen>
+    <dimen name="BoardSelectorGridCountryFlag_marginTop">11dp</dimen>
+
+    <dimen name="BoardGridCountryFlag_layout_width">16dp</dimen>
+    <dimen name="BoardGridCountryFlag_layout_height">11dp</dimen>
+    <dimen name="BoardGridCountryFlag_marginTop">4dp</dimen>
+
+    <dimen name="BoardListTextImageTopOverlay_paddingTop">2dp</dimen>
+    <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
+
+    <dimen name="BoardListTitle_paddingTop">16dp</dimen>
+    <dimen name="BoardListTitle_paddingLeft">16dp</dimen>
+    <dimen name="BoardListTitle_paddingRight">16dp</dimen>
+    <dimen name="BoardListTitle_paddingBottom">4dp</dimen>
+
+    <dimen name="BoardListButton_paddingTop">16dp</dimen>
+    <dimen name="BoardListButton_paddingLeft">16dp</dimen>
+    <dimen name="BoardListButton_paddingRight">16dp</dimen>
+    <dimen name="BoardListButton_paddingBottom">16dp</dimen>
+
+    <dimen name="BoardListImage_layout_width">160dp</dimen>
+    <dimen name="BoardListImage_layout_height">160dp</dimen>
+
+    <dimen name="BoardListSubject_paddingTop">4dp</dimen>
+    <dimen name="BoardListSubject_paddingLeft">16dp</dimen>
+    <dimen name="BoardListSubject_paddingRight">24dp</dimen>
+    <dimen name="BoardListSubject_paddingBottom">0dp</dimen>
+
+    <dimen name="BoardListHeadline_paddingTop">8dp</dimen>
+    <dimen name="BoardListHeadline_paddingLeft">16dp</dimen>
+    <dimen name="BoardListHeadline_paddingRight">24dp</dimen>
+    <dimen name="BoardListHeadline_paddingBottom">8dp</dimen>
+
+    <dimen name="BoardListText_paddingLeft">24dp</dimen>
+    <dimen name="BoardListText_paddingRight">24dp</dimen>
+    <dimen name="BoardListText_paddingTop">16dp</dimen>
+    <dimen name="BoardListText_paddingBottom">16dp</dimen>
+    <dimen name="BoardListText_textSize">18sp</dimen>
+
+    <dimen name="ThreadListLinkLayout_paddingTop">16dp</dimen>
+    <dimen name="ThreadListLinkLayout_paddingBottom">16dp</dimen>
+    <dimen name="ThreadListLayout_paddingTop">16dp</dimen>
+    <dimen name="ThreadListLayout_paddingBottom">16dp</dimen>
+    <dimen name="ThreadListLayout_paddingLeft">16dp</dimen>
+    <dimen name="ThreadListHeaderInnerLayout_paddingLeft">0dp</dimen>
+    <dimen name="ThreadListLayout_paddingRight">16dp</dimen>
+
+    <dimen name="ThreadListHeader_flowsize">48dp</dimen>
+    <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
+    <dimen name="ThreadListHeader_paddingPlusLeft">64dp</dimen>
+    <dimen name="ThreadListHeader_padding">16dp</dimen>
+    <dimen name="ThreadListHeader_medplus_padding">14dp</dimen>
+    <dimen name="ThreadListHeader_med_padding">12dp</dimen>
+    <dimen name="ThreadListHeader_smallplus_padding">9dp</dimen>
+    <dimen name="ThreadListHeader_small_padding">8dp</dimen>
+    <dimen name="ThreadListHeader_mini_padding">6dp</dimen>
+    <dimen name="ThreadListHeader_micro_padding">4dp</dimen>
+
+    <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
+    <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
+
+    <dimen name="ThreadListHeaderSubject_layout_marginLeft">16dp</dimen>
+    <dimen name="ThreadListHeaderSubject_layout_marginRight">16dp</dimen>
+    <dimen name="ThreadListHeaderSubject_paddingTop">16dp</dimen>
+
+    <dimen name="ThreadListHeaderHeadWrapper_paddingBottom">16dp</dimen>
+    <dimen name="ThreadListHeaderHeadWrapper_paddingLeft">16dp</dimen>
+
+    <dimen name="ThreadListHeaderCountryFlag_layout_width">18dp</dimen>
+    <dimen name="ThreadListHeaderCountryFlag_layout_height">12dp</dimen>
+    <dimen name="ThreadListHeaderCountryFlag_layout_marginTop">8dp</dimen>
+    <dimen name="ThreadListHeaderCountryFlag_layout_marginRight">16dp</dimen>
+
+    <dimen name="ThreadListHeaderHead_layout_marginLeft">16dp</dimen>
+    <dimen name="ThreadListHeaderHead_layout_marginRight">16dp</dimen>
+
+    <dimen name="ThreadListHeaderExifText_layout_marginLeft">16dp</dimen>
+    <dimen name="ThreadListHeaderExifText_layout_marginRight">16dp</dimen>
+    <dimen name="ThreadListHeaderExifText_paddingBottom">8dp</dimen>
+
+    <dimen name="ThreadListHeaderFullText_layout_marginLeft">16dp</dimen>
+    <dimen name="ThreadListHeaderFullText_layout_marginRight">16dp</dimen>
+    <dimen name="ThreadListHeaderFullText_paddingBottom">16dp</dimen>
+
+    <dimen name="ThreadListHeaderTitle_layout_marginLeft">16dp</dimen>
+    <dimen name="ThreadListHeaderTitle_layout_marginRight">16dp</dimen>
+    <dimen name="ThreadListHeaderTitle_paddingTop">16dp</dimen>
+
+    <dimen name="ThreadListHeaderBar_layout_height">2dp</dimen>
+
+    <dimen name="ThreadListItemHeaderWrapper_paddingLeft">16dp</dimen>
+    <dimen name="ThreadListItemHeaderWrapper_paddingRight">0dp</dimen>
+
+    <dimen name="ThreadListItemImageSpacer_layout_width">0dp</dimen>
+
+    <dimen name="ThreadListItemImageWrapper_layout_width">96dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginTop">0dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginRight">8dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginBottom">0dp</dimen>
+
+    <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
+
+    <dimen name="ThreadListItemImageExpandedWrapper_marginBottom">16dp</dimen>
+    <dimen name="ThreadListItemImageExpandedWrapper_paddingLeft">0dp</dimen>
+    <dimen name="ThreadListItemImageExpandedWrapper_paddingRight">0dp</dimen>
+
+    <dimen name="ThreadListItemSubject_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemSubject_paddingRight">0dp</dimen>
+
+    <dimen name="ThreadListItemCountryFlag_layout_width">18dp</dimen>
+    <dimen name="ThreadListItemCountryFlag_layout_height">12dp</dimen>
+    <dimen name="ThreadListItemCountryFlag_marginTop">8dp</dimen>
+    <dimen name="ThreadListItemCountryFlag_marginRight">0dp</dimen>
+
+    <dimen name="ThreadListItemHead_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemHead_marginRight">0dp</dimen>
+    <dimen name="ThreadListItemHead_paddingRight">0dp</dimen>
+    <dimen name="ThreadListItemHead_paddingTop">8dp</dimen>
+    <dimen name="ThreadListItemHead_paddingBottom">0dp</dimen>
+
+    <dimen name="ThreadListItemExifText_layout_marginLeft">16dp</dimen>
+    <dimen name="ThreadListItemExifText_layout_marginRight">16dp</dimen>
+    <dimen name="ThreadListItemExifText_paddingTop">16dp</dimen>
+
+    <dimen name="ThreadListItemFullText_layout_marginLeft">16dp</dimen>
+    <dimen name="ThreadListItemFullText_layout_marginRight">16dp</dimen>
+    <dimen name="ThreadListItemFullText_paddingTop">0dp</dimen>
+    <dimen name="ThreadListItemFullText_paddingLeft">0dp</dimen>
+    <dimen name="ThreadListItemFullTextHeader_paddingLeft">0dp</dimen>
+
+    <dimen name="PostReplyEditText_padding">16dp</dimen>
+    <dimen name="PostReplyEditText_layout_marginLeft">24dp</dimen>
+    <dimen name="PostReplyEditText_layout_marginRight">24dp</dimen>
+    <dimen name="PostReplyEditText_layout_marginBottom">24dp</dimen>
+
+    <dimen name="PostReplyCheckbox_layout_marginLeft">20dp</dimen>
+    <dimen name="PostReplyCheckbox_layout_marginBottom">16dp</dimen>
+
+    <dimen name="PostReplyButton_layout_width">64dp</dimen>
+    <dimen name="PostReplyButton_layout_height">64dp</dimen>
+    <dimen name="PostReplyButton_layout_height_withSpacing">88dp</dimen>
+
+    <!--
+    <dimen name="PopupFullTextScrollLayout_marginTop">24dp</dimen>
+    <dimen name="PopupFullTextScrollLayout_marginLeft">24dp</dimen>
+    <dimen name="PopupFullTextScrollLayout_marginRight">24dp</dimen>
+    <dimen name="PopupFullTextScrollLayout_marginBottom">24dp</dimen>
+
+    <dimen name="PopupFullTextHeader_layout_height">62dp</dimen>
+    <dimen name="PopupFullTextHeader_paddingLeft">16dp</dimen>
+
+    <dimen name="PopupFullTextHeaderHorizontalSeparator_layout_height">2dp</dimen>
+
+    <dimen name="PopupFullTextHorizontalSeparator_layout_height">1dp</dimen>
+
+    <dimen name="PopupFullTextButton_layout_height">47dp</dimen>
+    <dimen name="PopupFullTextButton_textSize">18dp</dimen>
+
+    <dimen name="PopupFullTextView_paddingLeft">16dp</dimen>
+    <dimen name="PopupFullTextView_paddingRight">16dp</dimen>
+    <dimen name="PopupFullTextView_paddingTop">8dp</dimen>
+    <dimen name="PopupFullTextView_paddingBottom">8dp</dimen>
+     -->
+    <dimen name="MessageText_layout_marginLeft">8dp</dimen>
+    <dimen name="MessageText_layout_marginRight">8dp</dimen>
+    <dimen name="MessageText_layout_marginBottom">8dp</dimen>
+
+    <dimen name="WidgetConfigureOkButton_paddingTop">8dp</dimen>
+    <dimen name="WidgetConfigureOkButton_paddingBottom">8dp</dimen>
+
+    <string name="BoardRefreshBarWidth">wrap_content</string>
+
+    <!-- tutorial_overlay -->
+    <dimen name="tutorial_overlay_paddingTop">259dp</dimen>
+    <dimen name="tutorial_overlay_inner_paddingLeft">11dp</dimen>
+    <dimen name="tutorial_overlay_subject_paddingTop">340dp</dimen>
+    <dimen name="tutorial_overlay_subject_textSize">72sp</dimen>
+    <dimen name="tutorial_overlay_detail_textSize">@dimen/BoardTypeText</dimen>
+    <integer name="tutorial_overlay_cols">@integer/BoardGridViewSmall.numColumns</integer>
+    <integer name="tutorial_overlay_border_cols">1</integer>
+    <integer name="tutorial_overlay_center_cols">2</integer>
+    <integer name="tutorial_overlay_fill_cols">3</integer>
+
+    <!-- widgets dimension -->
+    <dimen name="widget_onecol">40dp</dimen>
+    <dimen name="widget_twocol">110dp</dimen>
+    <dimen name="widget_fourcol">250dp</dimen>
+    <dimen name="widget_twocol_inner">100dp</dimen>
+    <dimen name="widget_twocol_inner_paddingLeft">108dp</dimen>
+    <dimen name="widget_textSize">12sp</dimen>
+
+    <!-- popular / home -->
+    <dimen name="PopularTitle_paddingTop">64dp</dimen>
+    <dimen name="PopularTitle_paddingLeft">24dp</dimen>
+    <dimen name="PopularTitle_paddingRight">24dp</dimen>
+    <dimen name="PopularTitle_paddingBottom">16dp</dimen>
+    <dimen name="PopularTitle_textSize">48sp</dimen>
+    <dimen name="PopularSmallTitle_textSize">28sp</dimen>
+    <dimen name="PopularItemText_paddingTop">16dp</dimen>
+    <dimen name="PopularItemText_paddingLeft">24dp</dimen>
+    <dimen name="PopularItemText_paddingRight">24dp</dimen>
+    <dimen name="PopularItemText_paddingBottom">64dp</dimen>
+    <dimen name="PopularItem_textSize">18sp</dimen>
+
+    <dimen name="ItemsDialogFragment_title_minHeight">72dp</dimen>
+    <dimen name="ItemsDialogFragment_title_paddingLeft">24dp</dimen>
+    <dimen name="ItemsDialogFragment_title_paddingRight">24dp</dimen>
+    <dimen name="ItemsDialogFragment_title_textSize">28sp</dimen>
+
+    <integer name="BoardGridView.maxLines">4</integer>
+    <integer name="BoardGridView.Half.maxLines">2</integer>
+    <integer name="BoardGridViewNarrowTablet.maxLines">7</integer>
+    <dimen name="BoardGridView.topSpacing">6dp</dimen>
+    <dimen name="BoardGridView.halfSpacing">8dp</dimen>
+    <dimen name="BoardGridView.infoBottomPadding">5dp</dimen>
+    <dimen name="BoardGridView.spacing">16dp</dimen>
+    <dimen name="BoardGridView.rightSpacing">32dp</dimen>
+    <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
+    <dimen name="BoardGridViewTablet.quarterSpacing">4dp</dimen>
+
+    <dimen name="BoardGridImageSize">120dp</dimen>
+    <dimen name="BoardGridImageSizeDouble">240dp</dimen>
+    <dimen name="BoardGridImageSizeHalf">60dp</dimen>
+    <dimen name="BoardGridImageSizeNarrow">144dp</dimen>
+    <dimen name="BoardGridImageSizeNarrowDouble">288dp</dimen>
+    <dimen name="BoardGridImageSizeNarrowHalf">72dp</dimen>
+    <dimen name="BoardGridImageSizeForFlag">76dp</dimen>
+    <dimen name="BoardGridImageSizeHalfMinusSpacing">64dp</dimen>
+    <dimen name="BoardGridItemOverflowIconMarginTop">88dp</dimen>
+    <!--<dimen name="BoardGridTextHeightSmall">80dp</dimen>-->
+    <dimen name="BoardGridItemHeight">120dp</dimen>
+    <dimen name="BoardGridItemHeightOuter">136dp</dimen>
+    <dimen name="BoardGridItemHeight1">180dp</dimen>
+    <dimen name="BoardGridItemHeightOuter1">196dp</dimen>
+    <dimen name="BoardGridItemHeight2">240dp</dimen>
+    <dimen name="BoardGridItemHeightOuter2">256dp</dimen>
+    <dimen name="BoardGridItemHeight3">300dp</dimen>
+    <dimen name="BoardGridItemHeightOuter3">316dp</dimen>
+    <dimen name="BoardGridItemHeight4">360dp</dimen>
+    <dimen name="BoardGridItemHeightOuter4">376dp</dimen>
+    <dimen name="BoardGridItemHeight5">420dp</dimen>
+    <dimen name="BoardGridItemHeightOuter5">436dp</dimen>
+
+
+    <integer name="BoardGridView.numColumns">1</integer>
+    <integer name="BoardGridViewSmall.numColumns">4</integer>
+
+    <dimen name="drawer_spacer_width">80dp</dimen>
+    <dimen name="drawer_spacer_height">32dp</dimen>
+    <dimen name="drawer_item_height">44dp</dimen>
+    <dimen name="drawer_padding_left">16dp</dimen>
+    <dimen name="drawer_padding_right">16dp</dimen>
+    <dimen name="drawer_icon_wrapper_width">46dp</dimen>
+
+    <dimen name="ad_layout_height">90dp</dimen>
+
+    <bool name="BoardGridView.abbrev">true</bool>
+    <bool name="narrow_tablet">false</bool>
+
+    <dimen name="PostReplyRecaptcha.marginLeft">28dp</dimen>
+    <dimen name="PostReplyRecaptcha.marginRight">28dp</dimen>
+    <dimen name="PostReplyRecaptcha.marginBottom">8dp</dimen>
+    <dimen name="PostReplyRecaptcha.layoutHeight">96dp</dimen>
+    <dimen name="PostReplyButton.marginLeft">16dp</dimen>
+    <dimen name="PostReplyButton.marginRight">16dp</dimen>
+    <dimen name="PostReplyButton.marginBottom">8dp</dimen>
+    <dimen name="PostReplyButton.paddingLeft">4dp</dimen>
+    <dimen name="PostReplyButton.paddingBottom">4dp</dimen>
+    <dimen name="PostReplyImage.marginBottom">24dp</dimen>
+
+    <dimen name="ThreadListItemReplyWrap_marginRight">32dp</dimen>
+    <dimen name="ThreadListItemReplyNum_marginLeft">56dp</dimen>
+    <dimen name="ThreadListItemBarOverflow_layout_width">32dp</dimen>
+
+    <string name="list_item_ago_date_separator"> ~ </string>
+
+    <integer name="PostReplyComment_minLines">17</integer>
+
+    <dimen name="BoardGridBoardCodePadding">4dp</dimen>
+    <dimen name="BoardGridItemCountryFlagWidth">17dp</dimen>
+    <dimen name="BoardGridItemCountryFlagHeight">22dp</dimen>
+    <dimen name="BoardGridItemCountryFlagPaddingBottom">10dp</dimen>
+    <dimen name="BoardGridItemNumRepliesSpacing">2dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgWidth">24dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgHeight">27dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgPaddingBottom">3dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgWidth">24dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgHeight">24dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgPaddingBottom">6dp</dimen>
+    <dimen name="BoardGridItemIconWidth">18dp</dimen>
+    <dimen name="BoardGridItemIconHeight">24dp</dimen>
+    <dimen name="BoardGridItemIconPaddingBottom">7dp</dimen>
+    <dimen name="BoardGridItemIconSmallMarginBottom">4dp</dimen>
+    <dimen name="BoardGridItemIconSpacing">8dp</dimen>
+
+    <integer name="BoardGridSubject_maxLines">4</integer>
+
+    <dimen name="BlocklistItemHeight">56dp</dimen>
+
+    <dimen name="dialogFragmentMarginWidth">16dp</dimen>
+    <dimen name="dialogFragmentMarginHeight">16dp</dimen>
+
+</resources>

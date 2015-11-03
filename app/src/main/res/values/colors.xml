@@ -1,0 +1,124 @@
+<resources>
+
+    <!-- semantic colors -->
+
+    <color name="PaletteActionBar">#3f4541</color>
+    <color name="PaletteCardListBg">#d5d5d5</color>
+    <color name="PaletteCardListBarBg">#f4f4f4</color>
+    <color name="PaletteTitleBg">@color/PaletteCardListBg</color>
+    <color name="PaletteTitleText">#313b4b</color>
+    <color name="PaletteBoardTitleTextColor">#222222</color>
+    <color name="PaletteThreadLine">#ccc</color>
+    <color name="PaletteThreadHeaderBg">#00000000</color>
+    <color name="PaletteThreadHeaderImageBg">#333</color>
+    <color name="PaletteThreadSecondaryText">#ccc</color>
+    <color name="PaletteThreadHeadText">#bbb</color>
+    <color name="PaletteImagePlaceholder">#ccc</color>
+    <color name="PaletteDrawerText">#f2f2f2</color>
+    <!--
+    <color name="PaletteDrawerBg">#3f4541</color>
+    <color name="PaletteDrawerUncheckedBg">#883f4541</color>
+    <color name="PaletteDrawerUncheckedFg">#883f4541</color>
+    -->
+    <color name="PaletteDrawerBg">@color/DarkPaletteDrawerBg</color>
+    <color name="PaletteDrawerUncheckedBg">@color/DarkPaletteDrawerUncheckedBg</color>
+    <color name="PaletteDrawerUncheckedFg">@color/DarkPaletteDrawerUncheckedBg</color>
+    <color name="PaletteDrawerDividerText">#88ffffff</color>
+    <color name="PaletteDrawerDivider">#44ffffff</color>
+    <color name="PaletteThreadDividerText">@color/PaletteMedGray</color>
+    <color name="PaletteThreadDivider">@color/PaletteLightGray</color>
+    <!--
+    <color name="PaletteSelector">#449def</color>
+    <color name="PaletteSelectorHalf">#88449def</color>
+    <color name="PaletteSelector">@android:color/holo_blue_light</color>
+    <color name="PaletteSelectorHalf">@android:color/holo_blue_light</color>
+    -->
+    <color name="PaletteSelector">#8833b5e5</color>
+    <color name="PaletteSelectorHalf">#8833b5e5</color>
+    <!-- <color name="PaletteSelectorHalf">#8833b5e5</color> -->
+    <!--<color name="PaletteThreadListBarOverlayBg">#88f4f4f4</color>-->
+    <color name="PaletteThreadListBarOverlayFg">#88000000</color>
+    <color name="PaletteThreadTitleSecondaryText">@color/PaletteLightGray</color>
+    <color name="PaletteBoardGridBoardCodeBg">@color/PaletteLightGray</color>
+
+    <!-- pure colors -->
+
+    <color name="PaletteTransparent">#00000000</color>
+    <color name="PaletteGreen">#43c279</color>
+    <color name="PaletteWelcomeText">@color/blue_base</color>
+    <color name="PaletteYellowWhite">#ecebe7</color>
+    <color name="PaletteDarkYellowWhite">#2c2b27</color>
+    <color name="PaletteCardBg">#ffffff</color>
+    <!-- <color name="PaletteDarkCardBg">#000000</color> -->
+    <color name="PaletteDarkCardBg">#252525</color>
+    <color name="PaletteWhite">#f7f7f7</color>
+    <color name="PaletteOffWhite">#e4e4e4</color>
+    <color name="PaletteLightestGray">#ccc</color>
+    <color name="PaletteLightGray">#aaaaaa</color>
+    <color name="PaletteMedGray">#666</color>
+    <color name="PaletteDarkGray">#313b4b</color>
+    <color name="PaletteBlack">#ff272727</color>
+    <!-- <color name="PalettePureBlack">#ff000000</color> -->
+    <color name="PalettePureBlack">#ff252525</color>
+    <color name="PaletteBlackHalfOpacity">#802d2d2d</color>
+    <color name="PaletteBlack34Opacity">#d02d2d2d</color>
+    <color name="PaletteTutorialOpacity">#f02d2d2d</color>
+    <color name="PaletteKambalaGrayBg">#dcdbe0</color>
+    <color name="PaletteDarkBlue">#ff2a2b31</color>
+    <color name="blue_base">#449def</color>
+    <color name="blue_base_half">#80449def</color>
+    <color name="blue_stroke">#2f6699</color>
+    <color name="blue_gradientS">#00a2e2</color>
+    <color name="blue_gradientE">#0767a4</color>
+    <color name="pressed_pastel">#7f10004a</color>
+
+    <!-- dark theme -->
+
+    <color name="DarkPaletteBoardTitleTextColor">#eeeeee</color>
+    <!-- <color name="DarkPaletteCardListBg">#484848</color> -->
+    <color name="DarkPaletteCardListBg">#1d1d1d</color>
+    <color name="DarkPaletteCardListBarBg">#2f2f2f</color>
+    <color name="DarkPaletteImagePlaceholder">#2f2f2f</color>
+    <color name="DarkPaletteDrawerBg">#202220</color>
+    <color name="DarkPaletteDrawerUncheckedBg">#88202220</color>
+    <!--
+    <color name="DarkPaletteDrawerUncheckedBg">#88303230</color>
+    -->
+    <color name="DarkPaletteThreadLine">#44bdbdbd</color>
+    <color name="DarkPaletteThreadListBarOverlayFg">#88ffffff</color>
+    <color name="DarkPaletteThreadHeaderImageBg">#222</color>
+    <color name="DarkPaletteActionBarBg">#222</color>
+    <color name="DarkPaletteBoardGridBoardCodeBg">#282828</color>
+
+    <!-- <color name="ad_background">#121212</color> -->
+    <color name="ad_background">#ffec964a</color>
+    <color name="ad_text_color">#fff2f2f2</color>
+
+    <color name="PaletteCardActionItem">#00B6E6</color>
+
+    <color name="PaletteBoardCodeText">#eeeeee</color>
+
+    <!-- board code colors -->
+    <color name="PaletteBoardTextColor">#fefefe</color>
+    <color name="PaletteBoardColor0">#4897B3</color>
+    <color name="PaletteBoardColor1">#8F48B3</color>
+    <color name="PaletteBoardColor2">#97B348</color>
+    <color name="PaletteBoardColor3">#B38F48</color>
+    <color name="PaletteBoardColor4">#B34848</color>
+
+    <color name="PaletteBoardColor5">#0099CC</color>
+    <color name="PaletteBoardColor6">#9933CC</color>
+    <color name="PaletteBoardColor7">#669900</color>
+    <color name="PaletteBoardColor8">#FF8800</color>
+    <color name="PaletteBoardColor9">#CC0000</color>
+    <color name="PaletteBoardColor10">#CC0000</color>
+
+    <!-- for enhanced list view -->
+	<color name="btn_pressed">#ff33b5e5</color>
+	<color name="btn_focused">#ff0099cc</color>
+	<color name="btn_normal">#00000000</color>
+	<color name="popup_bg_color">#EE666666</color>
+	<color name="separator_color">#BBBBBB</color>
+	<color name="popup_text_color">#FFFFFF</color>
+
+</resources>

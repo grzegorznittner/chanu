@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/post_reply_all_menu"
+          android:title="@string/post_reply_all_menu"
+          android:icon="@drawable/social_reply"
+            />
+
+    <item android:id="@+id/thread_context_share_action_menu"
+          android:icon="@drawable/ic_menu_share_holo_light"
+          android:title="@string/share_url"
+          android:actionProviderClass="android.widget.ShareActionProvider"
+          android:showAsAction="always"
+          android:enabled="false"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/download_images_to_gallery_menu"
+          android:title="@string/download_images_to_gallery_menu"
+          android:icon="@drawable/av_download"
+            />
+
+    <item android:id="@+id/image_search_menu"
+          android:title="@string/image_search_menu"
+          android:icon="@drawable/action_search"
+          android:visible="false"
+            />
+    <item android:id="@+id/anime_image_search_menu"
+          android:title="@string/anime_image_search_menu"
+          android:icon="@drawable/action_search"
+          android:visible="false"
+            />
+
+    <item android:id="@+id/translate_posts_menu"
+          android:title="@string/translate"
+          android:icon="@drawable/content_import_export"
+            />
+
+    <item android:id="@+id/copy_text_menu"
+          android:title="@string/copy_text_menu"
+          android:icon="@drawable/content_copy"
+            />
+
+    <item android:id="@+id/delete_posts_menu"
+          android:title="@string/delete_posts_menu"
+          android:icon="@drawable/content_discard"
+            />
+    <item android:id="@+id/report_posts_menu"
+          android:title="@string/report_posts_menu"
+          android:icon="@drawable/alerts_and_states_warning"
+            />
+
+    <item android:id="@+id/web_menu"
+          android:title="@string/direct_web_menu"
+          android:icon="@drawable/location_web_site"
+          android:visible="false"
+            />
+
+</menu>

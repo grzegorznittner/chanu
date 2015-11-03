@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/board_grid_layout"
+        style="@style/BoardGridLayout"
+        >
+
+    <include layout="@layout/board_title_bar" android:id="@+id/board_title_bar"/>
+
+    <!--
+    <include layout="@layout/board_refresh_bar"
+            android:layout_below="@+id/board_title_bar"
+            />
+    -->
+    <!--
+    <TextView
+        android:id="@+id/board_test"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Board Test"
+        />
+    -->
+    <GridView
+            android:id="@+id/board_grid_view"
+            style="@style/BoardGridViewSmall"
+            android:layout_below="@+id/board_title_bar"
+            />
+
+    <TextView
+            android:id="@+id/board_grid_empty_text"
+            style="@style/BoardGridLayoutEmptyText"
+            />
+
+    <include layout="@layout/ad_section"
+            />
+
+    <include layout="@layout/tutorial_overlay"/>
+
+</RelativeLayout>

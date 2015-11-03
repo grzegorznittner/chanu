@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+<!-- posting -->
+
+    <PreferenceCategory
+            android:key="pref_about_developer_category"
+            android:title="@string/pref_about_developer_category"
+            android:persistent="true"
+            >
+
+        <Preference
+                android:key="pref_about_store_chanapps"
+                android:title="@string/pref_about_store_chanapps"
+                android:summary="@string/pref_about_store_chanapps_sum"
+                />
+
+        <Preference
+                android:key="pref_about_contact_us"
+                android:title="@string/pref_about_contact_us"
+                android:summary="@string/pref_about_contact_email"
+                />
+
+    </PreferenceCategory>
+    
+</PreferenceScreen>

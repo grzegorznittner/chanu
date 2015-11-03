@@ -1,0 +1,21 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+
+    <integer name="StaggeredGridView.Board.numColumns">2</integer>
+
+    <integer name="BoardGridView.numColumns">2</integer>
+    <integer name="BoardGridViewSmall.numColumns">5</integer>
+
+    <dimen name="tutorial_overlay_paddingTop">37dp</dimen>
+    <dimen name="tutorial_overlay_inner_paddingLeft">0dp</dimen>
+    <dimen name="tutorial_overlay_subject_paddingTop">87dp</dimen>
+    <integer name="tutorial_overlay_cols">9</integer>
+    <integer name="tutorial_overlay_border_cols">3</integer>
+    <integer name="tutorial_overlay_center_cols">3</integer>
+    <integer name="tutorial_overlay_fill_cols">4</integer>
+
+    <dimen name="ad_layout_height">32dp</dimen>
+    <bool name="BoardGridView.abbrev">false</bool>
+    <bool name="narrow_tablet">false</bool>
+
+    <integer name="PostReplyComment_minLines">5</integer>
+</resources>

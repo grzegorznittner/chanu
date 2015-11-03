@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NOTE: we set updatePeriodMillis to 0 because we use the UpdateWidgetService with alarms instead for better battery life -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:minWidth="@dimen/widget_board_oneimage_minWidth"
+                    android:minHeight="@dimen/widget_board_oneimage_minHeight"
+                    android:updatePeriodMillis="3600000"
+                    android:previewImage="@drawable/widget_preview_1x1"
+                    android:initialLayout="@layout/widget_board_oneimage_layout"
+                    android:resizeMode="none"
+                    android:configure="com.chanapps.four.widget.WidgetConfigureOneImageActivity"
+        />

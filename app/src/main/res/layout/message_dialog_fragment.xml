@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/thread_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="0dp"
+        android:orientation="vertical">
+                                                          <!-- style="?android:attr/windowTitleStyle" -->
+    <TextView android:id="@+id/title"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:minHeight="64dp"
+              android:paddingLeft="16dip"
+              android:paddingRight="16dip"
+              android:textColor="@color/blue_base"
+              android:textSize="22dp"
+              android:gravity="center_vertical|left" />
+    <View android:id="@+id/titleDivider"
+          android:layout_width="match_parent"
+          android:layout_height="2dip"
+          android:background="@color/blue_base" />
+
+    <TextView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textSize="@dimen/DialogFragmentMessageSize"
+            />
+
+</LinearLayout>

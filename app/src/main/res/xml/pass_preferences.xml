@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="pref_pass_category"
+        android:summary="@string/pref_pass_category_summ"
+        android:title="@string/pref_pass_category" >
+        <EditTextPreference
+            android:hint="@string/pref_pass_token_hint"
+            android:inputType="text|textCapCharacters|textNoSuggestions"
+            android:key="pref_pass_token"
+            android:maxLength="10"
+            android:summary="@string/pref_pass_token_summ"
+            android:title="@string/pref_pass_token" />
+        <EditTextPreference
+            android:hint="@string/pref_pass_pin_hint"
+            android:inputType="textVisiblePassword|numberPassword"
+            android:key="pref_pass_pin"
+            android:maxLength="6"
+            android:summary="@string/pref_pass_pin_summ"
+            android:title="@string/pref_pass_pin" />
+        <!--
+        <CheckBoxPreference
+                android:key="pref_pass_enabled"
+                android:title="@string/pref_pass_enabled"
+                android:summaryOn="@string/pref_pass_enabled_summ_on"
+                android:summaryOff="@string/pref_pass_enabled_summ_off"
+                android:defaultValue="false" />
+        -->
+        <Preference
+            android:key="pref_pass_auth_button"
+            android:title="@string/dialog_authorize" />
+        <Preference
+            android:hint="@string/pref_pass_purchase_hint"
+            android:key="pref_pass_purchase_button"
+            android:title="@string/purchase_menu" />
+        <Preference
+            android:key="pref_pass_close_button"
+            android:title="@string/dialog_cancel" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
