@@ -22,6 +22,8 @@ Chanu - 4chan android app
 1.  Open Android Studio
 2.  Import the following projects (```File > New > Import Project```)
 3.  Select source folder and confirm
-4.  Open 'run configurations' (```Run > Edit Configurations ```)
-5.  Select ....
+4.  Set the app module under run configurations' (```Run > Edit Configurations ```)
+5.  Run app to install app onto device
+6.  ....
+7.  Profit!
 
