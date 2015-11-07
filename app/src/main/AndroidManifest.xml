@@ -23,7 +23,7 @@
                       android:anyDensity="true"/>
 
     <application
-            android:name="com.chanapps.four.FourChannerApp"
+            android:name="com.chanapps.four.ChanuApp"
             android:icon="@drawable/launcher_icon"
             android:logo="@drawable/app_icon_actionbar"
             android:label="@string/app_name"

@@ -21,10 +21,10 @@ import com.chanapps.four.service.NetworkProfileManager;
  *
  */
 
-public class FourChannerApp extends GalleryAppImpl {
+public class ChanuApp extends GalleryAppImpl {
 
     private static final boolean DEBUG = false;
-    private static final String TAG = FourChannerApp.class.getSimpleName();
+    private static final String TAG = ChanuApp.class.getSimpleName();
     private static Locale locale = null;
 
     public synchronized DataManager getDataManager() {
