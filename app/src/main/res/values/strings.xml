@@ -427,7 +427,7 @@
     <string name="board_hr">High Resolution</string>
     <string name="board_gif">Animated GIF</string>
     <string name="board_type_other">Other</string>
-    <string name="board_q">4chan Feedback</string>
+    <!--<string name="board_q">4chan Feedback</string>-->
     <string name="board_trv">Travel</string>
     <string name="board_fit">Fitness</string>
     <string name="board_x">Paranormal</string>
@@ -442,6 +442,10 @@
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_s4s">Shit 4chan Says</string>
     <string name="board_soc">Cams &amp; Meetups</string>
+    <string name="board_aco">Adult Cartoons</string>
+    <string name="board_his">History &amp; Humanities</string>
+    <string name="board_qa">Questions &amp; Answers</string>
+
     <string name="board_watch">Thread Watchlist</string>
     <string name="board_favorites">Favorite Boards</string>
     <string name="board_popular">Popular Threads</string>
@@ -490,7 +494,9 @@
     <string name="board_desc_p">Content and criticism</string>
     <string name="board_desc_po">Folding and cutouts</string>
     <string name="board_desc_pol">Politics 4chan style</string>
-    <string name="board_desc_q">Mods and features</string>
+    <!--<string name="board_desc_q">Mods and features</string>-->
+    <string name="board_desc_qa">Feedback and whining</string>
+
     <string name="board_desc_r">Ask for images and videos</string>
     <string name="board_desc_r9k">No-repeats community</string>
     <string name="board_desc_s">Female softcore</string>
@@ -562,6 +568,16 @@
 ]]>
 </string>
 
+
+
+<string name="board_aco_rules">
+<![CDATA[
+<h3>/hc/ - Adult Cartoons</h3>
+
+<p>1. </p>
+
+]]>
+</string>
 
 <string name="board_adv_rules">
 <![CDATA[
@@ -808,6 +824,16 @@ We will remove anything that remotely breaks this rule.</p>
 </string>
 
 
+<string name="board_his_rules">
+<![CDATA[
+<h3>/hc/ - History & Humanities</h3>
+
+<p>1. </p>
+
+]]>
+</string>
+
+
 <string name="board_hm_rules">
 <![CDATA[
 <h3>/hm/ - Handsome Men</h3>
@@ -1019,6 +1045,17 @@ We will remove anything that remotely breaks this rule.</p>
 <string name="board_q_rules">
 <![CDATA[
 <h3>/q/ - 4chan Feedback</h3>
+
+<p>1. Users are free to discuss the site amongst themselves and with the 4chan team.</p>
+<p>2. Constructive criticism only. Trolling, flooding, and ban evasion will not be tolerated.</p>
+
+]]>
+</string>
+
+
+<string name="board_qa_rules">
+<![CDATA[
+<h3>/qa/ - Questions and Answers</h3>
 
 <p>1. Users are free to discuss the site amongst themselves and with the 4chan team.</p>
 <p>2. Constructive criticism only. Trolling, flooding, and ban evasion will not be tolerated.</p>
