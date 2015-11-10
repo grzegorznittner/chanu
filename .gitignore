@@ -29,3 +29,5 @@ local.properties
 gradle/
 .gradle/
 .idea/
+gradlew
+gradlew.bat

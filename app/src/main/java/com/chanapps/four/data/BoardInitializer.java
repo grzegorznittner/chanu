@@ -211,7 +211,7 @@ public class BoardInitializer
         boardDrawables.put("gif", new int[]{ R.drawable.gif, R.drawable.gif_2, R.drawable.gif_3 } );
         boardDrawables.put("h", new int[]{ R.drawable.h, R.drawable.h_2, R.drawable.h_3 } );
         boardDrawables.put("hc", new int[]{ R.drawable.hc, R.drawable.hc_2, R.drawable.hc_3 } );
-        //boardDrawables.put("his", new int[]{ R.drawable.his, R.drawable.his_2, R.drawable.his_3 } );
+        boardDrawables.put("his", new int[]{ R.drawable.his, R.drawable.his_2, R.drawable.his_3 } );
         boardDrawables.put("hm", new int[]{ R.drawable.hm, R.drawable.hm_2, R.drawable.hm_3 } );
         boardDrawables.put("hr", new int[]{ R.drawable.hr, R.drawable.hr_2, R.drawable.hr_3 } );
         boardDrawables.put("i", new int[]{ R.drawable.i, R.drawable.i_2, R.drawable.i_3 } );

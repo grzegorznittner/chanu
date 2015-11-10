@@ -208,8 +208,6 @@ public class ChanBoard {
 
         String[][] boardCodesByType = BoardInitializer.initBoardCodes(ctx);
 
-
-
         for (String[] boardCodesForType : boardCodesByType) {
             BoardType boardType = BoardType.valueOf(boardCodesForType[0]);
             List<ChanBoard> boardsForType = new ArrayList<ChanBoard>();
