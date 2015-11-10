@@ -190,7 +190,7 @@ public class BoardInitializer
         HashMap<String, int[]> boardDrawables = new HashMap<String, int[]>();
 
         boardDrawables.put("a", new int[]{ R.drawable.a, R.drawable.a_2, R.drawable.a_3 } );
-        //boardDrawables.put("aco", new int[]{ R.drawable.aco, R.drawable.aco_2, R.drawable.aco_3 } );
+        boardDrawables.put("aco", new int[]{ R.drawable.aco, R.drawable.aco, R.drawable.aco } );
         boardDrawables.put("adv", new int[]{ R.drawable.adv, R.drawable.adv_2, R.drawable.adv_3 } );
         boardDrawables.put("an", new int[]{ R.drawable.an, R.drawable.an_2, R.drawable.an_3 } );
         boardDrawables.put("asp", new int[]{ R.drawable.asp, R.drawable.asp_2, R.drawable.asp_3 } );
