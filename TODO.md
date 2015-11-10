@@ -2,6 +2,7 @@
 
 ### NEED to Do
 1.  Find board icons for /aco/, /his/, and /qa/(might just reuse /q/)
+2.  Convert from Holo to Material Design
 
 ### Want to Do
 1.  Activity transition animations
