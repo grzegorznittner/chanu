@@ -119,6 +119,7 @@ public class BoardInitializer
                         BoardType.ALL_BOARDS.toString(),
                         ChanBoard.ALL_BOARDS_BOARD_CODE, ctx.getString(R.string.board_all_boards),
                         "a", ctx.getString(R.string.board_a),
+                        "aco", ctx.getString(R.string.board_aco),
                         "adv", ctx.getString(R.string.board_adv),
                         "asp", ctx.getString(R.string.board_asp),
                         "an", ctx.getString(R.string.board_an),
@@ -140,6 +141,7 @@ public class BoardInitializer
                         "h", ctx.getString(R.string.board_h),
                         "hc", ctx.getString(R.string.board_hc),
                         "hm", ctx.getString(R.string.board_hm),
+                        "his", ctx.getString(R.string.board_his),
                         "hr", ctx.getString(R.string.board_hr),
                         "i", ctx.getString(R.string.board_i),
                         "ic", ctx.getString(R.string.board_ic),
@@ -157,6 +159,7 @@ public class BoardInitializer
                         "p", ctx.getString(R.string.board_p),
                         "po", ctx.getString(R.string.board_po),
                         "pol", ctx.getString(R.string.board_pol),
+                        "qa", ctx.getString(R.string.board_qa),
                         "r", ctx.getString(R.string.board_r),
                         "r9k", ctx.getString(R.string.board_r9k),
                         "s", ctx.getString(R.string.board_s),
@@ -341,5 +344,4 @@ public class BoardInitializer
         };
         return relatedBoardCodes;
     }
-
 }

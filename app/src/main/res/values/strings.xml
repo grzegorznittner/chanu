@@ -457,6 +457,7 @@
     <!-- board descriptions -->
     <string name="board_desc_3">Modeling and imagery</string>
     <string name="board_desc_a">Novels and vids</string>
+    <string name="board_desc_aco">Adult Cartoons </string>
     <string name="board_desc_adv">Ask and you shall receive</string>
     <string name="board_desc_an">Pets, plants, cuddlies</string>
     <string name="board_desc_asp">BMX, skiing, parachuting</string>
@@ -475,6 +476,7 @@
     <string name="board_desc_gd">Websites and logos</string>
     <string name="board_desc_gif">Uncensored loops</string>
     <string name="board_desc_h">Anime sex and nudity</string>
+    <string name="board_desc_his">History</string>
     <string name="board_desc_hc">Live action hardcore</string>
     <string name="board_desc_hm">Male softcore</string>
     <string name="board_desc_hr">Artwork and scans</string>
