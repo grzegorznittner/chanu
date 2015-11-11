@@ -9,7 +9,7 @@ Chanu - 4chan android app
 #### Requirements
 1.  Android Studio [Android Studio](http://developer.android.com/sdk/index.html)
 2.  Android SDK Platform      23 (Marshmallow)
-3.  Android SDK Build-tools   23.0.1
+3.  Android SDK Build-tools   23.0.2
 4.  Android Support Library   23.1
 
 #### Branch
