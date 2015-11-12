@@ -1,0 +1,4 @@
+include ':app', ':actionBarPullToRefresh', ':gallery'
+
+project(':actionBarPullToRefresh').projectDir = new File('app/libs/actionBarPullToRefresh')
+project(':gallery').projectDir = new File('app/libs/gallery')

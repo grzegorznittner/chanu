@@ -1,0 +1,401 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.chanapps.four.activity"
+          android:versionCode="90"
+          android:versionName="2.0.15">
+
+    <uses-sdk
+            android:minSdkVersion="15"
+            android:targetSdkVersion="23"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE"/> -->
+
+    <!-- check if app is in the foreground -->
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+
+    <supports-screens android:smallScreens="false"
+                      android:normalScreens="true" android:largeScreens="true"
+                      android:anyDensity="true"/>
+
+    <application
+            android:name="com.chanapps.four.ChanuApp"
+            android:icon="@drawable/launcher_icon"
+            android:logo="@drawable/app_icon_actionbar"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme"
+            android:hardwareAccelerated="true"
+            >
+
+        <activity android:name="com.chanapps.four.activity.StartupActivity"
+                  android:configChanges="orientation|keyboardHidden"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter android:priority="100">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="http" android:host="4chan.org" android:pathPattern=".*"/>
+                <data android:scheme="http" android:host="www.4chan.org" android:pathPattern=".*"/>
+                <data android:scheme="http" android:host="boards.4chan.org" android:pathPattern=".*"/>
+                <data android:scheme="https" android:host="4chan.org" android:pathPattern=".*"/>
+                <data android:scheme="https" android:host="www.4chan.org" android:pathPattern=".*"/>
+                <data android:scheme="https" android:host="boards.4chan.org" android:pathPattern=".*"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name="com.chanapps.four.activity.PostReplyActivity"
+                android:label="@string/post_reply_title"
+                android:configChanges="orientation"
+                android:exported="false"
+                android:launchMode="standard">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name="com.chanapps.four.activity.PostReplyShareActivity"
+                android:label="@string/app_name"
+                android:configChanges="orientation"
+                android:exported="true"
+                android:launchMode="standard">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="image/*"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.chanapps.four.activity.GalleryViewActivity" android:label="@string/board_thread_gallery_menu"
+                  android:configChanges="orientation|screenSize"
+                  android:launchMode="standard">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".ThreadActivity"
+                    />
+        </activity>
+
+        <activity android:name="com.chanapps.four.activity.BoardSelectorActivity"
+                  android:label="@string/app_name" android:launchMode="singleTask"
+                  android:configChanges="orientation|screenSize"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.chanapps.four.activity.BoardActivity"
+                  android:label="@string/app_name" android:launchMode="singleTask"
+                  android:configChanges="orientation|screenSize"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+
+            <meta-data
+                    android:name="android.app.default_searchable"
+                    android:value=".SearchActivity"/>
+        </activity>
+
+        <activity android:name="com.chanapps.four.activity.ThreadActivity"
+                  android:label="@string/app_name" android:launchMode="singleTask"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+            <meta-data
+                    android:name="android.app.default_searchable"
+                    android:value=".SearchActivity"/>
+        </activity>
+
+        <activity android:name="com.chanapps.four.activity.SearchActivity" android:label="@string/search_title"
+                  android:launchMode="singleTop"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+            <meta-data
+                    android:name="android.app.searchable"
+                    android:resource="@xml/searchable"
+                    />
+        </activity>
+
+        <activity android:name="com.chanapps.four.activity.SettingsActivity" android:label="@string/settings_menu"
+                  android:launchMode="standard"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.chanapps.four.activity.AboutActivity" android:label="@string/about_activity"
+                  android:launchMode="standard"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.chanapps.four.activity.CancelDownloadActivity" android:label=""
+	          android:launchMode="standard"
+	          android:theme="@android:style/Theme.Holo.Dialog"
+	          android:excludeFromRecents="true"
+	        >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+        </activity>
+        
+        <service android:name="com.chanapps.four.service.FetchChanDataService"/>
+        <service android:name="com.chanapps.four.service.BoardParserService"/>
+        <service android:name="com.chanapps.four.service.BoardThreadsParserService"/>
+        <service android:name="com.chanapps.four.service.ThreadParserService"/>
+        <service android:name="com.chanapps.four.service.CleanUpService"/>
+        <service android:name="com.chanapps.four.service.FileSaverService"/>
+        <service android:name="com.chanapps.four.service.ImageDownloadService"/>
+        <service android:name="com.chanapps.four.service.ThreadImageDownloadService"/>
+        <service android:name="com.chanapps.four.service.FetchPopularThreadsService"/>
+
+        <!--widgets-->
+        <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity"
+                  android:excludeFromRecents="true"
+                  android:taskAffinity=""
+                  android:launchMode="standard"
+                  android:label="@string/widget_configure_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.chanapps.four.widget.WidgetConfigureOneImageActivity"
+                  android:excludeFromRecents="true"
+                  android:taskAffinity=""
+                  android:launchMode="standard"
+                  android:label="@string/widget_configure_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.chanapps.four.widget.WidgetConfigureCoverFlowActivity"
+                  android:excludeFromRecents="true"
+                  android:taskAffinity=""
+                  android:launchMode="standard"
+                  android:label="@string/widget_configure_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.chanapps.four.widget.WidgetConfigureCoverFlowCardActivity"
+                  android:excludeFromRecents="true"
+                  android:taskAffinity=""
+                  android:launchMode="standard"
+                  android:label="@string/widget_configure_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+        <receiver android:name="com.chanapps.four.widget.BoardWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_info"/>
+        </receiver>
+        <receiver android:name="com.chanapps.four.widget.BoardOneImageWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_oneimage_info"/>
+        </receiver>
+        <receiver android:name="com.chanapps.four.widget.BoardCoverFlowWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_coverflow_info"/>
+        </receiver>
+        <receiver android:name="com.chanapps.four.widget.BoardCoverFlowCardWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_coverflowcard_info"/>
+        </receiver>
+        <receiver android:name="com.chanapps.four.component.GlobalAlarmReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="com.chanapps.four.component.GlobalAlarmReceiver.update"/>
+            </intent-filter>
+        </receiver>
+        <service android:name="com.chanapps.four.widget.UpdateWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS" android:exported="false"/>
+        <service android:name="com.chanapps.four.widget.StackWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS" android:exported="false"/>
+        <service android:name="com.chanapps.four.widget.CardStackWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS" android:exported="false"/>
+
+        <!-- Gallery Photo widget -->
+        <!-- 
+        <activity android:name="com.chanapps.four.widget.PhotoAppWidgetConfigure"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:theme="@style/android:Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <receiver android:name="com.chanapps.four.widget.PhotoAppWidgetProvider"
+                android:label="@string/appwidget_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                    android:resource="@xml/widget_photoapp_info" />
+        </receiver>
+        <receiver android:name="com.android.gallery3d.app.PackagesMonitor">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+        <service android:name="com.android.gallery3d.gadget.WidgetService"
+                android:permission="android.permission.BIND_REMOTEVIEWS"
+                android:exported="false"/>
+        <provider android:name="com.android.gallery3d.provider.GalleryProvider"
+                android:syncable="false"
+                android:grantUriPermissions="true"
+                android:authorities="com.android.gallery3d.provider"
+                android:exported="false"/>
+        -->
+        <activity android:name="com.android.gallery3d.gadget.WidgetClickHandler"
+            	android:exported="false"/>
+        <activity android:name="com.android.gallery3d.app.DialogPicker"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:theme="@style/DialogPickerTheme"
+                android:exported="false"/>
+        <activity android:name="com.android.gallery3d.app.AlbumPicker"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:theme="@style/DialogPickerTheme"
+                android:exported="false"/>
+        <activity android:name="com.android.gallery3d.gadget.WidgetTypeChooser"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:theme="@style/DialogPickerTheme"
+                android:exported="false"/>
+
+        <!-- advertising -->
+        <!--
+        <activity android:name="com.google.ads.AdActivity"
+                  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+
+        <activity android:name=".VideoViewActivity"
+                  android:launchMode="standard"
+                  android:configChanges="orientation|keyboardHidden|screenSize"
+                  android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+        -->
+
+        <!-- Gallery activities -->
+
+        <activity android:name="com.android.gallery3d.app.Wallpaper"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:theme="@style/android:Theme.Translucent.NoTitleBar"
+                  android:launchMode="standard"
+                  android:exported="false">
+            <meta-data android:name="android.wallpaper.preview"
+                       android:resource="@xml/wallpaper_picker_preview"/>
+        </activity>
+        <activity android:name="com.android.gallery3d.app.CropImage"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:label="@string/crop_label"
+                  android:process=":crop"
+                  android:exported="false"
+                  android:launchMode="standard"
+                >
+            <intent-filter android:label="@string/crop_label">
+                <action android:name="com.android.camera.action.CROP"/>
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:scheme="content"/>
+                <data android:scheme="file"/>
+                <data android:scheme=""/>
+                <data android:mimeType="image/*"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.ALTERNATIVE"/>
+                <category android:name="android.intent.category.SELECTED_ALTERNATIVE"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.android.gallery3d.photoeditor.PhotoEditor"
+                  android:label="@string/photoeditor_name"
+                  android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:hardwareAccelerated="true"
+                  android:exported="false"
+                  android:launchMode="standard"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.EDIT"/>
+                <data android:mimeType="image/*"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <uses-library android:name="com.google.android.media.effects"
+                      android:required="false"/>
+
+       <!--
+        <activity android:name="com.android.gallery3d.app.SlideshowDream"
+                  android:label="@string/slideshow_dream_name"
+                  android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+                  android:hardwareAccelerated="true"
+                  android:exported="false"
+                  android:launchMode="standard"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DREAM"/>
+            </intent-filter>
+        </activity>
+        -->
+
+        <!--
+        <meta-data android:name="com.mobclix.APPLICATION_ID" android:value="8149A3F7-CAF0-49D6-ABC3-11D3F97D2171"/>
+        <activity android:name="com.mobclix.android.sdk.MobclixBrowserActivity"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        -->
+
+    </application>
+
+</manifest>

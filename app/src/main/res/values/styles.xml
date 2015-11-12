@@ -1,0 +1,1330 @@
+<resources>
+
+    <!-- START ACTIONBAR THEME -->
+
+    <style name="ListViewTemplate" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:smoothScrollbar">false</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:horizontalSpacing">0dp</item>
+        <item name="android:stretchMode">none</item>
+        <item name="android:divider">@color/PaletteLightGray</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+    </style>
+
+    <style name="ThreadListView" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <!--<item name="android:layout_centerInParent">true</item>-->
+        <item name="android:smoothScrollbar">false</item>
+        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:horizontalSpacing">0dp</item>
+        <item name="android:stretchMode">none</item>
+        <item name="android:divider">@color/PaletteTransparent</item>
+        <item name="android:dividerHeight">@dimen/BoardGridView.spacing</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:paddingTop">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingBottom">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingRight">@dimen/BoardGridView.spacing</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:listSelector">@drawable/null_selector_bg</item>
+        <!--
+        <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
+        <item name="android:drawSelectorOnTop">true</item>
+        -->
+    </style>
+
+    <!-- SELECTOR GRID STYLES -->
+
+    <style name="SelectorScrollView" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <style name="SelectorBoardType" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:isScrollContainer">true</item>
+        <item name="android:adjustViewBounds">true</item>
+    </style>
+
+    <!-- BOARD GRID STYLES -->
+
+    <style name="BoardGridLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">?themedCardListBackground</item>
+    </style>
+
+    <style name="ThreadListLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">?themedCardListBackground</item>
+    </style>
+
+    <style name="ThreadListPopupLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="BoardGridLayoutEmptyText" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
+        <item name="android:textColor">?themedBoardGridLayoutEmptyTextColor</item>
+        <item name="android:visibility">gone</item>
+    </style>
+    
+    <style name="BoardGridItemSmall" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?themedSmallCardBackground</item>
+    </style>
+
+    <style name="BoardGridItemSmallSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:maxLines">@integer/BoardGridSubject_maxLines</item>
+        <!--
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:lines">2</item>
+        -->
+    </style>
+
+    <style name="BoardGridItemSmallTabletColSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/BoardGridViewTablet_layout_marginHeight_belowImage</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingRight">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingTop">@dimen/BoardGridView.halfSpacing</item>
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
+        <item name="android:ellipsize">none</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:maxLines">5</item>
+    </style>
+
+    <style name="BoardGridItemSmallInfo" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <!--
+        <item name="android:paddingRight">8dp</item>
+        -->
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
+        <item name="android:textSize">@dimen/BoardGridInfo</item>
+        <item name="android:maxLines">4</item>
+        <!--
+               <item name="android:lines">2</item>
+               <item name="android:maxLines">2</item>
+               <item name="android:maxLines">3</item>
+               -->
+    </style>
+
+    <style name="BoardGridItemSmallTabletColInfo" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|center_horizontal</item>
+        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingRight">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingBottom">@dimen/BoardGridView.halfSpacing</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
+        <item name="android:textSize">@dimen/BoardGridInfo</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="BoardGridView" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/BoardGridView.spacing</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:smoothScrollbar">false</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
+        <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
+        <item name="android:numColumns">@integer/BoardGridView.numColumns</item>
+        <item name="android:stretchMode">columnWidth</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
+        <item name="android:drawSelectorOnTop">true</item>
+        <item name="android:divider">@color/PaletteTransparent</item>
+        <item name="android:dividerHeight">0dp</item>
+        <!--
+        <item name="android:divider">@color/PaletteTransparent</item>
+        <item name="android:dividerHeight">@dimen/BoardGridView.spacing</item>
+        -->
+    </style>
+
+    <style name="BoardGridViewSmall" parent="BoardGridView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/BoardGridView.spacing</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:smoothScrollbar">false</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
+        <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
+        <item name="android:numColumns">@integer/BoardGridViewSmall.numColumns</item>
+        <item name="android:stretchMode">columnWidth</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
+        <item name="android:drawSelectorOnTop">true</item>
+    </style>
+
+    <style name="BoardGridViewTablet" parent="AppTheme">
+        <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingBottom">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:divider">@color/PaletteTransparent</item>
+        <item name="android:dividerHeight">@dimen/BoardGridViewTablet.spacing</item>
+        <item name="android:stretchMode">columnWidth</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:smoothScrollbar">false</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
+        <item name="android:drawSelectorOnTop">true</item>
+        <item name="android:numColumns">1</item>
+        <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
+        <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
+    </style>
+
+    <style name="BoardGridImage" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:contentDescription">@string/thread_post_image</item>
+        <item name="android:adjustViewBounds">false</item>
+    </style>
+
+    <style name="BoardTypeText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">@dimen/BoardTypeText_padding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/BoardTypeText</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="BoardSelectorOverlay" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:paddingTop">@dimen/BoardSelectorOverlay_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/BoardSelectorOverlay_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardSelectorOverlay_paddingRight</item>
+        <item name="android:paddingBottom">@dimen/BoardSelectorOverlay_paddingBottom</item>
+        <item name="android:gravity">center_horizontal|bottom</item>
+        <item name="android:textSize">@dimen/BoardSelectorOverlay</item>
+        <item name="android:background">@drawable/board_subject_gradient_bg</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="BoardGridOverlay" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/BoardGridOverlay_paddingLeft</item>
+        <item name="android:paddingTop">@dimen/BoardGridOverlay_paddingTop</item>
+        <item name="android:paddingRight">@dimen/BoardGridOverlay_paddingRight</item>
+        <item name="android:paddingBottom">@dimen/BoardGridOverlay_paddingBottom</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:background">@drawable/board_subject_gradient_bg</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="BoardGridSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal|top</item>
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BoardGridInfo" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal|top</item>
+        <item name="android:textSize">@dimen/BoardGridInfo</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BoardGridAbbrev" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingLeft">@dimen/BoardGridAbbrev_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardGridAbbrev_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardGridAbbrev_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardGridAbbrev_paddingBottom</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/BoardGridAbbrev</item>
+        <item name="android:background">@drawable/board_abbrev_gradient_bg</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="BoardSelectorGridCountryFlag" parent="AppTheme">
+        <item name="android:layout_width">@dimen/BoardSelectorGridCountryFlag_layout_width</item>
+        <item name="android:layout_height">@dimen/BoardSelectorGridCountryFlag_layout_height</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:layout_marginRight">@dimen/BoardSelectorGridCountryFlag_marginRight</item>
+        <item name="android:layout_marginTop">@dimen/BoardSelectorGridCountryFlag_marginTop</item>
+        <item name="android:contentDescription">@string/thread_country_flag</item>
+    </style>
+
+    <style name="BoardGridCountryFlag" parent="AppTheme">
+        <item name="android:layout_width">@dimen/BoardGridCountryFlag_layout_width</item>
+        <item name="android:layout_height">@dimen/BoardGridCountryFlag_layout_height</item>
+        <!-- <item name="android:layout_alignParentTop">true</item> -->
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:layout_marginTop">@dimen/BoardGridCountryFlag_marginTop</item>
+        <item name="android:contentDescription">@string/thread_country_flag</item>
+    </style>
+
+    <!-- BOARD LIST STYLES -->
+
+    <style name="BoardListLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="BoardListTextImageTopOverlay" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:paddingTop">@dimen/BoardListTextImageTopOverlay_paddingTop</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingBottom">@dimen/BoardListTextImageTopOverlay_paddingBottom</item>
+        <item name="android:gravity">center_horizontal|center_vertical</item>
+        <item name="android:textSize">@dimen/BoardListTextImageTopOverlay</item>
+        <item name="android:background">@drawable/board_subject_gradient_bg</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BoardListTitle" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/BoardListTitle_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListTitle_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListTitle_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListTitle_paddingBottom</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteGreen</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <!--
+    <style name="BoardListButton" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingLeft">@dimen/BoardListButton_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListButton_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListButton_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListButton_paddingBottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@drawable/thread_button_selector_bg</item>
+        <item name="android:visibility">gone</item>
+    </style>
+    -->
+    <style name="BoardListTitleBar" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/ThreadListHeaderBar_layout_height</item>
+        <item name="android:background">@color/PaletteGreen</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="BoardListSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/BoardListSubject_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/BoardListSubject_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListSubject_paddingRight</item>
+        <item name="android:paddingBottom">@dimen/BoardListSubject_paddingBottom</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/BoardListSubject</item>
+    </style>
+
+    <style name="BoardListHeadline" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/BoardListHeadline_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListHeadline_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListHeadline_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListHeadline_paddingBottom</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/BoardListHeadline</item>
+        <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
+    </style>
+
+    <style name="BoardTitleBar" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="BoardRefreshBar" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <!-- THREAD LIST STYLES -->
+
+    <style name="ThreadListHeaderLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <!-- <item name="android:background">@color/PaletteYellowWhite</item> -->
+    </style>
+
+    <style name="ThreadListHeaderInnerLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/ThreadListLayout_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/ThreadListLayout_paddingBottom</item>
+        <item name="android:paddingLeft">@dimen/ThreadListHeaderInnerLayout_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ThreadListLayout_paddingRight</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:textSize">@dimen/ThreadListLayout</item>
+        <item name="android:background">@color/PaletteDarkGray</item>
+    </style>
+
+    <style name="ThreadListItemLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:textSize">@dimen/ThreadListLayout</item>
+    </style>
+
+    <style name="ThreadListAdLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="ThreadListTitleLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <!--
+    <style name="ThreadListButtonLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@drawable/thread_button_selector_bg</item>
+    </style>
+    -->
+    <!-- THREAD LIST TYPE_HEADER -->
+
+    <style name="ThreadListHeaderImageSection" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?themedThreadHeaderImageBg</item>
+    </style>
+
+    <style name="ThreadListItemImageSection" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:background">?themedThreadHeaderImageBg</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListHeaderImage" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:contentDescription">@string/thread_post_image</item>
+        <item name="android:background">@color/PaletteThreadHeaderImageBg</item>
+    </style>
+
+    <style name="ThreadListHeaderImageExpanded" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/ThreadListHeaderImage_layout_marginTop</item>
+        <item name="android:layout_marginBottom">@dimen/ThreadListHeaderImage_layout_marginBottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:contentDescription">@string/thread_post_image</item>
+        <item name="android:background">@color/PaletteThreadHeaderImageBg</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListHeaderImageExpandedClickEffect" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/ThreadListHeaderImage_layout_marginTop</item>
+        <item name="android:layout_marginBottom">@dimen/ThreadListHeaderImage_layout_marginBottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:contentDescription">@string/thread_post_image</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
+    </style>
+
+    <style name="ThreadListHeaderSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListHeaderHeadWrapper" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/ThreadListHeader_padding</item>
+        <item name="android:paddingRight">@dimen/ThreadListHeader_padding</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_med_padding</item>
+        <item name="android:background">@color/PaletteThreadHeaderBg</item>
+    </style>
+
+    <style name="ThreadListHeaderCountryFlag" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeaderCountryFlag_layout_width</item>
+        <item name="android:layout_height">@dimen/ThreadListHeaderCountryFlag_layout_height</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:gravity">top|right</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:contentDescription">@string/thread_country_flag</item>
+    </style>
+
+    <style name="ThreadListHeaderHead" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
+        <item name="android:textColor">@color/PaletteThreadSecondaryText</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:autoLink">email</item>
+        <item name="android:linksClickable">true</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_micro_padding</item>
+    </style>
+
+    <style name="ThreadListHeaderBar" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:background">?themedCardListBarBg</item>
+    </style>
+    <style name="ThreadListItemBarBackground" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?themedCardListBarBg</item>
+    </style>
+    <style name="ThreadListItemBarHighlightBackground" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/PaletteSelectorHalf</item>
+    </style>
+
+    <style name="ThreadListItemBar" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+    </style>
+
+    <style name="ThreadListItemLeftSpacer" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_padding</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_paddingPlusLeft</item>
+    </style>
+
+    <style name="ThreadListHeaderBarAgoWrapper" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:paddingLeft">@dimen/ThreadListHeader_padding</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ThreadListItemBarAgoWrapper" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_paddingPlusLeft</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ThreadListItemBarAgoWrapperTextOnly" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_padding</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ThreadListItemBarAgo" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
+        <item name="android:textColor">@color/PaletteThreadTitleSecondaryText</item>
+    </style>
+
+    <style name="ThreadListHeaderBarNo" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ThreadListItemBarNo" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ThreadListItemBarChat" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ThreadListItemBarWebIcon" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:src">?themedCardWebIcon</item>
+    </style>
+
+    <style name="ThreadListItemBarChatIcon" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:src">?themedCardChatIcon</item>
+    </style>
+
+    <style name="ThreadListItemBarReplyIcon" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/speech_bubble_light</item>
+    </style>
+
+    <style name="ThreadListHeaderBarOverflow" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
+    </style>
+
+    <style name="ThreadListHeaderBarOverflowIcon" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/card_overflow_icon</item>
+    </style>
+
+    <style name="ThreadListItemBarOverflow" parent="AppTheme">
+        <!-- <item name="android:layout_width">@dimen/ThreadListItemBarOverflow_layout_width</item> -->
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:gravity">center_vertical|right</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_gravity">center_vertical|right</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
+    </style>
+
+    <style name="ThreadListItemBarOverflowIcon" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical|right</item>
+        <item name="android:gravity">center_vertical|right</item>
+        <item name="android:src">@drawable/card_overflow_icon</item>
+    </style>
+
+    <style name="ThreadListHeaderNumSection" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:weightSum">2</item>
+        <item name="android:background">@color/PaletteThreadHeaderBg</item>
+        <!--<item name="android:background">@color/PaletteDarkGray</item>-->
+    </style>
+
+    <style name="ThreadListHeaderActionItemLine" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/PaletteThreadHeaderBg</item>
+    </style>
+
+    <style name="ThreadListHeaderNumWrap" parent="AppTheme">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItemLineInner" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
+    </style>
+
+    <style name="ThreadListItemLeftBarWrap" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <!-- <item name="android:foreground">@drawable/thread_list_selector_bg</item> -->
+    </style>
+
+    <style name="ThreadListItemRightMenuWrap" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ThreadListItemRightMenuSpacer" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_med_padding</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListItemReplyWrap" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:foreground">@drawable/thread_list_selector_bg</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ThreadListHeaderNumHorizontalBorder" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">?themedCardLineBackground</item>
+    </style>
+
+    <style name="ThreadListHeaderNumVerticalBorder" parent="AppTheme">
+        <item name="android:layout_width">1px</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:background">?themedCardLineBackground</item>
+    </style>
+
+    <style name="ThreadListHeaderNumWrapInner" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_med_padding</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItemWrap" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingLeft">@dimen/ThreadListHeader_padding</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_padding</item>
+    </style>
+
+    <style name="ThreadListHeaderNumWrapInnerHorizontal" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <!--
+        <item name="android:paddingTop">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_med_padding</item>
+        -->
+    </style>
+
+    <style name="ThreadListHeaderNumNum" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|center_horizontal</item>
+        <!-- <item name="android:textSize">@dimen/ThreadListHeaderSubject</item> -->
+        <item name="android:textSize">@dimen/ThreadListHeaderNumLabel</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItemLatest" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:src">@drawable/clock_blue</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItemGallery" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:src">@drawable/gallery_blue</item>
+    </style>
+
+    <style name="ThreadListHeaderActionItem" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/ThreadListHeader_padding</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
+        <item name="android:textColor">@color/PaletteCardActionItem</item>
+    </style>
+
+    <style name="ThreadListHeaderNumNumHorizontal" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_padding</item>
+        <item name="android:gravity">top|center_horizontal</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
+    <style name="ThreadListItemReplyNum" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListItemReplyNum_marginLeft</item>
+        <item name="android:paddingRight">@dimen/ThreadListHeader_micro_padding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?themedCardListBarOverlayFg</item>
+    </style>
+
+    <style name="ThreadListHeaderNumLabel" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|center_horizontal</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderLabel</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
+    <style name="ThreadListHeaderNumLabelHorizontal" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:gravity">top|center_horizontal</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderLabel</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
+    <style name="ThreadListHeaderFullText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:textSize">@dimen/ThreadListItemFullText</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_micro_padding</item>
+    </style>
+
+    <style name="ThreadListHeaderExifText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_micro_padding</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textColor">@color/PaletteThreadSecondaryText</item>
+        <item name="android:textSize">@dimen/ThreadListItemExifText</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListHeaderTitle" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListHeaderTitle_layout_marginLeft</item>
+        <item name="android:paddingRight">@dimen/ThreadListHeaderTitle_layout_marginRight</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeaderTitle_paddingTop</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+    </style>
+
+    <style name="ThreadListHeaderLine" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/ThreadListHeaderBar_layout_height</item>
+        <item name="android:background">@color/PaletteThreadDivider</item>
+    </style>
+
+    <!-- THREAD LIST ITEM -->
+
+    <style name="ThreadListItemImageWrapper" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_marginRight">@dimen/ThreadListHeader_padding</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ThreadListItemImage" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:contentDescription">@string/thread_post_image</item>
+    </style>
+
+    <style name="ThreadListItemImageCollapse" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:contentDescription">@string/thread_post_collapse_button</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:src">?themedThreadCollapseImageIcon</item>
+    </style>
+
+    <style name="ThreadListItemImageNothumbsExpand" parent="AppTheme">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:contentDescription">@string/thread_post_expand_button</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:src">?themedSpinnerTriangle</item>
+    </style>
+
+    <style name="ThreadListLinkImage" parent="AppTheme">
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:contentDescription">@string/thread_post_image</item>
+    </style>
+
+    <style name="ThreadListItemExpandedProgressBar" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListItemExpandedProgressBarTest1" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateOnly">true</item>
+    </style>
+
+    <style name="ThreadListItemExpandedProgressBarTest2" parent="@android:style/Widget.Holo.Light.ProgressBar.Large.Inverse">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateOnly">true</item>
+    </style>
+
+    <style name="WebImageProgressBar" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListItemImageExpanded" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:contentDescription">@string/thread_post_image_expanded</item>
+    </style>
+
+    <style name="ThreadListItemImageExpandedClickEffect" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:contentDescription">@string/thread_post_image_expanded</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
+    </style>
+
+    <style name="ThreadListItemHead" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_micro_padding</item>
+        <item name="android:textColor">@color/PaletteThreadHeadText</item>
+        <item name="android:textSize">@dimen/ThreadListItemHead</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:autoLink">email</item>
+        <item name="android:linksClickable">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListLinkHead" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/PaletteThreadSecondaryText</item>
+        <item name="android:textSize">@dimen/ThreadListItemHead</item>
+        <item name="android:autoLink">none</item>
+        <item name="android:linksClickable">false</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListItemSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/ThreadListItemSubject</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListItemCountryFlag" parent="AppTheme">
+        <item name="android:layout_width">@dimen/ThreadListItemCountryFlag_layout_width</item>
+        <item name="android:layout_height">@dimen/ThreadListItemCountryFlag_layout_height</item>
+        <item name="android:layout_marginTop">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:contentDescription">@string/thread_country_flag</item>
+    </style>
+
+    <!-- FOO -->
+
+    <style name="ThreadListItemCountWrapper" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:weightSum">2</item>
+        <item name="android:paddingTop">@dimen/ThreadListItemFullText_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/ThreadListItemFullText_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ThreadListItemFullText_paddingLeft</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListItemNumRefs" parent="AppTheme">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ThreadListItemNumDirectReplies" parent="AppTheme">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ThreadListItemNumNum" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/ThreadListItemSubject</item>
+    </style>
+
+    <style name="ThreadListItemNumLabel" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderLabel</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
+    </style>
+
+    <!-- BAR -->
+
+    <style name="ThreadListTitle" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingLeft">@dimen/BoardListTitle_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListTitle_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListTitle_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListTitle_paddingBottom</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteTitleText</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="ThreadListUrlLink" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingLeft">@dimen/BoardListTitle_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListTitle_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListTitle_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListTitle_paddingBottom</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteGreen</item>
+    </style>
+
+    <style name="ThreadListButton" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingLeft">@dimen/BoardListButton_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListButton_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListButton_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListButton_paddingBottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+    </style>
+
+    <style name="ThreadListItemExifText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
+        <item name="android:textSize">@dimen/ThreadListItemExifText</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListItemFullText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:textSize">@dimen/ThreadListItemFullText</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <!-- POST REPLY STYLES -->
+
+    <style name="PostReplyEditText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/PostReplyEditText_padding</item>
+        <item name="android:textSize">@dimen/PostReplyEditText</item>
+        <item name="android:layout_marginLeft">@dimen/PostReplyEditText_layout_marginLeft</item>
+        <item name="android:layout_marginRight">@dimen/PostReplyEditText_layout_marginRight</item>
+        <item name="android:layout_marginBottom">@dimen/PostReplyEditText_layout_marginBottom</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:imeOptions">actionSend</item>
+        <item name="android:imeActionLabel">@string/post_reply_send</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+
+    <style name="PostReplyImageUrlEditText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/PostReplyEditText_padding</item>
+        <item name="android:textSize">@dimen/PostReplyEditText</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginLeft">@dimen/PostReplyEditText_layout_marginLeft</item>
+        <item name="android:layout_marginRight">@dimen/PostReplyEditText_layout_marginRight</item>
+        <item name="android:scrollbars">none</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:imeActionLabel">@string/web_image_key_download</item>
+        <item name="android:hint">@string/web_image_url_text_hint</item>
+        <item name="android:inputType">textUri</item>
+        <item name="android:imeOptions">actionUnspecified</item>
+        <item name="android:maxLength">255</item>
+    </style>
+
+    <style name="PostReplyCheckbox" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/PostReplyCheckbox</item>
+        <item name="android:layout_marginLeft">@dimen/PostReplyCheckbox_layout_marginLeft</item>
+        <item name="android:layout_marginBottom">@dimen/PostReplyCheckbox_layout_marginBottom</item>
+    </style>
+
+    <style name="PostReplyButton" parent="AppTheme">
+        <item name="android:layout_width">@dimen/PostReplyButton_layout_width</item>
+        <item name="android:layout_height">@dimen/PostReplyButton_layout_height</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <style name="MessageText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/MessageText_layout_marginLeft</item>
+        <item name="android:layout_marginRight">@dimen/MessageText_layout_marginRight</item>
+        <item name="android:layout_marginBottom">@dimen/MessageText_layout_marginBottom</item>
+        <item name="android:textSize">@dimen/MessageText</item>
+    </style>
+
+    <!-- action bar -->
+
+    <style name="BoardJumpDropDown" parent="android:style/Widget.Holo.Light.Spinner">
+    </style>
+
+    <!-- Dialog -->
+    <style name="ItemsDialogItemLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/ItemsDialogItemLayout_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/ItemsDialogItemLayout_paddingBottom</item>
+        <item name="android:paddingLeft">@dimen/ItemsDialogItemLayout_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ItemsDialogItemLayout_paddingRight</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/ItemsDialogItemLayout_textSize</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
+    </style>
+
+    <!-- Dialog -->
+    <style name="ItemsDialogItemLayoutDark" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/ItemsDialogItemLayout_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/ItemsDialogItemLayout_paddingBottom</item>
+        <item name="android:paddingLeft">@dimen/ItemsDialogItemLayout_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ItemsDialogItemLayout_paddingRight</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/ItemsDialogItemLayout_textSize</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+    </style>
+
+    <!-- Dialog -->
+    <style name="BlocklistItemsDialogItemLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/ItemsDialogItemLayout_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/ItemsDialogItemLayout_paddingBottom</item>
+        <item name="android:paddingLeft">@dimen/ItemsDialogItemLayout_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ItemsDialogItemLayout_paddingRight</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/ItemsDialogItemLayout_textSize</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+    </style>
+
+    <!-- Widgets -->
+    <style name="WidgetConfigureOkButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_gravity">bottom|center_horizontal</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:paddingTop">@dimen/WidgetConfigureOkButton_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/WidgetConfigureOkButton_paddingBottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">?themedWidgetConfigureButtonBg</item>
+        <item name="android:textSize">@dimen/WidgetConfigureOkButton</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteBoardCodeText</item>
+        <item name="android:text">@string/thread_context_select</item>
+    </style>
+
+    <!-- Drawer -->
+
+    <dimen name="Drawer.layout_width">320dp</dimen>
+    <dimen name="Drawer.paddingTop">0dp</dimen>
+
+    <!-- YesNoPreference -->
+
+    <style name="Preference">
+        <item name="android:layout">@layout/preference</item>
+    </style>
+    <style name="Preference.DialogPreference">
+        <item name="android:positiveButtonText">@android:string/ok</item>
+        <item name="android:negativeButtonText">@android:string/cancel</item>
+    </style>
+    <style name="Preference.DialogPreference.YesNoPreference">
+        <item name="android:positiveButtonText">@android:string/yes</item>
+        <item name="android:negativeButtonText">@android:string/no</item>
+    </style>
+    <style name="Preference.Holo">
+        <item name="android:layout">@layout/preference_holo</item>
+    </style>
+    <style name="Preference.Holo.DialogPreference">
+        <item name="android:positiveButtonText">@android:string/ok</item>
+        <item name="android:negativeButtonText">@android:string/cancel</item>
+    </style>
+    <style name="Preference.Holo.DialogPreference.YesNoPreference">
+        <item name="android:positiveButtonText">@android:string/yes</item>
+        <item name="android:negativeButtonText">@android:string/no</item>
+    </style>
+
+    <!-- for enhanced list view -->
+	<style name="fade_animation">
+		<item name="@android:windowEnterAnimation">@anim/popup_show</item>
+		<item name="@android:windowExitAnimation">@anim/popup_hide</item>
+	</style>
+
+</resources>

@@ -9,13 +9,13 @@
 *.class
 
 .DS_Store
-.idea
 
 # generated files
 bin/
 gen/
 out/
 target/
+build/
 .classpath
 .project
 .settings
@@ -26,3 +26,8 @@ local.properties
 *.ipr
 *.iws
 *.iml
+gradle/
+.gradle/
+.idea/
+gradlew
+gradlew.bat
