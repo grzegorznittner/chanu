@@ -2,6 +2,7 @@ package com.chanapps.four;
 
 import java.util.Locale;
 
+import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.preference.PreferenceManager;
@@ -21,12 +22,13 @@ import com.chanapps.four.service.NetworkProfileManager;
  *
  */
 
-public class ChanuApp extends GalleryAppImpl {
+public class ChanuApp extends Application
+{
 
     private static final boolean DEBUG = false;
     private static final String TAG = ChanuApp.class.getSimpleName();
     private static Locale locale = null;
-
+/*
     public synchronized DataManager getDataManager() {
         if (mDataManager == null) {
             mDataManager = new DataManager(this);
@@ -36,7 +38,7 @@ public class ChanuApp extends GalleryAppImpl {
         }
         return mDataManager;
     }
-
+*/
     @Override
     public void onCreate() {
         super.onCreate();
