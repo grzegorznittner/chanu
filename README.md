@@ -16,7 +16,8 @@ Chanu - 4chan android app
 1.  git checkout android-studio
 
 #### Terminal (using gradle)
-1.  To be added later
+1.  Run "./gradlew assemledebug" in the root folder of the project
+2.
 
 #### Android Studio
 1.  Open Android Studio
