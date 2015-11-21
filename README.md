@@ -17,7 +17,7 @@ Chanu - 4chan android app
 
 #### Terminal (using gradle)
 1.  Run "./gradlew assemledebug" in the root folder of the project
-2.
+2.  Navigate to app/build/outputs/apk for the apk to install
 
 #### Android Studio
 1.  Open Android Studio
