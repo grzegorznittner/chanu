@@ -22,13 +22,13 @@ import com.chanapps.four.service.NetworkProfileManager;
  *
  */
 
-public class ChanuApp extends Application
+public class ChanuApp extends GalleryAppImpl
 {
 
     private static final boolean DEBUG = false;
     private static final String TAG = ChanuApp.class.getSimpleName();
     private static Locale locale = null;
-/*
+
     public synchronized DataManager getDataManager() {
         if (mDataManager == null) {
             mDataManager = new DataManager(this);
@@ -38,7 +38,7 @@ public class ChanuApp extends Application
         }
         return mDataManager;
     }
-*/
+
     @Override
     public void onCreate() {
         super.onCreate();
