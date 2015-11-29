@@ -88,6 +88,7 @@ public class BoardInitializer
                         "adv", ctx.getString(R.string.board_adv),
                         "lgbt", ctx.getString(R.string.board_lgbt),
                         "mlp", ctx.getString(R.string.board_mlp),
+                        "news", ctx.getString(R.string.board_news),
                         "qa", ctx.getString(R.string.board_qa),
                 },
                 {   BoardType.ADULT.toString(),
@@ -101,6 +102,7 @@ public class BoardInitializer
                         "d", ctx.getString(R.string.board_d),
                         "y", ctx.getString(R.string.board_y),
                         "t", ctx.getString(R.string.board_t),
+
                         "hr", ctx.getString(R.string.board_hr),
                         "gif", ctx.getString(R.string.board_gif),
                         "aco", ctx.getString(R.string.board_aco)
@@ -113,7 +115,7 @@ public class BoardInitializer
                         "pol", ctx.getString(R.string.board_pol),
                         "soc", ctx.getString(R.string.board_soc),
                         "s4s", ctx.getString(R.string.board_s4s),
-
+                        "trash", ctx.getString(R.string.board_trash)
                 },
                 {
                         BoardType.ALL_BOARDS.toString(),
@@ -154,6 +156,7 @@ public class BoardInitializer
                         "mlp", ctx.getString(R.string.board_mlp),
                         "mu", ctx.getString(R.string.board_mu),
                         "n", ctx.getString(R.string.board_n),
+                        "news", ctx.getString(R.string.board_news),
                         "o", ctx.getString(R.string.board_o),
                         "out", ctx.getString(R.string.board_out),
                         "p", ctx.getString(R.string.board_p),
@@ -170,6 +173,7 @@ public class BoardInitializer
                         "t", ctx.getString(R.string.board_t),
                         "tg", ctx.getString(R.string.board_tg),
                         "toy", ctx.getString(R.string.board_toy),
+                        "trash", ctx.getString(R.string.board_trash),
                         "trv", ctx.getString(R.string.board_trv),
                         "tv", ctx.getString(R.string.board_tv),
                         "u", ctx.getString(R.string.board_u),
@@ -182,7 +186,6 @@ public class BoardInitializer
                         "wsg", ctx.getString(R.string.board_wsg),
                         "x", ctx.getString(R.string.board_x),
                         "y", ctx.getString(R.string.board_y),
-
                         "3", ctx.getString(R.string.board_3),
                 }
         };
@@ -228,6 +231,7 @@ public class BoardInitializer
         boardDrawables.put("mlp", new int[]{ R.drawable.mlp, R.drawable.mlp_2, R.drawable.mlp_3 } );
         boardDrawables.put("mu", new int[]{ R.drawable.mu, R.drawable.mu_2, R.drawable.mu_3 } );
         boardDrawables.put("n", new int[]{ R.drawable.n, R.drawable.n_2, R.drawable.n_3 } );
+        boardDrawables.put("news", new int[]{ R.drawable.news, R.drawable.news, R.drawable.news } );
         boardDrawables.put("p", new int[]{ R.drawable.p, R.drawable.p_2, R.drawable.p_3 } );
         boardDrawables.put("po", new int[]{ R.drawable.po, R.drawable.po_2, R.drawable.po_3 } );
         boardDrawables.put("pol", new int[]{ R.drawable.pol, R.drawable.pol_2, R.drawable.pol_3 } );
@@ -246,6 +250,7 @@ public class BoardInitializer
         boardDrawables.put("tg", new int[]{ R.drawable.tg, R.drawable.tg_2, R.drawable.tg_3 } );
         boardDrawables.put("toy", new int[]{ R.drawable.toy, R.drawable.toy_2, R.drawable.toy_3 } );
         boardDrawables.put("trv", new int[]{ R.drawable.trv, R.drawable.trv_2, R.drawable.trv_3 } );
+        boardDrawables.put("trash", new int[]{ R.drawable.trash, R.drawable.trash, R.drawable.trash } );
         boardDrawables.put("tv", new int[]{ R.drawable.tv, R.drawable.tv_2, R.drawable.tv_3 } );
         boardDrawables.put("u", new int[]{ R.drawable.u, R.drawable.u_2, R.drawable.u_3 } );
         boardDrawables.put("v", new int[]{ R.drawable.v, R.drawable.v_2, R.drawable.v_3 } );

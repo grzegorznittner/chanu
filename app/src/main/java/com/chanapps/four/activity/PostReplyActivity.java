@@ -106,7 +106,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final String BOARD_CODE = "postReplyBoardCode";
     public static final String THREAD_NO = "postReplyThreadNo";
@@ -894,6 +894,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private void startGallery() {
         if (DEBUG) Log.i(TAG, "startGallery()");
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        //intent.setType("image/*|video/webm");
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, IMAGE_GALLERY);

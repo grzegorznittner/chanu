@@ -47,7 +47,11 @@ public enum BoardType {
             false, false, true, "watchlist", R.string.board_empty_watchlist, R.string.board_watch),
     FAVORITES (R.string.board_favorites,
             R.drawable.star, R.drawable.star_light,
-            false, false, true, "favorites", R.string.board_empty_favorites, R.string.board_favorites);
+            false, false, true, "favorites", R.string.board_empty_favorites, R.string.board_favorites),
+    TRIAL (R.string.board_type_other,
+            R.drawable.speech_bubble_ellipsis, R.drawable.speech_bubble_ellipsis_light,
+            true, true, true, "trial", R.string.board_empty_all_boards, R.string.board_type_other),;
+
 
     private final int displayStringId;
     private final int drawableId;
