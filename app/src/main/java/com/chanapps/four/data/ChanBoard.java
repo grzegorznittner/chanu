@@ -423,7 +423,7 @@ public class ChanBoard {
     }
 
     static public boolean isAsciiOnlyBoard(String boardCode) {
-        if (boardCode.equals("q") || boardCode.equals("r9k"))
+        if (boardCode.equals("q") || boardCode.equals("r9k") || boardCode.equals("news"))
             return true;
         else
             return false;

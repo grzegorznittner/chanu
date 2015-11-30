@@ -400,7 +400,7 @@
     <string name="board_sci">Science &amp; Math</string>
     <string name="board_int">International</string>
     <string name="board_out">Outdoors</string>
-    <string name="board_type_creative">Creative</string>
+
     <string name="board_i">Oekaki</string>
     <string name="board_po">Papercraft &amp; Origami</string>
     <string name="board_p">Photography</string>
@@ -414,7 +414,7 @@
     <string name="board_gd">Graphic Design</string>
     <string name="board_diy">Do-It-Yourself</string>
     <string name="board_wsg">Worksafe GIF</string>
-    <string name="board_type_adult">Adult</string>
+
     <string name="board_s">Sexy Beautiful Women</string>
     <string name="board_hc">Hardcore</string>
     <string name="board_hm">Handsome Men</string>
@@ -435,7 +435,7 @@
     <string name="board_adv">Advice</string>
     <string name="board_lgbt">LGBT</string>
     <string name="board_mlp">Pony</string>
-    <string name="board_type_misc">Misc</string>
+
     <string name="board_b">Random</string>
     <string name="board_r">Request</string>
     <string name="board_r9k">ROBOT9001</string>
@@ -445,6 +445,13 @@
     <string name="board_aco">Adult Cartoons</string>
     <string name="board_his">History &amp; Humanities</string>
     <string name="board_qa">Questions &amp; Answers</string>
+    <string name="board_news">Current News</string>
+    <string name="board_trash">Off-Topic</string>
+
+
+    <string name="board_type_adult">Adult</string>
+    <string name="board_type_creative">Creative</string>
+    <string name="board_type_misc">Misc</string>
 
     <string name="board_watch">Thread Watchlist</string>
     <string name="board_favorites">Favorite Boards</string>
@@ -491,6 +498,7 @@
     <string name="board_desc_mlp">Pony heaven</string>
     <string name="board_desc_mu">Fans, haters, and audio</string>
     <string name="board_desc_n">Trains and bikes</string>
+    <string name="board_desc_news">Breaking headlines</string>
     <string name="board_desc_o">Rides and car talk</string>
     <string name="board_desc_out">Hiking and camping</string>
     <string name="board_desc_p">Content and criticism</string>
@@ -509,6 +517,7 @@
     <string name="board_desc_t">Share links</string>
     <string name="board_desc_tg">Boards and roleplay</string>
     <string name="board_desc_toy">Figures and collectibles</string>
+    <string name="board_desc_trash">Garbage and unwanted posts</string>
     <string name="board_desc_trv">Journeys, adventures</string>
     <string name="board_desc_tv">Series and sets</string>
     <string name="board_desc_u">Lesbian anime</string>
@@ -987,6 +996,13 @@ We will remove anything that remotely breaks this rule.</p>
 ]]>
 </string>
 
+<string name="board_news_rules">
+<![CDATA[
+<h3>/news/ - News</h3>
+
+]]>
+</string>
+
 
 <string name="board_o_rules">
 <![CDATA[
@@ -1200,6 +1216,12 @@ We will remove anything that remotely breaks this rule.</p>
 ]]>
 </string>
 
+<string name="board_trash_rules">
+<![CDATA[
+<h3>/trasb/ - Trash</h3>
+
+]]>
+</string>
 
 <string name="board_trv_rules">
 <![CDATA[
