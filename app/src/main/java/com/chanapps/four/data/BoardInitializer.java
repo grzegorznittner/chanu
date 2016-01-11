@@ -260,6 +260,7 @@ public class BoardInitializer
         boardDrawables.put("w", new int[]{ R.drawable.w, R.drawable.w_2, R.drawable.w_3 } );
         boardDrawables.put("wg", new int[]{ R.drawable.wg, R.drawable.wg_2, R.drawable.wg_3 } );
         boardDrawables.put("wsg", new int[]{ R.drawable.wsg, R.drawable.wsg_2, R.drawable.wsg_3 } );
+        boardDrawables.put("wsr", new int[]{ R.drawable.wsr, R.drawable.wsr, R.drawable.wsr } );
         boardDrawables.put("y", new int[]{ R.drawable.y, R.drawable.y_2, R.drawable.y_3 } );
         boardDrawables.put("x", new int[]{ R.drawable.x, R.drawable.x_2, R.drawable.x_3 } );
         boardDrawables.put("3", new int[]{ R.drawable.board_3, R.drawable.board_3_2, R.drawable.board_3_3 } );
