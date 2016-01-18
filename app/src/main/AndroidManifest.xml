@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.chanapps.four.activity"
-          android:versionCode="92"
-          android:versionName="2.0.19">
+          android:versionCode="93"
+          android:versionName="2.0.20">
 
     <uses-sdk
             android:minSdkVersion="15"
