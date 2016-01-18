@@ -447,6 +447,7 @@
     <string name="board_qa">Questions &amp; Answers</string>
     <string name="board_news">Current News</string>
     <string name="board_trash">Off-Topic</string>
+    <string name="board_wsr">Worksafe Requests</string>
 
 
     <string name="board_type_adult">Adult</string>
@@ -528,6 +529,7 @@
     <string name="board_desc_w">J-pop and anime pics</string>
     <string name="board_desc_wg">Highres non-anime</string>
     <string name="board_desc_wsg">Loops of humor</string>
+    <string name="board_desc_wsr">Worksafe Requests</string>
     <string name="board_desc_x">Aliens and spirits</string>
     <string name="board_desc_y">Homosexual anime</string>
 
@@ -998,7 +1000,7 @@ We will remove anything that remotely breaks this rule.</p>
 
 <string name="board_news_rules">
 <![CDATA[
-<h3>/news/ - News</h3>
+<h3>/news/ - Current News</h3>
 
 ]]>
 </string>
@@ -1218,7 +1220,7 @@ We will remove anything that remotely breaks this rule.</p>
 
 <string name="board_trash_rules">
 <![CDATA[
-<h3>/trasb/ - Trash</h3>
+<h3>/trash/ - Off-Topic</h3>
 
 ]]>
 </string>
@@ -1330,6 +1332,16 @@ We will remove anything that remotely breaks this rule.</p>
 <h3>/wsg/ - Worksafe GIF</h3>
 
 <p>1. All worksafe GIFs welcome.</p>
+
+]]>
+</string>
+
+
+    <string name="board_wsr_rules">
+<![CDATA[
+<h3>/wsr/ - Worksafe Requests</h3>
+
+<p>1. Like /r/ but without the pink slip.</p>
 
 ]]>
 </string>
