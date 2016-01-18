@@ -90,6 +90,7 @@ public class BoardInitializer
                         "mlp", ctx.getString(R.string.board_mlp),
                         "news", ctx.getString(R.string.board_news),
                         "qa", ctx.getString(R.string.board_qa),
+                        "wsr", ctx.getString(R.string.board_desc_wsr)
                 },
                 {   BoardType.ADULT.toString(),
                         ChanBoard.META_ADULT_BOARD_CODE, ctx.getString(R.string.board_type_adult),
@@ -184,6 +185,7 @@ public class BoardInitializer
                         "w", ctx.getString(R.string.board_w),
                         "wg", ctx.getString(R.string.board_wg),
                         "wsg", ctx.getString(R.string.board_wsg),
+                        "wsr", ctx.getString(R.string.board_wsr),
                         "x", ctx.getString(R.string.board_x),
                         "y", ctx.getString(R.string.board_y),
                         "3", ctx.getString(R.string.board_3),
@@ -261,8 +263,8 @@ public class BoardInitializer
         boardDrawables.put("wg", new int[]{ R.drawable.wg, R.drawable.wg_2, R.drawable.wg_3 } );
         boardDrawables.put("wsg", new int[]{ R.drawable.wsg, R.drawable.wsg_2, R.drawable.wsg_3 } );
         boardDrawables.put("wsr", new int[]{ R.drawable.wsr, R.drawable.wsr, R.drawable.wsr } );
-        boardDrawables.put("y", new int[]{ R.drawable.y, R.drawable.y_2, R.drawable.y_3 } );
         boardDrawables.put("x", new int[]{ R.drawable.x, R.drawable.x_2, R.drawable.x_3 } );
+        boardDrawables.put("y", new int[]{ R.drawable.y, R.drawable.y_2, R.drawable.y_3 } );
         boardDrawables.put("3", new int[]{ R.drawable.board_3, R.drawable.board_3_2, R.drawable.board_3_3 } );
 
         boardDrawables.put("popular", new int[]{ R.drawable.popular, R.drawable.popular_2, R.drawable.popular_3 } );
