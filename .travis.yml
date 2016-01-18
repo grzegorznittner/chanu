@@ -13,10 +13,10 @@ script:
 
 deploy:
     provider: releases
- 	skip_cleanup: true
+    skip_cleanup: true
     api_key:
-      secure: Wk41dTj7MJTw1bZA3xYMY4Bc1AbTg+x0y3B61ncCl0R60JKF0JTSEbRWssaoKl03nME1wSkQqUEH/4ytFXlr/7hFuOqluG0GnA3RzJEcjlA4KlbVpvLwtkG1jAN+88vu5nHTYQfZmAdryp3RsdjJXbUeIdH/Zg6cS6wJ4U7FYCM=
-	file: app/build/outputs/apk/app-debug.apk
+        secure: Wk41dTj7MJTw1bZA3xYMY4Bc1AbTg+x0y3B61ncCl0R60JKF0JTSEbRWssaoKl03nME1wSkQqUEH/4ytFXlr/7hFuOqluG0GnA3RzJEcjlA4KlbVpvLwtkG1jAN+88vu5nHTYQfZmAdryp3RsdjJXbUeIdH/Zg6cS6wJ4U7FYCM=
+        file: app/build/outputs/apk/app-debug.apk
     on:
       repo: grzegorznittner/chanu
       tags: true
