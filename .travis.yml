@@ -12,9 +12,8 @@ script:
 - ./gradlew assembledebug
 deploy:
   provider: releases
-  user: grzegorznittner
-  password:
-    secure: izeX4As4Ox1oRu/hHEzQcV0dpLvMsjuhnoNLeZv60dhQEenErR0taCPZ9vqK11n/ZTd3sbflOp8WlZMPJWCddyAspFpex3sSVk206BGgdhNMXuIx4Sm37dLnb7Vl6EmDufVAYwRv/FOSGl9hSHgEisPO4jraTHIUuhqTvxa/v6k=
+  api_key:
+    secure: CfFaay2ph5qepRD1RQy0T5j1bLbsi7K4ya2qGZizpdFrrpXnZ1n++ZtKtunUijuoi3VYjTk2huMxaDz3doym9t7+riAsm0/fuszUebzQAYH20Pr9sjQYX5eYJih1j/nFi+rANLbSWjBvh6IhRyQgj4VL0CEoNIPOfp4qvUodlPo=
   skip_cleanup: true
   file: app/build/outputs/apk/app-debug.apk
   on:
