@@ -3,19 +3,20 @@ sudo: false
 jdk: openjdk7
 android:
   components:
-    - tools
-    - build-tools-23.0.2
-    - extra-android-support
-    - extra-android-m2repository
-    - android-23
+  - tools
+  - build-tools-23.0.2
+  - extra-android-support
+  - extra-android-m2repository
+  - android-23
 script:
-  - ./gradlew assembledebug  
-
+- ./gradlew assembledebug
 deploy:
-    provider: releases
-    skip_cleanup: true
-    api_key: "Wk41dTj7MJTw1bZA3xYMY4Bc1AbTg+x0y3B61ncCl0R60JKF0JTSEbRWssaoKl03nME1wSkQqUEH/4ytFXlr/7hFuOqluG0GnA3RzJEcjlA4KlbVpvLwtkG1jAN+88vu5nHTYQfZmAdryp3RsdjJXbUeIdH/Zg6cS6wJ4U7FYCM="
-    file:  "app/build/outputs/apk/app-debug.apk"
-    on:
-      repo: grzegorznittner/chanu
-      tags: true
+  provider: releases
+  user: grzegorznittner
+  password:
+    secure: izeX4As4Ox1oRu/hHEzQcV0dpLvMsjuhnoNLeZv60dhQEenErR0taCPZ9vqK11n/ZTd3sbflOp8WlZMPJWCddyAspFpex3sSVk206BGgdhNMXuIx4Sm37dLnb7Vl6EmDufVAYwRv/FOSGl9hSHgEisPO4jraTHIUuhqTvxa/v6k=
+  skip_cleanup: true
+  file: app/build/outputs/apk/app-debug.apk
+  on:
+    repo: grzegorznittner/chanu
+    tags: true
