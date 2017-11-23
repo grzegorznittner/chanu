@@ -1323,8 +1323,8 @@
 
     <!-- for enhanced list view -->
 	<style name="fade_animation">
-		<item name="@android:windowEnterAnimation">@anim/popup_show</item>
-		<item name="@android:windowExitAnimation">@anim/popup_hide</item>
+		<item name="android:windowEnterAnimation">@anim/popup_show</item>
+		<item name="android:windowExitAnimation">@anim/popup_hide</item>
 	</style>
 
 </resources>
