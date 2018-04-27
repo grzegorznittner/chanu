@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '27.0.1'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
@@ -33,5 +33,5 @@ dependencies {
     compile files('libs/commons-lang3-3.1.jar')
     compile files('libs/jackson-all-1.8.2.jar')
     compile files('libs/nineoldandroids-2.4.0.jar')
-    compile 'com.android.support:support-v4:25.1.0'
+    compile 'com.android.support:support-v4:27.1.1'
 }
