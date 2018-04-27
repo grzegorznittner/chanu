@@ -1,6 +1,6 @@
 language: android
 sudo: false
-jdk: openjdk9
+jdk: oraclejdk9
 android:
   components:
     - tools
