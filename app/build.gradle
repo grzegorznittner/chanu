@@ -25,13 +25,19 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     api project(':gallery')
     api project(':actionBarPullToRefresh')
-    implementation files('libs/commons-io-2.0.1.jar')
-    implementation files('libs/commons-lang3-3.1.jar')
+
+    implementation 'commons-io:commons-io:2.0.1'
+    implementation 'org.apache.commons:commons-lang3:3.3.1'
+    implementation 'com.nineoldandroids:library:2.4.0'
+
     implementation files('libs/jackson-all-1.8.2.jar')
-    implementation files('libs/nineoldandroids-2.4.0.jar')
+
     implementation 'com.android.support:support-v4:27.1.1'
 }

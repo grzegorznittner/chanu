@@ -8,8 +8,6 @@
 # Java class files
 *.class
 
-.DS_Store
-
 # generated files
 bin/
 gen/
@@ -28,3 +26,7 @@ local.properties
 *.iml
 .idea/
 .gradle/
+
+#OS related file
+.directory
+.DS_Store
