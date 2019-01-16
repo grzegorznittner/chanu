@@ -225,7 +225,7 @@ public class NetworkProfileManager {
 		currentActivityId = newActivity.getChanActivityId();
 		currentActivity = newActivity;
 		
-		if (activeProfile == null) {
+		if (activeProfile == null || activeProfile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION) {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		}
         if (DEBUG) Log.i(TAG, "activeProfile=" + activeProfile);
