@@ -1,4 +1,5 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
 
     <string name="dialog_color_picker_title">Pick a Colour</string>
     <string name="authorize_pass_successful">Authorised</string>
@@ -24,14 +25,14 @@
     <string name="board_favorites">Favourite Boards</string>
     <string name="board_desc_3">Modelling and imagery</string>
     <string name="board_desc_wsg">Loops of humour</string>
-<string name="board_3_rules">
+    <string name="board_3_rules">
 <![CDATA[
 <h3>/3/ - 3DCG</h3>
 <p>Images and discussion should relate to 3D modelling and imagery.</p>
 <p>Remember: This is a worksafe board! No adult content is allowed.</p>
 ]]>
 </string>
-<string name="board_a_rules">
+    <string name="board_a_rules">
 <![CDATA[
 <h3>/a/ - Anime &amp; Manga</h3>
 <p>1. All images and resulting discussion should pertain to anime or manga. For long-term series discussion, please refer to the <a href="http://dis.4chan.org/anime/">http://dis.4chan.org/anime/</a> board.</p>
@@ -43,7 +44,7 @@
 ]]>
 </string>
 
-<string name="board_ck_rules">
+    <string name="board_ck_rules">
 <![CDATA[
 <h3>/ck/ - Food &amp; Cooking</h3>
 
@@ -52,7 +53,7 @@
 
 ]]>
 </string>
-<string name="board_hr_rules">
+    <string name="board_hr_rules">
 <![CDATA[
 <h3>/hr/ - High Resolution</h3>
 
@@ -63,7 +64,7 @@
 
 ]]>
 </string>
-<string name="board_n_rules">
+    <string name="board_n_rules">
 <![CDATA[
 <h3>/n/ - Transportation</h3>
 
@@ -73,7 +74,7 @@
 
 ]]>
 </string>
-<string name="board_trv_rules">
+    <string name="board_trv_rules">
 <![CDATA[
 <h3>/trv/ - Travel</h3>
 
