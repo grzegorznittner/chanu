@@ -30,7 +30,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaDetails;
@@ -38,6 +37,7 @@ import com.android.gallery3d.ui.DetailsAddressResolver.AddressResolvingListener;
 import com.android.gallery3d.ui.DetailsHelper.CloseListener;
 import com.android.gallery3d.ui.DetailsHelper.DetailsSource;
 import com.android.gallery3d.ui.DetailsHelper.DetailsViewContainer;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -47,9 +47,9 @@ public class DialogDetailsView implements DetailsViewContainer {
     private static final String TAG = "DialogDetailsView";
 
     private final GalleryActivity mContext;
+    private final DetailsSource mSource;
     private DetailsAdapter mAdapter;
     private MediaDetails mDetails;
-    private final DetailsSource mSource;
     private int mIndex;
     private Dialog mDialog;
     private DialogInterface.OnClickListener mClickListener;
@@ -99,8 +99,8 @@ public class DialogDetailsView implements DetailsViewContainer {
                 R.layout.details_list, null, false);
         detailsList.setAdapter(mAdapter);
         AlertDialog.Builder builder = new AlertDialog.Builder((Activity) mContext)
-            .setView(detailsList)
-            .setTitle(title);
+                .setView(detailsList)
+                .setTitle(title);
         if (mClickListener != null) {
             builder.setPositiveButton(mClickListenerStringId, mClickListener)
                     .setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
@@ -108,8 +108,7 @@ public class DialogDetailsView implements DetailsViewContainer {
                             mDialog.dismiss();
                         }
                     });
-        }
-        else {
+        } else {
             builder.setNeutralButton(R.string.close, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     mDialog.dismiss();
@@ -126,6 +125,15 @@ public class DialogDetailsView implements DetailsViewContainer {
                 }
             }
         });
+    }
+
+    public void setCloseListener(CloseListener listener) {
+        mCloseListener = listener;
+    }
+
+    public void setClickListener(int stringId, DialogInterface.OnClickListener listener) {
+        mClickListenerStringId = stringId;
+        mClickListener = listener;
     }
 
     private class DetailsAdapter extends BaseAdapter implements AddressResolvingListener {
@@ -180,7 +188,7 @@ public class DialogDetailsView implements DetailsViewContainer {
                         } else {
                             int integer = (int) time;
                             time -= integer;
-                            value = String.valueOf(integer) + "''";
+                            value = integer + "''";
                             if (time > 0.0001) {
                                 value += String.format(" 1/%d", (int) (0.5f + 1 / time));
                             }
@@ -254,14 +262,5 @@ public class DialogDetailsView implements DetailsViewContainer {
             mItems.set(mLocationIndex, address);
             notifyDataSetChanged();
         }
-    }
-
-    public void setCloseListener(CloseListener listener) {
-        mCloseListener = listener;
-    }
-
-    public void setClickListener(int stringId, DialogInterface.OnClickListener listener) {
-        mClickListenerStringId = stringId;
-        mClickListener = listener;
     }
 }

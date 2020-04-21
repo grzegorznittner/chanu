@@ -16,11 +16,6 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.common.BitmapUtils;
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.util.ThreadPool.CancelListener;
-import com.android.gallery3d.util.ThreadPool.JobContext;
-
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -31,6 +26,11 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
+import com.android.gallery3d.common.BitmapUtils;
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.util.ThreadPool.CancelListener;
+import com.android.gallery3d.util.ThreadPool.JobContext;
+
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -38,18 +38,8 @@ import java.io.InputStream;
 public class DecodeUtils {
     private static final String TAG = "DecodeService";
 
-    private static class DecodeCanceller implements CancelListener {
-        Options mOptions;
-        public DecodeCanceller(Options options) {
-            mOptions = options;
-        }
-        public void onCancel() {
-            mOptions.requestCancelDecode();
-        }
-    }
-
     public static Bitmap requestDecode(JobContext jc, final String filePath,
-            Options options) {
+                                       Options options) {
         if (options == null) options = new Options();
         jc.setCancelListener(new DecodeCanceller(options));
         return ensureGLCompatibleBitmap(
@@ -64,12 +54,12 @@ public class DecodeUtils {
     }
 
     public static Bitmap requestDecode(JobContext jc, byte[] bytes,
-            Options options) {
+                                       Options options) {
         return requestDecode(jc, bytes, 0, bytes.length, options);
     }
 
     public static Bitmap requestDecode(JobContext jc, byte[] bytes, int offset,
-            int length, Options options) {
+                                       int length, Options options) {
         if (options == null) options = new Options();
         jc.setCancelListener(new DecodeCanceller(options));
         return ensureGLCompatibleBitmap(
@@ -77,7 +67,7 @@ public class DecodeUtils {
     }
 
     public static Bitmap requestDecode(JobContext jc, final String filePath,
-            Options options, int targetSize) {
+                                       Options options, int targetSize) {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(filePath);
@@ -92,7 +82,7 @@ public class DecodeUtils {
     }
 
     public static Bitmap requestDecode(JobContext jc, FileDescriptor fd,
-            Options options, int targetSize) {
+                                       Options options, int targetSize) {
         if (options == null) options = new Options();
         jc.setCancelListener(new DecodeCanceller(options));
 
@@ -114,12 +104,12 @@ public class DecodeUtils {
     /**
      * Decodes the bitmap from the given byte array if the image size is larger than the given
      * requirement.
-     *
+     * <p>
      * Note: The returned image may be resized down. However, both width and height must be
      * larger than the <code>targetSize</code>.
      */
     public static Bitmap requestDecodeIfBigEnough(JobContext jc, byte[] data,
-            Options options, int targetSize) {
+                                                  Options options, int targetSize) {
         if (options == null) options = new Options();
         jc.setCancelListener(new DecodeCanceller(options));
 
@@ -137,7 +127,7 @@ public class DecodeUtils {
     }
 
     public static Bitmap requestDecode(JobContext jc,
-            FileDescriptor fileDescriptor, Rect paddings, Options options) {
+                                       FileDescriptor fileDescriptor, Rect paddings, Options options) {
         if (options == null) options = new Options();
         jc.setCancelListener(new DecodeCanceller(options));
         return ensureGLCompatibleBitmap(BitmapFactory.decodeFileDescriptor
@@ -166,7 +156,7 @@ public class DecodeUtils {
         try {
             return BitmapRegionDecoder.newInstance(
                     bytes, offset, length, shareable);
-        } catch (Throwable t)  {
+        } catch (Throwable t) {
             Log.w(TAG, t);
             return null;
         }
@@ -176,7 +166,7 @@ public class DecodeUtils {
             JobContext jc, String filePath, boolean shareable) {
         try {
             return BitmapRegionDecoder.newInstance(filePath, shareable);
-        } catch (Throwable t)  {
+        } catch (Throwable t) {
             Log.w(TAG, t);
             return null;
         }
@@ -186,7 +176,7 @@ public class DecodeUtils {
             JobContext jc, FileDescriptor fd, boolean shareable) {
         try {
             return BitmapRegionDecoder.newInstance(fd, shareable);
-        } catch (Throwable t)  {
+        } catch (Throwable t) {
             Log.w(TAG, t);
             return null;
         }
@@ -196,7 +186,7 @@ public class DecodeUtils {
             JobContext jc, InputStream is, boolean shareable) {
         try {
             return BitmapRegionDecoder.newInstance(is, shareable);
-        } catch (Throwable t)  {
+        } catch (Throwable t) {
             // We often cancel the creating of bitmap region decoder,
             // so just log one line.
             Log.w(TAG, "requestCreateBitmapRegionDecoder: " + t);
@@ -217,6 +207,18 @@ public class DecodeUtils {
             return null;
         } finally {
             Utils.closeSilently(pfd);
+        }
+    }
+
+    private static class DecodeCanceller implements CancelListener {
+        Options mOptions;
+
+        public DecodeCanceller(Options options) {
+            mOptions = options;
+        }
+
+        public void onCancel() {
+            mOptions.requestCancelDecode();
         }
     }
 }

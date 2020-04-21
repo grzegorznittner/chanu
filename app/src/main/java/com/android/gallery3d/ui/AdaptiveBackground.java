@@ -29,14 +29,12 @@ public class AdaptiveBackground extends GLView {
     private static final int BACKGROUND_HEIGHT = 64;
     private static final int FILTERED_COLOR = 0xffaaaaaa;
     private static final int ANIMATION_DURATION = 500;
-
-    private BasicTexture mOldBackground;
-    private BasicTexture mBackground;
-
     private final Paint mPaint;
-    private Bitmap mPendingBitmap;
     private final FloatAnimation mAnimation =
             new FloatAnimation(0, 1, ANIMATION_DURATION);
+    private BasicTexture mOldBackground;
+    private BasicTexture mBackground;
+    private Bitmap mPendingBitmap;
 
     public AdaptiveBackground() {
         Paint paint = new Paint();

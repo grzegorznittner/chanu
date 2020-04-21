@@ -8,15 +8,33 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.CacheSizePreference;
-import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanBoardStat;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.FileDesc;
+import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.widget.AbstractBoardWidgetProvider;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,9 +47,6 @@ public class CleanUpService extends BaseChanService {
 
     private static final long MIN_DELAY_BETWEEN_CLEANUPS_MS = 4 * 60 * 1000; // 2min
     private static final long MAX_DELAY_BETWEEN_CLEANUPS_MS = 30 * 60 * 1000; // 10min
-    private static long scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS_MS;
-    private static long lastScheduled = 0;
-
     private static final long ONE_MIN_MS = 60L * 60L * 1000L;
     private static final long ONE_HOUR_MS = 60L * ONE_MIN_MS;
     private static final long ONE_DAY_MS = 24L * ONE_HOUR_MS;
@@ -39,13 +54,13 @@ public class CleanUpService extends BaseChanService {
     private static final long ONE_HOUR_KEEP_SIZE_BYTES = 500L * 1024L;
     private static final long ONE_DAY_KEEP_SIZE_BYTES = 1000L * 1024L;
     private static final long ONE_MB_BYTES = 1024L * 1024L;
-
     private static final String NOMEDIA_FILE_PATTERN = ".*/\\.nomedia";
     private static final Pattern nomediaFilePattern = Pattern.compile(NOMEDIA_FILE_PATTERN);
     private static final String BOARD_FILE_PATTERN_FORMAT = ".*/%s(_catalog)?\\.txt";
     private static final String THREAD_FILE_PATTERN = ".*/t_([0-9]*)\\.txt";
     private static final Pattern threadFilePattern = Pattern.compile(THREAD_FILE_PATTERN);
-
+    private static long scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS_MS;
+    private static long lastScheduled = 0;
     private File cacheFolder = null;
     private List<FileDesc> otherFiles = null;
     private Map<String, Long> sizeByBoard = null;
@@ -60,6 +75,14 @@ public class CleanUpService extends BaseChanService {
     private int totalFiles = 0;
     private int totalDeletedFiles = 0;
     private long otherSize = 0;
+
+    public CleanUpService() {
+        super("cleanup");
+    }
+
+    protected CleanUpService(String name) {
+        super(name);
+    }
 
     public static void startService(Context context) {
         /*
@@ -80,14 +103,6 @@ public class CleanUpService extends BaseChanService {
         context.startService(intent);
     }
 
-    public CleanUpService() {
-        super("cleanup");
-    }
-
-    protected CleanUpService(String name) {
-        super(name);
-    }
-
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
@@ -105,12 +120,14 @@ public class CleanUpService extends BaseChanService {
         long endTime = Calendar.getInstance().getTimeInMillis();
         if (DEBUG) logCacheFileInfo("ClearUp init.", startTime, endTime);
         long diffSec = (endTime - startTime) / 1000;
-        if (DEBUG) Log.i(TAG, "cache files=" + totalFiles + " size=" + (totalSize / 1024) + "KB scanned in " +  diffSec + "s.");
+        if (DEBUG)
+            Log.i(TAG, "cache files=" + totalFiles + " size=" + (totalSize / 1024) + "KB scanned in " + diffSec + "s.");
 
         startTime = Calendar.getInstance().getTimeInMillis();
         long maxCacheSize = getPreferredCacheSize() * ONE_MB_BYTES;
         targetCacheSize = maxCacheSize * 80 / 100;
-        if (DEBUG) Log.i(TAG, "cache size current=" + (totalSize/ONE_MB_BYTES) + "MB target=" + (targetCacheSize/ONE_MB_BYTES) + "MB  max=" + (maxCacheSize / ONE_MB_BYTES) + "MB");
+        if (DEBUG)
+            Log.i(TAG, "cache size current=" + (totalSize / ONE_MB_BYTES) + "MB target=" + (targetCacheSize / ONE_MB_BYTES) + "MB  max=" + (maxCacheSize / ONE_MB_BYTES) + "MB");
 
         /*
         for (int daysAgo = 6; daysAgo > 0; daysAgo--)
@@ -138,8 +155,10 @@ public class CleanUpService extends BaseChanService {
         endTime = Calendar.getInstance().getTimeInMillis();
         if (DEBUG) logCacheFileInfo("Deletion report.", startTime, endTime);
         diffSec = (endTime - startTime) / 1000;
-        if (DEBUG) Log.i(TAG, "deleted cache files=" + totalDeletedFiles + " out of original=" + totalFiles + " in " + diffSec + "s");
-        if (DEBUG) Log.i(TAG, "final cache size=" + (totalSize/ONE_MB_BYTES) + "MB target=" + (targetCacheSize/ONE_MB_BYTES) + "MB  max=" + (maxCacheSize / ONE_MB_BYTES) + "MB");
+        if (DEBUG)
+            Log.i(TAG, "deleted cache files=" + totalDeletedFiles + " out of original=" + totalFiles + " in " + diffSec + "s");
+        if (DEBUG)
+            Log.i(TAG, "final cache size=" + (totalSize / ONE_MB_BYTES) + "MB target=" + (targetCacheSize / ONE_MB_BYTES) + "MB  max=" + (maxCacheSize / ONE_MB_BYTES) + "MB");
 
         cleanVars();
     }
@@ -174,8 +193,8 @@ public class CleanUpService extends BaseChanService {
                 addWatchedImagePaths(context, imageCache, threadPost.board, threadPost.no);
             }
             for (String boardCode : watchedThreads.keySet())
-            if (DEBUG) Log.i(TAG, "watchedThreads /" + boardCode + "/ = "
-                    + Arrays.toString(watchedThreads.get(boardCode).toArray()));
+                if (DEBUG) Log.i(TAG, "watchedThreads /" + boardCode + "/ = "
+                        + Arrays.toString(watchedThreads.get(boardCode).toArray()));
         }
         if (DEBUG) Log.i(TAG, "watchedImagePaths = "
                 + Arrays.toString(watchedImagePath.toArray()));
@@ -228,14 +247,13 @@ public class CleanUpService extends BaseChanService {
                 watchedImagePath.add(fullPath);
 
             }
-        }
-        catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             Log.e(TAG, "out of memory adding watched files, skipping more files");
         }
     }
 
     private void logCacheFileInfo(String logMsg, long startTime, long endTime) {
-        Log.i(TAG, logMsg + " Cache folder contains " + totalFiles + " files of size " + (totalSize / ONE_MB_BYTES )
+        Log.i(TAG, logMsg + " Cache folder contains " + totalFiles + " files of size " + (totalSize / ONE_MB_BYTES)
                 + "MB. Calculated in " + (endTime - startTime) + "ms.");
         for (Map.Entry<String, Long> entry : sizeByBoard.entrySet()) {
             if (filesByBoard.get(entry.getKey()).size() == 0)
@@ -257,8 +275,7 @@ public class CleanUpService extends BaseChanService {
                             : o1.lastModified < o2.lastModified ? -1 : 0;
                 }
             });
-        }
-        catch (Error e) {
+        } catch (Error e) {
             Log.e(TAG, "error while trimBySize()", e);
             return 0;
         }
@@ -292,8 +309,7 @@ public class CleanUpService extends BaseChanService {
                             : o1.size < o2.size ? 1 : 0;
                 }
             });
-        }
-        catch (Error e) {
+        } catch (Error e) {
             Log.e(TAG, "error while trimBySize()", e);
             return 0;
         }
@@ -334,7 +350,7 @@ public class CleanUpService extends BaseChanService {
         File[] children = cacheFolder.listFiles();
         if (children == null)
             return;
-        try{
+        try {
             for (File child : children) {
                 if (child.isDirectory()) {
                     if (ChanBoard.getBoardByCode(getBaseContext(), child.getName()) != null) {
@@ -364,8 +380,7 @@ public class CleanUpService extends BaseChanService {
                     otherFiles.add(desc);
                 }
             }
-        }
-        catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             Log.e(TAG, "out of memory adding files, skipping more files");
         }
         totalFiles += otherFiles.size();
@@ -387,17 +402,10 @@ public class CleanUpService extends BaseChanService {
                     all.add(desc);
                 }
             }
-        }
-        catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             Log.e(TAG, "out of memory adding files, skipping more files");
         }
         return totalSize;
-    }
-
-    private static enum DeleteType {
-        BY_DATE,
-        BY_SIZE,
-        BY_DATE_INCL_WATCHED
     }
 
     private void cleanUpBoards(long olderThanMsOrMaxKeepSizeBytes, DeleteType deleteType) {
@@ -425,8 +433,7 @@ public class CleanUpService extends BaseChanService {
                         continue;
                     boardFiles.add(d);
                 }
-            }
-            catch (OutOfMemoryError e) {
+            } catch (OutOfMemoryError e) {
                 Log.e(TAG, "out of memory adding board files, skipping more files");
             }
 
@@ -438,16 +445,14 @@ public class CleanUpService extends BaseChanService {
         List<FileDesc> files;
         if (deleteType == DeleteType.BY_DATE_INCL_WATCHED) {
             files = inFiles;
-        }
-        else {
+        } else {
             files = new ArrayList<FileDesc>();
             try {
                 for (FileDesc inFile : inFiles) {
                     if (!watchedImagePath.contains(inFile.path))
                         files.add(inFile);
                 }
-            }
-            catch (OutOfMemoryError e) {
+            } catch (OutOfMemoryError e) {
                 Log.e(TAG, "out of memory adding files, skipping more files");
             }
         }
@@ -506,11 +511,9 @@ public class CleanUpService extends BaseChanService {
             threadNo = Long.valueOf(threadNo);
             if (threadNos.contains(threadNo))
                 return true;
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             if (DEBUG) Log.i(TAG, "bad match thread number, adding file to cleanup: " + d.path, e);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             if (DEBUG) Log.i(TAG, "unmatched thread number, adding file to cleanup: " + d.path, e);
         }
         return false;
@@ -530,6 +533,12 @@ public class CleanUpService extends BaseChanService {
         totalFiles = 0;
         totalDeletedFiles = 0;
         otherSize = 0;
+    }
+
+    private enum DeleteType {
+        BY_DATE,
+        BY_SIZE,
+        BY_DATE_INCL_WATCHED
     }
 
 

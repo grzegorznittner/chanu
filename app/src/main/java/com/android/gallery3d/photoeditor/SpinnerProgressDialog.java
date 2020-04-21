@@ -32,13 +32,6 @@ public class SpinnerProgressDialog extends Dialog {
 
     private final ViewGroup tools;
 
-    public static SpinnerProgressDialog show(ViewGroup tools) {
-        SpinnerProgressDialog dialog = new SpinnerProgressDialog(tools);
-        dialog.setCancelable(false);
-        dialog.show();
-        return dialog;
-    }
-
     private SpinnerProgressDialog(ViewGroup tools) {
         super(tools.getContext(), R.style.SpinnerProgressDialog);
 
@@ -47,6 +40,13 @@ public class SpinnerProgressDialog extends Dialog {
 
         this.tools = tools;
         enableTools(false);
+    }
+
+    public static SpinnerProgressDialog show(ViewGroup tools) {
+        SpinnerProgressDialog dialog = new SpinnerProgressDialog(tools);
+        dialog.setCancelable(false);
+        dialog.show();
+        return dialog;
     }
 
     @Override

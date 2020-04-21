@@ -15,10 +15,10 @@
  */
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.data.MediaObject;
-
 import android.content.Context;
+
+import com.android.gallery3d.data.MediaObject;
+import com.chanapps.four.gallery3d.R;
 
 public abstract class IconDrawer extends SelectionDrawer {
     private static final String TAG = "IconDrawer";
@@ -35,13 +35,6 @@ public abstract class IconDrawer extends SelectionDrawer {
     private final Texture mVideoOverlay;
     private final Texture mVideoPlayIcon;
     private final int mIconSize;
-
-    public static class IconDimension {
-        int x;
-        int y;
-        int width;
-        int height;
-    }
 
     public IconDrawer(Context context) {
         mLocalSetIcon = new ResourceTexture(context, R.drawable.frame_overlay_gallery_folder);
@@ -63,7 +56,7 @@ public abstract class IconDrawer extends SelectionDrawer {
     }
 
     protected IconDimension drawIcon(GLCanvas canvas, int width, int height,
-            int dataSourceType) {
+                                     int dataSourceType) {
         ResourceTexture icon = getIcon(dataSourceType);
 
         if (icon != null) {
@@ -97,7 +90,7 @@ public abstract class IconDrawer extends SelectionDrawer {
     }
 
     protected IconDimension getIconDimension(ResourceTexture icon, int width,
-            int height) {
+                                             int height) {
         IconDimension id = new IconDimension();
         float scale = (float) mIconSize / icon.getWidth();
         id.width = Math.round(scale * icon.getWidth());
@@ -108,7 +101,7 @@ public abstract class IconDrawer extends SelectionDrawer {
     }
 
     protected void drawMediaTypeOverlay(GLCanvas canvas, int mediaType,
-            boolean isPanorama, int x, int y, int width, int height) {
+                                        boolean isPanorama, int x, int y, int width, int height) {
         if (mediaType == MediaObject.MEDIA_TYPE_VIDEO) {
             drawVideoOverlay(canvas, x, y, width, height);
         }
@@ -118,7 +111,7 @@ public abstract class IconDrawer extends SelectionDrawer {
     }
 
     protected void drawVideoOverlay(GLCanvas canvas, int x, int y,
-            int width, int height) {
+                                    int width, int height) {
         // Scale the video overlay to the height of the thumbnail and put it
         // on the left side.
         float scale = (float) height / mVideoOverlay.getHeight();
@@ -131,7 +124,7 @@ public abstract class IconDrawer extends SelectionDrawer {
     }
 
     protected void drawPanoramaBorder(GLCanvas canvas, int x, int y,
-            int width, int height) {
+                                      int width, int height) {
         float scale = (float) width / mPanoramaBorder.getWidth();
         int w = Math.round(scale * mPanoramaBorder.getWidth());
         int h = Math.round(scale * mPanoramaBorder.getHeight());
@@ -142,23 +135,30 @@ public abstract class IconDrawer extends SelectionDrawer {
     }
 
     protected void drawLabelBackground(GLCanvas canvas, int width, int height,
-            int drawLabelBackground) {
+                                       int drawLabelBackground) {
         int x = -width / 2;
         int y = (height + 1) / 2 - drawLabelBackground;
         drawFrame(canvas, mDarkStrip, x, y, width, drawLabelBackground);
     }
 
     protected void drawPressedFrame(GLCanvas canvas, int x, int y, int width,
-            int height) {
+                                    int height) {
         drawFrame(canvas, mFramePressed, x, y, width, height);
     }
 
     protected void drawSelectedFrame(GLCanvas canvas, int x, int y, int width,
-            int height) {
+                                     int height) {
         drawFrame(canvas, mFrameSelected, x, y, width, height);
     }
 
     @Override
     public void drawFocus(GLCanvas canvas, int width, int height) {
+    }
+
+    public static class IconDimension {
+        int x;
+        int y;
+        int width;
+        int height;
     }
 }

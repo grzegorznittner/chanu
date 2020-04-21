@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanThread;
@@ -77,7 +78,7 @@ public class BoardCursorAdapter extends AbstractBoardCursorAdapter {
         if (isHeader(cursor))
             return R.layout.board_grid_header;
         if (isBlocked(cursor))
-                return R.layout.board_grid_item_empty;
+            return R.layout.board_grid_item_empty;
         if (isOffWatchlist(cursor))
             return R.layout.board_grid_item_empty;
         if (hideLastReplies)

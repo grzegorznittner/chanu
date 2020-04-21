@@ -11,8 +11,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+
 import com.android.gallery3d.ui.Log;
-import com.chanapps.four.component.*;
+import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.StringResourceDialog;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.AboutFragment;
@@ -26,11 +29,10 @@ import com.chanapps.four.fragment.AboutFragment;
  */
 public class AboutActivity extends Activity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
-    protected static final boolean DEBUG = false;
     public static final String TAG = AboutActivity.class.getSimpleName();
     public static final String PREF_PURCHASE_CATEGORY = "pref_about_developer_category";
     public static final int PURCHASE_REQUEST_CODE = 1987;
-
+    protected static final boolean DEBUG = false;
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
     protected Handler handler;
@@ -102,13 +104,16 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     }
 
     @Override
-    public void refresh() {}
+    public void refresh() {
+    }
 
     @Override
-    public void closeSearch() {}
+    public void closeSearch() {
+    }
 
     @Override
-    public void setProgress(boolean on) {}
+    public void setProgress(boolean on) {
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -143,7 +148,8 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (DEBUG) Log.i(TAG, "onActivityResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
+        if (DEBUG)
+            Log.i(TAG, "onActivityResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
         if (requestCode != PURCHASE_REQUEST_CODE)
             return;
         if (resultCode != RESULT_OK) {
@@ -165,16 +171,18 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
         int numTasks = p.first;
         ActivityManager.RunningTaskInfo task = p.second;
         if (task != null) {
-            if (DEBUG) android.util.Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (DEBUG)
+                android.util.Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null
                     && !getClass().getName().equals(task.baseActivity.getClassName())) {
-                if (DEBUG) android.util.Log.i(TAG, "navigateUp() using finish instead of intents with me="
-                        + getClass().getName() + " base=" + task.baseActivity.getClassName());
+                if (DEBUG)
+                    android.util.Log.i(TAG, "navigateUp() using finish instead of intents with me="
+                            + getClass().getName() + " base=" + task.baseActivity.getClassName());
                 finish();
                 return;
-            }
-            else if (task.baseActivity != null && numTasks >= 2) {
-                if (DEBUG) android.util.Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + numTasks);
+            } else if (task.baseActivity != null && numTasks >= 2) {
+                if (DEBUG)
+                    android.util.Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + numTasks);
                 finish();
                 return;
             }
@@ -187,6 +195,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     }
 
     @Override
-    public void switchBoard(String boardCode, String query) {}
+    public void switchBoard(String boardCode, String query) {
+    }
 
 }

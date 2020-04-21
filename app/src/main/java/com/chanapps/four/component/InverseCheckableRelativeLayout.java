@@ -7,12 +7,14 @@ package com.chanapps.four.component;
  * Time: 5:46 PM
  * To change this template use File | Settings | File Templates.
  */
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+
 import com.chanapps.four.activity.R;
 
 public class InverseCheckableRelativeLayout extends RelativeLayout implements Checkable {
@@ -34,8 +36,7 @@ public class InverseCheckableRelativeLayout extends RelativeLayout implements Ch
             checkedBackgroundDrawable = a.getResourceId(R.styleable.InverseCheckableRelativeLayout_checkedBackground, 0);
             inverseBackgroundDrawable = a.getResourceId(R.styleable.InverseCheckableRelativeLayout_inverseBackground, 0);
             inverseForegroundDrawable = a.getResourceId(R.styleable.InverseCheckableRelativeLayout_inverseForeground, 0);
-        }
-        finally {
+        } finally {
             a.recycle();
         }
     }
@@ -64,13 +65,12 @@ public class InverseCheckableRelativeLayout extends RelativeLayout implements Ch
     }
 
     protected void setBackground() {
-        FrameLayout child = (FrameLayout)this.findViewById(R.id.frame_child);
+        FrameLayout child = this.findViewById(R.id.frame_child);
         if (isChecked) {
             setBackgroundResource(checkedBackgroundDrawable);
             if (child != null)
                 child.setForeground(getResources().getDrawable(R.color.PaletteDrawerUncheckedFg));
-        }
-        else {
+        } else {
             setBackgroundResource(inverseBackgroundDrawable);
             if (child != null)
                 child.setForeground(getResources().getDrawable(inverseForegroundDrawable));

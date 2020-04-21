@@ -16,11 +16,11 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.common.Utils;
-
 import android.content.Context;
 import android.view.ViewConfiguration;
 import android.widget.OverScroller;
+
+import com.android.gallery3d.common.Utils;
 
 public class ScrollerHelper {
     private OverScroller mScroller;
@@ -58,10 +58,6 @@ public class ScrollerHelper {
         return mScroller.getCurrX();
     }
 
-    public float getCurrVelocity() {
-        return mScroller.getCurrVelocity();
-    }
-
     public void setPosition(int position) {
         mScroller.startScroll(
                 position, 0,    // startX, startY
@@ -69,6 +65,10 @@ public class ScrollerHelper {
 
         // This forces the scroller to reach the final position.
         mScroller.abortAnimation();
+    }
+
+    public float getCurrVelocity() {
+        return mScroller.getCurrVelocity();
     }
 
     public void fling(int velocity, int min, int max) {
@@ -88,8 +88,8 @@ public class ScrollerHelper {
         int newPosition = Utils.clamp(finalPosition + distance, min, max);
         if (newPosition != currPosition) {
             mScroller.startScroll(
-                currPosition, 0,                    // startX, startY
-                newPosition - currPosition, 0, 0);  // dx, dy, duration
+                    currPosition, 0,                    // startX, startY
+                    newPosition - currPosition, 0, 0);  // dx, dy, duration
         }
         return finalPosition + distance - newPosition;
     }

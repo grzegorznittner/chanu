@@ -16,20 +16,6 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.app.GalleryActionBar;
-import com.android.gallery3d.app.GalleryActivity;
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.data.DataManager;
-import com.android.gallery3d.data.MediaObject;
-import com.android.gallery3d.data.Path;
-import com.android.gallery3d.ui.CustomMenu.DropDownMenu;
-import com.android.gallery3d.ui.MenuExecutor.ProgressListener;
-import com.android.gallery3d.util.Future;
-import com.android.gallery3d.util.GalleryUtils;
-import com.android.gallery3d.util.ThreadPool.Job;
-import com.android.gallery3d.util.ThreadPool.JobContext;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -43,8 +29,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.PopupMenu.OnMenuItemClickListener;
-import android.widget.ShareActionProvider.OnShareTargetSelectedListener;
 import android.widget.ShareActionProvider;
+import android.widget.ShareActionProvider.OnShareTargetSelectedListener;
+
+import com.android.gallery3d.app.GalleryActionBar;
+import com.android.gallery3d.app.GalleryActivity;
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.data.DataManager;
+import com.android.gallery3d.data.MediaObject;
+import com.android.gallery3d.data.Path;
+import com.android.gallery3d.ui.CustomMenu.DropDownMenu;
+import com.android.gallery3d.ui.MenuExecutor.ProgressListener;
+import com.android.gallery3d.util.Future;
+import com.android.gallery3d.util.GalleryUtils;
+import com.android.gallery3d.util.ThreadPool.Job;
+import com.android.gallery3d.util.ThreadPool.JobContext;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 
@@ -53,11 +53,6 @@ public class ActionModeHandler implements ActionMode.Callback {
     private static final int SUPPORT_MULTIPLE_MASK = MediaObject.SUPPORT_DELETE
             | MediaObject.SUPPORT_ROTATE | MediaObject.SUPPORT_SHARE
             | MediaObject.SUPPORT_CACHE | MediaObject.SUPPORT_IMPORT;
-
-    public interface ActionModeListener {
-        public boolean onActionItemClicked(MenuItem item);
-    }
-
     private final GalleryActivity mActivity;
     private final MenuExecutor mMenuExecutor;
     private final SelectionManager mSelectionManager;
@@ -67,7 +62,6 @@ public class ActionModeHandler implements ActionMode.Callback {
     private Future<?> mMenuTask;
     private Handler mMainHandler;
     private ShareActionProvider mShareActionProvider;
-
     public ActionModeHandler(
             GalleryActivity activity, SelectionManager selectionManager) {
         mActivity = Utils.checkNotNull(activity);
@@ -287,5 +281,9 @@ public class ActionModeHandler implements ActionMode.Callback {
 
     public void resume() {
         updateSupportedOperation();
+    }
+
+    public interface ActionModeListener {
+        boolean onActionItemClicked(MenuItem item);
     }
 }

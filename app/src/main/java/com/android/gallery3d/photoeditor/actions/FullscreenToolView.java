@@ -75,7 +75,7 @@ abstract class FullscreenToolView extends View {
         if (photoBounds.isEmpty()) {
             dst.set(0, 0);
         } else {
-            float[] point = new float[] {x, y};
+            float[] point = new float[]{x, y};
             photoMatrix.mapPoints(point);
             dst.set(point[0] / photoBounds.width(), point[1] / photoBounds.height());
         }

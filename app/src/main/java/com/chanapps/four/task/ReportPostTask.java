@@ -5,6 +5,7 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.URLFormatComponent;
@@ -14,6 +15,7 @@ import com.chanapps.four.multipartmime.MultipartEntity;
 import com.chanapps.four.multipartmime.Part;
 import com.chanapps.four.multipartmime.PartBase;
 import com.chanapps.four.multipartmime.StringPart;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 
@@ -35,7 +37,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
 
     public static final String TAG = ReportPostTask.class.getSimpleName();
     public static final boolean DEBUG = false;
-
+    protected String errorMessage = null;
     private String boardCode = null;
     private long[] postNos = {};
     private int reportTypeIndex;
@@ -46,8 +48,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
     public ReportPostTask(ChanIdentifiedActivity refreshableActivity,
                           String boardCode, long threadNo, long[] postNos,
                           String reportType, int reportTypeIndex,
-                          String recaptchaResponse)
-    {
+                          String recaptchaResponse) {
         this.context = refreshableActivity.getBaseContext();
         this.boardCode = boardCode;
         this.postNos = postNos;
@@ -78,8 +79,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
                 return R.string.report_post_error;
 
             return 0;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Error posting", e);
             return R.string.report_post_error;
         }
@@ -87,10 +87,13 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
 
     protected String reportTypeCode(int reportTypeIndex) {
         switch (reportTypeIndex) {
-            case 0: return "vio";
-            case 1: return "illegal";
+            case 0:
+                return "vio";
+            case 1:
+                return "illegal";
             case 2:
-            default: return "spam";
+            default:
+                return "spam";
         }
     }
 
@@ -113,14 +116,14 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
         for (Part p : partsList) {
             if (!(p instanceof StringPart))
                 continue;
-            StringPart s = (StringPart)p;
+            StringPart s = (StringPart) p;
             String line = s.getName() + ": " + s.getValue() + ", ";
             if (DEBUG) Log.i(TAG, line);
         }
     }
 
     protected String executeReportPost(MultipartEntity entity) {
-        String url = String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POST_URL_DELETE_FORMAT), boardCode);;
+        String url = String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POST_URL_DELETE_FORMAT), boardCode);
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         try {
             HttpPost request = new HttpPost(url);
@@ -130,7 +133,8 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
                 dumpRequestContent(request.getEntity().getContent());
             if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse httpResponse = client.execute(request);
-            if (DEBUG) Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
+            if (DEBUG)
+                Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
             if (httpResponse == null) {
                 Log.e(TAG, context.getString(R.string.report_post_no_response));
                 return null;
@@ -144,12 +148,10 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
             }
             String response = s.toString();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception while posting to url=" + url, e);
             return null;
-        }
-        finally {
+        } finally {
             if (client != null) {
                 client.close();
             }
@@ -163,13 +165,10 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
             String l;
             while ((l = r.readLine()) != null)
                 if (DEBUG) Log.i(TAG, l);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
         }
     }
-
-    protected String errorMessage = null;
 
     protected boolean postSuccessful(ReportPostResponse reportPostResponse) {
         errorMessage = reportPostResponse.getError(context);
@@ -198,8 +197,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
         if (result != 0) {
             String error = context.getString(result) + (errorMessage == null ? "" : ": " + errorMessage);
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             Toast.makeText(context, R.string.report_post_successful, Toast.LENGTH_SHORT).show();
             // actually no reason to refresh when reporting posts, as nothing happens
             //refreshableActivity.refresh();

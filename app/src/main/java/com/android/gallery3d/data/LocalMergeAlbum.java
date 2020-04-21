@@ -179,6 +179,11 @@ public class LocalMergeAlbum extends MediaSet implements ContentListener {
         }
     }
 
+    @Override
+    public boolean isLeafAlbum() {
+        return true;
+    }
+
     private static class FetchCache {
         private MediaSet mBaseSet;
         private SoftReference<ArrayList<MediaItem>> mCacheRef;
@@ -217,10 +222,5 @@ public class LocalMergeAlbum extends MediaSet implements ContentListener {
 
             return cache.get(index - mStartPos);
         }
-    }
-
-    @Override
-    public boolean isLeafAlbum() {
-        return true;
     }
 }

@@ -15,40 +15,40 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Information for load'n'display image task
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.3.1
  * @see MemoryCacheUtil
  * @see DisplayImageOptions
  * @see ImageLoadingListener
+ * @since 1.3.1
  */
 final class ImageLoadingInfo {
 
-	final String uri;
-	final String memoryCacheKey;
-	final ImageView imageView;
-	final ImageSize targetSize;
-	final DisplayImageOptions options;
-	final ImageLoadingListener listener;
-	final ReentrantLock loadFromUriLock;
+    final String uri;
+    final String memoryCacheKey;
+    final ImageView imageView;
+    final ImageSize targetSize;
+    final DisplayImageOptions options;
+    final ImageLoadingListener listener;
+    final ReentrantLock loadFromUriLock;
 
-	public ImageLoadingInfo(String uri, ImageView imageView, ImageSize targetSize, String memoryCacheKey, DisplayImageOptions options, ImageLoadingListener listener, ReentrantLock loadFromUriLock) {
-		this.uri = uri;
-		this.imageView = imageView;
-		this.targetSize = targetSize;
-		this.options = options;
-		this.listener = listener;
-		this.loadFromUriLock = loadFromUriLock;
-		this.memoryCacheKey = memoryCacheKey;
-	}
+    public ImageLoadingInfo(String uri, ImageView imageView, ImageSize targetSize, String memoryCacheKey, DisplayImageOptions options, ImageLoadingListener listener, ReentrantLock loadFromUriLock) {
+        this.uri = uri;
+        this.imageView = imageView;
+        this.targetSize = targetSize;
+        this.options = options;
+        this.listener = listener;
+        this.loadFromUriLock = loadFromUriLock;
+        this.memoryCacheKey = memoryCacheKey;
+    }
 }

@@ -9,41 +9,108 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Pair;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.EnhancedListView;
 import com.chanapps.four.data.ChanBlocklist;
 import com.chanapps.four.viewer.ThreadViewer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 12/14/12
-* Time: 12:44 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 12/14/12
+ * Time: 12:44 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public class BlocklistViewAllDialogFragment
-        extends DialogFragment
-{
+        extends DialogFragment {
 
     public static final String TAG = BlocklistViewAllDialogFragment.class.getSimpleName();
-
+    protected static final int UNDO_HIDE_DELAY_MS = 2500;
     protected List<Pair<String, ChanBlocklist.BlockType>> blocks;
     protected EnhancedListAdapter adapter;
     protected EnhancedListView listView;
     protected AlertDialog dialog;
     protected Dialog.OnDismissListener onDismissListener;
+    protected ListView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            if (adapter != null && position >= 0)
+                adapter.showEditTextDialog(position);
+        }
+    };
+    protected DialogInterface.OnClickListener onAddListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            // we do this in the onShowListener
+        }
+    };
+    protected View.OnClickListener onAddButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            adapter.insert(adapter.getCount(), new Pair<String, ChanBlocklist.BlockType>("", ChanBlocklist.BlockType.TEXT));
+            ThreadViewer.jumpToBottom(listView, new Handler());
+        }
+    };
+    protected View.OnClickListener onCloseButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (onDismissListener != null)
+                onDismissListener.onDismiss(dialog);
+            dismiss();
+        }
+    };
+    protected DialogInterface.OnShowListener onShowListener = new DialogInterface.OnShowListener() {
+        @Override
+        public void onShow(DialogInterface d) {
+            Button add = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button close = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            add.setOnClickListener(onAddButtonListener);
+            close.setOnClickListener(onCloseButtonListener);
+        }
+    };
+    protected DialogInterface.OnClickListener onCloseListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            // we do this in button click
+        }
+    };
+    protected EnhancedListView.OnDismissCallback dismissCallback = new EnhancedListView.OnDismissCallback() {
+        @Override
+        public EnhancedListView.Undoable onDismiss(final EnhancedListView listView, final int position) {
+            final Pair<String, ChanBlocklist.BlockType> item = (Pair<String, ChanBlocklist.BlockType>) adapter.getItem(position);
+            adapter.remove(position);
+            return new EnhancedListView.Undoable() {
+                @Override
+                public void undo() {
+                    adapter.insert(position, item);
+                }
+            };
+        }
+    };
 
-    public BlocklistViewAllDialogFragment() {}
+    public BlocklistViewAllDialogFragment() {
+    }
 
     public BlocklistViewAllDialogFragment(List<Pair<String, ChanBlocklist.BlockType>> blocks,
-                                          Dialog.OnDismissListener onDismissListener)
-    {
+                                          Dialog.OnDismissListener onDismissListener) {
         super();
         this.blocks = blocks;
         this.onDismissListener = onDismissListener;
@@ -61,21 +128,19 @@ public class BlocklistViewAllDialogFragment
         return createFilledListDialog();
     }
 
-    protected static final int UNDO_HIDE_DELAY_MS = 2500;
-
     protected Dialog createFilledListDialog() {
         setStyle(STYLE_NO_TITLE, 0);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.blocklist_items_dialog_fragment, null);
         View empty = layout.findViewById(R.id.empty);
-        listView = (EnhancedListView)layout.findViewById(R.id.items);
+        listView = layout.findViewById(R.id.items);
         listView.setOnItemClickListener(itemClickListener);
         listView.setDismissCallback(dismissCallback);
         listView.enableSwipeToDismiss();
         listView.setRequireTouchBeforeDismiss(false);
         listView.setUndoHideDelay(UNDO_HIDE_DELAY_MS);
         listView.setEmptyView(empty);
-        TextView titleView = (TextView)layout.findViewById(R.id.title);
+        TextView titleView = layout.findViewById(R.id.title);
         titleView.setText(R.string.blocklist_title);
 
         adapter = new EnhancedListAdapter();
@@ -89,78 +154,58 @@ public class BlocklistViewAllDialogFragment
         return dialog;
     }
 
-    protected ListView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            if (adapter != null && position >= 0)
-                adapter.showEditTextDialog(position);
-        }
-    };
-
-    protected DialogInterface.OnShowListener onShowListener = new DialogInterface.OnShowListener() {
-        @Override
-        public void onShow(DialogInterface d) {
-            Button add = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            Button close = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-            add.setOnClickListener(onAddButtonListener);
-            close.setOnClickListener(onCloseButtonListener);
-        }
-    };
-
-    protected DialogInterface.OnClickListener onAddListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-                    // we do this in the onShowListener
-        }
-    };
-
-    protected View.OnClickListener onAddButtonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            adapter.insert(adapter.getCount(), new Pair<String, ChanBlocklist.BlockType>("", ChanBlocklist.BlockType.TEXT));
-            ThreadViewer.jumpToBottom(listView, new Handler());
-        }
-    };
-
-    protected View.OnClickListener onCloseButtonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (onDismissListener != null)
-                onDismissListener.onDismiss(dialog);
-            dismiss();
-        }
-    };
-
-    protected DialogInterface.OnClickListener onCloseListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            // we do this in button click
-        }
-    };
-
     protected void save() {
         if (listView != null)
             listView.discardUndo();
         ChanBlocklist.save(getActivity(), blocks);
     }
 
-    protected EnhancedListView.OnDismissCallback dismissCallback = new EnhancedListView.OnDismissCallback() {
-        @Override
-        public EnhancedListView.Undoable onDismiss(final EnhancedListView listView, final int position) {
-            final Pair<String, ChanBlocklist.BlockType> item = (Pair<String, ChanBlocklist.BlockType>)adapter.getItem(position);
-            adapter.remove(position);
-            return new EnhancedListView.Undoable() {
-                @Override
-                public void undo() {
-                    adapter.insert(position, item);
-                }
-            };
+    @Override
+    public void onStop() {
+        if (listView != null) {
+            listView.discardUndo();
         }
-    };
+        super.onStop();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialogInterface) {
+        closeKeyboard();
+        save();
+        BoardActivity.updateBoard(getActivity());
+        dismiss();
+    }
+
+    private void closeKeyboard() {
+        IBinder windowToken = getActivity().getCurrentFocus() != null ? getActivity().getCurrentFocus().getWindowToken() : null;
+        if (windowToken != null) { // close the keyboard
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(windowToken, 0);
+        }
+    }
 
     private class EnhancedListAdapter extends BaseAdapter {
 
         private List<Pair<String, ChanBlocklist.BlockType>> mItems = new ArrayList<Pair<String, ChanBlocklist.BlockType>>();
+        private AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ChanBlocklist.BlockType newType = ChanBlocklist.BlockType.values()[position];
+                int pos = listView.getPositionForView(view);
+                if (pos < 0)
+                    return;
+                Pair<String, ChanBlocklist.BlockType> b = blocks.get(pos);
+                if (b == null)
+                    return;
+                Pair<String, ChanBlocklist.BlockType> newBlock = new Pair<String, ChanBlocklist.BlockType>(b.first, newType);
+                blocks.set(pos, newBlock);
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        };
 
         void setItems(List<Pair<String, ChanBlocklist.BlockType>> items) {
             mItems.clear();
@@ -233,12 +278,12 @@ public class BlocklistViewAllDialogFragment
         public View getView(int position, View convertView, ViewGroup parent) {
 
             ViewHolder holder;
-            if(convertView == null) {
+            if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.blocklist_items_dialog_item, parent, false);
                 holder = new ViewHolder();
                 assert convertView != null;
-                holder.mText1 = (TextView) convertView.findViewById(R.id.text1);
-                holder.mText2 = (TextView) convertView.findViewById(R.id.text2);
+                holder.mText1 = convertView.findViewById(R.id.text1);
+                holder.mText2 = convertView.findViewById(R.id.text2);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -264,9 +309,9 @@ public class BlocklistViewAllDialogFragment
             if (b == null)
                 return;
             View layout = getActivity().getLayoutInflater().inflate(R.layout.blocklist_items_single_dialog_item, null);
-            final EditText input = (EditText)layout.findViewById(R.id.text1);
+            final EditText input = layout.findViewById(R.id.text1);
             input.setText(b.first);
-            final Spinner spinner = (Spinner)layout.findViewById(R.id.spinner);
+            final Spinner spinner = layout.findViewById(R.id.spinner);
             ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(
                     getActivity(),
                     R.array.block_types,
@@ -315,55 +360,12 @@ public class BlocklistViewAllDialogFragment
             dialog.show();
         }
 
-        private AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ChanBlocklist.BlockType newType = ChanBlocklist.BlockType.values()[position];
-                int pos = listView.getPositionForView(view);
-                if (pos < 0)
-                    return;
-                Pair<String, ChanBlocklist.BlockType> b = blocks.get(pos);
-                if (b == null)
-                    return;
-                Pair<String, ChanBlocklist.BlockType> newBlock = new Pair<String, ChanBlocklist.BlockType>(b.first, newType);
-                blocks.set(pos, newBlock);
-                notifyDataSetChanged();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        };
-
         private class ViewHolder {
             TextView mText1;
             TextView mText2;
             int position;
         }
 
-    }
-
-    @Override
-    public void onStop() {
-        if(listView != null) {
-            listView.discardUndo();
-        }
-        super.onStop();
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialogInterface) {
-        closeKeyboard();
-        save();
-        BoardActivity.updateBoard(getActivity());
-        dismiss();
-    }
-
-    private void closeKeyboard() {
-        IBinder windowToken = getActivity().getCurrentFocus() != null ? getActivity().getCurrentFocus().getWindowToken() : null;
-        if (windowToken != null) { // close the keyboard
-            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(windowToken, 0);
-        }
     }
 
 }

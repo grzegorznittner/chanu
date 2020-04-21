@@ -2,15 +2,16 @@ package com.chanapps.four.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.UserStatistics;
@@ -30,7 +31,8 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
     public static final String TAG = ResetPreferencesDialogFragment.class.getSimpleName();
     private SettingsFragment fragment;
 
-    public ResetPreferencesDialogFragment(){}
+    public ResetPreferencesDialogFragment() {
+    }
 
     public ResetPreferencesDialogFragment(SettingsFragment fragment) {
         super();
@@ -41,8 +43,8 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
-        TextView title = (TextView) layout.findViewById(R.id.title);
-        TextView message = (TextView) layout.findViewById(R.id.message);
+        TextView title = layout.findViewById(R.id.title);
+        TextView message = layout.findViewById(R.id.message);
         title.setText(R.string.dialog_reset_preferences);
         message.setText(R.string.dialog_reset_preferences_confirm);
         setStyle(STYLE_NO_TITLE, 0);

@@ -30,11 +30,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class BitmapUtils {
-    private static final String TAG = "BitmapUtils";
     public static final int UNCONSTRAINED = -1;
+    private static final String TAG = "BitmapUtils";
     private static final int COMPRESS_JPEG_QUALITY = 90;
 
-    private BitmapUtils(){}
+    private BitmapUtils() {
+    }
 
     /*
      * Compute the sample size as a function of minSideLength
@@ -56,7 +57,7 @@ public class BitmapUtils {
      * request is 3. So we round up the sample size to avoid OOM.
      */
     public static int computeSampleSize(int width, int height,
-            int minSideLength, int maxNumOfPixels) {
+                                        int minSideLength, int maxNumOfPixels) {
         int initialSize = computeInitialSampleSize(
                 width, height, minSideLength, maxNumOfPixels);
 
@@ -66,7 +67,7 @@ public class BitmapUtils {
     }
 
     private static int computeInitialSampleSize(int w, int h,
-            int minSideLength, int maxNumOfPixels) {
+                                                int minSideLength, int maxNumOfPixels) {
         if (maxNumOfPixels == UNCONSTRAINED
                 && minSideLength == UNCONSTRAINED) return 1;
 
@@ -84,7 +85,7 @@ public class BitmapUtils {
     // This computes a sample size which makes the longer side at least
     // minSideLength long. If that's not possible, return 1.
     public static int computeSampleSizeLarger(int w, int h,
-            int minSideLength) {
+                                              int minSideLength) {
         int initialSize = Math.max(w / minSideLength, h / minSideLength);
         if (initialSize <= 1) return 1;
 
@@ -158,9 +159,9 @@ public class BitmapUtils {
     // Resize the bitmap if each side is >= targetSize * 2
     public static Bitmap resizeDownIfTooBig(
             Bitmap bitmap, int targetSize, boolean recycle) {
-    	if (bitmap == null) {
-    		return null;
-    	}
+        if (bitmap == null) {
+            return null;
+        }
         int srcWidth = bitmap.getWidth();
         int srcHeight = bitmap.getHeight();
         float scale = Math.max(
@@ -186,7 +187,7 @@ public class BitmapUtils {
     }
 
     public static Bitmap resizeDownAndCropCenter(Bitmap bitmap, int size,
-            boolean recycle) {
+                                                 boolean recycle) {
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
         int minSide = Math.min(w, h);

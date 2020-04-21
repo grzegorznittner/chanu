@@ -26,9 +26,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public final class EntrySchema {
-    @SuppressWarnings("unused")
-    private static final String TAG = "EntrySchema";
-
     public static final int TYPE_STRING = 0;
     public static final int TYPE_BOOLEAN = 1;
     public static final int TYPE_SHORT = 2;
@@ -37,8 +34,10 @@ public final class EntrySchema {
     public static final int TYPE_FLOAT = 5;
     public static final int TYPE_DOUBLE = 6;
     public static final int TYPE_BLOB = 7;
-    private static final String SQLITE_TYPES[] = {
-            "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "REAL", "REAL", "NONE" };
+    @SuppressWarnings("unused")
+    private static final String TAG = "EntrySchema";
+    private static final String[] SQLITE_TYPES = {
+            "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "REAL", "REAL", "NONE"};
 
     private static final String FULL_TEXT_INDEX_SUFFIX = "_fulltext";
 
@@ -106,34 +105,34 @@ public final class EntrySchema {
                 int columnIndex = column.projectionIndex;
                 Field field = column.field;
                 switch (column.type) {
-                case TYPE_STRING:
-                    field.set(object, cursor.isNull(columnIndex)
-                            ? null
-                            : cursor.getString(columnIndex));
-                    break;
-                case TYPE_BOOLEAN:
-                    field.setBoolean(object, cursor.getShort(columnIndex) == 1);
-                    break;
-                case TYPE_SHORT:
-                    field.setShort(object, cursor.getShort(columnIndex));
-                    break;
-                case TYPE_INT:
-                    field.setInt(object, cursor.getInt(columnIndex));
-                    break;
-                case TYPE_LONG:
-                    field.setLong(object, cursor.getLong(columnIndex));
-                    break;
-                case TYPE_FLOAT:
-                    field.setFloat(object, cursor.getFloat(columnIndex));
-                    break;
-                case TYPE_DOUBLE:
-                    field.setDouble(object, cursor.getDouble(columnIndex));
-                    break;
-                case TYPE_BLOB:
-                    field.set(object, cursor.isNull(columnIndex)
-                            ? null
-                            : cursor.getBlob(columnIndex));
-                    break;
+                    case TYPE_STRING:
+                        field.set(object, cursor.isNull(columnIndex)
+                                ? null
+                                : cursor.getString(columnIndex));
+                        break;
+                    case TYPE_BOOLEAN:
+                        field.setBoolean(object, cursor.getShort(columnIndex) == 1);
+                        break;
+                    case TYPE_SHORT:
+                        field.setShort(object, cursor.getShort(columnIndex));
+                        break;
+                    case TYPE_INT:
+                        field.setInt(object, cursor.getInt(columnIndex));
+                        break;
+                    case TYPE_LONG:
+                        field.setLong(object, cursor.getLong(columnIndex));
+                        break;
+                    case TYPE_FLOAT:
+                        field.setFloat(object, cursor.getFloat(columnIndex));
+                        break;
+                    case TYPE_DOUBLE:
+                        field.setDouble(object, cursor.getDouble(columnIndex));
+                        break;
+                    case TYPE_BLOB:
+                        field.set(object, cursor.isNull(columnIndex)
+                                ? null
+                                : cursor.getBlob(columnIndex));
+                        break;
                 }
             }
             return object;
@@ -157,30 +156,30 @@ public final class EntrySchema {
                 String columnName = column.name;
                 Field field = column.field;
                 switch (column.type) {
-                case TYPE_STRING:
-                    setIfNotNull(field, object, values.getAsString(columnName));
-                    break;
-                case TYPE_BOOLEAN:
-                    setIfNotNull(field, object, values.getAsBoolean(columnName));
-                    break;
-                case TYPE_SHORT:
-                    setIfNotNull(field, object, values.getAsShort(columnName));
-                    break;
-                case TYPE_INT:
-                    setIfNotNull(field, object, values.getAsInteger(columnName));
-                    break;
-                case TYPE_LONG:
-                    setIfNotNull(field, object, values.getAsLong(columnName));
-                    break;
-                case TYPE_FLOAT:
-                    setIfNotNull(field, object, values.getAsFloat(columnName));
-                    break;
-                case TYPE_DOUBLE:
-                    setIfNotNull(field, object, values.getAsDouble(columnName));
-                    break;
-                case TYPE_BLOB:
-                    setIfNotNull(field, object, values.getAsByteArray(columnName));
-                    break;
+                    case TYPE_STRING:
+                        setIfNotNull(field, object, values.getAsString(columnName));
+                        break;
+                    case TYPE_BOOLEAN:
+                        setIfNotNull(field, object, values.getAsBoolean(columnName));
+                        break;
+                    case TYPE_SHORT:
+                        setIfNotNull(field, object, values.getAsShort(columnName));
+                        break;
+                    case TYPE_INT:
+                        setIfNotNull(field, object, values.getAsInteger(columnName));
+                        break;
+                    case TYPE_LONG:
+                        setIfNotNull(field, object, values.getAsLong(columnName));
+                        break;
+                    case TYPE_FLOAT:
+                        setIfNotNull(field, object, values.getAsFloat(columnName));
+                        break;
+                    case TYPE_DOUBLE:
+                        setIfNotNull(field, object, values.getAsDouble(columnName));
+                        break;
+                    case TYPE_BLOB:
+                        setIfNotNull(field, object, values.getAsByteArray(columnName));
+                        break;
                 }
             }
             return object;
@@ -195,30 +194,30 @@ public final class EntrySchema {
                 String columnName = column.name;
                 Field field = column.field;
                 switch (column.type) {
-                case TYPE_STRING:
-                    values.put(columnName, (String) field.get(object));
-                    break;
-                case TYPE_BOOLEAN:
-                    values.put(columnName, field.getBoolean(object));
-                    break;
-                case TYPE_SHORT:
-                    values.put(columnName, field.getShort(object));
-                    break;
-                case TYPE_INT:
-                    values.put(columnName, field.getInt(object));
-                    break;
-                case TYPE_LONG:
-                    values.put(columnName, field.getLong(object));
-                    break;
-                case TYPE_FLOAT:
-                    values.put(columnName, field.getFloat(object));
-                    break;
-                case TYPE_DOUBLE:
-                    values.put(columnName, field.getDouble(object));
-                    break;
-                case TYPE_BLOB:
-                    values.put(columnName, (byte[]) field.get(object));
-                    break;
+                    case TYPE_STRING:
+                        values.put(columnName, (String) field.get(object));
+                        break;
+                    case TYPE_BOOLEAN:
+                        values.put(columnName, field.getBoolean(object));
+                        break;
+                    case TYPE_SHORT:
+                        values.put(columnName, field.getShort(object));
+                        break;
+                    case TYPE_INT:
+                        values.put(columnName, field.getInt(object));
+                        break;
+                    case TYPE_LONG:
+                        values.put(columnName, field.getLong(object));
+                        break;
+                    case TYPE_FLOAT:
+                        values.put(columnName, field.getFloat(object));
+                        break;
+                    case TYPE_DOUBLE:
+                        values.put(columnName, field.getDouble(object));
+                        break;
+                    case TYPE_BLOB:
+                        values.put(columnName, (byte[]) field.get(object));
+                        break;
                 }
             }
         } catch (IllegalAccessException e) {
@@ -266,7 +265,7 @@ public final class EntrySchema {
 
     public boolean queryWithId(SQLiteDatabase db, long id, Entry entry) {
         Cursor cursor = db.query(mTableName, mProjection, "_id=?",
-                new String[] {Long.toString(id)}, null, null, null);
+                new String[]{Long.toString(id)}, null, null, null);
         boolean success = false;
         if (cursor.moveToFirst()) {
             cursorToObject(cursor, entry);
@@ -288,7 +287,7 @@ public final class EntrySchema {
     }
 
     public boolean deleteWithId(SQLiteDatabase db, long id) {
-        return db.delete(mTableName, "_id=?", new String[] { Long.toString(id) }) == 1;
+        return db.delete(mTableName, "_id=?", new String[]{Long.toString(id)}) == 1;
     }
 
     public void createTables(SQLiteDatabase db) {
@@ -510,7 +509,7 @@ public final class EntrySchema {
         public final int projectionIndex;
 
         public ColumnInfo(String name, int type, boolean indexed,
-                boolean fullText, String defaultValue, Field field, int projectionIndex) {
+                          boolean fullText, String defaultValue, Field field, int projectionIndex) {
             this.name = name.toLowerCase();
             this.type = type;
             this.indexed = indexed;

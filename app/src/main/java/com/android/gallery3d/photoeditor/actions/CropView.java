@@ -32,34 +32,22 @@ import com.chanapps.four.gallery3d.R;
  */
 class CropView extends FullscreenToolView {
 
-    /**
-     * Listener of crop bounds.
-     */
-    public interface OnCropChangeListener {
-
-        void onCropChanged(RectF cropBounds, boolean fromUser);
-    }
-
     private static final int MOVE_LEFT = 1;
     private static final int MOVE_TOP = 2;
     private static final int MOVE_RIGHT = 4;
     private static final int MOVE_BOTTOM = 8;
     private static final int MOVE_BLOCK = 16;
-
     private static final int MIN_CROP_WIDTH_HEIGHT = 2;
     private static final int TOUCH_TOLERANCE = 25;
     private static final int SHADOW_ALPHA = 160;
-
     private final Paint borderPaint;
     private final Drawable cropIndicator;
     private final int indicatorSize;
     private final RectF cropBounds = new RectF(0, 0, 1, 1);
-
     private float lastX;
     private float lastY;
     private int movingEdges;
     private OnCropChangeListener listener;
-
     public CropView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -118,8 +106,7 @@ class CropView extends FullscreenToolView {
         float right = Math.abs(x - cropped.right);
         if ((left <= TOUCH_TOLERANCE) && (left < right)) {
             movingEdges |= MOVE_LEFT;
-        }
-        else if (right <= TOUCH_TOLERANCE) {
+        } else if (right <= TOUCH_TOLERANCE) {
             movingEdges |= MOVE_RIGHT;
         }
 
@@ -128,8 +115,7 @@ class CropView extends FullscreenToolView {
         float bottom = Math.abs(y - cropped.bottom);
         if ((top <= TOUCH_TOLERANCE) & (top < bottom)) {
             movingEdges |= MOVE_TOP;
-        }
-        else if (bottom <= TOUCH_TOLERANCE) {
+        } else if (bottom <= TOUCH_TOLERANCE) {
             movingEdges |= MOVE_BOTTOM;
         }
 
@@ -243,5 +229,13 @@ class CropView extends FullscreenToolView {
         if (((movingEdges & MOVE_RIGHT) != 0) || notMoving) {
             drawIndicator(canvas, cropIndicator, cropped.right, cropped.centerY());
         }
+    }
+
+    /**
+     * Listener of crop bounds.
+     */
+    public interface OnCropChangeListener {
+
+        void onCropChanged(RectF cropBounds, boolean fromUser);
     }
 }

@@ -16,17 +16,6 @@
 
 package com.android.gallery3d.provider;
 
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.data.DataManager;
-import com.android.gallery3d.data.DownloadCache;
-import com.android.gallery3d.data.MediaItem;
-import com.android.gallery3d.data.MediaObject;
-import com.android.gallery3d.data.MtpImage;
-import com.android.gallery3d.data.Path;
-import com.android.gallery3d.picasasource.PicasaSource;
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -39,15 +28,25 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.util.Log;
 
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.data.DataManager;
+import com.android.gallery3d.data.DownloadCache;
+import com.android.gallery3d.data.MediaItem;
+import com.android.gallery3d.data.MediaObject;
+import com.android.gallery3d.data.MtpImage;
+import com.android.gallery3d.data.Path;
+import com.android.gallery3d.picasasource.PicasaSource;
+import com.android.gallery3d.util.GalleryUtils;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class GalleryProvider extends ContentProvider {
-    private static final String TAG = "GalleryProvider";
-
     public static final String AUTHORITY = "com.android.gallery3d.provider";
     public static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
+    private static final String TAG = "GalleryProvider";
     private static final String[] SUPPORTED_PICASA_COLUMNS = {
             ImageColumns.DISPLAY_NAME,
             ImageColumns.SIZE,
@@ -56,10 +55,9 @@ public class GalleryProvider extends ContentProvider {
             ImageColumns.LATITUDE,
             ImageColumns.LONGITUDE,
             ImageColumns.ORIENTATION};
-
+    private static Uri sBaseUri;
     private DataManager mDataManager;
     private DownloadCache mDownloadCache;
-    private static Uri sBaseUri;
 
     public static String getAuthority(Context context) {
         return context.getPackageName() + ".provider";
@@ -115,7 +113,7 @@ public class GalleryProvider extends ContentProvider {
     // TODO: consider concurrent access
     @Override
     public Cursor query(Uri uri, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder) {
+                        String selection, String[] selectionArgs, String sortOrder) {
         long token = Binder.clearCallingIdentity();
         try {
             Path path = Path.fromString(uri.getPath());
@@ -131,7 +129,7 @@ public class GalleryProvider extends ContentProvider {
                 return queryMtpItem((MtpImage) object,
                         projection, selection, selectionArgs, sortOrder);
             } else {
-                    return null;
+                return null;
             }
         } finally {
             Binder.restoreCallingIdentity(token);
@@ -139,13 +137,13 @@ public class GalleryProvider extends ContentProvider {
     }
 
     private Cursor queryMtpItem(MtpImage image, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder) {
+                                String selection, String[] selectionArgs, String sortOrder) {
         Object[] columnValues = new Object[projection.length];
         for (int i = 0, n = projection.length; i < n; ++i) {
             String column = projection[i];
             if (ImageColumns.DISPLAY_NAME.equals(column)) {
                 columnValues[i] = image.getName();
-            } else if (ImageColumns.SIZE.equals(column)){
+            } else if (ImageColumns.SIZE.equals(column)) {
                 columnValues[i] = image.getSize();
             } else if (ImageColumns.MIME_TYPE.equals(column)) {
                 columnValues[i] = image.getMimeType();
@@ -161,7 +159,7 @@ public class GalleryProvider extends ContentProvider {
     }
 
     private Cursor queryPicasaItem(MediaObject image, String[] projection,
-            String selection, String[] selectionArgs, String sortOrder) {
+                                   String selection, String[] selectionArgs, String sortOrder) {
         if (projection == null) projection = SUPPORTED_PICASA_COLUMNS;
         Object[] columnValues = new Object[projection.length];
         double latitude = PicasaSource.getLatitude(image);
@@ -172,7 +170,7 @@ public class GalleryProvider extends ContentProvider {
             String column = projection[i];
             if (ImageColumns.DISPLAY_NAME.equals(column)) {
                 columnValues[i] = PicasaSource.getImageTitle(image);
-            } else if (ImageColumns.SIZE.equals(column)){
+            } else if (ImageColumns.SIZE.equals(column)) {
                 columnValues[i] = PicasaSource.getImageSize(image);
             } else if (ImageColumns.MIME_TYPE.equals(column)) {
                 columnValues[i] = PicasaSource.getContentType(image);
@@ -233,7 +231,7 @@ public class GalleryProvider extends ContentProvider {
 
         @Override
         public void writeDataToPipe(ParcelFileDescriptor output,
-                Uri uri, String mimeType, Bundle opts, Object args) {
+                                    Uri uri, String mimeType, Bundle opts, Object args) {
             OutputStream os = null;
             try {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);

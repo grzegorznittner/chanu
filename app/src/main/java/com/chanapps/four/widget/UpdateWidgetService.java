@@ -32,13 +32,12 @@ public class UpdateWidgetService extends RemoteViewsService {
         if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equals(widgetConf.widgetType)) {
             if (DEBUG) Log.i(TAG, "onGetViewFactory() returning StackRemoteViewsFactory");
             return new StackRemoteViewsFactory(getApplicationContext(), intent);
-        }
-        else if (WidgetConstants.WIDGET_TYPE_COVER_FLOW_CARD.equals(widgetConf.widgetType)) {
+        } else if (WidgetConstants.WIDGET_TYPE_COVER_FLOW_CARD.equals(widgetConf.widgetType)) {
             if (DEBUG) Log.i(TAG, "onGetViewFactory() returning CardStackRemoteViewsFactory");
             return new CardStackRemoteViewsFactory(getApplicationContext(), intent);
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "onGetViewFactory() non-matching card flow type=" + widgetConf.widgetType + " returning null");
+        } else {
+            if (DEBUG)
+                Log.i(TAG, "onGetViewFactory() non-matching card flow type=" + widgetConf.widgetType + " returning null");
             return null;
         }
     }
@@ -52,7 +51,8 @@ public class UpdateWidgetService extends RemoteViewsService {
             WidgetConf widgetConf = WidgetProviderUtils.loadWidgetConf(this, appWidgetId);
             if (widgetConf == null)
                 widgetConf = new WidgetConf(appWidgetId); // new widget or no config;
-            if (DEBUG) Log.i(TAG, "onStartCommand() id=" + appWidgetId + " /" + widgetConf.boardCode + "/");
+            if (DEBUG)
+                Log.i(TAG, "onStartCommand() id=" + appWidgetId + " /" + widgetConf.boardCode + "/");
             (new WidgetUpdateTask(getApplicationContext(), widgetConf)).execute();
         }
         return Service.START_NOT_STICKY;

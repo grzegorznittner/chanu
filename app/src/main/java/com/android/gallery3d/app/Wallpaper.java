@@ -46,7 +46,7 @@ public class Wallpaper extends Activity {
         super.onCreate(bundle);
         if (bundle != null) {
             mState = bundle.getInt(KEY_STATE);
-            mPickedItem = (Uri) bundle.getParcelable(KEY_PICKED_ITEM);
+            mPickedItem = bundle.getParcelable(KEY_PICKED_ITEM);
         }
     }
 

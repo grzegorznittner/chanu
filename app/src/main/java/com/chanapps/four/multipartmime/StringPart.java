@@ -30,11 +30,12 @@
 
 package com.chanapps.four.multipartmime;
 
-import java.io.OutputStream;
-import java.io.IOException;
+import android.util.Log;
 
 import org.apache.http.util.EncodingUtils;
-import android.util.Log;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Simple string parameter for a multipart post
@@ -43,42 +44,47 @@ import android.util.Log;
  * @author <a href="mailto:jsdever@apache.org">Jeff Dever</a>
  * @author <a href="mailto:mbowler@GargoyleSoftware.com">Mike Bowler</a>
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
- *
  * @since 2.0
  */
 public class StringPart extends PartBase {
 
-    /** Log object for this class. */
+    /**
+     * Log object for this class.
+     */
     public static final String TAG = StringPart.class.getSimpleName();
-    private static final boolean DEBUG = false;
-
-    /** Default content encoding of string parameters. */
+    /**
+     * Default content encoding of string parameters.
+     */
     public static final String DEFAULT_CONTENT_TYPE = "text/plain";
-
-    /** Default transfer encoding of string parameters*/
+    /**
+     * Default transfer encoding of string parameters
+     */
     public static final String DEFAULT_TRANSFER_ENCODING = "8bit";
-
-    /** Contents of this StringPart. */
+    private static final boolean DEBUG = false;
+    /**
+     * Contents of this StringPart.
+     */
     private byte[] content;
-    
-    /** The String value of this part. */
+
+    /**
+     * The String value of this part.
+     */
     private String value;
 
-    public String getValue() { return value; }
     /**
      * Constructor.
      *
-     * @param name The name of the part
-     * @param value the string to post
-     * @param charset the charset to be used to encode the string, if <code>null</code> 
+     * @param name    The name of the part
+     * @param value   the string to post
+     * @param charset the charset to be used to encode the string, if <code>null</code>
      */
     public StringPart(String name, String value, String charset) {
-        
+
         super(
-            name,
-            DEFAULT_CONTENT_TYPE,
-            charset == null ? DEFAULT_CHARSET : charset,
-            DEFAULT_TRANSFER_ENCODING
+                name,
+                DEFAULT_CONTENT_TYPE,
+                charset == null ? DEFAULT_CHARSET : charset,
+                DEFAULT_TRANSFER_ENCODING
         );
         if (value == null) {
             throw new IllegalArgumentException("Value may not be null");
@@ -93,17 +99,21 @@ public class StringPart extends PartBase {
     /**
      * Constructor.
      *
-     * @param name The name of the part
+     * @param name  The name of the part
      * @param value the string to post
      */
     public StringPart(String name, String value) {
         this(name, value, null);
     }
 
+    public String getValue() {
+        return value;
+    }
+
     /**
      * Gets the content in bytes.  Bytes are lazily created to allow the charset to be changed
      * after the part is created.
-     * 
+     *
      * @return the content in bytes
      */
     private byte[] getContent() {
@@ -112,9 +122,10 @@ public class StringPart extends PartBase {
         }
         return content;
     }
-    
+
     /**
      * Writes the data to the given OutputStream.
+     *
      * @param out the OutputStream to write to
      * @throws IOException if there is a write error
      */
@@ -123,9 +134,10 @@ public class StringPart extends PartBase {
         if (DEBUG) Log.d(TAG, "enter sendData(OutputStream)");
         out.write(getContent());
     }
-    
+
     /**
      * Return the length of the data.
+     *
      * @return The length of the data.
      * @see Part#lengthOfData()
      */
@@ -134,7 +146,7 @@ public class StringPart extends PartBase {
         if (DEBUG) Log.d(TAG, "enter lengthOfData()");
         return getContent().length;
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.commons.httpclient.methods.multipart.BasePart#setCharSet(java.lang.String)
      */

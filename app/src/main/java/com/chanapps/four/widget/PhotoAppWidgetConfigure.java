@@ -33,18 +33,14 @@ import com.android.gallery3d.gadget.WidgetTypeChooser;
 import com.chanapps.four.gallery3d.R;
 
 public class PhotoAppWidgetConfigure extends Activity {
+    public static final String KEY_WIDGET_TYPE = "widget-type";
+    public static final int RESULT_ERROR = RESULT_FIRST_USER;
     @SuppressWarnings("unused")
     private static final String TAG = "PhotoAppWidgetConfigure";
-
-    public static final String KEY_WIDGET_TYPE = "widget-type";
-
     private static final int REQUEST_WIDGET_TYPE = 1;
     private static final int REQUEST_CHOOSE_ALBUM = 2;
     private static final int REQUEST_CROP_IMAGE = 3;
     private static final int REQUEST_GET_PHOTO = 4;
-
-    public static final int RESULT_ERROR = RESULT_FIRST_USER;
-
     // Scale up the widget size since we only specified the minimized
     // size of the gadget. The real size could be larger.
     // Note: There is also a limit on the size of data that can be
@@ -58,7 +54,7 @@ public class PhotoAppWidgetConfigure extends Activity {
 
     @Override
     protected void onCreate(Bundle bundle) {
-    	Log.i(TAG, "onCreate called");
+        Log.i(TAG, "onCreate called");
         super.onCreate(bundle);
         mAppWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
 
@@ -75,7 +71,7 @@ public class PhotoAppWidgetConfigure extends Activity {
     }
 
     private void updateWidgetAndFinish(WidgetDatabaseHelper.Entry entry) {
-    	Log.i(TAG, "updateWidgetAndFinish called");
+        Log.i(TAG, "updateWidgetAndFinish called");
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         RemoteViews views = PhotoAppWidgetProvider.buildWidget(this, mAppWidgetId, entry);
         manager.updateAppWidget(mAppWidgetId, views);
@@ -108,7 +104,7 @@ public class PhotoAppWidgetConfigure extends Activity {
 
     private void setPhotoWidget(Intent data) {
         // Store the cropped photo in our database
-        Bitmap bitmap = (Bitmap) data.getParcelableExtra("data");
+        Bitmap bitmap = data.getParcelableExtra("data");
         WidgetDatabaseHelper helper = new WidgetDatabaseHelper(this);
         try {
             helper.setPhoto(mAppWidgetId, mPickedItem, bitmap);

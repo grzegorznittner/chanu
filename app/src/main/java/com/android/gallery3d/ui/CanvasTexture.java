@@ -17,16 +17,16 @@
 package com.android.gallery3d.ui;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Bitmap.Config;
 
 // CanvasTexture is a texture whose content is the drawing on a Canvas.
 // The subclasses should override onDraw() to draw on the bitmap.
 // By default CanvasTexture is not opaque.
 abstract class CanvasTexture extends UploadedTexture {
-    protected Canvas mCanvas;
     private final Config mConfig;
+    protected Canvas mCanvas;
 
     public CanvasTexture(int width, int height) {
         mConfig = Config.ARGB_8888;

@@ -1,9 +1,5 @@
 package com.chanapps.four.loader;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.Map;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -11,7 +7,16 @@ import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Map;
 
 public class ThreadCursorLoader extends BoardCursorLoader {
 
@@ -56,28 +61,34 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 thread = null;
             }
             int isDead = thread != null && thread.isDead ? 1 : 0;
-            if (DEBUG) Log.i(TAG, "loadInBackground " + thread.board + "/" + thread.no + " num posts " + (thread.posts != null ? thread.posts.length : 0));
-            if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
-            if (DEBUG) Log.i(TAG, "Thread closed status for " + boardName + "/" + threadNo + " is closed=" + thread.closed);
+            if (DEBUG)
+                Log.i(TAG, "loadInBackground " + thread.board + "/" + thread.no + " num posts " + (thread.posts != null ? thread.posts.length : 0));
+            if (DEBUG)
+                Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
+            if (DEBUG)
+                Log.i(TAG, "Thread closed status for " + boardName + "/" + threadNo + " is closed=" + thread.closed);
 
             int capacity = thread != null && thread.posts != null && (query == null || query.isEmpty()) ? thread.posts.length : 0;
             MatrixCursor matrixCursor = ChanPost.buildMatrixCursor(capacity);
 
             if (board != null && thread != null && thread.posts != null && thread.posts.length > 0) { // show loading for no thread data
                 loadMatrixCursor(matrixCursor, board, thread);
-                if (DEBUG) Log.i(TAG, "Remaining to load:" + (thread.posts[0].replies - thread.posts.length));
+                if (DEBUG)
+                    Log.i(TAG, "Remaining to load:" + (thread.posts[0].replies - thread.posts.length));
             }
             registerContentObserver(matrixCursor, mObserver);
             return matrixCursor;
-    	} catch (Exception e) {
-    		Log.e(TAG, "loadInBackground", e);
-    		return null;
-    	}
+        } catch (Exception e) {
+            Log.e(TAG, "loadInBackground", e);
+            return null;
+        }
     }
 
     private void loadMatrixCursor(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
-        if (DEBUG) Log.i(TAG, "Thread toplevel thumb=" + thread.tn_w + "x" + thread.tn_h + " full=" + thread.w + "x" + thread.h);
-        if (DEBUG) Log.i(TAG, "Thread postlevel thumb=" + thread.posts[0].tn_w + "x" + thread.posts[0].tn_h + " full=" + thread.posts[0].w + "x" + thread.posts[0].h);
+        if (DEBUG)
+            Log.i(TAG, "Thread toplevel thumb=" + thread.tn_w + "x" + thread.tn_h + " full=" + thread.w + "x" + thread.h);
+        if (DEBUG)
+            Log.i(TAG, "Thread postlevel thumb=" + thread.posts[0].tn_w + "x" + thread.posts[0].tn_h + " full=" + thread.posts[0].w + "x" + thread.posts[0].h);
 
         // first get the maps for thread references
         Map<Long, HashSet<Long>> backlinksMap = thread.backlinksMap();
@@ -116,9 +127,15 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
-        writer.print(prefix); writer.print("boardName="); writer.println(boardName);
-        writer.print(prefix); writer.print("threadNo="); writer.println(threadNo);
-        writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
+        writer.print(prefix);
+        writer.print("boardName=");
+        writer.println(boardName);
+        writer.print(prefix);
+        writer.print("threadNo=");
+        writer.println(threadNo);
+        writer.print(prefix);
+        writer.print("mCursor=");
+        writer.println(mCursor);
     }
 
 }

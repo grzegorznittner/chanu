@@ -74,7 +74,7 @@ public class FutureTask<T> implements Runnable, Future<T> {
             }
         }
 
-        synchronized(this) {
+        synchronized (this) {
             mResult = result;
             mIsDone = true;
             if (mListener != null) {

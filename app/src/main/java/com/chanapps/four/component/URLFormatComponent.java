@@ -2,6 +2,7 @@ package com.chanapps.four.component;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+
 import com.chanapps.four.activity.SettingsActivity;
 
 import java.util.Arrays;
@@ -67,8 +68,8 @@ public class URLFormatComponent {
         if (url.startsWith("market://"))
             return url;
         boolean useHttps = PreferenceManager
-                        .getDefaultSharedPreferences(context)
-                        .getBoolean(SettingsActivity.PREF_USE_HTTPS, true);
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_USE_HTTPS, true);
         if (forceHttpsUrls.isEmpty() && FORCE_HTTPS_URLS.length > 0)
             forceHttpsUrls.addAll(Arrays.asList(FORCE_HTTPS_URLS));
         if (forceHttpsUrls.contains(url))

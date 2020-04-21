@@ -2,23 +2,24 @@ package com.chanapps.four.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThemeSelector;
 
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 12/14/12
-* Time: 12:44 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 12/14/12
+ * Time: 12:44 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public abstract class ListDialogFragment extends DialogFragment {
 
     protected String[] array = {};
@@ -26,7 +27,8 @@ public abstract class ListDialogFragment extends DialogFragment {
     protected ListView items = null;
     private DialogInterface.OnCancelListener cancelListener = null;
 
-    public ListDialogFragment(){}
+    public ListDialogFragment() {
+    }
 
     public Dialog createListDialog(int titleStringId, int emptyTitleStringId, int emptyStringId, String[] array,
                                    ListView.OnItemClickListener listener) {
@@ -40,19 +42,19 @@ public abstract class ListDialogFragment extends DialogFragment {
     }
 
     public Dialog createListDialog(String title, String emptyTitle, String empty, String[] array,
-                             ListView.OnItemClickListener listener,
-                             final DialogInterface.OnCancelListener cancelListener,
-                             String positiveLabel,
-                             final DialogInterface.OnClickListener positiveListener) {
+                                   ListView.OnItemClickListener listener,
+                                   final DialogInterface.OnCancelListener cancelListener,
+                                   String positiveLabel,
+                                   final DialogInterface.OnClickListener positiveListener) {
         this.array = array;
         this.cancelListener = cancelListener;
         if (array.length > 0) {
             setStyle(STYLE_NO_TITLE, 0);
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View layout = inflater.inflate(R.layout.items_dialog_fragment, null);
-            TextView titleView = (TextView)layout.findViewById(R.id.title);
+            TextView titleView = layout.findViewById(R.id.title);
             titleView.setText(title);
-            items = (ListView)layout.findViewById(R.id.items);
+            items = layout.findViewById(R.id.items);
             int itemLayoutId = ThemeSelector.instance(getActivity()).isDark()
                     ? R.layout.items_dialog_item_dark
                     : R.layout.items_dialog_item;
@@ -73,8 +75,7 @@ public abstract class ListDialogFragment extends DialogFragment {
                                 cancelListener.onCancel(dialog);
                             }
                         });
-            }
-            else {
+            } else {
                 builder.setNegativeButton(R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -84,12 +85,11 @@ public abstract class ListDialogFragment extends DialogFragment {
             }
             Dialog d = builder.create();
             return d;
-        }
-        else {
+        } else {
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
-            TextView titleView = (TextView)layout.findViewById(R.id.title);
-            TextView message = (TextView)layout.findViewById(R.id.message);
+            TextView titleView = layout.findViewById(R.id.title);
+            TextView message = layout.findViewById(R.id.message);
             titleView.setText(emptyTitle);
             message.setText(empty);
             setStyle(STYLE_NO_TITLE, 0);
@@ -102,8 +102,7 @@ public abstract class ListDialogFragment extends DialogFragment {
                                 cancelListener.onCancel(dialog);
                             }
                         });
-            }
-            else {
+            } else {
                 builder.setNegativeButton(R.string.dismiss,
                         new DialogInterface.OnClickListener() {
                             @Override

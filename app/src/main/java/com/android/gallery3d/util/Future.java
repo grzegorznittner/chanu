@@ -27,9 +27,13 @@ package com.android.gallery3d.util;
 // - get() does not throw exceptions.
 //
 public interface Future<T> {
-    public void cancel();
-    public boolean isCancelled();
-    public boolean isDone();
-    public T get();
-    public void waitDone();
+    void cancel();
+
+    boolean isCancelled();
+
+    boolean isDone();
+
+    T get();
+
+    void waitDone();
 }

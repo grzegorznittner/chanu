@@ -1,6 +1,7 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
+
 import com.chanapps.four.activity.R;
 
 import java.util.regex.Matcher;
@@ -15,13 +16,12 @@ import java.util.regex.Pattern;
  */
 public class DeletePostResponse {
 
+    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
+    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
     private Context ctx = null;
     private String response = null;
     private boolean isPosted = false;
     private String error = null;
-
-    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
-    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
 
     public DeletePostResponse(Context ctx, String response) {
         this.ctx = ctx;
@@ -41,8 +41,7 @@ public class DeletePostResponse {
                 error = errorMatch.group(2).replaceFirst("Error: ", "");
             else
                 isPosted = true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             error = e.getLocalizedMessage();
             isPosted = false;
         }

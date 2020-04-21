@@ -11,6 +11,7 @@ import android.net.http.AndroidHttpClient;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
+
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.ChanBoard;
@@ -19,6 +20,7 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,7 +31,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,8 +45,8 @@ import java.util.*;
 public final class WidgetProviderUtils {
 
     public static final String TAG = WidgetProviderUtils.class.getSimpleName();
-    private static final boolean DEBUG = false;
     public static final String WIDGET_PROVIDER_UTILS = "com.chanapps.four.widget.WidgetProviderUtils";
+    private static final boolean DEBUG = false;
 
     public static Set<String> getActiveWidgetPref(Context context) {
         ComponentName widgetProvider = new ComponentName(context, AbstractBoardWidgetProvider.class);
@@ -102,7 +107,8 @@ public final class WidgetProviderUtils {
             boardsToFetch.add(widgetBoardCode);
         }
         for (String boardCode : boardsToFetch) {
-            if (DEBUG) Log.i(WidgetProviderUtils.TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
+            if (DEBUG)
+                Log.i(WidgetProviderUtils.TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
             //if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
             //    GlobalAlarmReceiver.fetchWatchlistThreads(context);
             //else
@@ -118,7 +124,8 @@ public final class WidgetProviderUtils {
     public static void update(Context context, int appWidgetId, String widgetType) {
         WidgetConf widgetConf = loadWidgetConf(context, appWidgetId);
         if (widgetConf != null) {
-            if (DEBUG) Log.i(WidgetProviderUtils.TAG, "update() calling update widget service for widget=" + appWidgetId + " /" + widgetConf.boardCode + "/");
+            if (DEBUG)
+                Log.i(WidgetProviderUtils.TAG, "update() calling update widget service for widget=" + appWidgetId + " /" + widgetConf.boardCode + "/");
             Intent updateIntent = new Intent(context, UpdateWidgetService.class);
             updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             updateIntent.putExtra(WIDGET_PROVIDER_UTILS, widgetType);
@@ -157,7 +164,8 @@ public final class WidgetProviderUtils {
     public static boolean storeWidgetConf(final Context context, final WidgetConf widgetConf) {
         int appWidgetId = widgetConf.appWidgetId;
         String boardCode = widgetConf.boardCode;
-        if (DEBUG) Log.i(WidgetProviderUtils.TAG, "Configuring widget=" + appWidgetId + " with board=" + boardCode);
+        if (DEBUG)
+            Log.i(WidgetProviderUtils.TAG, "Configuring widget=" + appWidgetId + " with board=" + boardCode);
         if (boardCode == null || ChanBoard.getBoardByCode(context, boardCode) == null) {
             Log.e(WidgetProviderUtils.TAG, "Couldn't find board=" + boardCode + " for widget=" + appWidgetId + " not adding widget");
             return false;
@@ -194,7 +202,7 @@ public final class WidgetProviderUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-               if (hasWidgets(context))
+                if (hasWidgets(context))
                     fetchAllWidgets(context);
 
                 /*
@@ -355,10 +363,7 @@ public final class WidgetProviderUtils {
                 viable = false;
             else if (board.isPopularBoard()) // never have images or sticky, so always viable
                 viable = true;
-            else if (thread.sticky <= 0 && thread.tim > 0 && thread.no > 0)
-                viable = true;
-            else
-                viable = false;
+            else viable = thread.sticky <= 0 && thread.tim > 0 && thread.no > 0;
             if (!viable)
                 continue;
             String url = thread.thumbnailUrl(context);
@@ -397,14 +402,13 @@ public final class WidgetProviderUtils {
             fos = new FileOutputStream(f);
             b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
-            if (DEBUG) Log.i(TAG, "downloadAndCacheUrl complete for url=" + url + " notifying callback");
+            if (DEBUG)
+                Log.i(TAG, "downloadAndCacheUrl complete for url=" + url + " notifying callback");
             if (downloadCallback != null)
                 downloadCallback.run();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.e(TAG, "Coludn't write file " + f.getAbsolutePath(), e);
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(fos);
         }
     }
@@ -457,16 +461,17 @@ public final class WidgetProviderUtils {
                 Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath());
                 views.setImageViewBitmap(imageId, b);
                 isCached = true;
-                if (DEBUG) Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " set image to file=" + f.getAbsolutePath());
-            }
-            catch (Exception e) {
+                if (DEBUG)
+                    Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " set image to file=" + f.getAbsolutePath());
+            } catch (Exception e) {
                 Log.e(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " exception setting image to file=" + f.getAbsolutePath(), e);
             }
         }
         if (!isCached && i > 0) {
             int defaultImageId = ChanBoard.getRandomImageResourceId(widgetConf.boardCode, i);
             views.setImageViewResource(imageId, defaultImageId);
-            if (DEBUG) Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " no file, set image to default resource");
+            if (DEBUG)
+                Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " no file, set image to default resource");
         }
         return isCached;
     }

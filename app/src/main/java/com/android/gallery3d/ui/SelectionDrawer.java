@@ -16,9 +16,9 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.data.Path;
-
 import android.graphics.Rect;
+
+import com.android.gallery3d.data.Path;
 
 /**
  * Drawer class responsible for drawing selectable frame.
@@ -30,22 +30,8 @@ public abstract class SelectionDrawer {
     public static final int DATASOURCE_TYPE_MTP = 3;
     public static final int DATASOURCE_TYPE_CAMERA = 4;
 
-    public abstract void prepareDrawing();
-    public abstract void draw(GLCanvas canvas, Texture content,
-            int width, int height, int rotation, Path path,
-            int dataSourceType, int mediaType, boolean isPanorama,
-            int labelBackgroundHeight, boolean wantCache, boolean isCaching);
-    public abstract void drawFocus(GLCanvas canvas, int width, int height);
-
-    public void draw(GLCanvas canvas, Texture content, int width, int height,
-            int rotation, Path path, int mediaType, boolean isPanorama) {
-        draw(canvas, content, width, height, rotation, path,
-                DATASOURCE_TYPE_NOT_CATEGORIZED, mediaType, isPanorama,
-                0, false, false);
-    }
-
     public static void drawWithRotation(GLCanvas canvas, Texture content,
-            int x, int y, int width, int height, int rotation) {
+                                        int x, int y, int width, int height, int rotation) {
         if (rotation != 0) {
             canvas.save(GLCanvas.SAVE_FLAG_MATRIX);
             canvas.rotate(rotation, 0, 0, 1);
@@ -59,9 +45,25 @@ public abstract class SelectionDrawer {
     }
 
     public static void drawFrame(GLCanvas canvas, NinePatchTexture frame,
-            int x, int y, int width, int height) {
+                                 int x, int y, int width, int height) {
         Rect p = frame.getPaddings();
         frame.draw(canvas, x - p.left, y - p.top, width + p.left + p.right,
-                 height + p.top + p.bottom);
+                height + p.top + p.bottom);
+    }
+
+    public abstract void prepareDrawing();
+
+    public abstract void draw(GLCanvas canvas, Texture content,
+                              int width, int height, int rotation, Path path,
+                              int dataSourceType, int mediaType, boolean isPanorama,
+                              int labelBackgroundHeight, boolean wantCache, boolean isCaching);
+
+    public abstract void drawFocus(GLCanvas canvas, int width, int height);
+
+    public void draw(GLCanvas canvas, Texture content, int width, int height,
+                     int rotation, Path path, int mediaType, boolean isPanorama) {
+        draw(canvas, content, width, height, rotation, path,
+                DATASOURCE_TYPE_NOT_CATEGORIZED, mediaType, isPanorama,
+                0, false, false);
     }
 }

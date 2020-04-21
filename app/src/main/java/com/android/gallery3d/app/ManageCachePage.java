@@ -16,7 +16,21 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.format.Formatter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
@@ -36,21 +50,7 @@ import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.text.format.Formatter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 
@@ -66,14 +66,11 @@ public class ManageCachePage extends ActivityState implements
     private static final int MSG_REFRESH_STORAGE_INFO = 1;
     private static final int MSG_REQUEST_LAYOUT = 2;
     private static final int PROGRESS_BAR_MAX = 10000;
-
-    private StaticBackground mStaticBackground;
-    private AlbumSetView mAlbumSetView;
-
-    private MediaSet mMediaSet;
-
     protected SelectionManager mSelectionManager;
     protected SelectionDrawer mSelectionDrawer;
+    private StaticBackground mStaticBackground;
+    private AlbumSetView mAlbumSetView;
+    private MediaSet mMediaSet;
     private AlbumSetDataAdapter mAlbumSetDataAdapter;
     private float mUserDistance; // in pixel
 
@@ -93,7 +90,7 @@ public class ManageCachePage extends ActivityState implements
     private boolean mLayoutReady = false;
 
     private GLView mRootPane = new GLView() {
-        private float mMatrix[] = new float[16];
+        private float[] mMatrix = new float[16];
 
         @Override
         protected void onLayout(
@@ -115,7 +112,7 @@ public class ManageCachePage extends ActivityState implements
 
             View footer = activity.findViewById(R.id.footer);
             if (footer != null) {
-                int location[] = {0, 0};
+                int[] location = {0, 0};
                 footer.getLocationOnScreen(location);
                 slotViewBottom = location[1];
             }
@@ -127,10 +124,20 @@ public class ManageCachePage extends ActivityState implements
         protected void render(GLCanvas canvas) {
             canvas.save(GLCanvas.SAVE_FLAG_MATRIX);
             GalleryUtils.setViewPointMatrix(mMatrix,
-                        getWidth() / 2 + mX, getHeight() / 2 + mY, mZ);
+                    getWidth() / 2 + mX, getHeight() / 2 + mY, mZ);
             canvas.multiplyMatrix(mMatrix, 0);
             super.render(canvas);
             canvas.restore();
+        }
+    };
+    private Job<Void> mUpdateStorageInfoJob = new Job<Void>() {
+        @Override
+        public Void run(JobContext jc) {
+            mCacheStorageInfo.loadStorageInfo(jc);
+            if (!jc.isCancelled()) {
+                mHandler.sendEmptyMessage(MSG_REFRESH_STORAGE_INFO);
+            }
+            return null;
         }
     };
 
@@ -219,7 +226,7 @@ public class ManageCachePage extends ActivityState implements
     public void onConfigurationChanged(Configuration config) {
         // We use different layout resources for different configs
         initializeFooterViews();
-        FrameLayout layout = (FrameLayout) ((Activity) mActivity).findViewById(R.id.footer);
+        FrameLayout layout = ((Activity) mActivity).findViewById(R.id.footer);
         if (layout.getVisibility() == View.VISIBLE) {
             layout.removeAllViews();
             layout.addView(mFooterContent);
@@ -239,21 +246,10 @@ public class ManageCachePage extends ActivityState implements
         }
         mHandler.removeMessages(MSG_REFRESH_STORAGE_INFO);
 
-        FrameLayout layout = (FrameLayout) ((Activity) mActivity).findViewById(R.id.footer);
+        FrameLayout layout = ((Activity) mActivity).findViewById(R.id.footer);
         layout.removeAllViews();
         layout.setVisibility(View.INVISIBLE);
     }
-
-    private Job<Void> mUpdateStorageInfoJob = new Job<Void>() {
-        @Override
-        public Void run(JobContext jc) {
-            mCacheStorageInfo.loadStorageInfo(jc);
-            if (!jc.isCancelled()) {
-                mHandler.sendEmptyMessage(MSG_REFRESH_STORAGE_INFO);
-            }
-            return null;
-        }
-    };
 
     @Override
     public void onResume() {
@@ -263,7 +259,7 @@ public class ManageCachePage extends ActivityState implements
         mAlbumSetView.resume();
         mEyePosition.resume();
         mUpdateStorageInfo = mActivity.getThreadPool().submit(mUpdateStorageInfoJob);
-        FrameLayout layout = (FrameLayout) ((Activity) mActivity).findViewById(R.id.footer);
+        FrameLayout layout = ((Activity) mActivity).findViewById(R.id.footer);
         layout.addView(mFooterContent);
         layout.setVisibility(View.VISIBLE);
     }
@@ -319,7 +315,7 @@ public class ManageCachePage extends ActivityState implements
     private void initializeFooterViews() {
         Activity activity = (Activity) mActivity;
 
-        FrameLayout footer = (FrameLayout) activity.findViewById(R.id.footer);
+        FrameLayout footer = activity.findViewById(R.id.footer);
         LayoutInflater inflater = activity.getLayoutInflater();
         mFooterContent = inflater.inflate(R.layout.manage_offline_bar, null);
 
@@ -357,13 +353,13 @@ public class ManageCachePage extends ActivityState implements
     private void showToastForLocalAlbum() {
         Activity activity = (Activity) mActivity;
         Toast.makeText(activity, activity.getResources().getString(
-            R.string.try_to_set_local_album_available_offline),
-            Toast.LENGTH_SHORT).show();
+                R.string.try_to_set_local_album_available_offline),
+                Toast.LENGTH_SHORT).show();
     }
 
     private void refreshCacheStorageInfo() {
-        ProgressBar progressBar = (ProgressBar) mFooterContent.findViewById(R.id.progress);
-        TextView status = (TextView) mFooterContent.findViewById(R.id.status);
+        ProgressBar progressBar = mFooterContent.findViewById(R.id.progress);
+        TextView status = mFooterContent.findViewById(R.id.status);
         progressBar.setMax(PROGRESS_BAR_MAX);
         long totalBytes = mCacheStorageInfo.getTotalBytes();
         long usedBytes = mCacheStorageInfo.getUsedBytes();

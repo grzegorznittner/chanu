@@ -16,21 +16,21 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.data.Path;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Layout;
 
+import com.android.gallery3d.data.Path;
+import com.chanapps.four.gallery3d.R;
+
 public class GridDrawer extends IconDrawer {
-    private Texture mImportLabel;
-    private int mGridWidth;
     private final SelectionManager mSelectionManager;
     private final Context mContext;
     private final int IMPORT_FONT_SIZE = 14;
     private final int IMPORT_FONT_COLOR = Color.WHITE;
     private final int IMPORT_LABEL_MARGIN = 10;
+    private Texture mImportLabel;
+    private int mGridWidth;
     private boolean mSelectionMode;
 
     public GridDrawer(Context context, SelectionManager selectionManager) {
@@ -46,9 +46,9 @@ public class GridDrawer extends IconDrawer {
 
     @Override
     public void draw(GLCanvas canvas, Texture content, int width,
-            int height, int rotation, Path path,
-            int dataSourceType, int mediaType, boolean isPanorama,
-            int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
+                     int height, int rotation, Path path,
+                     int dataSourceType, int mediaType, boolean isPanorama,
+                     int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
 
         int x = -width / 2;
         int y = -height / 2;

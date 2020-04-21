@@ -19,5 +19,5 @@ package com.android.gallery3d.ui;
 import com.android.gallery3d.ui.PositionRepository.Position;
 
 public interface PositionProvider {
-    public Position getPosition(long identity, Position target);
+    Position getPosition(long identity, Position target);
 }

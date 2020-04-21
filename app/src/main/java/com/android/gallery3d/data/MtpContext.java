@@ -1,8 +1,5 @@
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
@@ -12,57 +9,19 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.gallery3d.util.GalleryUtils;
+import com.chanapps.four.gallery3d.R;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MtpContext implements MtpClient.Listener {
-    private static final String TAG = "MtpContext";
-
     public static final String NAME_IMPORTED_FOLDER = "Imported";
-
+    private static final String TAG = "MtpContext";
     private ScannerClient mScannerClient;
     private Context mContext;
     private MtpClient mClient;
-
-    private static final class ScannerClient implements MediaScannerConnectionClient {
-        ArrayList<String> mPaths = new ArrayList<String>();
-        MediaScannerConnection mScannerConnection;
-        boolean mConnected;
-        Object mLock = new Object();
-
-        public ScannerClient(Context context) {
-            mScannerConnection = new MediaScannerConnection(context, this);
-        }
-
-        public void scanPath(String path) {
-            synchronized (mLock) {
-                if (mConnected) {
-                    mScannerConnection.scanFile(path, null);
-                } else {
-                    mPaths.add(path);
-                    mScannerConnection.connect();
-                }
-            }
-        }
-
-        @Override
-        public void onMediaScannerConnected() {
-            synchronized (mLock) {
-                mConnected = true;
-                if (!mPaths.isEmpty()) {
-                    for (String path : mPaths) {
-                        mScannerConnection.scanFile(path, null);
-                    }
-                    mPaths.clear();
-                }
-            }
-        }
-
-        @Override
-        public void onScanCompleted(String path, Uri uri) {
-        }
-    }
 
     public MtpContext(Context context) {
         mContext = context;
@@ -120,7 +79,7 @@ public class MtpContext implements MtpClient.Listener {
     }
 
     public boolean copyAlbum(String deviceName, String albumName,
-            List<MtpObjectInfo> children) {
+                             List<MtpObjectInfo> children) {
         File dest = Environment.getExternalStorageDirectory();
         dest = new File(dest, albumName);
         dest.mkdirs();
@@ -136,5 +95,44 @@ public class MtpContext implements MtpClient.Listener {
             }
         }
         return success == children.size();
+    }
+
+    private static final class ScannerClient implements MediaScannerConnectionClient {
+        ArrayList<String> mPaths = new ArrayList<String>();
+        MediaScannerConnection mScannerConnection;
+        boolean mConnected;
+        Object mLock = new Object();
+
+        public ScannerClient(Context context) {
+            mScannerConnection = new MediaScannerConnection(context, this);
+        }
+
+        public void scanPath(String path) {
+            synchronized (mLock) {
+                if (mConnected) {
+                    mScannerConnection.scanFile(path, null);
+                } else {
+                    mPaths.add(path);
+                    mScannerConnection.connect();
+                }
+            }
+        }
+
+        @Override
+        public void onMediaScannerConnected() {
+            synchronized (mLock) {
+                mConnected = true;
+                if (!mPaths.isEmpty()) {
+                    for (String path : mPaths) {
+                        mScannerConnection.scanFile(path, null);
+                    }
+                    mPaths.clear();
+                }
+            }
+        }
+
+        @Override
+        public void onScanCompleted(String path, Uri uri) {
+        }
     }
 }

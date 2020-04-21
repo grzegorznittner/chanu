@@ -16,14 +16,14 @@
 
 package com.android.gallery3d.common;
 
-import com.android.gallery3d.common.Entry.Table;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.android.gallery3d.common.Entry.Table;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class FileCache {
     private static final String ID_WHERE = FileEntry.Columns.ID + "=?";
     private static final String[] PROJECTION_SIZE_SUM =
             {String.format("sum(%s)", FileEntry.Columns.SIZE)};
-    private static final String FREESPACE_PROJECTION[] = {
+    private static final String[] FREESPACE_PROJECTION = {
             FileEntry.Columns.ID, FileEntry.Columns.FILENAME,
             FileEntry.Columns.CONTENT_URL, FileEntry.Columns.SIZE};
     private static final String FREESPACE_ORDER_BY =
@@ -58,16 +58,10 @@ public class FileCache {
 
     private DatabaseHelper mDbHelper;
 
-    public static final class CacheEntry {
-        private long id;
-        public String contentUrl;
-        public File cacheFile;
-
-        private CacheEntry(long id, String contentUrl, File cacheFile) {
-            this.id = id;
-            this.contentUrl = contentUrl;
-            this.cacheFile = cacheFile;
-        }
+    public FileCache(Context context, File rootDir, String dbName, long capacity) {
+        mRootDir = Utils.checkNotNull(rootDir);
+        mCapacity = capacity;
+        mDbHelper = new DatabaseHelper(context, dbName);
     }
 
     public static void deleteFiles(Context context, File rootDir, String dbName) {
@@ -83,12 +77,6 @@ public class FileCache {
         } catch (Throwable t) {
             Log.w(TAG, "cannot reset database", t);
         }
-    }
-
-    public FileCache(Context context, File rootDir, String dbName, long capacity) {
-        mRootDir = Utils.checkNotNull(rootDir);
-        mCapacity = capacity;
-        mDbHelper = new DatabaseHelper(context, dbName);
     }
 
     public void store(String downloadUrl, File file) {
@@ -142,7 +130,7 @@ public class FileCache {
             if (!entry.cacheFile.isFile()) { // file has been removed
                 try {
                     mDbHelper.getWritableDatabase().delete(
-                            TABLE_NAME, ID_WHERE, new String[] {String.valueOf(file.id)});
+                            TABLE_NAME, ID_WHERE, new String[]{String.valueOf(file.id)});
                     mTotalBytes -= file.size;
                 } catch (Throwable t) {
                     Log.w(TAG, "cannot delete entry: " + file.filename, t);
@@ -158,7 +146,7 @@ public class FileCache {
 
     private FileEntry queryDatabase(String downloadUrl) {
         long hash = Utils.crc64Long(downloadUrl);
-        String whereArgs[] = new String[] {String.valueOf(hash), downloadUrl};
+        String[] whereArgs = new String[]{String.valueOf(hash), downloadUrl};
         Cursor cursor = mDbHelper.getReadableDatabase().query(TABLE_NAME,
                 FileEntry.SCHEMA.getProjection(),
                 QUERY_WHERE, whereArgs, null, null, null);
@@ -177,7 +165,7 @@ public class FileCache {
         ContentValues values = new ContentValues();
         values.put(FileEntry.Columns.LAST_ACCESS, System.currentTimeMillis());
         mDbHelper.getWritableDatabase().update(TABLE_NAME,
-                values,  ID_WHERE, new String[] {String.valueOf(id)});
+                values, ID_WHERE, new String[]{String.valueOf(id)});
     }
 
     public File createFile() throws IOException {
@@ -237,30 +225,29 @@ public class FileCache {
         }
     }
 
+    public static final class CacheEntry {
+        public String contentUrl;
+        public File cacheFile;
+        private long id;
+
+        private CacheEntry(long id, String contentUrl, File cacheFile) {
+            this.id = id;
+            this.contentUrl = contentUrl;
+            this.cacheFile = cacheFile;
+        }
+    }
+
     @Table("files")
     private static class FileEntry extends Entry {
         public static final EntrySchema SCHEMA = new EntrySchema(FileEntry.class);
-
-        public interface Columns extends Entry.Columns {
-            public static final String HASH_CODE = "hash_code";
-            public static final String CONTENT_URL = "content_url";
-            public static final String FILENAME = "filename";
-            public static final String SIZE = "size";
-            public static final String LAST_ACCESS = "last_access";
-        }
-
         @Column(value = Columns.HASH_CODE, indexed = true)
         public long hashCode;
-
         @Column(Columns.CONTENT_URL)
         public String contentUrl;
-
         @Column(Columns.FILENAME)
         public String filename;
-
         @Column(Columns.SIZE)
         public long size;
-
         @Column(value = Columns.LAST_ACCESS, indexed = true)
         public long lastAccess;
 
@@ -271,6 +258,14 @@ public class FileCache {
                     .append("content_url").append(contentUrl).append(", ")
                     .append("last_access").append(lastAccess).append(", ")
                     .append("filename").append(filename).toString();
+        }
+
+        public interface Columns extends Entry.Columns {
+            String HASH_CODE = "hash_code";
+            String CONTENT_URL = "content_url";
+            String FILENAME = "filename";
+            String SIZE = "size";
+            String LAST_ACCESS = "last_access";
         }
     }
 

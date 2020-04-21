@@ -4,6 +4,7 @@ import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.UserStatistics;
@@ -24,27 +25,16 @@ public class TutorialOverlay {
 
     protected static final String SUBJECT_FONT = "fonts/Edmondsans-Regular.otf";
     private static Typeface subjectTypeface = null;
-
-    public enum Page {
-        //BOARDLIST,
-        //POPULAR,
-        //WATCHLIST,
-        BOARD
-        //,THREAD
-        ;
-    }
-
     protected UserStatistics.ChanFeature feature;
     protected Page page;
     protected View layout;
     protected ViewGroup tutorialOverlay;
-
     public TutorialOverlay(View layout, Page page) {
-        this.layout =  layout;
+        this.layout = layout;
         this.page = page;
         if (layout == null)
             return;
-        tutorialOverlay = (ViewGroup)layout.findViewById(R.id.tutorial_overlay);
+        tutorialOverlay = layout.findViewById(R.id.tutorial_overlay);
         if (tutorialOverlay == null)
             return;
         if (!TEST_MODE && !displayNextTipForPage(page)) {
@@ -84,7 +74,7 @@ public class TutorialOverlay {
 
     protected void setSubjectTypeface() {
         subjectTypeface = Typeface.createFromAsset(layout.getResources().getAssets(), SUBJECT_FONT);
-        TextView subject = (TextView)tutorialOverlay.findViewById(R.id.tutorial_overlay_subject);
+        TextView subject = tutorialOverlay.findViewById(R.id.tutorial_overlay_subject);
         if (subject != null && subjectTypeface != null)
             subject.setTypeface(subjectTypeface);
     }
@@ -103,6 +93,14 @@ public class TutorialOverlay {
                 NetworkProfileManager.instance().getUserStatistics().disableTips();
             }
         });
+    }
+
+    public enum Page {
+        //BOARDLIST,
+        //POPULAR,
+        //WATCHLIST,
+        BOARD
+        //,THREAD
     }
 
 }

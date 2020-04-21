@@ -16,14 +16,6 @@
 
 package com.android.gallery3d.gadget;
 
-import com.chanapps.four.gallery3d.R;
-import com.chanapps.four.widget.WidgetDatabaseHelper;
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.data.ContentListener;
-import com.android.gallery3d.data.DataManager;
-import com.android.gallery3d.data.MediaSet;
-import com.android.gallery3d.data.Path;
-
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -31,13 +23,20 @@ import android.net.Uri;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-public class WidgetService extends RemoteViewsService {
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.data.ContentListener;
+import com.android.gallery3d.data.DataManager;
+import com.android.gallery3d.data.MediaSet;
+import com.android.gallery3d.data.Path;
+import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.widget.WidgetDatabaseHelper;
 
-    @SuppressWarnings("unused")
-    private static final String TAG = "GalleryAppWidgetService";
+public class WidgetService extends RemoteViewsService {
 
     public static final String EXTRA_WIDGET_TYPE = "widget-type";
     public static final String EXTRA_ALBUM_PATH = "album-path";
+    @SuppressWarnings("unused")
+    private static final String TAG = "GalleryAppWidgetService";
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {

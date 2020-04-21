@@ -16,13 +16,13 @@
 
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.util.MediaSetUtils;
-
 import android.mtp.MtpDeviceInfo;
 import android.net.Uri;
 import android.util.Log;
+
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.util.MediaSetUtils;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,12 +31,11 @@ import java.util.List;
 // MtpDeviceSet -- MtpDevice -- MtpImage
 public class MtpDeviceSet extends MediaSet {
     private static final String TAG = "MtpDeviceSet";
-
-    private GalleryApp mApplication;
     private final ArrayList<MediaSet> mDeviceSet = new ArrayList<MediaSet>();
     private final ChangeNotifier mNotifier;
     private final MtpContext mMtpContext;
     private final String mName;
+    private GalleryApp mApplication;
 
     public MtpDeviceSet(Path path, GalleryApp application, MtpContext mtpContext) {
         super(path, nextVersionNumber());
@@ -44,6 +43,20 @@ public class MtpDeviceSet extends MediaSet {
         mNotifier = new ChangeNotifier(this, Uri.parse("mtp://"), application);
         mMtpContext = mtpContext;
         mName = application.getResources().getString(R.string.set_label_mtp_devices);
+    }
+
+    public static String getDeviceName(MtpContext mtpContext, int deviceId) {
+        android.mtp.MtpDevice device = mtpContext.getMtpClient().getDevice(deviceId);
+        if (device == null) {
+            return "";
+        }
+        MtpDeviceInfo info = device.getDeviceInfo();
+        if (info == null) {
+            return "";
+        }
+        String manufacturer = info.getManufacturer().trim();
+        String model = info.getModel().trim();
+        return manufacturer + " " + model;
     }
 
     private void loadDevices() {
@@ -67,20 +80,6 @@ public class MtpDeviceSet extends MediaSet {
         for (int i = 0, n = mDeviceSet.size(); i < n; i++) {
             mDeviceSet.get(i).reload();
         }
-    }
-
-    public static String getDeviceName(MtpContext mtpContext, int deviceId) {
-        android.mtp.MtpDevice device = mtpContext.getMtpClient().getDevice(deviceId);
-        if (device == null) {
-            return "";
-        }
-        MtpDeviceInfo info = device.getDeviceInfo();
-        if (info == null) {
-            return "";
-        }
-        String manufacturer = info.getManufacturer().trim();
-        String model = info.getModel().trim();
-        return manufacturer + " " + model;
     }
 
     @Override

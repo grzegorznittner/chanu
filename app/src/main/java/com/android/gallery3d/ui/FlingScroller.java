@@ -66,15 +66,15 @@ class FlingScroller {
     }
 
     public int getCurrVelocityX() {
-        return (int)Math.round(mCurrV * mCosAngle);
+        return (int) Math.round(mCurrV * mCosAngle);
     }
 
     public int getCurrVelocityY() {
-        return (int)Math.round(mCurrV * mSinAngle);
+        return (int) Math.round(mCurrV * mSinAngle);
     }
 
     public void fling(int startX, int startY, int velocityX, int velocityY,
-            int minX, int maxX, int minY, int maxY) {
+                      int minX, int maxX, int minY, int maxY) {
         mStartX = startX;
         mStartY = startY;
         mMinX = minX;
@@ -93,11 +93,11 @@ class FlingScroller {
         //
 
         // Ta = T_ref * (Va / V_ref) ^ (1 / (d - 1)); V_ref = 1 pixel/second;
-        mDuration = (int)Math.round(FLING_DURATION_PARAM
+        mDuration = (int) Math.round(FLING_DURATION_PARAM
                 * Math.pow(Math.abs(velocity), 1.0 / (DECELERATED_FACTOR - 1)));
 
         // (e - s) = v0 * T / d
-        mDistance = (int)Math.round(
+        mDistance = (int) Math.round(
                 velocity * mDuration / DECELERATED_FACTOR / 1000);
 
         mFinalX = getX(1.0f);

@@ -16,33 +16,30 @@
 
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
-
 import android.content.Context;
 import android.content.res.Resources;
+
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 
 public class SizeClustering extends Clustering {
     private static final String TAG = "SizeClustering";
-
+    private static final long MEGA_BYTES = 1024L * 1024;
+    private static final long GIGA_BYTES = 1024L * 1024 * 1024;
+    private static final long[] SIZE_LEVELS = {
+            0,
+            1 * MEGA_BYTES,
+            10 * MEGA_BYTES,
+            100 * MEGA_BYTES,
+            1 * GIGA_BYTES,
+            2 * GIGA_BYTES,
+            4 * GIGA_BYTES,
+    };
     private Context mContext;
     private ArrayList<Path>[] mClusters;
     private String[] mNames;
-    private long mMinSizes[];
-
-    private static final long MEGA_BYTES = 1024L*1024;
-    private static final long GIGA_BYTES = 1024L*1024*1024;
-
-    private static final long[] SIZE_LEVELS = {
-        0,
-        1 * MEGA_BYTES,
-        10 * MEGA_BYTES,
-        100 * MEGA_BYTES,
-        1 * GIGA_BYTES,
-        2 * GIGA_BYTES,
-        4 * GIGA_BYTES,
-    };
+    private long[] mMinSizes;
 
     public SizeClustering(Context context) {
         mContext = context;

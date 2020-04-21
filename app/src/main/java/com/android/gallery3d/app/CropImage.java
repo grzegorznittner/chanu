@@ -43,7 +43,6 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.DataManager;
@@ -64,6 +63,7 @@ import com.android.gallery3d.util.InterruptableOutputStream;
 import com.android.gallery3d.util.ThreadPool.CancelListener;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
+import com.chanapps.four.gallery3d.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -77,27 +77,7 @@ import java.util.Date;
  * The activity can crop specific region of interest from an image.
  */
 public class CropImage extends AbstractGalleryActivity {
-    private static final String TAG = "CropImage";
     public static final String ACTION_CROP = "com.android.camera.action.CROP";
-
-    private static final int MAX_PIXEL_COUNT = 5 * 1000000; // 5M pixels
-    private static final int MAX_FILE_INDEX = 1000;
-    private static final int TILE_SIZE = 512;
-    private static final int BACKUP_PIXEL_COUNT = 480000; // around 800x600
-
-    private static final int MSG_LARGE_BITMAP = 1;
-    private static final int MSG_BITMAP = 2;
-    private static final int MSG_SAVE_COMPLETE = 3;
-    private static final int MSG_SHOW_SAVE_ERROR = 4;
-
-    private static final int MAX_BACKUP_IMAGE_SIZE = 320;
-    private static final int DEFAULT_COMPRESS_QUALITY = 90;
-    private static final String TIME_STAMP_NAME = "'IMG'_yyyyMMdd_HHmmss";
-
-    // Change these to Images.Media.WIDTH/HEIGHT after they are unhidden.
-    private static final String WIDTH = "width";
-    private static final String HEIGHT = "height";
-
     public static final String KEY_RETURN_DATA = "return-data";
     public static final String KEY_CROPPED_RECT = "cropped-rect";
     public static final String KEY_ASPECT_X = "aspectX";
@@ -112,29 +92,51 @@ public class CropImage extends AbstractGalleryActivity {
     public static final String KEY_OUTPUT_FORMAT = "outputFormat";
     public static final String KEY_SET_AS_WALLPAPER = "set-as-wallpaper";
     public static final String KEY_NO_FACE_DETECTION = "noFaceDetection";
-
-    private static final String KEY_STATE = "state";
-
-    private static final int STATE_INIT = 0;
-    private static final int STATE_LOADED = 1;
-    private static final int STATE_SAVING = 2;
-
     public static final String DOWNLOAD_STRING = "download";
     public static final File DOWNLOAD_BUCKET = new File(
             Environment.getExternalStorageDirectory(), DOWNLOAD_STRING);
-
     public static final String CROP_ACTION = "com.android.camera.action.CROP";
-
+    private static final String TAG = "CropImage";
+    private static final int MAX_PIXEL_COUNT = 5 * 1000000; // 5M pixels
+    private static final int MAX_FILE_INDEX = 1000;
+    private static final int TILE_SIZE = 512;
+    private static final int BACKUP_PIXEL_COUNT = 480000; // around 800x600
+    private static final int MSG_LARGE_BITMAP = 1;
+    private static final int MSG_BITMAP = 2;
+    private static final int MSG_SAVE_COMPLETE = 3;
+    private static final int MSG_SHOW_SAVE_ERROR = 4;
+    private static final int MAX_BACKUP_IMAGE_SIZE = 320;
+    private static final int DEFAULT_COMPRESS_QUALITY = 90;
+    private static final String TIME_STAMP_NAME = "'IMG'_yyyyMMdd_HHmmss";
+    // Change these to Images.Media.WIDTH/HEIGHT after they are unhidden.
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
+    private static final String KEY_STATE = "state";
+    private static final int STATE_INIT = 0;
+    private static final int STATE_LOADED = 1;
+    private static final int STATE_SAVING = 2;
+    private static final String[] EXIF_TAGS = {
+            ExifInterface.TAG_DATETIME,
+            ExifInterface.TAG_MAKE,
+            ExifInterface.TAG_MODEL,
+            ExifInterface.TAG_FLASH,
+            ExifInterface.TAG_GPS_LATITUDE,
+            ExifInterface.TAG_GPS_LONGITUDE,
+            ExifInterface.TAG_GPS_LATITUDE_REF,
+            ExifInterface.TAG_GPS_LONGITUDE_REF,
+            ExifInterface.TAG_GPS_ALTITUDE,
+            ExifInterface.TAG_GPS_ALTITUDE_REF,
+            ExifInterface.TAG_GPS_TIMESTAMP,
+            ExifInterface.TAG_GPS_DATESTAMP,
+            ExifInterface.TAG_WHITE_BALANCE,
+            ExifInterface.TAG_FOCAL_LENGTH,
+            ExifInterface.TAG_GPS_PROCESSING_METHOD};
     private int mState = STATE_INIT;
-
     private CropView mCropView;
-
     private boolean mDoFaceDetection = true;
 
-    private Handler mMainHandler;
-
     // We keep the following members so that we can free them
-
+    private Handler mMainHandler;
     // mBitmap is the unrotated bitmap we pass in to mCropView for detect faces.
     // mCropView is responsible for rotating it to the way that it is viewed by users.
     private Bitmap mBitmap;
@@ -142,13 +144,137 @@ public class CropImage extends AbstractGalleryActivity {
     private BitmapRegionDecoder mRegionDecoder;
     private Bitmap mBitmapInIntent;
     private boolean mUseRegionDecoder = false;
-
     private ProgressDialog mProgressDialog;
     private Future<BitmapRegionDecoder> mLoadTask;
     private Future<Bitmap> mLoadBitmapTask;
     private Future<Intent> mSaveTask;
-
     private MediaItem mMediaItem;
+
+    public static String determineCompressFormat(MediaObject obj) {
+        String compressFormat = "JPEG";
+        if (obj instanceof MediaItem) {
+            String mime = ((MediaItem) obj).getMimeType();
+            if (mime.contains("png") || mime.contains("gif")) {
+                // Set the compress format to PNG for png and gif images
+                // because they may contain alpha values.
+                compressFormat = "PNG";
+            }
+        }
+        return compressFormat;
+    }
+
+    private static void rotateCanvas(
+            Canvas canvas, int width, int height, int rotation) {
+        canvas.translate(width / 2, height / 2);
+        canvas.rotate(rotation);
+        if (((rotation / 90) & 0x01) == 0) {
+            canvas.translate(-width / 2, -height / 2);
+        } else {
+            canvas.translate(-height / 2, -width / 2);
+        }
+    }
+
+    private static void rotateRectangle(
+            Rect rect, int width, int height, int rotation) {
+        if (rotation == 0 || rotation == 360) return;
+
+        int w = rect.width();
+        int h = rect.height();
+        switch (rotation) {
+            case 90: {
+                rect.top = rect.left;
+                rect.left = height - rect.bottom;
+                rect.right = rect.left + h;
+                rect.bottom = rect.top + w;
+                return;
+            }
+            case 180: {
+                rect.left = width - rect.right;
+                rect.top = height - rect.bottom;
+                rect.right = rect.left + w;
+                rect.bottom = rect.top + h;
+                return;
+            }
+            case 270: {
+                rect.left = rect.top;
+                rect.top = width - rect.right;
+                rect.right = rect.left + h;
+                rect.bottom = rect.top + w;
+                return;
+            }
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private static void copyExif(MediaItem item, String destination, int newWidth, int newHeight) {
+        try {
+            ExifInterface newExif = new ExifInterface(destination);
+            PicasaSource.extractExifValues(item, newExif);
+            newExif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, String.valueOf(newWidth));
+            newExif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, String.valueOf(newHeight));
+            newExif.setAttribute(ExifInterface.TAG_ORIENTATION, String.valueOf(0));
+            newExif.saveAttributes();
+        } catch (Throwable t) {
+            Log.w(TAG, "cannot copy exif: " + item, t);
+        }
+    }
+
+    private static void copyExif(String source, String destination, int newWidth, int newHeight) {
+        try {
+            ExifInterface oldExif = new ExifInterface(source);
+            ExifInterface newExif = new ExifInterface(destination);
+
+            newExif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, String.valueOf(newWidth));
+            newExif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, String.valueOf(newHeight));
+            newExif.setAttribute(ExifInterface.TAG_ORIENTATION, String.valueOf(0));
+
+            for (String tag : EXIF_TAGS) {
+                String value = oldExif.getAttribute(tag);
+                if (value != null) {
+                    newExif.setAttribute(tag, value);
+                }
+            }
+
+            // Handle some special values here
+            String value = oldExif.getAttribute(ExifInterface.TAG_APERTURE);
+            if (value != null) {
+                try {
+                    float aperture = Float.parseFloat(value);
+                    newExif.setAttribute(ExifInterface.TAG_APERTURE,
+                            (int) (aperture * 10 + 0.5f) + "/10");
+                } catch (NumberFormatException e) {
+                    Log.w(TAG, "cannot parse aperture: " + value);
+                }
+            }
+
+            // TODO: The code is broken, need to fix the JHEAD lib
+            /*
+            value = oldExif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
+            if (value != null) {
+                try {
+                    double exposure = Double.parseDouble(value);
+                    testToRational("test exposure", exposure);
+                    newExif.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, value);
+                } catch (NumberFormatException e) {
+                    Log.w(TAG, "cannot parse exposure time: " + value);
+                }
+            }
+
+            value = oldExif.getAttribute(ExifInterface.TAG_ISO);
+            if (value != null) {
+                try {
+                    int iso = Integer.parseInt(value);
+                    newExif.setAttribute(ExifInterface.TAG_ISO, String.valueOf(iso) + "/1");
+                } catch (NumberFormatException e) {
+                    Log.w(TAG, "cannot parse exposure time: " + value);
+                }
+            }*/
+            newExif.saveAttributes();
+        } catch (Throwable t) {
+            Log.w(TAG, "cannot copy exif: " + source, t);
+        }
+    }
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -223,69 +349,6 @@ public class CropImage extends AbstractGalleryActivity {
             onSaveClicked();
         }
         return true;
-    }
-
-    private class SaveOutput implements Job<Intent> {
-        private final RectF mCropRect;
-
-        public SaveOutput(RectF cropRect) {
-            mCropRect = cropRect;
-        }
-
-        public Intent run(JobContext jc) {
-            RectF cropRect = mCropRect;
-            Bundle extra = getIntent().getExtras();
-
-            Rect rect = new Rect(
-                    Math.round(cropRect.left), Math.round(cropRect.top),
-                    Math.round(cropRect.right), Math.round(cropRect.bottom));
-
-            Intent result = new Intent();
-            result.putExtra(KEY_CROPPED_RECT, rect);
-            Bitmap cropped = null;
-            boolean outputted = false;
-            if (extra != null) {
-                Uri uri = (Uri) extra.getParcelable(MediaStore.EXTRA_OUTPUT);
-                if (uri != null) {
-                    if (jc.isCancelled()) return null;
-                    outputted = true;
-                    cropped = getCroppedImage(rect);
-                    if (!saveBitmapToUri(jc, cropped, uri)) return null;
-                }
-                if (extra.getBoolean(KEY_RETURN_DATA, false)) {
-                    if (jc.isCancelled()) return null;
-                    outputted = true;
-                    if (cropped == null) cropped = getCroppedImage(rect);
-                    result.putExtra(KEY_DATA, cropped);
-                }
-                if (extra.getBoolean(KEY_SET_AS_WALLPAPER, false)) {
-                    if (jc.isCancelled()) return null;
-                    outputted = true;
-                    if (cropped == null) cropped = getCroppedImage(rect);
-                    if (!setAsWallpaper(jc, cropped)) return null;
-                }
-            }
-            if (!outputted) {
-                if (jc.isCancelled()) return null;
-                if (cropped == null) cropped = getCroppedImage(rect);
-                Uri data = saveToMediaProvider(jc, cropped);
-                if (data != null) result.setData(data);
-            }
-            return result;
-        }
-    }
-
-    public static String determineCompressFormat(MediaObject obj) {
-        String compressFormat = "JPEG";
-        if (obj instanceof MediaItem) {
-            String mime = ((MediaItem) obj).getMimeType();
-            if (mime.contains("png") || mime.contains("gif")) {
-              // Set the compress format to PNG for png and gif images
-              // because they may contain alpha values.
-              compressFormat = "PNG";
-            }
-        }
-        return compressFormat;
     }
 
     private boolean setAsWallpaper(JobContext jc, Bitmap wallpaper) {
@@ -462,10 +525,10 @@ public class CropImage extends AbstractGalleryActivity {
         // We wrap the OutputStream so that it can be interrupted.
         final InterruptableOutputStream ios = new InterruptableOutputStream(os);
         jc.setCancelListener(new CancelListener() {
-                public void onCancel() {
-                    ios.interrupt();
-                }
-            });
+            public void onCancel() {
+                ios.interrupt();
+            }
+        });
         try {
             bitmap.compress(format, DEFAULT_COMPRESS_QUALITY, os);
             return !jc.isCancelled();
@@ -520,18 +583,18 @@ public class CropImage extends AbstractGalleryActivity {
                 this, null, getString(messageId), true, false);
         mSaveTask = getThreadPool().submit(new SaveOutput(cropRect),
                 new FutureListener<Intent>() {
-            public void onFutureDone(Future<Intent> future) {
-                mSaveTask = null;
-                if (future.isCancelled()) return;
-                Intent intent = future.get();
-                if (intent != null) {
-                    mMainHandler.sendMessage(mMainHandler.obtainMessage(
-                            MSG_SAVE_COMPLETE, intent));
-                } else {
-                    mMainHandler.sendEmptyMessage(MSG_SHOW_SAVE_ERROR);
-                }
-            }
-        });
+                    public void onFutureDone(Future<Intent> future) {
+                        mSaveTask = null;
+                        if (future.isCancelled()) return;
+                        Intent intent = future.get();
+                        if (intent != null) {
+                            mMainHandler.sendMessage(mMainHandler.obtainMessage(
+                                    MSG_SAVE_COMPLETE, intent));
+                        } else {
+                            mMainHandler.sendEmptyMessage(MSG_SHOW_SAVE_ERROR);
+                        }
+                    }
+                });
     }
 
     private Bitmap getCroppedImage(Rect rect) {
@@ -624,51 +687,8 @@ public class CropImage extends AbstractGalleryActivity {
         }
     }
 
-    private static void rotateCanvas(
-            Canvas canvas, int width, int height, int rotation) {
-        canvas.translate(width / 2, height / 2);
-        canvas.rotate(rotation);
-        if (((rotation / 90) & 0x01) == 0) {
-            canvas.translate(-width / 2, -height / 2);
-        } else {
-            canvas.translate(-height / 2, -width / 2);
-        }
-    }
-
-    private static void rotateRectangle(
-            Rect rect, int width, int height, int rotation) {
-        if (rotation == 0 || rotation == 360) return;
-
-        int w = rect.width();
-        int h = rect.height();
-        switch (rotation) {
-            case 90: {
-                rect.top = rect.left;
-                rect.left = height - rect.bottom;
-                rect.right = rect.left + h;
-                rect.bottom = rect.top + w;
-                return;
-            }
-            case 180: {
-                rect.left = width - rect.right;
-                rect.top = height - rect.bottom;
-                rect.right = rect.left + w;
-                rect.bottom = rect.top + h;
-                return;
-            }
-            case 270: {
-                rect.left = rect.top;
-                rect.top = width - rect.right;
-                rect.right = rect.left + h;
-                rect.bottom = rect.top + w;
-                return;
-            }
-            default: throw new AssertionError();
-        }
-    }
-
     private void drawInTiles(Canvas canvas,
-            BitmapRegionDecoder decoder, Rect rect, Rect dest, int sample) {
+                             BitmapRegionDecoder decoder, Rect rect, Rect dest, int sample) {
         int tileSize = TILE_SIZE * sample;
         Rect tileRect = new Rect();
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -679,9 +699,9 @@ public class CropImage extends AbstractGalleryActivity {
                 (float) sample * dest.height() / rect.height());
         Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
         for (int tx = rect.left, x = 0;
-                tx < rect.right; tx += tileSize, x += TILE_SIZE) {
+             tx < rect.right; tx += tileSize, x += TILE_SIZE) {
             for (int ty = rect.top, y = 0;
-                    ty < rect.bottom; ty += tileSize, y += TILE_SIZE) {
+                 ty < rect.bottom; ty += tileSize, y += TILE_SIZE) {
                 tileRect.set(tx, ty, tx + tileSize, ty + tileSize);
                 if (tileRect.intersect(rect)) {
                     Bitmap bitmap;
@@ -793,35 +813,35 @@ public class CropImage extends AbstractGalleryActivity {
         if (mMediaItem == null) return;
 
         boolean supportedByBitmapRegionDecoder =
-            (mMediaItem.getSupportedOperations() & MediaItem.SUPPORT_FULL_IMAGE) != 0;
+                (mMediaItem.getSupportedOperations() & MediaItem.SUPPORT_FULL_IMAGE) != 0;
         if (supportedByBitmapRegionDecoder) {
             mLoadTask = getThreadPool().submit(new LoadDataTask(mMediaItem),
                     new FutureListener<BitmapRegionDecoder>() {
-                public void onFutureDone(Future<BitmapRegionDecoder> future) {
-                    mLoadTask = null;
-                    BitmapRegionDecoder decoder = future.get();
-                    if (future.isCancelled()) {
-                        if (decoder != null) decoder.recycle();
-                        return;
-                    }
-                    mMainHandler.sendMessage(mMainHandler.obtainMessage(
-                            MSG_LARGE_BITMAP, decoder));
-                }
-            });
+                        public void onFutureDone(Future<BitmapRegionDecoder> future) {
+                            mLoadTask = null;
+                            BitmapRegionDecoder decoder = future.get();
+                            if (future.isCancelled()) {
+                                if (decoder != null) decoder.recycle();
+                                return;
+                            }
+                            mMainHandler.sendMessage(mMainHandler.obtainMessage(
+                                    MSG_LARGE_BITMAP, decoder));
+                        }
+                    });
         } else {
             mLoadBitmapTask = getThreadPool().submit(new LoadBitmapDataTask(mMediaItem),
                     new FutureListener<Bitmap>() {
-                public void onFutureDone(Future<Bitmap> future) {
-                    mLoadBitmapTask = null;
-                    Bitmap bitmap = future.get();
-                    if (future.isCancelled()) {
-                        if (bitmap != null) bitmap.recycle();
-                        return;
-                    }
-                    mMainHandler.sendMessage(mMainHandler.obtainMessage(
-                            MSG_BITMAP, bitmap));
-                }
-            });
+                        public void onFutureDone(Future<Bitmap> future) {
+                            mLoadBitmapTask = null;
+                            Bitmap bitmap = future.get();
+                            if (future.isCancelled()) {
+                                if (bitmap != null) bitmap.recycle();
+                                return;
+                            }
+                            mMainHandler.sendMessage(mMainHandler.obtainMessage(
+                                    MSG_BITMAP, bitmap));
+                        }
+                    });
         }
     }
 
@@ -892,6 +912,56 @@ public class CropImage extends AbstractGalleryActivity {
         return (MediaItem) manager.getMediaObject(path);
     }
 
+    private class SaveOutput implements Job<Intent> {
+        private final RectF mCropRect;
+
+        public SaveOutput(RectF cropRect) {
+            mCropRect = cropRect;
+        }
+
+        public Intent run(JobContext jc) {
+            RectF cropRect = mCropRect;
+            Bundle extra = getIntent().getExtras();
+
+            Rect rect = new Rect(
+                    Math.round(cropRect.left), Math.round(cropRect.top),
+                    Math.round(cropRect.right), Math.round(cropRect.bottom));
+
+            Intent result = new Intent();
+            result.putExtra(KEY_CROPPED_RECT, rect);
+            Bitmap cropped = null;
+            boolean outputted = false;
+            if (extra != null) {
+                Uri uri = extra.getParcelable(MediaStore.EXTRA_OUTPUT);
+                if (uri != null) {
+                    if (jc.isCancelled()) return null;
+                    outputted = true;
+                    cropped = getCroppedImage(rect);
+                    if (!saveBitmapToUri(jc, cropped, uri)) return null;
+                }
+                if (extra.getBoolean(KEY_RETURN_DATA, false)) {
+                    if (jc.isCancelled()) return null;
+                    outputted = true;
+                    if (cropped == null) cropped = getCroppedImage(rect);
+                    result.putExtra(KEY_DATA, cropped);
+                }
+                if (extra.getBoolean(KEY_SET_AS_WALLPAPER, false)) {
+                    if (jc.isCancelled()) return null;
+                    outputted = true;
+                    if (cropped == null) cropped = getCroppedImage(rect);
+                    if (!setAsWallpaper(jc, cropped)) return null;
+                }
+            }
+            if (!outputted) {
+                if (jc.isCancelled()) return null;
+                if (cropped == null) cropped = getCroppedImage(rect);
+                Uri data = saveToMediaProvider(jc, cropped);
+                if (data != null) result.setData(data);
+            }
+            return result;
+        }
+    }
+
     private class LoadDataTask implements Job<BitmapRegionDecoder> {
         MediaItem mItem;
 
@@ -910,96 +980,11 @@ public class CropImage extends AbstractGalleryActivity {
         public LoadBitmapDataTask(MediaItem item) {
             mItem = item;
         }
+
         public Bitmap run(JobContext jc) {
             return mItem == null
                     ? null
                     : mItem.requestImage(MediaItem.TYPE_THUMBNAIL).run(jc);
-        }
-    }
-
-    private static final String[] EXIF_TAGS = {
-            ExifInterface.TAG_DATETIME,
-            ExifInterface.TAG_MAKE,
-            ExifInterface.TAG_MODEL,
-            ExifInterface.TAG_FLASH,
-            ExifInterface.TAG_GPS_LATITUDE,
-            ExifInterface.TAG_GPS_LONGITUDE,
-            ExifInterface.TAG_GPS_LATITUDE_REF,
-            ExifInterface.TAG_GPS_LONGITUDE_REF,
-            ExifInterface.TAG_GPS_ALTITUDE,
-            ExifInterface.TAG_GPS_ALTITUDE_REF,
-            ExifInterface.TAG_GPS_TIMESTAMP,
-            ExifInterface.TAG_GPS_DATESTAMP,
-            ExifInterface.TAG_WHITE_BALANCE,
-            ExifInterface.TAG_FOCAL_LENGTH,
-            ExifInterface.TAG_GPS_PROCESSING_METHOD};
-
-    private static void copyExif(MediaItem item, String destination, int newWidth, int newHeight) {
-        try {
-            ExifInterface newExif = new ExifInterface(destination);
-            PicasaSource.extractExifValues(item, newExif);
-            newExif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, String.valueOf(newWidth));
-            newExif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, String.valueOf(newHeight));
-            newExif.setAttribute(ExifInterface.TAG_ORIENTATION, String.valueOf(0));
-            newExif.saveAttributes();
-        } catch (Throwable t) {
-            Log.w(TAG, "cannot copy exif: " + item, t);
-        }
-    }
-
-    private static void copyExif(String source, String destination, int newWidth, int newHeight) {
-        try {
-            ExifInterface oldExif = new ExifInterface(source);
-            ExifInterface newExif = new ExifInterface(destination);
-
-            newExif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, String.valueOf(newWidth));
-            newExif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, String.valueOf(newHeight));
-            newExif.setAttribute(ExifInterface.TAG_ORIENTATION, String.valueOf(0));
-
-            for (String tag : EXIF_TAGS) {
-                String value = oldExif.getAttribute(tag);
-                if (value != null) {
-                    newExif.setAttribute(tag, value);
-                }
-            }
-
-            // Handle some special values here
-            String value = oldExif.getAttribute(ExifInterface.TAG_APERTURE);
-            if (value != null) {
-                try {
-                    float aperture = Float.parseFloat(value);
-                    newExif.setAttribute(ExifInterface.TAG_APERTURE,
-                            String.valueOf((int) (aperture * 10 + 0.5f)) + "/10");
-                } catch (NumberFormatException e) {
-                    Log.w(TAG, "cannot parse aperture: " + value);
-                }
-            }
-
-            // TODO: The code is broken, need to fix the JHEAD lib
-            /*
-            value = oldExif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
-            if (value != null) {
-                try {
-                    double exposure = Double.parseDouble(value);
-                    testToRational("test exposure", exposure);
-                    newExif.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, value);
-                } catch (NumberFormatException e) {
-                    Log.w(TAG, "cannot parse exposure time: " + value);
-                }
-            }
-
-            value = oldExif.getAttribute(ExifInterface.TAG_ISO);
-            if (value != null) {
-                try {
-                    int iso = Integer.parseInt(value);
-                    newExif.setAttribute(ExifInterface.TAG_ISO, String.valueOf(iso) + "/1");
-                } catch (NumberFormatException e) {
-                    Log.w(TAG, "cannot parse exposure time: " + value);
-                }
-            }*/
-            newExif.saveAttributes();
-        } catch (Throwable t) {
-            Log.w(TAG, "cannot copy exif: " + source, t);
         }
     }
 }

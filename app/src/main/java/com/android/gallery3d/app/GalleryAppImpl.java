@@ -16,8 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import java.io.File;
-
 import android.app.Application;
 import android.content.Context;
 
@@ -27,13 +25,14 @@ import com.android.gallery3d.data.ImageCacheService;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.ThreadPool;
 
+import java.io.File;
+
 public class GalleryAppImpl extends Application implements GalleryApp {
 
     private static final String DOWNLOAD_FOLDER = "download";
     private static final long DOWNLOAD_CAPACITY = 64 * 1024 * 1024; // 64M
-
-    private ImageCacheService mImageCacheService;
     protected DataManager mDataManager;
+    private ImageCacheService mImageCacheService;
     private ThreadPool mThreadPool;
     private DownloadCache mDownloadCache;
 

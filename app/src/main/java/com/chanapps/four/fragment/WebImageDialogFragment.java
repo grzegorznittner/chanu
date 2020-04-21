@@ -8,13 +8,21 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.fragment.app.DialogFragment;
+
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
@@ -32,12 +40,12 @@ import java.net.URI;
 import java.util.UUID;
 
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 12/14/12
-* Time: 12:44 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 12/14/12
+ * Time: 12:44 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public class WebImageDialogFragment extends DialogFragment {
 
     public static final String TAG = WebImageDialogFragment.class.getSimpleName();
@@ -56,6 +64,50 @@ public class WebImageDialogFragment extends DialogFragment {
     private String fullImagePath;
 
     private boolean downloadSuccess = false;
+    protected ImageLoadingListener imageListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+            downloadSuccess = false;
+            webProgress.setVisibility(View.VISIBLE);
+            frame.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            webProgress.setVisibility(View.GONE);
+            Toast.makeText(view.getContext(), R.string.thread_couldnt_download_image, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            webProgress.setVisibility(View.GONE);
+            downloadSuccess = true;
+        }
+
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            webProgress.setVisibility(View.GONE);
+            Toast.makeText(view.getContext(), R.string.thread_couldnt_download_image, Toast.LENGTH_SHORT).show();
+        }
+    };
+    protected View.OnClickListener attachListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            String url = urlTextView.getText().toString();
+            if ("".equals(url)) {
+                Toast.makeText(view.getContext(), R.string.web_image_input_url_first, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (fullImageUri == null || !downloadSuccess) {
+                Toast.makeText(view.getContext(), R.string.web_image_download_first, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            closeKeyboard();
+            ((PostReplyActivity) getActivity()).setImageUri(fullImageUri);
+            Toast.makeText(view.getContext(), "Attached image", Toast.LENGTH_SHORT).show();
+            dismiss();
+        }
+    };
 
     public WebImageDialogFragment() {
         super();
@@ -71,7 +123,7 @@ public class WebImageDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.web_image_dialog_fragment, null);
-        urlTextView = (EditText)view.findViewById(R.id.text);
+        urlTextView = view.findViewById(R.id.text);
         urlTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -79,16 +131,16 @@ public class WebImageDialogFragment extends DialogFragment {
                 return true;
             }
         });
-        webImage = (ImageView)view.findViewById(R.id.widget_coverflowcard_image);
-        webProgress = (ProgressBar)view.findViewById(R.id.progress_bar);
-        webButton = (ImageButton)view.findViewById(R.id.button);
+        webImage = view.findViewById(R.id.widget_coverflowcard_image);
+        webProgress = view.findViewById(R.id.progress_bar);
+        webButton = view.findViewById(R.id.button);
         webButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 downloadImage();
             }
         });
-        webBrowse = (ImageButton)view.findViewById(R.id.browse);
+        webBrowse = view.findViewById(R.id.browse);
         webBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,7 +148,7 @@ public class WebImageDialogFragment extends DialogFragment {
                         URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
             }
         });
-        frame = (ViewGroup)view.findViewById(R.id.frame);
+        frame = view.findViewById(R.id.frame);
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setPositiveButton(R.string.web_image_button_attach, null)
@@ -130,30 +182,6 @@ public class WebImageDialogFragment extends DialogFragment {
         ChanImageLoader.getInstance(urlTextView.getContext()).displayImage(url, webImage, options, imageListener);
     }
 
-    protected ImageLoadingListener imageListener = new ImageLoadingListener() {
-        @Override
-        public void onLoadingStarted(String imageUri, View view) {
-            downloadSuccess = false;
-            webProgress.setVisibility(View.VISIBLE);
-            frame.setVisibility(View.VISIBLE);
-        }
-        @Override
-        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            webProgress.setVisibility(View.GONE);
-            Toast.makeText(view.getContext(), R.string.thread_couldnt_download_image, Toast.LENGTH_SHORT).show();
-        }
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            webProgress.setVisibility(View.GONE);
-            downloadSuccess = true;
-        }
-        @Override
-        public void onLoadingCancelled(String imageUri, View view) {
-            webProgress.setVisibility(View.GONE);
-            Toast.makeText(view.getContext(), R.string.thread_couldnt_download_image, Toast.LENGTH_SHORT).show();
-        }
-    };
-
     @Override
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
@@ -168,29 +196,10 @@ public class WebImageDialogFragment extends DialogFragment {
     public void onDismiss(DialogInterface dialog) {
     }
 
-    protected View.OnClickListener attachListener = new View.OnClickListener(){
-        @Override
-        public void onClick(View view) {
-            String url = urlTextView.getText().toString();
-            if ("".equals(url)) {
-                Toast.makeText(view.getContext(), R.string.web_image_input_url_first, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (fullImageUri == null || !downloadSuccess) {
-                Toast.makeText(view.getContext(), R.string.web_image_download_first, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            closeKeyboard();
-            ((PostReplyActivity)getActivity()).setImageUri(fullImageUri);
-            Toast.makeText(view.getContext(), "Attached image", Toast.LENGTH_SHORT).show();
-            dismiss();
-        }
-    };
-
     @Override
     public void onResume() {
         super.onResume();
-        AlertDialog dialog = (AlertDialog)getDialog();
+        AlertDialog dialog = (AlertDialog) getDialog();
         Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         button.setOnClickListener(attachListener);
     }
@@ -200,7 +209,7 @@ public class WebImageDialogFragment extends DialogFragment {
                 getActivity().getCurrentFocus().getWindowToken()
                 : null;
         if (windowToken != null) { // close the keyboard
-            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(windowToken, 0);
         }
     }

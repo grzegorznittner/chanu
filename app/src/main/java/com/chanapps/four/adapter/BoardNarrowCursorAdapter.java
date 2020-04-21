@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.viewer.BoardViewHolder;

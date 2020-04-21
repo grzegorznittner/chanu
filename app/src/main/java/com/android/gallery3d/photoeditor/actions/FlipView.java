@@ -25,20 +25,7 @@ import android.view.MotionEvent;
  */
 class FlipView extends FullscreenToolView {
 
-    /**
-     * Listens to flip changes.
-     */
-    public interface OnFlipChangeListener {
-
-        void onAngleChanged(float horizontalDegrees, float verticalDegrees, boolean fromUser);
-
-        void onStartTrackingTouch();
-
-        void onStopTrackingTouch();
-    }
-
     private static final float FIXED_DIRECTION_THRESHOLD = 20;
-
     private OnFlipChangeListener listener;
     private float maxFlipSpan;
     private float touchStartX;
@@ -49,7 +36,6 @@ class FlipView extends FullscreenToolView {
     private float lastVerticalDegrees;
     private boolean fixedDirection;
     private boolean fixedDirectionHorizontal;
-
     public FlipView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -124,7 +110,7 @@ class FlipView extends FullscreenToolView {
                     } else {
                         refreshAngle(lastHorizontalDegrees, lastVerticalDegrees + degrees, true);
                     }
-                   break;
+                    break;
 
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
@@ -143,5 +129,17 @@ class FlipView extends FullscreenToolView {
         if (listener != null) {
             listener.onAngleChanged(horizontalDegrees, verticalDegrees, fromUser);
         }
+    }
+
+    /**
+     * Listens to flip changes.
+     */
+    public interface OnFlipChangeListener {
+
+        void onAngleChanged(float horizontalDegrees, float verticalDegrees, boolean fromUser);
+
+        void onStartTrackingTouch();
+
+        void onStopTrackingTouch();
     }
 }

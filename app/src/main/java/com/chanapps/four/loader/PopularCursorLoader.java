@@ -4,7 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.util.Log;
-import com.chanapps.four.data.*;
+
+import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanThread;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +31,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-    	if (DEBUG) Log.i(TAG, "loadInBackground");
+        if (DEBUG) Log.i(TAG, "loadInBackground");
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor(10);
         loadBoard(matrixCursor, ChanBoard.POPULAR_BOARD_CODE);
         loadBoard(matrixCursor, ChanBoard.LATEST_BOARD_CODE);
@@ -53,8 +57,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
             if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, thread.trip)
                     || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, thread.name)
                     || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, thread.email)
-                    || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, thread.id))
-            {
+                    || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, thread.id)) {
                 if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                 continue;
             }
@@ -78,7 +81,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
     }
 
     protected void addRecommendedBoardLink(MatrixCursor matrixCursor) {
-        String[] boardCodes = { "a", "v", "vg", "fit", "mu", "sp", "co", "g", "tv" }; // b s gif
+        String[] boardCodes = {"a", "v", "vg", "fit", "mu", "sp", "co", "g", "tv"}; // b s gif
         List<String> boardCodeList = new ArrayList<String>(Arrays.asList(boardCodes));
         Collections.shuffle(boardCodeList);
         for (String boardCode : boardCodeList) {

@@ -1,5 +1,17 @@
 package com.chanapps.four.data;
 
+import android.content.Context;
+import android.database.MatrixCursor;
+import android.util.Log;
+
+import com.chanapps.four.activity.R;
+import com.chanapps.four.component.URLFormatComponent;
+import com.chanapps.four.service.NetworkProfileManager;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,39 +27,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-
-import android.content.Context;
-import android.database.MatrixCursor;
-import android.util.Log;
-
-import com.chanapps.four.activity.R;
-import com.chanapps.four.component.URLFormatComponent;
-import com.chanapps.four.service.NetworkProfileManager;
-
 public class ChanThread extends ChanPost {
 
-    private static final String TAG = ChanThread.class.getSimpleName();
-    private static final boolean DEBUG = false;
     public static final double MAX_THUMBNAIL_PX = 250;
-
-    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
-    public long lastFetched = 0;
-
-    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
-    public boolean loadedFromBoard = false;
-
-	public ChanPost posts[] = new ChanPost[0];
-
-    @JsonProperty("last_replies")
-    public ChanPost[] lastReplies = new ChanPost[0];
-
-    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingIntegerDeserializer.class)
-    public int viewPosition = -1;
-    public int viewOffset = 0;
-
     public static final String THREAD_COMPOSITE_ID = "_id";
     public static final String THREAD_BOARD_CODE = "threadBoardCode";
     public static final String THREAD_NO = "threadNo";
@@ -65,7 +47,6 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_FLAGS = "threadFlags";
     public static final String THREAD_NUM_LAST_REPLIES = "numLastReplies";
     public static final String THREAD_LAST_REPLIES_BLOB = "lastRepliesBlob";
-
     public static final int THREAD_FLAG_DEAD = 0x001;
     public static final int THREAD_FLAG_CLOSED = 0x002;
     public static final int THREAD_FLAG_STICKY = 0x004;
@@ -75,7 +56,8 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_LATEST_POST = 0x100;
     public static final int THREAD_FLAG_RECENT_IMAGE = 0x200;
     public static final int THREAD_FLAG_HEADER = 0x400;
-
+    private static final String TAG = ChanThread.class.getSimpleName();
+    private static final boolean DEBUG = false;
     private static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
             THREAD_BOARD_CODE,
@@ -95,6 +77,16 @@ public class ChanThread extends ChanPost {
             THREAD_LAST_REPLIES_BLOB,
             THREAD_FLAGS
     };
+    @JsonDeserialize(using = JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
+    public long lastFetched = 0;
+    @JsonDeserialize(using = JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
+    public boolean loadedFromBoard = false;
+    public ChanPost[] posts = new ChanPost[0];
+    @JsonProperty("last_replies")
+    public ChanPost[] lastReplies = new ChanPost[0];
+    @JsonDeserialize(using = JacksonNonBlockingObjectMapperFactory.NonBlockingIntegerDeserializer.class)
+    public int viewPosition = -1;
+    public int viewOffset = 0;
 
     public static MatrixCursor buildMatrixCursor(int capacity) {
         return new MatrixCursor(THREAD_COLUMNS, capacity);
@@ -116,8 +108,9 @@ public class ChanThread extends ChanPost {
         String id = thread.board + "/" + thread.no;
         String[] textComponents = thread.textComponents(query);
         byte[] lastRepliesBlob = blobifyLastReplies(thread.lastReplies);
-        if (DEBUG) Log.i(TAG, "makeRow /" + thread.board + "/" + thread.no + " lastRepliesBlob=" + lastRepliesBlob);
-        return new Object[] {
+        if (DEBUG)
+            Log.i(TAG, "makeRow /" + thread.board + "/" + thread.no + " lastRepliesBlob=" + lastRepliesBlob);
+        return new Object[]{
                 id.hashCode(),
                 thread.board,
                 thread.no,
@@ -139,7 +132,7 @@ public class ChanThread extends ChanPost {
     }
 
     public static Object[] makeBoardRow(Context context, String boardCode, String boardName, int boardImageResourceId, int extraFlags) {
-        return new Object[] {
+        return new Object[]{
                 boardCode.hashCode(),
                 boardCode,
                 0,
@@ -170,7 +163,7 @@ public class ChanThread extends ChanPost {
         //        + safeText + "<br/>"
         //        + dateText;
         String description = dateText;
-        return new Object[] {
+        return new Object[]{
                 boardCode.hashCode(),
                 boardCode,
                 0,
@@ -199,7 +192,39 @@ public class ChanThread extends ChanPost {
             return true;
         return thread.threadNeedsRefresh();
     }
-    
+
+    public static String threadUrl(Context context, String boardCode, long threadNo) {
+        return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_THREAD_URL_FORMAT), boardCode, threadNo);
+    }
+
+    public static byte[] blobifyLastReplies(ChanPost[] list) {
+        if (list == null || list.length == 0)
+            return null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(list);
+            return baos.toByteArray();
+        } catch (IOException e) {
+            Log.e(TAG, "Couldn't serialize list=" + list, e);
+        }
+        return null;
+    }
+
+    public static ChanPost[] parseLastRepliesBlob(final byte[] b) {
+        if (b == null || b.length == 0)
+            return null;
+        try {
+            InputStream bais = new BufferedInputStream(new ByteArrayInputStream(b));
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            ChanPost[] list = (ChanPost[]) ois.readObject();
+            return list;
+        } catch (Exception e) {
+            Log.e(TAG, "Couldn't deserialize blob=" + b);
+        }
+        return null;
+    }
+
     public boolean threadNeedsRefresh() {
         if (isDead)
             return false;
@@ -211,28 +236,25 @@ public class ChanThread extends ChanPost {
             return true;
         else if (posts.length < replies)
             return true;
-        else if (!isCurrent())
-            return true;
-        else
-            return false;
+        else return !isCurrent();
     }
 
     public String toString() {
-		return "Thread " + no + ", defData:" + defData + " dead:" + isDead + ", images: " + images
+        return "Thread " + no + ", defData:" + defData + " dead:" + isDead + ", images: " + images
                 + " com: " + com + ", sub:" + sub + ", replies: " + replies + ", posts.length: " + posts.length
-				+ (posts.length > 0
-                    ? ", posts[0].no: " + posts[0].no + ", posts[0].replies: " + posts[0].replies
-                    + ", posts[0].images: " + posts[0].images + ", posts[0].defData: " + posts[0].defData
-                    + ", posts[0].isDead: " + posts[0].isDead
-                    : "")
-				+ ", tn_w: " + tn_w + " tn_h: " + tn_h;
-	}
-	
+                + (posts.length > 0
+                ? ", posts[0].no: " + posts[0].no + ", posts[0].replies: " + posts[0].replies
+                + ", posts[0].images: " + posts[0].images + ", posts[0].defData: " + posts[0].defData
+                + ", posts[0].isDead: " + posts[0].isDead
+                : "")
+                + ", tn_w: " + tn_w + " tn_h: " + tn_h;
+    }
+
     public void mergePosts(List<ChanPost> newPosts) {
-        Map<Long,ChanPost> postMap = new HashMap<Long,ChanPost>(this.posts.length);
+        Map<Long, ChanPost> postMap = new HashMap<Long, ChanPost>(this.posts.length);
         for (ChanPost post : this.posts)
             postMap.put(post.no, post);
-        for (ChanPost newPost: newPosts)
+        for (ChanPost newPost : newPosts)
             postMap.put(newPost.no, newPost); // overwrite any existing posts
         ChanPost[] postArray = postMap.values().toArray(new ChanPost[0]);
         Arrays.sort(postArray, new Comparator<ChanPost>() {
@@ -288,54 +310,50 @@ public class ChanThread extends ChanPost {
         }
         return sameIdsMap;
     }
-    
+
     public ChanThread cloneForWatchlist() {
-    	ChanThread t = new ChanThread();
-    	t.no = no;
-    	t.board = board;
-    	t.closed = closed;
-    	t.created = created;
-    	t.omitted_images = omitted_images;
-    	t.omitted_posts = omitted_posts;
-    	t.resto = resto;
+        ChanThread t = new ChanThread();
+        t.no = no;
+        t.board = board;
+        t.closed = closed;
+        t.created = created;
+        t.omitted_images = omitted_images;
+        t.omitted_posts = omitted_posts;
+        t.resto = resto;
         t.jumpToPostNo = jumpToPostNo;
-    	t.defData = false;
+        t.defData = false;
 
-    	if (posts.length > 0 && posts[0] != null) {
-        	t.replies = posts[0].replies;
-        	t.images = posts[0].images;
-	    	t.bumplimit = posts[0].bumplimit;
-	    	t.capcode = posts[0].capcode;
-	    	t.com = posts[0].com;
-	    	t.country = posts[0].country;
-	    	t.country_name = posts[0].country_name;
-	    	t.email = posts[0].email;
-	    	t.ext = posts[0].ext;
-	    	t.filedeleted = posts[0].filedeleted;
-	    	t.filename = posts[0].filename;
-	    	t.fsize = posts[0].fsize;
-	    	t.h = posts[0].h;
-	    	t.hideAllText = posts[0].hideAllText;
-	    	t.hidePostNumbers = posts[0].hidePostNumbers;
-	    	t.id = posts[0].id;
-	    	t.now = posts[0].now;
-	    	t.spoiler = posts[0].spoiler;
-	    	t.sticky = posts[0].sticky;
-	    	t.sub = posts[0].sub;
-	    	t.tim = posts[0].tim;
-	    	t.tn_h = posts[0].tn_h;
-	    	t.tn_w = posts[0].tn_w;
-	    	t.trip = posts[0].trip;
-	    	t.useFriendlyIds = posts[0].useFriendlyIds;
-	    	t.w = posts[0].w;
+        if (posts.length > 0 && posts[0] != null) {
+            t.replies = posts[0].replies;
+            t.images = posts[0].images;
+            t.bumplimit = posts[0].bumplimit;
+            t.capcode = posts[0].capcode;
+            t.com = posts[0].com;
+            t.country = posts[0].country;
+            t.country_name = posts[0].country_name;
+            t.email = posts[0].email;
+            t.ext = posts[0].ext;
+            t.filedeleted = posts[0].filedeleted;
+            t.filename = posts[0].filename;
+            t.fsize = posts[0].fsize;
+            t.h = posts[0].h;
+            t.hideAllText = posts[0].hideAllText;
+            t.hidePostNumbers = posts[0].hidePostNumbers;
+            t.id = posts[0].id;
+            t.now = posts[0].now;
+            t.spoiler = posts[0].spoiler;
+            t.sticky = posts[0].sticky;
+            t.sub = posts[0].sub;
+            t.tim = posts[0].tim;
+            t.tn_h = posts[0].tn_h;
+            t.tn_w = posts[0].tn_w;
+            t.trip = posts[0].trip;
+            t.useFriendlyIds = posts[0].useFriendlyIds;
+            t.w = posts[0].w;
             t.jumpToPostNo = posts[0].jumpToPostNo;
-    	}
-    	
-    	return t;
-    }
+        }
 
-    public static String threadUrl(Context context, String boardCode, long threadNo) {
-        return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_THREAD_URL_FORMAT), boardCode, threadNo);
+        return t;
     }
 
     public boolean isCurrent() {
@@ -344,40 +362,7 @@ public class ChanThread extends ChanPost {
             return false;
         else if (lastFetched <= 0)
             return false;
-        else if (Math.abs(new Date().getTime() - lastFetched) > params.refreshDelay)
-            return false;
-        else
-            return true;
-    }
-
-    public static byte[] blobifyLastReplies(ChanPost[] list) {
-        if (list == null || list.length == 0)
-            return null;
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(list);
-            return baos.toByteArray();
-        }
-        catch (IOException e) {
-            Log.e(TAG, "Couldn't serialize list=" + list, e);
-        }
-        return null;
-    }
-
-    public static ChanPost[] parseLastRepliesBlob(final byte[] b) {
-        if (b == null || b.length == 0)
-            return null;
-        try {
-            InputStream bais = new BufferedInputStream(new ByteArrayInputStream(b));
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            ChanPost[] list = (ChanPost[])ois.readObject();
-            return list;
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Couldn't deserialize blob=" + b);
-        }
-        return null;
+        else return Math.abs(new Date().getTime() - lastFetched) <= params.refreshDelay;
     }
 
     public boolean matchesQuery(String query) {

@@ -16,26 +16,27 @@
 
 package com.android.gallery3d.ui;
 
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import com.android.gallery3d.anim.CanvasAnimation;
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.opengl.GLSurfaceView;
+import android.os.Build;
 import android.os.Process;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 
+import com.android.gallery3d.anim.CanvasAnimation;
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.util.GalleryUtils;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -53,43 +54,30 @@ public class GLRootView extends GLSurfaceView
     private static final String TAG = "GLRootView";
 
     private static final boolean DEBUG_FPS = false;
-    private int mFrameCount = 0;
-    private long mFrameCountingStart = 0;
-
     private static final boolean DEBUG_INVALIDATE = false;
-    private int mInvalidateColor = 0;
-
     private static final boolean DEBUG_DRAWING_STAT = false;
-
     private static final int FLAG_INITIALIZED = 1;
     private static final int FLAG_NEED_LAYOUT = 2;
-
-    private GL11 mGL;
-    private GLCanvasImpl mCanvas;
-
-    private GLView mContentView;
-    private DisplayMetrics mDisplayMetrics;
-
-    private int mFlags = FLAG_NEED_LAYOUT;
-    private volatile boolean mRenderRequested = false;
-
-    private Rect mClipRect = new Rect();
-    private int mClipRetryCount = 0;
-
+    private static final int TARGET_FRAME_TIME = 33;
     private final GalleryEGLConfigChooser mEglConfigChooser =
             new GalleryEGLConfigChooser();
-
     private final ArrayList<CanvasAnimation> mAnimations =
             new ArrayList<CanvasAnimation>();
-
     private final LinkedList<OnGLIdleListener> mIdleListeners =
             new LinkedList<OnGLIdleListener>();
-
     private final IdleRunner mIdleRunner = new IdleRunner();
-
     private final ReentrantLock mRenderLock = new ReentrantLock();
-
-    private static final int TARGET_FRAME_TIME = 33;
+    private int mFrameCount = 0;
+    private long mFrameCountingStart = 0;
+    private int mInvalidateColor = 0;
+    private GL11 mGL;
+    private GLCanvasImpl mCanvas;
+    private GLView mContentView;
+    private DisplayMetrics mDisplayMetrics;
+    private int mFlags = FLAG_NEED_LAYOUT;
+    private volatile boolean mRenderRequested = false;
+    private Rect mClipRect = new Rect();
+    private int mClipRetryCount = 0;
     private long mLastDrawFinishTime;
     private boolean mInDownState = false;
 
@@ -143,6 +131,10 @@ public class GLRootView extends GLSurfaceView
         }
     }
 
+    public GLView getContentPane() {
+        return mContentView;
+    }
+
     @Override
     public void setContentPane(GLView content) {
         if (mContentView == content) return;
@@ -163,10 +155,6 @@ public class GLRootView extends GLSurfaceView
             content.attachToRoot(this);
             requestLayoutContentPane();
         }
-    }
-
-    public GLView getContentPane() {
-        return mContentView;
     }
 
     @Override
@@ -312,7 +300,7 @@ public class GLRootView extends GLSurfaceView
 
         mCanvas.setCurrentAnimationTimeMillis(SystemClock.uptimeMillis());
         if (mContentView != null) {
-           mContentView.render(mCanvas);
+            mContentView.render(mCanvas);
         }
 
         if (!mAnimations.isEmpty()) {
@@ -379,6 +367,16 @@ public class GLRootView extends GLSurfaceView
         return mCanvas;
     }
 
+    @Override
+    public void lockRenderThread() {
+        mRenderLock.lock();
+    }
+
+    @Override
+    public void unlockRenderThread() {
+        mRenderLock.unlock();
+    }
+
     private class IdleRunner implements Runnable {
         // true if the idle runner is in the queue
         private boolean mActive = false;
@@ -410,15 +408,5 @@ public class GLRootView extends GLSurfaceView
             mActive = true;
             queueEvent(this);
         }
-    }
-
-    @Override
-    public void lockRenderThread() {
-        mRenderLock.lock();
-    }
-
-    @Override
-    public void unlockRenderThread() {
-        mRenderLock.unlock();
     }
 }

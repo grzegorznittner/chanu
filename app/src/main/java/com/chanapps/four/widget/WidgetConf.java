@@ -72,10 +72,10 @@ public class WidgetConf implements Serializable {
         appWidgetId = c.length > 0 ? Integer.parseInt(c[0]) : 0;
         boardCode = c.length > 1 ? c[1] : "";
         boardTitleColor = c.length > 2 ? Integer.parseInt(c[2]) : 0;
-        roundedCorners = c.length > 3 ? Boolean.parseBoolean(c[3]) : true;
-        showBoardTitle = c.length > 4 ? Boolean.parseBoolean(c[4]) : true;
-        showRefreshButton = c.length > 5 ? Boolean.parseBoolean(c[5]) : true;
-        showConfigureButton = c.length > 6 ? Boolean.parseBoolean(c[6]) : true;
+        roundedCorners = c.length <= 3 || Boolean.parseBoolean(c[3]);
+        showBoardTitle = c.length <= 4 || Boolean.parseBoolean(c[4]);
+        showRefreshButton = c.length <= 5 || Boolean.parseBoolean(c[5]);
+        showConfigureButton = c.length <= 6 || Boolean.parseBoolean(c[6]);
         widgetType = c.length > 7 ? c[7] : WidgetConstants.WIDGET_TYPE_EMPTY;
     }
 

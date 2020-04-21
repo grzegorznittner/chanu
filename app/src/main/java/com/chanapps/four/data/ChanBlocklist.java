@@ -5,10 +5,19 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
+
 import com.chanapps.four.activity.SettingsActivity;
+
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -22,32 +31,20 @@ public class ChanBlocklist {
 
     private static final String TAG = ChanBlocklist.class.getSimpleName();
     private static final boolean DEBUG = false;
-
-    public enum BlockType {
-        TEXT ("text", SettingsActivity.PREF_BLOCKLIST_TEXT),
-        TRIPCODE ("tripcode", SettingsActivity.PREF_BLOCKLIST_TRIPCODE),
-        NAME ("name", SettingsActivity.PREF_BLOCKLIST_NAME),
-        EMAIL ("email", SettingsActivity.PREF_BLOCKLIST_EMAIL),
-        ID ("id", SettingsActivity.PREF_BLOCKLIST_ID),
-        THREAD ("thread", SettingsActivity.PREF_BLOCKLIST_THREAD);
-        private String displayString;
-        private String blockPref;
-        BlockType(String s, String t) {
-            displayString = s;
-            blockPref = t;
-        }
-        public String displayString() {
-            return displayString;
-        }
-        public String blockPref() {
-            return blockPref;
+    protected static Comparator<Pair<String, BlockType>> blocklistComparator = new Comparator<Pair<String, BlockType>>() {
+        @Override
+        public int compare(Pair<String, BlockType> lhs, Pair<String, BlockType> rhs) {
+            int comp1 = lhs.first.compareToIgnoreCase(rhs.first);
+            if (comp1 != 0)
+                return comp1;
+            return lhs.second.compareTo(rhs.second);
         }
     };
 
     private static Map<BlockType, Set<String>> blocklist;
     private static Pattern testPattern = null;
 
-     private static void initBlocklist(Context context) {
+    private static void initBlocklist(Context context) {
         if (blocklist != null)
             return;
         blocklist = new HashMap<BlockType, Set<String>>();
@@ -85,16 +82,6 @@ public class ChanBlocklist {
         return sorted;
 
     }
-
-    protected static Comparator<Pair<String, BlockType>> blocklistComparator = new Comparator<Pair<String, BlockType>>() {
-        @Override
-        public int compare(Pair<String, BlockType> lhs, Pair<String, BlockType> rhs) {
-            int comp1 = lhs.first.compareToIgnoreCase(rhs.first);
-            if (comp1 != 0)
-                return comp1;
-            return lhs.second.compareTo(rhs.second);
-        }
-    };
 
     public static void removeAll(Context context, BlockType blockType, List<String> removeBlocks) {
         if (blocklist == null)
@@ -167,25 +154,22 @@ public class ChanBlocklist {
     public static boolean isBlocked(Context context, ChanPost post) {
         if (blocklist == null)
             initBlocklist(context);
-        boolean simpleMatch =  contains(context, BlockType.THREAD, post.uniqueId())
+        boolean simpleMatch = contains(context, BlockType.THREAD, post.uniqueId())
                 || contains(context, BlockType.TRIPCODE, post.trip)
                 || contains(context, BlockType.NAME, post.name)
                 || contains(context, BlockType.EMAIL, post.email)
-                || contains(context, BlockType.ID, post.id)
-                ;
+                || contains(context, BlockType.ID, post.id);
         if (simpleMatch)
             return true;
         if (testPattern == null)
             return false;
         if (post.sub != null && testPattern.matcher(post.sub).find())
             return true;
-        if (post.com != null && testPattern.matcher(post.com).find())
-            return true;
-        return false;
+        return post.com != null && testPattern.matcher(post.com).find();
     }
 
     public static boolean isBlocked(Context context, ChanThread thread) {
-        if (isBlocked(context, (ChanPost)thread))
+        if (isBlocked(context, (ChanPost) thread))
             return true;
         if (thread.lastReplies == null)
             return false;
@@ -247,6 +231,30 @@ public class ChanBlocklist {
                 editor.putStringSet(blockType.blockPref(), blocks);
             }
             editor.apply();
+        }
+    }
+
+    public enum BlockType {
+        TEXT("text", SettingsActivity.PREF_BLOCKLIST_TEXT),
+        TRIPCODE("tripcode", SettingsActivity.PREF_BLOCKLIST_TRIPCODE),
+        NAME("name", SettingsActivity.PREF_BLOCKLIST_NAME),
+        EMAIL("email", SettingsActivity.PREF_BLOCKLIST_EMAIL),
+        ID("id", SettingsActivity.PREF_BLOCKLIST_ID),
+        THREAD("thread", SettingsActivity.PREF_BLOCKLIST_THREAD);
+        private String displayString;
+        private String blockPref;
+
+        BlockType(String s, String t) {
+            displayString = s;
+            blockPref = t;
+        }
+
+        public String displayString() {
+            return displayString;
+        }
+
+        public String blockPref() {
+            return blockPref;
         }
     }
 

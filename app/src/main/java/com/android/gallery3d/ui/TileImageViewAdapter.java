@@ -27,15 +27,14 @@ import com.android.gallery3d.common.Utils;
 
 public class TileImageViewAdapter implements TileImageView.Model {
     private static final String TAG = "TileImageViewAdapter";
+    private final Rect mIntersectRect = new Rect();
+    private final Rect mRegionRect = new Rect();
     protected BitmapRegionDecoder mRegionDecoder;
     protected int mImageWidth;
     protected int mImageHeight;
     protected Bitmap mBackupImage;
     protected int mLevelCount;
     protected boolean mFailedToLoad;
-
-    private final Rect mIntersectRect = new Rect();
-    private final Rect mRegionRect = new Rect();
 
     public TileImageViewAdapter() {
     }
@@ -94,7 +93,7 @@ public class TileImageViewAdapter implements TileImageView.Model {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Config.ARGB_8888;
         options.inPreferQualityOverSpeed = true;
-        options.inSampleSize =  (1 << level);
+        options.inSampleSize = (1 << level);
 
         Bitmap bitmap;
 

@@ -16,16 +16,6 @@
 
 package com.android.gallery3d.util;
 
-import android.os.Build;
-import com.chanapps.four.component.URLFormatComponent;
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.app.GalleryActivity;
-import com.android.gallery3d.app.PackagesMonitor;
-import com.android.gallery3d.data.DataManager;
-import com.android.gallery3d.data.MediaItem;
-import com.android.gallery3d.util.ThreadPool.CancelListener;
-import com.android.gallery3d.util.ThreadPool.JobContext;
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -35,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Environment;
 import android.os.StatFs;
@@ -43,6 +34,15 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
+
+import com.android.gallery3d.app.GalleryActivity;
+import com.android.gallery3d.app.PackagesMonitor;
+import com.android.gallery3d.data.DataManager;
+import com.android.gallery3d.data.MediaItem;
+import com.android.gallery3d.util.ThreadPool.CancelListener;
+import com.android.gallery3d.util.ThreadPool.JobContext;
+import com.chanapps.four.component.URLFormatComponent;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,11 +64,12 @@ public class GalleryUtils {
 
     private static final String KEY_CAMERA_UPDATE = "camera-update";
     private static final String KEY_HAS_CAMERA = "has-camera";
-
-    private static Context sContext;
-
-
+    private static final double RAD_PER_DEG = Math.PI / 180.0;
+    private static final double EARTH_RADIUS_METERS = 6367000.0;
     static float sPixelDensity = -1f;
+    private static Context sContext;
+    private static volatile Thread sCurrentThread;
+    private static volatile boolean sWarned;
 
     public static void initialize(Context context) {
         sContext = context;
@@ -80,6 +81,9 @@ public class GalleryUtils {
             sPixelDensity = metrics.density;
         }
     }
+
+    // Below are used the detect using database in the render thread. It only
+    // works most of the time, but that's ok because it's for debugging only.
 
     public static float dpToPixel(float dp) {
         return sPixelDensity * dp;
@@ -104,12 +108,6 @@ public class GalleryUtils {
         return result;
     }
 
-    // Below are used the detect using database in the render thread. It only
-    // works most of the time, but that's ok because it's for debugging only.
-
-    private static volatile Thread sCurrentThread;
-    private static volatile boolean sWarned;
-
     public static void setRenderThread() {
         sCurrentThread = Thread.currentThread();
     }
@@ -123,34 +121,31 @@ public class GalleryUtils {
         }
     }
 
-    private static final double RAD_PER_DEG = Math.PI / 180.0;
-    private static final double EARTH_RADIUS_METERS = 6367000.0;
-
     public static double fastDistanceMeters(double latRad1, double lngRad1,
-            double latRad2, double lngRad2) {
-       if ((Math.abs(latRad1 - latRad2) > RAD_PER_DEG)
-             || (Math.abs(lngRad1 - lngRad2) > RAD_PER_DEG)) {
-           return accurateDistanceMeters(latRad1, lngRad1, latRad2, lngRad2);
-       }
-       // Approximate sin(x) = x.
-       double sineLat = (latRad1 - latRad2);
+                                            double latRad2, double lngRad2) {
+        if ((Math.abs(latRad1 - latRad2) > RAD_PER_DEG)
+                || (Math.abs(lngRad1 - lngRad2) > RAD_PER_DEG)) {
+            return accurateDistanceMeters(latRad1, lngRad1, latRad2, lngRad2);
+        }
+        // Approximate sin(x) = x.
+        double sineLat = (latRad1 - latRad2);
 
-       // Approximate sin(x) = x.
-       double sineLng = (lngRad1 - lngRad2);
+        // Approximate sin(x) = x.
+        double sineLng = (lngRad1 - lngRad2);
 
-       // Approximate cos(lat1) * cos(lat2) using
-       // cos((lat1 + lat2)/2) ^ 2
-       double cosTerms = Math.cos((latRad1 + latRad2) / 2.0);
-       cosTerms = cosTerms * cosTerms;
-       double trigTerm = sineLat * sineLat + cosTerms * sineLng * sineLng;
-       trigTerm = Math.sqrt(trigTerm);
+        // Approximate cos(lat1) * cos(lat2) using
+        // cos((lat1 + lat2)/2) ^ 2
+        double cosTerms = Math.cos((latRad1 + latRad2) / 2.0);
+        cosTerms = cosTerms * cosTerms;
+        double trigTerm = sineLat * sineLat + cosTerms * sineLng * sineLng;
+        trigTerm = Math.sqrt(trigTerm);
 
-       // Approximate arcsin(x) = x
-       return EARTH_RADIUS_METERS * trigTerm;
+        // Approximate arcsin(x) = x
+        return EARTH_RADIUS_METERS * trigTerm;
     }
 
     public static double accurateDistanceMeters(double lat1, double lng1,
-            double lat2, double lng2) {
+                                                double lat2, double lng2) {
         double dlat = Math.sin(0.5 * (lat2 - lat1));
         double dlng = Math.sin(0.5 * (lng2 - lng1));
         double x = dlat * dlat + dlng * dlng * Math.cos(lat1) * Math.cos(lat2);
@@ -187,8 +182,8 @@ public class GalleryUtils {
             List<ResolveInfo> infos = packageManager.queryIntentActivities(
                     new Intent(Intent.ACTION_EDIT).setType(mimeType), 0);
             prefs.edit().putInt(updateKey, version)
-                        .putBoolean(hasKey, !infos.isEmpty())
-                        .commit();
+                    .putBoolean(hasKey, !infos.isEmpty())
+                    .commit();
         }
 
         return prefs.getBoolean(hasKey, true);
@@ -202,8 +197,8 @@ public class GalleryUtils {
             List<ResolveInfo> infos = packageManager.queryIntentActivities(
                     new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA), 0);
             prefs.edit().putInt(KEY_CAMERA_UPDATE, version)
-                        .putBoolean(KEY_HAS_CAMERA, !infos.isEmpty())
-                        .commit();
+                    .putBoolean(KEY_HAS_CAMERA, !infos.isEmpty())
+                    .commit();
         }
         return prefs.getBoolean(KEY_HAS_CAMERA, true);
     }
@@ -214,7 +209,7 @@ public class GalleryUtils {
     }
 
     public static String formatLatitudeLongitude(String format, double latitude,
-            double longitude) {
+                                                 double longitude) {
         // We need to specify the locale otherwise it may go wrong in some language
         // (e.g. Locale.FRENCH)
         return String.format(Locale.ENGLISH, format, latitude, longitude);
@@ -244,7 +239,7 @@ public class GalleryUtils {
     }
 
     public static void setViewPointMatrix(
-            float matrix[], float x, float y, float z) {
+            float[] matrix, float x, float y, float z) {
         // The matrix is
         // -z,  0,  x,  0
         //  0, -z,  y,  0
@@ -276,7 +271,7 @@ public class GalleryUtils {
     }
 
     public static void setSpinnerVisibility(final Activity activity,
-            final boolean visible) {
+                                            final boolean visible) {
         SpinnerVisibilitySetter.getInstance(activity).setSpinnerVisibility(visible);
     }
 
@@ -374,7 +369,7 @@ public class GalleryUtils {
         return (h > 0 && w / h >= 2);
     }
 
-	public static void removeActivity(GalleryActivity activity) {
-		SpinnerVisibilitySetter.removeInstance(activity);
-	}
+    public static void removeActivity(GalleryActivity activity) {
+        SpinnerVisibilitySetter.removeInstance(activity);
+    }
 }

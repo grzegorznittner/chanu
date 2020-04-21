@@ -17,5 +17,5 @@
 package com.android.gallery3d.data;
 
 public interface ContentListener {
-    public void onContentDirty();
+    void onContentDirty();
 }

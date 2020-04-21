@@ -16,13 +16,6 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.common.BitmapUtils;
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.util.ThreadPool.CancelListener;
-import com.android.gallery3d.util.ThreadPool.Job;
-import com.android.gallery3d.util.ThreadPool.JobContext;
-
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -31,6 +24,13 @@ import android.graphics.BitmapRegionDecoder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.webkit.MimeTypeMap;
+
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.common.BitmapUtils;
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.util.ThreadPool.CancelListener;
+import com.android.gallery3d.util.ThreadPool.Job;
+import com.android.gallery3d.util.ThreadPool.JobContext;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -163,47 +163,6 @@ public class UriImage extends MediaItem {
         }
     }
 
-    private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
-        public BitmapRegionDecoder run(JobContext jc) {
-            if (!prepareInputFile(jc)) return null;
-            BitmapRegionDecoder decoder = DecodeUtils.requestCreateBitmapRegionDecoder(
-                    jc, mFileDescriptor.getFileDescriptor(), false);
-            mWidth = decoder.getWidth();
-            mHeight = decoder.getHeight();
-            return decoder;
-        }
-    }
-
-    private class BitmapJob implements Job<Bitmap> {
-        private int mType;
-
-        protected BitmapJob(int type) {
-            mType = type;
-        }
-
-        public Bitmap run(JobContext jc) {
-            if (!prepareInputFile(jc)) return null;
-            int targetSize = LocalImage.getTargetSize(mType);
-            Options options = new Options();
-            options.inPreferredConfig = Config.ARGB_8888;
-            Bitmap bitmap = DecodeUtils.requestDecode(jc,
-                    mFileDescriptor.getFileDescriptor(), options, targetSize);
-            if (jc.isCancelled() || bitmap == null) {
-                return null;
-            }
-
-            if (mType == MediaItem.TYPE_MICROTHUMBNAIL) {
-                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap,
-                        targetSize, true);
-            } else {
-                bitmap = BitmapUtils.resizeDownBySideLength(bitmap,
-                        targetSize, true);
-            }
-
-            return bitmap;
-        }
-    }
-
     @Override
     public int getSupportedOperations() {
         int supported = SUPPORT_EDIT | SUPPORT_SETAS;
@@ -272,5 +231,46 @@ public class UriImage extends MediaItem {
     @Override
     public int getHeight() {
         return 0;
+    }
+
+    private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
+        public BitmapRegionDecoder run(JobContext jc) {
+            if (!prepareInputFile(jc)) return null;
+            BitmapRegionDecoder decoder = DecodeUtils.requestCreateBitmapRegionDecoder(
+                    jc, mFileDescriptor.getFileDescriptor(), false);
+            mWidth = decoder.getWidth();
+            mHeight = decoder.getHeight();
+            return decoder;
+        }
+    }
+
+    private class BitmapJob implements Job<Bitmap> {
+        private int mType;
+
+        protected BitmapJob(int type) {
+            mType = type;
+        }
+
+        public Bitmap run(JobContext jc) {
+            if (!prepareInputFile(jc)) return null;
+            int targetSize = LocalImage.getTargetSize(mType);
+            Options options = new Options();
+            options.inPreferredConfig = Config.ARGB_8888;
+            Bitmap bitmap = DecodeUtils.requestDecode(jc,
+                    mFileDescriptor.getFileDescriptor(), options, targetSize);
+            if (jc.isCancelled() || bitmap == null) {
+                return null;
+            }
+
+            if (mType == MediaItem.TYPE_MICROTHUMBNAIL) {
+                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap,
+                        targetSize, true);
+            } else {
+                bitmap = BitmapUtils.resizeDownBySideLength(bitmap,
+                        targetSize, true);
+            }
+
+            return bitmap;
+        }
     }
 }

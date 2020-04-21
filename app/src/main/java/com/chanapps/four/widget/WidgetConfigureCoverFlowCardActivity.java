@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 
@@ -40,6 +41,16 @@ public class WidgetConfigureCoverFlowCardActivity extends WidgetConfigureCoverFl
         return new CardCoverflowStackAdapter(this, R.layout.widget_coverflowcard_item, R.id.widget_coverflowcard_image);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
     protected class CardCoverflowStackAdapter extends CoverflowStackAdapter {
 
         public CardCoverflowStackAdapter(Context context, int layoutId, int imageId) {
@@ -50,22 +61,12 @@ public class WidgetConfigureCoverFlowCardActivity extends WidgetConfigureCoverFl
         public View getView(int position, View view, ViewGroup parent) {
             View item = super.getView(position, view, parent);
             ChanBoard board = ChanBoard.getBoardByCode(context, widgetConf.boardCode);
-            TextView sub = (TextView)item.findViewById(R.id.widget_coverflowcard_subject);
+            TextView sub = item.findViewById(R.id.widget_coverflowcard_subject);
             String html = "<b>" + board.getName(context) + "</b><br/>" + board.getDescription(context);
             sub.setText(Html.fromHtml(html));
             return item;
         }
 
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
 }

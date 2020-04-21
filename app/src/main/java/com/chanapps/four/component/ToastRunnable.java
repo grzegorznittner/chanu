@@ -26,11 +26,10 @@ public class ToastRunnable implements Runnable {
     }
 
     @Override
-    public void run(){
+    public void run() {
         if (text == null) {
             Toast.makeText(ctx, strId, Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show();
         }
     }

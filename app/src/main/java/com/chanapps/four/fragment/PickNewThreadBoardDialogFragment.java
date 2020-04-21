@@ -10,19 +10,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import com.chanapps.four.activity.*;
+
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.PostReplyActivity;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
 
 import java.util.List;
 
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 12/14/12
-* Time: 12:44 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 12/14/12
+ * Time: 12:44 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public class PickNewThreadBoardDialogFragment extends ListDialogFragment {
 
     public static final String TAG = PickNewThreadBoardDialogFragment.class.getSimpleName();
@@ -31,6 +34,13 @@ public class PickNewThreadBoardDialogFragment extends ListDialogFragment {
 
     private String[] boards;
     private Handler activityHandler;
+
+    public PickNewThreadBoardDialogFragment() {
+    }
+
+    public PickNewThreadBoardDialogFragment(Handler handler) {
+        activityHandler = handler;
+    }
 
     private void initBoards(Context context) {
         List<ChanBoard> chanBoards = ChanBoard.getNewThreadBoardsRespectingNSFW(context);
@@ -43,12 +53,6 @@ public class PickNewThreadBoardDialogFragment extends ListDialogFragment {
             boards[i] = boardLine;
             i++;
         }
-    }
-
-    public PickNewThreadBoardDialogFragment(){}
-
-    public PickNewThreadBoardDialogFragment(Handler handler) {
-        activityHandler = handler;
     }
 
     @Override

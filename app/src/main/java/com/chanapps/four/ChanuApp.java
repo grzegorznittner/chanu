@@ -1,8 +1,5 @@
 package com.chanapps.four;
 
-import java.util.Locale;
-
-import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.preference.PreferenceManager;
@@ -17,13 +14,13 @@ import com.chanapps.four.gallery.ChanOffLineSource;
 import com.chanapps.four.gallery.ChanSource;
 import com.chanapps.four.service.NetworkProfileManager;
 
+import java.util.Locale;
+
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
- *
  */
 
-public class ChanuApp extends GalleryAppImpl
-{
+public class ChanuApp extends GalleryAppImpl {
 
     private static final boolean DEBUG = false;
     private static final String TAG = ChanuApp.class.getSimpleName();
@@ -44,7 +41,8 @@ public class ChanuApp extends GalleryAppImpl
         super.onCreate();
         ChanFileStorage.migrateIfNecessary(getApplicationContext());
         forceLocaleIfConfigured();
-        if (DEBUG) Log.i(TAG, "onCreate() activity=" + NetworkProfileManager.instance().getActivityId());
+        if (DEBUG)
+            Log.i(TAG, "onCreate() activity=" + NetworkProfileManager.instance().getActivityId());
     }
 
     @Override
@@ -62,7 +60,7 @@ public class ChanuApp extends GalleryAppImpl
         Configuration config = getBaseContext().getResources().getConfiguration();
         boolean forceEnglish = settings.getBoolean(SettingsActivity.PREF_FORCE_ENGLISH, false);
         String lang = getString(R.string.pref_force_english_lang);
-        if (forceEnglish && ! "".equals(lang) && ! config.locale.getLanguage().equals(lang)) {
+        if (forceEnglish && !"".equals(lang) && !config.locale.getLanguage().equals(lang)) {
             locale = new Locale(lang);
             Locale.setDefault(locale);
             config.locale = locale;

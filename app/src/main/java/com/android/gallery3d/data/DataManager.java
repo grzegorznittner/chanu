@@ -16,15 +16,15 @@
 
 package com.android.gallery3d.data;
 
+import android.database.ContentObserver;
+import android.net.Uri;
+import android.os.Handler;
+
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaSet.ItemConsumer;
 import com.android.gallery3d.data.MediaSource.PathId;
 import com.android.gallery3d.picasasource.PicasaSource;
-
-import android.database.ContentObserver;
-import android.net.Uri;
-import android.os.Handler;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,9 +61,9 @@ public class DataManager {
     // Any one who would like to access data should require this lock
     // to prevent concurrency issue.
     public static final Object LOCK = new Object();
-
+    public static final Comparator<MediaItem> sDateTakenComparator =
+            new DateTakenComparator();
     private static final String TAG = "DataManager";
-
     // This is the path for the media set seen by the user at top level.
     private static final String TOP_SET_PATH =
             "/combo/{/mtp,/local/all,/picasa/all}";
@@ -77,27 +77,14 @@ public class DataManager {
             "/local/image";
     private static final String TOP_LOCAL_VIDEO_SET_PATH =
             "/local/video";
-
-    public static final Comparator<MediaItem> sDateTakenComparator =
-            new DateTakenComparator();
-
-    private static class DateTakenComparator implements Comparator<MediaItem> {
-        public int compare(MediaItem item1, MediaItem item2) {
-            return -Utils.compare(item1.getDateInMs(), item2.getDateInMs());
-        }
-    }
-
     private final Handler mDefaultMainHandler;
-
     private GalleryApp mApplication;
     private int mActiveCount = 0;
-
     private HashMap<Uri, NotifyBroker> mNotifierMap =
             new HashMap<Uri, NotifyBroker>();
-
-
     private HashMap<String, MediaSource> mSourceMap =
             new LinkedHashMap<String, MediaSource>();
+
 
     public DataManager(GalleryApp application) {
         mApplication = application;
@@ -126,13 +113,20 @@ public class DataManager {
     public String getTopSetPath(int typeBits) {
 
         switch (typeBits) {
-            case INCLUDE_IMAGE: return TOP_IMAGE_SET_PATH;
-            case INCLUDE_VIDEO: return TOP_VIDEO_SET_PATH;
-            case INCLUDE_ALL: return TOP_SET_PATH;
-            case INCLUDE_LOCAL_IMAGE_ONLY: return TOP_LOCAL_IMAGE_SET_PATH;
-            case INCLUDE_LOCAL_VIDEO_ONLY: return TOP_LOCAL_VIDEO_SET_PATH;
-            case INCLUDE_LOCAL_ALL_ONLY: return TOP_LOCAL_SET_PATH;
-            default: throw new IllegalArgumentException();
+            case INCLUDE_IMAGE:
+                return TOP_IMAGE_SET_PATH;
+            case INCLUDE_VIDEO:
+                return TOP_VIDEO_SET_PATH;
+            case INCLUDE_ALL:
+                return TOP_SET_PATH;
+            case INCLUDE_LOCAL_IMAGE_ONLY:
+                return TOP_LOCAL_IMAGE_SET_PATH;
+            case INCLUDE_LOCAL_VIDEO_ONLY:
+                return TOP_LOCAL_VIDEO_SET_PATH;
+            case INCLUDE_LOCAL_ALL_ONLY:
+                return TOP_LOCAL_SET_PATH;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
@@ -194,7 +188,7 @@ public class DataManager {
     // the original position in the input list of the corresponding Path (plus
     // startIndex).
     public void mapMediaItems(ArrayList<Path> list, ItemConsumer consumer,
-            int startIndex) {
+                              int startIndex) {
         HashMap<String, ArrayList<PathId>> map =
                 new HashMap<String, ArrayList<PathId>>();
 
@@ -311,6 +305,12 @@ public class DataManager {
         }
     }
 
+    private static class DateTakenComparator implements Comparator<MediaItem> {
+        public int compare(MediaItem item1, MediaItem item2) {
+            return -Utils.compare(item1.getDateInMs(), item2.getDateInMs());
+        }
+    }
+
     private static class NotifyBroker extends ContentObserver {
         private WeakHashMap<ChangeNotifier, Object> mNotifiers =
                 new WeakHashMap<ChangeNotifier, Object>();
@@ -325,7 +325,7 @@ public class DataManager {
 
         @Override
         public synchronized void onChange(boolean selfChange) {
-            for(ChangeNotifier notifier : mNotifiers.keySet()) {
+            for (ChangeNotifier notifier : mNotifiers.keySet()) {
                 notifier.onChange(selfChange);
             }
         }

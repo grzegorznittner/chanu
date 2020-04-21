@@ -32,7 +32,7 @@ public class FilterSet extends MediaSet implements ContentListener {
     private final ArrayList<MediaSet> mAlbums = new ArrayList<MediaSet>();
 
     public FilterSet(Path path, DataManager dataManager, MediaSet baseSet,
-            int mediaType) {
+                     int mediaType) {
         super(path, INVALID_DATA_VERSION);
         mDataManager = dataManager;
         mBaseSet = baseSet;

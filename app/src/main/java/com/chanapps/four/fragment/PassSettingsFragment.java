@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import com.chanapps.four.activity.*;
+
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -21,8 +24,7 @@ import com.chanapps.four.task.AuthorizePassTask;
  * Time: 3:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PassSettingsFragment extends PreferenceFragment
-{
+public class PassSettingsFragment extends PreferenceFragment {
 
     public static String TAG = PassSettingsFragment.class.getSimpleName();
 
@@ -123,7 +125,7 @@ public class PassSettingsFragment extends PreferenceFragment
     private void authorizePass() {
         String passToken = ensurePrefs().getString(SettingsActivity.PREF_PASS_TOKEN, "");
         String passPIN = ensurePrefs().getString(SettingsActivity.PREF_PASS_PIN, "");
-        AuthorizePassTask authorizePassTask = new AuthorizePassTask((ChanIdentifiedActivity)getActivity(), passToken, passPIN);
+        AuthorizePassTask authorizePassTask = new AuthorizePassTask((ChanIdentifiedActivity) getActivity(), passToken, passPIN);
         AuthorizingPassDialogFragment passDialogFragment = new AuthorizingPassDialogFragment(authorizePassTask);
         passDialogFragment.show(getFragmentManager(), AuthorizingPassDialogFragment.TAG);
         if (!authorizePassTask.isCancelled()) {

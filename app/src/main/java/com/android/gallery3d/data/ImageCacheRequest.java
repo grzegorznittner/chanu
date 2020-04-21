@@ -16,14 +16,14 @@
 
 package com.android.gallery3d.data;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.data.ImageCacheService.ImageData;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 public abstract class ImageCacheRequest implements Job<Bitmap> {
     private static final String TAG = "ImageCacheRequest";
@@ -34,7 +34,7 @@ public abstract class ImageCacheRequest implements Job<Bitmap> {
     private int mTargetSize;
 
     public ImageCacheRequest(GalleryApp application,
-            Path path, int type, int targetSize) {
+                             Path path, int type, int targetSize) {
         mApplication = application;
         mPath = path;
         mType = type;
@@ -43,8 +43,8 @@ public abstract class ImageCacheRequest implements Job<Bitmap> {
 
     public Bitmap run(JobContext jc) {
         String debugTag = mPath + "," +
-                 ((mType == MediaItem.TYPE_THUMBNAIL) ? "THUMB" :
-                 (mType == MediaItem.TYPE_MICROTHUMBNAIL) ? "MICROTHUMB" : "?");
+                ((mType == MediaItem.TYPE_THUMBNAIL) ? "THUMB" :
+                        (mType == MediaItem.TYPE_MICROTHUMBNAIL) ? "MICROTHUMB" : "?");
         ImageCacheService cacheService = mApplication.getImageCacheService();
 
         ImageData data = cacheService.getImageData(mPath, mType);

@@ -16,12 +16,12 @@
 
 package com.android.gallery3d.data;
 
+import android.content.Context;
+
 import com.android.gallery3d.common.BlobCache;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.util.CacheManager;
 import com.android.gallery3d.util.GalleryUtils;
-
-import android.content.Context;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -43,13 +43,21 @@ public class ImageCacheService {
                 IMAGE_CACHE_VERSION);
     }
 
-    public static class ImageData {
-        public ImageData(byte[] data, int offset) {
-            mData = data;
-            mOffset = offset;
+    private static byte[] makeKey(Path path, int type) {
+        return GalleryUtils.getBytes(path.toString() + "+" + type);
+    }
+
+    private static boolean isSameKey(byte[] key, byte[] buffer) {
+        int n = key.length;
+        if (buffer.length < n) {
+            return false;
         }
-        public byte[] mData;
-        public int mOffset;
+        for (int i = 0; i < n; ++i) {
+            if (key[i] != buffer[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public ImageData getImageData(Path path, int type) {
@@ -86,20 +94,12 @@ public class ImageCacheService {
         }
     }
 
-    private static byte[] makeKey(Path path, int type) {
-        return GalleryUtils.getBytes(path.toString() + "+" + type);
-    }
-
-    private static boolean isSameKey(byte[] key, byte[] buffer) {
-        int n = key.length;
-        if (buffer.length < n) {
-            return false;
+    public static class ImageData {
+        public byte[] mData;
+        public int mOffset;
+        public ImageData(byte[] data, int offset) {
+            mData = data;
+            mOffset = offset;
         }
-        for (int i = 0; i < n; ++i) {
-            if (key[i] != buffer[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 }

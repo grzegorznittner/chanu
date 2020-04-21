@@ -16,11 +16,6 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.anim.Animation;
-import com.android.gallery3d.app.GalleryActivity;
-import com.android.gallery3d.common.Utils;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -35,28 +30,28 @@ import android.view.MotionEvent;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
+import com.android.gallery3d.anim.Animation;
+import com.android.gallery3d.app.GalleryActivity;
+import com.android.gallery3d.common.Utils;
+import com.chanapps.four.gallery3d.R;
+
 import java.util.ArrayList;
+
 import javax.microedition.khronos.opengles.GL11;
 
 /**
  * The activity can crop specific region of interest from an image.
  */
 public class CropView extends GLView {
+    public static final float UNSPECIFIED = -1f;
     private static final String TAG = "CropView";
-
     private static final int FACE_PIXEL_COUNT = 120000; // around 400x300
-
     private static final int COLOR_OUTLINE = 0xFF008AFF;
     private static final int COLOR_FACE_OUTLINE = 0xFF000000;
-
     private static final float OUTLINE_WIDTH = 3f;
-
     private static final int SIZE_UNKNOWN = -1;
     private static final int TOUCH_TOLERANCE = 30;
-
     private static final float MIN_SELECTION_LENGTH = 16f;
-    public static final float UNSPECIFIED = -1f;
-
     private static final int MAX_FACE_COUNT = 3;
     private static final float FACE_EYE_RATIO = 2f;
 
@@ -155,11 +150,16 @@ public class CropView extends GLView {
         TileImageView t = mImageView;
         int rotation = mImageRotation;
         switch (rotation) {
-            case 0: return t.setPosition(centerX, centerY, scale, 0);
-            case 90: return t.setPosition(centerY, inverseX, scale, 90);
-            case 180: return t.setPosition(inverseX, inverseY, scale, 180);
-            case 270: return t.setPosition(inverseY, centerX, scale, 270);
-            default: throw new IllegalArgumentException(String.valueOf(rotation));
+            case 0:
+                return t.setPosition(centerX, centerY, scale, 0);
+            case 90:
+                return t.setPosition(centerY, inverseX, scale, 90);
+            case 180:
+                return t.setPosition(inverseX, inverseY, scale, 180);
+            case 270:
+                return t.setPosition(inverseY, centerX, scale, 270);
+            default:
+                throw new IllegalArgumentException(String.valueOf(rotation));
         }
     }
 
@@ -190,6 +190,65 @@ public class CropView extends GLView {
 
     public int getImageHeight() {
         return mImageHeight;
+    }
+
+    public void setDataModel(TileImageView.Model dataModel, int rotation) {
+        if (((rotation / 90) & 0x01) != 0) {
+            mImageWidth = dataModel.getImageHeight();
+            mImageHeight = dataModel.getImageWidth();
+        } else {
+            mImageWidth = dataModel.getImageWidth();
+            mImageHeight = dataModel.getImageHeight();
+        }
+
+        mImageRotation = rotation;
+
+        mImageView.setModel(dataModel);
+        mAnimation.initialize();
+    }
+
+    public void detectFaces(Bitmap bitmap) {
+        int rotation = mImageRotation;
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        float scale = (float) Math.sqrt(
+                (double) FACE_PIXEL_COUNT / (width * height));
+
+        // faceBitmap is a correctly rotated bitmap, as viewed by a user.
+        Bitmap faceBitmap;
+        if (((rotation / 90) & 1) == 0) {
+            int w = (Math.round(width * scale) & ~1); // must be even
+            int h = Math.round(height * scale);
+            faceBitmap = Bitmap.createBitmap(w, h, Config.RGB_565);
+            Canvas canvas = new Canvas(faceBitmap);
+            canvas.rotate(rotation, w / 2, h / 2);
+            canvas.scale((float) w / width, (float) h / height);
+            canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
+        } else {
+            int w = (Math.round(height * scale) & ~1); // must be even
+            int h = Math.round(width * scale);
+            faceBitmap = Bitmap.createBitmap(w, h, Config.RGB_565);
+            Canvas canvas = new Canvas(faceBitmap);
+            canvas.translate(w / 2, h / 2);
+            canvas.rotate(rotation);
+            canvas.translate(-h / 2, -w / 2);
+            canvas.scale((float) w / height, (float) h / width);
+            canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
+        }
+        new DetectFaceTask(faceBitmap).start();
+    }
+
+    public void initializeHighlightRectangle() {
+        mHighlightRectangle.setInitRectangle();
+        mHighlightRectangle.setVisibility(GLView.VISIBLE);
+    }
+
+    public void resume() {
+        mImageView.prepareTextures();
+    }
+
+    public void pause() {
+        mImageView.freeTextures();
     }
 
     private class FaceHighlightView extends GLView {
@@ -455,8 +514,8 @@ public class CropView extends GLView {
             RectF r = mHighlightRect;
 
             if ((mMovingEdges & MOVE_BLOCK) != 0) {
-                dx = Utils.clamp(dx, -r.left,  1 - r.right);
-                dy = Utils.clamp(dy, -r.top , 1 - r.bottom);
+                dx = Utils.clamp(dx, -r.left, 1 - r.right);
+                dy = Utils.clamp(dy, -r.top, 1 - r.bottom);
                 r.top += dy;
                 r.bottom += dy;
                 r.left += dx;
@@ -706,7 +765,7 @@ public class CropView extends GLView {
                     r.right = r.left + w;
                 } else {
                     float h = r.width() / aspect;
-                    r.top =  (r.top + r.bottom - h) * 0.5f;
+                    r.top = (r.top + r.bottom - h) * 0.5f;
                     r.bottom = r.top + h;
                 }
             }
@@ -735,65 +794,6 @@ public class CropView extends GLView {
                 mHighlightRectangle.setVisibility(GLView.VISIBLE);
             }
         }
-    }
-
-    public void setDataModel(TileImageView.Model dataModel, int rotation) {
-        if (((rotation / 90) & 0x01) != 0) {
-            mImageWidth = dataModel.getImageHeight();
-            mImageHeight = dataModel.getImageWidth();
-        } else {
-            mImageWidth = dataModel.getImageWidth();
-            mImageHeight = dataModel.getImageHeight();
-        }
-
-        mImageRotation = rotation;
-
-        mImageView.setModel(dataModel);
-        mAnimation.initialize();
-    }
-
-    public void detectFaces(Bitmap bitmap) {
-        int rotation = mImageRotation;
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        float scale = (float) Math.sqrt(
-                (double) FACE_PIXEL_COUNT / (width * height));
-
-        // faceBitmap is a correctly rotated bitmap, as viewed by a user.
-        Bitmap faceBitmap;
-        if (((rotation / 90) & 1) == 0) {
-            int w = (Math.round(width * scale) & ~1); // must be even
-            int h = Math.round(height * scale);
-            faceBitmap = Bitmap.createBitmap(w, h, Config.RGB_565);
-            Canvas canvas = new Canvas(faceBitmap);
-            canvas.rotate(rotation, w / 2, h / 2);
-            canvas.scale((float) w / width, (float) h / height);
-            canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
-        } else {
-            int w = (Math.round(height * scale) & ~1); // must be even
-            int h = Math.round(width * scale);
-            faceBitmap = Bitmap.createBitmap(w, h, Config.RGB_565);
-            Canvas canvas = new Canvas(faceBitmap);
-            canvas.translate(w / 2, h / 2);
-            canvas.rotate(rotation);
-            canvas.translate(-h / 2, -w / 2);
-            canvas.scale((float) w / height, (float) h / width);
-            canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
-        }
-        new DetectFaceTask(faceBitmap).start();
-    }
-
-    public void initializeHighlightRectangle() {
-        mHighlightRectangle.setInitRectangle();
-        mHighlightRectangle.setVisibility(GLView.VISIBLE);
-    }
-
-    public void resume() {
-        mImageView.prepareTextures();
-    }
-
-    public void pause() {
-        mImageView.freeTextures();
     }
 }
 

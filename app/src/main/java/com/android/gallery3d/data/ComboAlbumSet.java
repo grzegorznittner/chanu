@@ -16,9 +16,9 @@
 
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.util.Future;
+import com.chanapps.four.gallery3d.R;
 
 // ComboAlbumSet combines multiple media sets into one. It lists all sub
 // media sets from the input album sets.

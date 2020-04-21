@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
+
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -28,8 +29,8 @@ public class SearchActivity extends Activity {
 
     public static void createSearchView(final Activity activity, MenuItem searchMenuItem) {
         try {
-            SearchManager searchManager = (SearchManager)activity.getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView = (SearchView)searchMenuItem.getActionView();
+            SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView) searchMenuItem.getActionView();
             if (searchView == null)
                 return;
             searchView.setSubmitButtonEnabled(true);
@@ -59,8 +60,7 @@ public class SearchActivity extends Activity {
                     return false;
                 }
             });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception creating search view", e);
         }
         ActionBar actionBar = activity.getActionBar();
@@ -119,7 +119,8 @@ public class SearchActivity extends Activity {
             return;
         }
 
-        if (DEBUG) Log.i(TAG, "handleIntent start search /" + boardCode + "/" + threadNo + " q=" + query);
+        if (DEBUG)
+            Log.i(TAG, "handleIntent start search /" + boardCode + "/" + threadNo + " q=" + query);
         ThreadActivity.startActivity(this, boardCode, threadNo, query);
     }
 

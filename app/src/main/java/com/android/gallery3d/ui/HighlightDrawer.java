@@ -15,9 +15,9 @@
  */
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.data.Path;
-
 import android.content.Context;
+
+import com.android.gallery3d.data.Path;
 
 public class HighlightDrawer extends IconDrawer {
     private SelectionManager mSelectionManager;
@@ -34,9 +34,9 @@ public class HighlightDrawer extends IconDrawer {
 
     @Override
     public void draw(GLCanvas canvas, Texture content, int width,
-            int height, int rotation, Path path,
-            int dataSourceType, int mediaType, boolean isPanorama,
-            int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
+                     int height, int rotation, Path path,
+                     int dataSourceType, int mediaType, boolean isPanorama,
+                     int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
         int x = -width / 2;
         int y = -height / 2;
 

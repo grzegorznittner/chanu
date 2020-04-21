@@ -1,10 +1,5 @@
 package com.chanapps.four.fragment;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -17,6 +12,11 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 /**
  * Created with IntelliJ IDEA.
  * User: arley
@@ -24,11 +24,10 @@ import com.chanapps.four.component.URLFormatComponent;
  * Time: 3:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AboutFragment extends PreferenceFragment
-{
+public class AboutFragment extends PreferenceFragment {
     protected static final boolean DEBUG = false;
-    protected static String TAG = AboutFragment.class.getSimpleName();
     protected static final String VERSION_DATE_FORMAT = "yyyy.MM.dd";
+    protected static String TAG = AboutFragment.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,25 +54,24 @@ public class AboutFragment extends PreferenceFragment
         try {
             PackageInfo info = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
             ApplicationInfo appInfo = getActivity().getPackageManager().getApplicationInfo(getActivity().getPackageName(), 0);
-            
+
             String version = info.versionName;
-            
+
             ZipFile zf = new ZipFile(appInfo.sourceDir);
             ZipEntry ze = zf.getEntry("classes.dex");
             long time = ze.getTime();
-            
+
             Date d = new Date(time);
-            
+
             zf.close();
-            
+
             String dateStr = DateFormat.getDateInstance(DateFormat.MEDIUM).format(d);
             String title = String.format(getString(R.string.pref_about_application_version), version);
             String summary = String.format(getString(R.string.pref_about_application_version_sum), dateStr);
             p.setTitle(title);
             p.setSummary(summary);
             if (DEBUG) Log.i(TAG, "set version title=" + title + " summary=" + summary);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception setting version preference", e);
         }
     }

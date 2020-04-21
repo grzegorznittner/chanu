@@ -28,19 +28,6 @@ import com.chanapps.four.gallery3d.R;
  */
 public class EffectsMenu extends RestorableView {
 
-    /**
-     * Listener of toggle changes.
-     */
-    public interface OnToggleListener {
-
-        /**
-         * Listens to the selected status and mapped effects-id of the clicked toggle.
-         *
-         * @return true to make the toggle selected; otherwise, make it unselected.
-         */
-        boolean onToggle(boolean isSelected, int effectsId);
-    }
-
     public EffectsMenu(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -58,7 +45,7 @@ public class EffectsMenu extends RestorableView {
     }
 
     private void setToggleRunnalbe(final OnToggleListener listener, final int toggleId,
-            final int effectsId) {
+                                   final int effectsId) {
         setClickRunnable(toggleId, new Runnable() {
 
             @Override
@@ -70,12 +57,25 @@ public class EffectsMenu extends RestorableView {
     }
 
     public void clearSelected() {
-        ViewGroup menu = (ViewGroup) findViewById(R.id.toggles);
+        ViewGroup menu = findViewById(R.id.toggles);
         for (int i = 0; i < menu.getChildCount(); i++) {
             View toggle = menu.getChildAt(i);
             if (toggle.isSelected()) {
                 setViewSelected(toggle.getId(), false);
             }
         }
+    }
+
+    /**
+     * Listener of toggle changes.
+     */
+    public interface OnToggleListener {
+
+        /**
+         * Listens to the selected status and mapped effects-id of the clicked toggle.
+         *
+         * @return true to make the toggle selected; otherwise, make it unselected.
+         */
+        boolean onToggle(boolean isSelected, int effectsId);
     }
 }

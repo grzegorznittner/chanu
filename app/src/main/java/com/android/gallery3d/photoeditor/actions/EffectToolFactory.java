@@ -20,21 +20,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.photoeditor.PhotoView;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * Factory to create tools that will be used by effect actions.
  */
 public class EffectToolFactory {
 
-    public enum ScalePickerType {
-        LIGHT, SHADOW, COLOR, GENERIC
-    }
-
     private final ViewGroup effectToolPanel;
     private final LayoutInflater inflater;
-
     public EffectToolFactory(ViewGroup effectToolPanel, LayoutInflater inflater) {
         this.effectToolPanel = effectToolPanel;
         this.inflater = inflater;
@@ -100,5 +95,9 @@ public class EffectToolFactory {
 
     public CropView createCropView() {
         return (CropView) createFullscreenTool(R.layout.photoeditor_crop_view);
+    }
+
+    public enum ScalePickerType {
+        LIGHT, SHADOW, COLOR, GENERIC
     }
 }

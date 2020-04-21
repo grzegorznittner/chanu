@@ -31,50 +31,17 @@ public class AlbumSetView extends SlotView {
     private static final String TAG = "AlbumSetView";
     private static final int CACHE_SIZE = 64;
     private static final float PHOTO_DISTANCE = 35f;
-
-    private int mVisibleStart;
-    private int mVisibleEnd;
-
     private final Random mRandom = new Random();
     private final long mSeed = mRandom.nextLong();
-
-    private AlbumSetSlidingWindow mDataWindow;
     private final GalleryActivity mActivity;
     private final LabelSpec mLabelSpec;
-
+    private int mVisibleStart;
+    private int mVisibleEnd;
+    private AlbumSetSlidingWindow mDataWindow;
     private SelectionDrawer mSelectionDrawer;
 
-    public static interface Model {
-        public MediaItem[] getCoverItems(int index);
-        public MediaSet getMediaSet(int index);
-        public int size();
-        public void setActiveWindow(int start, int end);
-        public void setModelListener(ModelListener listener);
-    }
-
-    public static interface ModelListener {
-        public void onWindowContentChanged(int index);
-        public void onSizeChanged(int size);
-    }
-
-    public static class AlbumSetItem {
-        public DisplayItem[] covers;
-        public DisplayItem labelItem;
-        public long setDataVersion;
-    }
-
-    public static class LabelSpec {
-        public int labelBackgroundHeight;
-        public int titleOffset;
-        public int countOffset;
-        public int titleFontSize;
-        public int countFontSize;
-        public int leftMargin;
-        public int iconSize;
-    }
-
     public AlbumSetView(GalleryActivity activity, SelectionDrawer drawer,
-            SlotView.Spec slotViewSpec, LabelSpec labelSpec) {
+                        SlotView.Spec slotViewSpec, LabelSpec labelSpec) {
         super(activity.getAndroidContext());
         mActivity = activity;
         setSelectionDrawer(drawer);
@@ -203,6 +170,54 @@ public class AlbumSetView extends SlotView {
         super.render(canvas);
     }
 
+    public void pause() {
+        for (int i = mVisibleStart, n = mVisibleEnd; i < n; ++i) {
+            freeSlotContent(i, mDataWindow.get(i));
+        }
+        mDataWindow.pause();
+    }
+
+    public void resume() {
+        mDataWindow.resume();
+        for (int i = mVisibleStart, n = mVisibleEnd; i < n; ++i) {
+            putSlotContent(i, mDataWindow.get(i));
+        }
+    }
+
+    public interface Model {
+        MediaItem[] getCoverItems(int index);
+
+        MediaSet getMediaSet(int index);
+
+        int size();
+
+        void setActiveWindow(int start, int end);
+
+        void setModelListener(ModelListener listener);
+    }
+
+    public interface ModelListener {
+        void onWindowContentChanged(int index);
+
+        void onSizeChanged(int size);
+    }
+
+    public static class AlbumSetItem {
+        public DisplayItem[] covers;
+        public DisplayItem labelItem;
+        public long setDataVersion;
+    }
+
+    public static class LabelSpec {
+        public int labelBackgroundHeight;
+        public int titleOffset;
+        public int countOffset;
+        public int titleFontSize;
+        public int countFontSize;
+        public int leftMargin;
+        public int iconSize;
+    }
+
     private class MyCacheListener implements AlbumSetSlidingWindow.Listener {
 
         public void onSizeChanged(int size) {
@@ -227,20 +242,6 @@ public class AlbumSetView extends SlotView {
 
         public void onContentInvalidated() {
             invalidate();
-        }
-    }
-
-    public void pause() {
-        for (int i = mVisibleStart, n = mVisibleEnd; i < n; ++i) {
-            freeSlotContent(i, mDataWindow.get(i));
-        }
-        mDataWindow.pause();
-    }
-
-    public void resume() {
-        mDataWindow.resume();
-        for (int i = mVisibleStart, n = mVisibleEnd; i < n; ++i) {
-            putSlotContent(i, mDataWindow.get(i));
         }
     }
 }

@@ -36,61 +36,6 @@ public class Path {
         mSegment = segment;
     }
 
-	public Path getChild(String segment) {
-        synchronized (Path.class) {
-            if (mChildren == null) {
-                mChildren = new IdentityCache<String, Path>();
-            } else {
-                Path p = mChildren.get(segment);
-                if (p != null) return p;
-            }
-
-            Path p = new Path(this, segment);
-            mChildren.put(segment, p);
-            return p;
-        }
-    }
-
-    public Path getParent() {
-        synchronized (Path.class) {
-            return mParent;
-        }
-    }
-
-    public Path getChild(int segment) {
-        return getChild(String.valueOf(segment));
-    }
-
-    public Path getChild(long segment) {
-        return getChild(String.valueOf(segment));
-    }
-
-    public void setObject(MediaObject object) {
-        synchronized (Path.class) {
-            Utils.assertTrue(mObject == null || mObject.get() == null);
-            mObject = new WeakReference<MediaObject>(object);
-        }
-    }
-
-    public MediaObject getObject() {
-        synchronized (Path.class) {
-            return (mObject == null) ? null : mObject.get();
-        }
-    }
-
-    @Override
-    public String toString() {
-        synchronized (Path.class) {
-            StringBuilder sb = new StringBuilder();
-            String[] segments = split();
-            for (int i = 0; i < segments.length; i++) {
-                sb.append("/");
-                sb.append(segments[i]);
-            }
-            return sb.toString();
-        }
-    }
-
     public static Path fromString(String s) {
         synchronized (Path.class) {
             String[] segments = split(s);
@@ -99,21 +44,6 @@ public class Path {
                 current = current.getChild(segments[i]);
             }
             return current;
-        }
-    }
-
-    public String[] split() {
-        synchronized (Path.class) {
-            int n = 0;
-            for (Path p = this; p != sRoot; p = p.mParent) {
-                n++;
-            }
-            String[] segments = new String[n];
-            int i = n - 1;
-            for (Path p = this; p != sRoot; p = p.mParent) {
-                segments[i--] = p.mSegment;
-            }
-            return segments;
         }
     }
 
@@ -149,7 +79,7 @@ public class Path {
     // For example, "{foo,bar,baz}" -> {"foo","bar","baz"}.
     public static String[] splitSequence(String s) {
         int n = s.length();
-        if (s.charAt(0) != '{' || s.charAt(n-1) != '}') {
+        if (s.charAt(0) != '{' || s.charAt(n - 1) != '}') {
             throw new RuntimeException("bad sequence: " + s);
         }
         ArrayList<String> segments = new ArrayList<String>();
@@ -172,31 +102,6 @@ public class Path {
         String[] result = new String[segments.size()];
         segments.toArray(result);
         return result;
-    }
-
-    public String getPrefix() {
-        synchronized (Path.class) {
-            Path current = this;
-            if (current == sRoot) return "";
-            while (current.mParent != sRoot) {
-                current = current.mParent;
-            }
-            return current.mSegment;
-        }
-    }
-
-    public String getSuffix() {
-        // We don't need lock because mSegment is final.
-        return mSegment;
-    }
-
-    public String getSuffix(int level) {
-        // We don't need lock because mSegment and mParent are final.
-        Path p = this;
-        while (level-- != 0) {
-            p = p.mParent;
-        }
-        return p.mSegment;
     }
 
     // Below are for testing/debugging only
@@ -235,17 +140,112 @@ public class Path {
         }
     }
 
+    public Path getChild(String segment) {
+        synchronized (Path.class) {
+            if (mChildren == null) {
+                mChildren = new IdentityCache<String, Path>();
+            } else {
+                Path p = mChildren.get(segment);
+                if (p != null) return p;
+            }
+
+            Path p = new Path(this, segment);
+            mChildren.put(segment, p);
+            return p;
+        }
+    }
+
+    public Path getParent() {
+        synchronized (Path.class) {
+            return mParent;
+        }
+    }
+
+    public Path getChild(int segment) {
+        return getChild(String.valueOf(segment));
+    }
+
+    public Path getChild(long segment) {
+        return getChild(String.valueOf(segment));
+    }
+
+    public MediaObject getObject() {
+        synchronized (Path.class) {
+            return (mObject == null) ? null : mObject.get();
+        }
+    }
+
+    public void setObject(MediaObject object) {
+        synchronized (Path.class) {
+            Utils.assertTrue(mObject == null || mObject.get() == null);
+            mObject = new WeakReference<MediaObject>(object);
+        }
+    }
+
     @Override
-	public boolean equals(Object o) {
-    	if (o != null && o instanceof Path) {
-    		Path op = (Path)o;
-    		if (mParent != null) {
-    			return mSegment.equals(op.mSegment) && mParent.equals(op.mParent);
-    		} else {
-    			return mSegment.equals(op.mSegment);
-    		}
-    	} else {
-    		return false;
-    	}
-	}
+    public String toString() {
+        synchronized (Path.class) {
+            StringBuilder sb = new StringBuilder();
+            String[] segments = split();
+            for (int i = 0; i < segments.length; i++) {
+                sb.append("/");
+                sb.append(segments[i]);
+            }
+            return sb.toString();
+        }
+    }
+
+    public String[] split() {
+        synchronized (Path.class) {
+            int n = 0;
+            for (Path p = this; p != sRoot; p = p.mParent) {
+                n++;
+            }
+            String[] segments = new String[n];
+            int i = n - 1;
+            for (Path p = this; p != sRoot; p = p.mParent) {
+                segments[i--] = p.mSegment;
+            }
+            return segments;
+        }
+    }
+
+    public String getPrefix() {
+        synchronized (Path.class) {
+            Path current = this;
+            if (current == sRoot) return "";
+            while (current.mParent != sRoot) {
+                current = current.mParent;
+            }
+            return current.mSegment;
+        }
+    }
+
+    public String getSuffix() {
+        // We don't need lock because mSegment is final.
+        return mSegment;
+    }
+
+    public String getSuffix(int level) {
+        // We don't need lock because mSegment and mParent are final.
+        Path p = this;
+        while (level-- != 0) {
+            p = p.mParent;
+        }
+        return p.mSegment;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o != null && o instanceof Path) {
+            Path op = (Path) o;
+            if (mParent != null) {
+                return mSegment.equals(op.mSegment) && mParent.equals(op.mParent);
+            } else {
+                return mSegment.equals(op.mSegment);
+            }
+        } else {
+            return false;
+        }
+    }
 }

@@ -27,6 +27,12 @@ public class Photo {
     private int width;
     private int height;
 
+    private Photo(int texture, int width, int height) {
+        this.texture = texture;
+        this.width = width;
+        this.height = height;
+    }
+
     /**
      * Factory method to ensure every Photo instance holds a valid texture.
      */
@@ -37,12 +43,6 @@ public class Photo {
 
     public static Photo create(int width, int height) {
         return new Photo(RendererUtils.createTexture(), width, height);
-    }
-
-    private Photo(int texture, int width, int height) {
-        this.texture = texture;
-        this.width = width;
-        this.height = height;
     }
 
     public int texture() {

@@ -17,12 +17,12 @@
 package com.android.gallery3d.ui;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Bitmap.Config;
 
 import com.android.gallery3d.app.GalleryContext;
 import com.android.gallery3d.common.Utils;
@@ -73,11 +73,23 @@ public class TileImageView extends GLView {
     private static final int STATE_DECODE_FAIL = 0x10;
     private static final int STATE_RECYCLING = 0x20;
     private static final int STATE_RECYCLED = 0x40;
-
-    private Model mModel;
+    private final RectF mSourceRect = new RectF();
+    private final RectF mTargetRect = new RectF();
+    private final HashMap<Long, Tile> mActiveTiles = new HashMap<Long, Tile>();
+    // Temp variables to avoid memory allocation
+    private final Rect mTileRange = new Rect();
+    private final Rect[] mActiveRange = {new Rect(), new Rect()};
+    private final TileUploader mTileUploader = new TileUploader();
     protected BitmapTexture mBackupImage;
     protected int mLevelCount;  // cache the value of mScaledBitmaps.length
-
+    // The width and height of the full-sized bitmap
+    protected int mImageWidth = SIZE_UNKNOWN;
+    protected int mImageHeight = SIZE_UNKNOWN;
+    protected int mCenterX;
+    protected int mCenterY;
+    protected float mScale;
+    protected int mRotation;
+    private Model mModel;
     // The mLevel variable indicates which level of bitmap we should use.
     // Level 0 means the original full-sized bitmap, and a larger value means
     // a smaller scaled bitmap (The width and height of each scaled bitmap is
@@ -85,58 +97,63 @@ public class TileImageView extends GLView {
     // use the bitmap in mScaledBitmaps[mLevel] for display, otherwise the value
     // is mLevelCount, and that means we use mBackupTexture for display.
     private int mLevel = 0;
-
     // The offsets of the (left, top) of the upper-left tile to the (left, top)
     // of the view.
     private int mOffsetX;
     private int mOffsetY;
-
     private int mUploadQuota;
     private boolean mRenderComplete;
-
-    private final RectF mSourceRect = new RectF();
-    private final RectF mTargetRect = new RectF();
-
-    private final HashMap<Long, Tile> mActiveTiles = new HashMap<Long, Tile>();
-
     // The following three queue is guarded by TileImageView.this
     private TileQueue mRecycledQueue = new TileQueue();
     private TileQueue mUploadQueue = new TileQueue();
     private TileQueue mDecodeQueue = new TileQueue();
-
-    // The width and height of the full-sized bitmap
-    protected int mImageWidth = SIZE_UNKNOWN;
-    protected int mImageHeight = SIZE_UNKNOWN;
-
-    protected int mCenterX;
-    protected int mCenterY;
-    protected float mScale;
-    protected int mRotation;
-
-    // Temp variables to avoid memory allocation
-    private final Rect mTileRange = new Rect();
-    private final Rect mActiveRange[] = {new Rect(), new Rect()};
-
-    private final TileUploader mTileUploader = new TileUploader();
     private boolean mIsTextureFreed;
     private Future<Void> mTileDecoder;
     private ThreadPool mThreadPool;
     private boolean mBackgroundTileUploaded;
 
-    public static interface Model {
-        public int getLevelCount();
-        public Bitmap getBackupImage();
-        public int getImageWidth();
-        public int getImageHeight();
-
-        // The method would be called in another thread
-        public Bitmap getTile(int level, int x, int y, int tileSize);
-        public boolean isFailedToLoad();
-    }
-
     public TileImageView(GalleryContext context) {
         mThreadPool = context.getThreadPool();
         mTileDecoder = mThreadPool.submit(new TileDecoder());
+    }
+
+    private static Long makeTileKey(int x, int y, int level) {
+        long result = x;
+        result = (result << 16) | y;
+        result = (result << 16) | level;
+        return Long.valueOf(result);
+    }
+
+    // TODO: avoid drawing the unused part of the textures.
+    static boolean drawTile(
+            Tile tile, GLCanvas canvas, RectF source, RectF target) {
+        while (true) {
+            if (tile.isContentValid(canvas)) {
+                // offset source rectangle for the texture border.
+                source.offset(TILE_BORDER, TILE_BORDER);
+                canvas.drawTexture(tile, source, target);
+                return true;
+            }
+
+            // Parent can be divided to four quads and tile is one of the four.
+            Tile parent = tile.getParentTile();
+            if (parent == null) return false;
+            if (tile.mX == parent.mX) {
+                source.left /= 2f;
+                source.right /= 2f;
+            } else {
+                source.left = (TILE_SIZE + source.left) / 2f;
+                source.right = (TILE_SIZE + source.right) / 2f;
+            }
+            if (tile.mY == parent.mY) {
+                source.top /= 2f;
+                source.bottom /= 2f;
+            } else {
+                source.top = (TILE_SIZE + source.top) / 2f;
+                source.bottom = (TILE_SIZE + source.bottom) / 2f;
+            }
+            tile = parent;
+        }
     }
 
     public void setModel(Model model) {
@@ -223,7 +240,7 @@ public class TileImageView extends GLView {
         fromLevel = Math.max(0, Math.min(fromLevel, mLevelCount - 2));
         endLevel = Math.min(fromLevel + 2, mLevelCount);
 
-        Rect range[] = mActiveRange;
+        Rect[] range = mActiveRange;
         for (int i = fromLevel; i < endLevel; ++i) {
             getRange(range[i - fromLevel], centerX, centerY, i, rotation);
         }
@@ -284,7 +301,7 @@ public class TileImageView extends GLView {
     // (cX, cY) is the point on the original bitmap which will be put in the
     // center of the ImageViewer.
     private void getRange(Rect out,
-            int cX, int cY, int level, float scale, int rotation) {
+                          int cX, int cY, int level, float scale, int rotation) {
 
         double radians = Math.toRadians(-rotation);
         double w = getWidth();
@@ -484,11 +501,77 @@ public class TileImageView extends GLView {
         return mActiveTiles.get(makeTileKey(x, y, level));
     }
 
-    private static Long makeTileKey(int x, int y, int level) {
-        long result = x;
-        result = (result << 16) | y;
-        result = (result << 16) | level;
-        return Long.valueOf(result);
+    // Draw the tile to a square at canvas that locates at (x, y) and
+    // has a side length of length.
+    public void drawTile(GLCanvas canvas,
+                         int tx, int ty, int level, float x, float y, float length) {
+        RectF source = mSourceRect;
+        RectF target = mTargetRect;
+        target.set(x, y, x + length, y + length);
+        source.set(0, 0, TILE_SIZE, TILE_SIZE);
+
+        Tile tile = getTile(tx, ty, level);
+        if (tile != null) {
+            if (!tile.isContentValid(canvas)) {
+                if (tile.mTileState == STATE_DECODED) {
+                    if (mUploadQuota > 0) {
+                        --mUploadQuota;
+                        tile.updateContent(canvas);
+                    } else {
+                        mRenderComplete = false;
+                    }
+                } else if (tile.mTileState != STATE_DECODE_FAIL) {
+                    mRenderComplete = false;
+                    queueForDecode(tile);
+                }
+            }
+            if (drawTile(tile, canvas, source, target)) return;
+        }
+        if (mBackupImage != null) {
+            BasicTexture backup = mBackupImage;
+            int size = TILE_SIZE << level;
+            float scaleX = (float) backup.getWidth() / mImageWidth;
+            float scaleY = (float) backup.getHeight() / mImageHeight;
+            source.set(tx * scaleX, ty * scaleY, (tx + size) * scaleX,
+                    (ty + size) * scaleY);
+            canvas.drawTexture(backup, source, target);
+        }
+    }
+
+    public interface Model {
+        int getLevelCount();
+
+        Bitmap getBackupImage();
+
+        int getImageWidth();
+
+        int getImageHeight();
+
+        // The method would be called in another thread
+        Bitmap getTile(int level, int x, int y, int tileSize);
+
+        boolean isFailedToLoad();
+    }
+
+    private static class TileQueue {
+        private Tile mHead;
+
+        public Tile pop() {
+            Tile tile = mHead;
+            if (tile != null) mHead = tile.mNext;
+            return tile;
+        }
+
+        public boolean push(Tile tile) {
+            boolean wasEmpty = mHead == null;
+            tile.mNext = mHead;
+            mHead = tile;
+            return wasEmpty;
+        }
+
+        public void clean() {
+            mHead = null;
+        }
     }
 
     private class TileUploader implements GLRoot.OnGLIdleListener {
@@ -511,75 +594,6 @@ public class TileImageView extends GLView {
             }
             mActive.set(tile != null);
             return tile != null;
-        }
-    }
-
-    // Draw the tile to a square at canvas that locates at (x, y) and
-    // has a side length of length.
-    public void drawTile(GLCanvas canvas,
-            int tx, int ty, int level, float x, float y, float length) {
-        RectF source = mSourceRect;
-        RectF target = mTargetRect;
-        target.set(x, y, x + length, y + length);
-        source.set(0, 0, TILE_SIZE, TILE_SIZE);
-
-        Tile tile = getTile(tx, ty, level);
-        if (tile != null) {
-            if (!tile.isContentValid(canvas)) {
-                if (tile.mTileState == STATE_DECODED) {
-                    if (mUploadQuota > 0) {
-                        --mUploadQuota;
-                        tile.updateContent(canvas);
-                    } else {
-                        mRenderComplete = false;
-                    }
-                } else if (tile.mTileState != STATE_DECODE_FAIL){
-                    mRenderComplete = false;
-                    queueForDecode(tile);
-                }
-            }
-            if (drawTile(tile, canvas, source, target)) return;
-        }
-        if (mBackupImage != null) {
-            BasicTexture backup = mBackupImage;
-            int size = TILE_SIZE << level;
-            float scaleX = (float) backup.getWidth() / mImageWidth;
-            float scaleY = (float) backup.getHeight() / mImageHeight;
-            source.set(tx * scaleX, ty * scaleY, (tx + size) * scaleX,
-                    (ty + size) * scaleY);
-            canvas.drawTexture(backup, source, target);
-        }
-    }
-
-    // TODO: avoid drawing the unused part of the textures.
-    static boolean drawTile(
-            Tile tile, GLCanvas canvas, RectF source, RectF target) {
-        while (true) {
-            if (tile.isContentValid(canvas)) {
-                // offset source rectangle for the texture border.
-                source.offset(TILE_BORDER, TILE_BORDER);
-                canvas.drawTexture(tile, source, target);
-                return true;
-            }
-
-            // Parent can be divided to four quads and tile is one of the four.
-            Tile parent = tile.getParentTile();
-            if (parent == null) return false;
-            if (tile.mX == parent.mX) {
-                source.left /= 2f;
-                source.right /= 2f;
-            } else {
-                source.left = (TILE_SIZE + source.left) / 2f;
-                source.right = (TILE_SIZE + source.right) / 2f;
-            }
-            if (tile.mY == parent.mY) {
-                source.top /= 2f;
-                source.bottom /= 2f;
-            } else {
-                source.top = (TILE_SIZE + source.top) / 2f;
-                source.bottom = (TILE_SIZE + source.bottom) / 2f;
-            }
-            tile = parent;
         }
     }
 
@@ -619,22 +633,22 @@ public class TileImageView extends GLView {
         @Override
         protected Bitmap onGetBitmap() {
             // Utils.assertTrue(mTileState == STATE_DECODED);
-        	// instead of failing when state is not decoded we create empty black filled tile
-        	if (mTileState == STATE_DECODED) {
-	            Bitmap bitmap = mDecodedTile;
-	            mDecodedTile = null;
-	            mTileState = STATE_ACTIVATED;
-	            return bitmap;
-        	} else {
-        		mDecodedTile = null;
-	            mTileState = STATE_ACTIVATED;
-	            
+            // instead of failing when state is not decoded we create empty black filled tile
+            if (mTileState == STATE_DECODED) {
+                Bitmap bitmap = mDecodedTile;
+                mDecodedTile = null;
+                mTileState = STATE_ACTIVATED;
+                return bitmap;
+            } else {
+                mDecodedTile = null;
+                mTileState = STATE_ACTIVATED;
+
                 int borderLength = TILE_BORDER << mTileLevel;
                 Bitmap bitmap = Bitmap.createBitmap(mX - borderLength, mY - borderLength, Config.ARGB_8888);
                 Canvas canvas = new Canvas(bitmap);
                 canvas.drawColor(Color.WHITE);
-	            return bitmap;
-        	}
+                return bitmap;
+            }
         }
 
         @Override
@@ -643,8 +657,7 @@ public class TileImageView extends GLView {
             if (mDecodedTile != null) {
                 options.outWidth = mDecodedTile.getWidth();
                 options.outHeight = mDecodedTile.getHeight();
-            }
-            else {
+            } else {
                 options.outWidth = 0;
                 options.outHeight = 0;
             }
@@ -673,27 +686,6 @@ public class TileImageView extends GLView {
         }
     }
 
-    private static class TileQueue {
-        private Tile mHead;
-
-        public Tile pop() {
-            Tile tile = mHead;
-            if (tile != null) mHead = tile.mNext;
-            return tile;
-        }
-
-        public boolean push(Tile tile) {
-            boolean wasEmpty = mHead == null;
-            tile.mNext = mHead;
-            mHead = tile;
-            return wasEmpty;
-        }
-
-        public void clean() {
-            mHead = null;
-        }
-    }
-
     private class TileDecoder implements ThreadPool.Job<Void> {
 
         private CancelListener mNotifier = new CancelListener() {
@@ -711,7 +703,7 @@ public class TileImageView extends GLView {
             jc.setCancelListener(mNotifier);
             while (!jc.isCancelled()) {
                 Tile tile = null;
-                synchronized(TileImageView.this) {
+                synchronized (TileImageView.this) {
                     tile = mDecodeQueue.pop();
                     if (tile == null && !jc.isCancelled()) {
                         Utils.waitWithoutInterrupt(TileImageView.this);

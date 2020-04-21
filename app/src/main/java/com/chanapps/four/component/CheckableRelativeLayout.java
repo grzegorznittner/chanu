@@ -7,12 +7,14 @@ package com.chanapps.four.component;
  * Time: 5:46 PM
  * To change this template use File | Settings | File Templates.
  */
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 import android.widget.RelativeLayout;
+
 import com.chanapps.four.activity.R;
 
 public class CheckableRelativeLayout extends RelativeLayout implements Checkable {

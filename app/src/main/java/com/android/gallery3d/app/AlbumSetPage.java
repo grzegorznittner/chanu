@@ -27,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaObject;
@@ -38,7 +37,6 @@ import com.android.gallery3d.ui.ActionModeHandler.ActionModeListener;
 import com.android.gallery3d.ui.AlbumSetView;
 import com.android.gallery3d.ui.DetailsHelper;
 import com.android.gallery3d.ui.DetailsHelper.CloseListener;
-import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.ui.GLCanvas;
 import com.android.gallery3d.ui.GLView;
 import com.android.gallery3d.ui.GridDrawer;
@@ -50,32 +48,29 @@ import com.android.gallery3d.ui.SelectionManager;
 import com.android.gallery3d.ui.SlotView;
 import com.android.gallery3d.ui.StaticBackground;
 import com.android.gallery3d.util.Future;
+import com.android.gallery3d.util.GalleryUtils;
+import com.chanapps.four.gallery3d.R;
 
 public class AlbumSetPage extends ActivityState implements
         SelectionManager.SelectionListener, GalleryActionBar.ClusterRunner,
         EyePosition.EyePositionListener, MediaSet.SyncListener {
-    @SuppressWarnings("unused")
-    private static final String TAG = "AlbumSetPage";
-
     public static final String KEY_MEDIA_PATH = "media-path";
     public static final String KEY_SET_TITLE = "set-title";
     public static final String KEY_SET_SUBTITLE = "set-subtitle";
     public static final String KEY_SELECTED_CLUSTER_TYPE = "selected-cluster";
-
+    @SuppressWarnings("unused")
+    private static final String TAG = "AlbumSetPage";
     private static final int DATA_CACHE_SIZE = 256;
     private static final int REQUEST_DO_ANIMATION = 1;
     private static final int MSG_GOTO_MANAGE_CACHE_PAGE = 1;
-
+    protected SelectionManager mSelectionManager;
     private boolean mIsActive = false;
     private StaticBackground mStaticBackground;
     private AlbumSetView mAlbumSetView;
-
     private MediaSet mMediaSet;
     private String mSubtitle;
     private boolean mShowClusterMenu;
     private int mSelectedAction;
-
-    protected SelectionManager mSelectionManager;
     private AlbumSetDataAdapter mAlbumSetDataAdapter;
     private GridDrawer mGridDrawer;
     private HighlightDrawer mHighlightDrawer;
@@ -94,11 +89,8 @@ public class AlbumSetPage extends ActivityState implements
     private float mX;
     private float mY;
     private float mZ;
-
-    private Future<Integer> mSyncTask = null;
-
     private final GLView mRootPane = new GLView() {
-        private final float mMatrix[] = new float[16];
+        private final float[] mMatrix = new float[16];
 
         @Override
         protected void onLayout(
@@ -131,6 +123,7 @@ public class AlbumSetPage extends ActivityState implements
             canvas.restore();
         }
     };
+    private Future<Integer> mSyncTask = null;
 
     @Override
     public void onEyePositionChanged(float x, float y, float z) {
@@ -155,7 +148,7 @@ public class AlbumSetPage extends ActivityState implements
         }
     }
 
-    private void savePositions(int slotIndex, int center[]) {
+    private void savePositions(int slotIndex, int[] center) {
         Rect offset = new Rect();
         mRootPane.getBoundsOf(mAlbumSetView, offset);
         mAlbumSetView.savePositions(PositionRepository.getInstance(mActivity));
@@ -406,7 +399,7 @@ public class AlbumSetPage extends ActivityState implements
             }
             return true;
         } else {
-        	return false;
+            return false;
         }
     }
 
@@ -424,6 +417,7 @@ public class AlbumSetPage extends ActivityState implements
                 PositionRepository.getInstance(mActivity);
         mAlbumSetView.startTransition(new PositionProvider() {
             private final Position mTempPosition = new Position();
+
             public Position getPosition(long identity, Position target) {
                 Position p = repository.get(identity);
                 if (p == null) {
@@ -499,17 +493,17 @@ public class AlbumSetPage extends ActivityState implements
         Handler handler = mActivity.getHandler();
         if (handler != null)
             handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!mIsActive) return;
-                mediaSet.notifyContentChanged(); // force reload to handle spinner
+                @Override
+                public void run() {
+                    if (!mIsActive) return;
+                    mediaSet.notifyContentChanged(); // force reload to handle spinner
 
-                if (resultCode == MediaSet.SYNC_RESULT_ERROR) {
-                    Toast.makeText((Context) mActivity, R.string.sync_album_set_error,
-                            Toast.LENGTH_LONG).show();
+                    if (resultCode == MediaSet.SYNC_RESULT_ERROR) {
+                        Toast.makeText((Context) mActivity, R.string.sync_album_set_error,
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
-            }
-        });
+            });
     }
 
     private class MyLoadingListener implements LoadingListener {
@@ -524,7 +518,7 @@ public class AlbumSetPage extends ActivityState implements
                 // Request sync in case the mediaSet hasn't been sync'ed before.
                 mSyncTask = mMediaSet.requestSync(AlbumSetPage.this);
             }
-            if (mSyncTask.isDone()){
+            if (mSyncTask.isDone()) {
                 // The mediaSet is in sync. Turn off the loading indicator.
                 GalleryUtils.setSpinnerVisibility((Activity) mActivity, false);
 
@@ -542,6 +536,7 @@ public class AlbumSetPage extends ActivityState implements
 
     private class MyDetailsSource implements DetailsHelper.DetailsSource {
         private int mIndex;
+
         public int size() {
             return mAlbumSetDataAdapter.size();
         }

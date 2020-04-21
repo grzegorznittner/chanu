@@ -122,6 +122,18 @@ public class BlobCache {
     private byte[] mIndexHeader = new byte[INDEX_HEADER_SIZE];
     private byte[] mBlobHeader = new byte[BLOB_HEADER_SIZE];
     private Adler32 mAdler32 = new Adler32();
+    // This method is for one-off lookup. For repeated lookup, use the version
+    // accepting LookupRequest to avoid repeated memory allocation.
+    private LookupRequest mLookupRequest = new LookupRequest();
+    // Tries to look up a key in the specified hash region.
+    // Returns true if the lookup is successful.
+    // The slot offset in the index file is saved in mSlotOffset. If the lookup
+    // is successful, it's the slot found. Otherwise it's the slot suitable for
+    // insertion.
+    // If the lookup is successful, the file offset is also saved in
+    // mFileOffset.
+    private int mSlotOffset;
+    private int mFileOffset;
 
     // Creates the cache. Three files will be created:
     // path + ".idx", path + ".0", and path + ".1"
@@ -135,7 +147,7 @@ public class BlobCache {
     }
 
     public BlobCache(String path, int maxEntries, int maxBytes, boolean reset,
-            int version) throws IOException {
+                     int version) throws IOException {
         mIndexFile = new RandomAccessFile(path + ".idx", "rw");
         mDataFile0 = new RandomAccessFile(path + ".0", "rw");
         mDataFile1 = new RandomAccessFile(path + ".1", "rw");
@@ -166,6 +178,44 @@ public class BlobCache {
             new File(path).delete();
         } catch (Throwable t) {
             // ignore;
+        }
+    }
+
+    static void closeSilently(Closeable c) {
+        if (c == null) return;
+        try {
+            c.close();
+        } catch (Throwable t) {
+            // do nothing
+        }
+    }
+
+    static int readInt(byte[] buf, int offset) {
+        return (buf[offset] & 0xff)
+                | ((buf[offset + 1] & 0xff) << 8)
+                | ((buf[offset + 2] & 0xff) << 16)
+                | ((buf[offset + 3] & 0xff) << 24);
+    }
+
+    static long readLong(byte[] buf, int offset) {
+        long result = buf[offset + 7] & 0xff;
+        for (int i = 6; i >= 0; i--) {
+            result = (result << 8) | (buf[offset + i] & 0xff);
+        }
+        return result;
+    }
+
+    static void writeInt(byte[] buf, int offset, int value) {
+        for (int i = 0; i < 4; i++) {
+            buf[offset + i] = (byte) (value & 0xff);
+            value >>= 8;
+        }
+    }
+
+    static void writeLong(byte[] buf, int offset, long value) {
+        for (int i = 0; i < 8; i++) {
+            buf[offset + i] = (byte) (value & 0xff);
+            value >>= 8;
         }
     }
 
@@ -349,7 +399,7 @@ public class BlobCache {
     private void clearHash(int hashStart) {
         byte[] zero = new byte[1024];
         mIndexBuffer.position(hashStart);
-        for (int count = mMaxEntries * 12; count > 0;) {
+        for (int count = mMaxEntries * 12; count > 0; ) {
             int todo = Math.min(count, 1024);
             mIndexBuffer.put(zero, 0, todo);
             count -= todo;
@@ -398,15 +448,6 @@ public class BlobCache {
         writeInt(mIndexHeader, IH_ACTIVE_BYTES, mActiveBytes);
     }
 
-    public static class LookupRequest {
-        public long key;        // input: the key to find
-        public byte[] buffer;   // input/output: the buffer to store the blob
-        public int length;      // output: the length of the blob
-    }
-
-    // This method is for one-off lookup. For repeated lookup, use the version
-    // accepting LookupRequest to avoid repeated memory allocation.
-    private LookupRequest mLookupRequest = new LookupRequest();
     public byte[] lookup(long key) throws IOException {
         mLookupRequest.key = key;
         mLookupRequest.buffer = null;
@@ -446,7 +487,7 @@ public class BlobCache {
                 // If we don't have enough space to insert this blob into
                 // the active file, just return it.
                 if (mActiveBytes + BLOB_HEADER_SIZE + req.length > mMaxBytes
-                    || mActiveEntries * 2 >= mMaxEntries) {
+                        || mActiveEntries * 2 >= mMaxEntries) {
                     return true;
                 }
                 // Otherwise copy it over.
@@ -466,7 +507,6 @@ public class BlobCache {
         return false;
     }
 
-
     // Copies the blob for the specified offset in the specified file to
     // req.buffer. If req.buffer is null or too small, allocate a buffer and
     // assign it to req.buffer.
@@ -474,7 +514,7 @@ public class BlobCache {
     // not sync with the data file, or one of them is corrupted). The length
     // of the blob is stored in the req.length variable.
     private boolean getBlob(RandomAccessFile file, int offset,
-            LookupRequest req) throws IOException {
+                            LookupRequest req) throws IOException {
         byte[] header = mBlobHeader;
         long oldPosition = file.getFilePointer();
         try {
@@ -515,7 +555,7 @@ public class BlobCache {
                 return false;
             }
             return true;
-        } catch (Throwable t)  {
+        } catch (Throwable t) {
             Log.e(TAG, "getBlob failed.", t);
             return false;
         } finally {
@@ -523,15 +563,6 @@ public class BlobCache {
         }
     }
 
-    // Tries to look up a key in the specified hash region.
-    // Returns true if the lookup is successful.
-    // The slot offset in the index file is saved in mSlotOffset. If the lookup
-    // is successful, it's the slot found. Otherwise it's the slot suitable for
-    // insertion.
-    // If the lookup is successful, the file offset is also saved in
-    // mFileOffset.
-    private int mSlotOffset;
-    private int mFileOffset;
     private boolean lookupInternal(long key, int hashStart) {
         int slot = (int) (key % mMaxEntries);
         if (slot < 0) slot += mMaxEntries;
@@ -613,41 +644,9 @@ public class BlobCache {
         return (int) mAdler32.getValue();
     }
 
-    static void closeSilently(Closeable c) {
-        if (c == null) return;
-        try {
-            c.close();
-        } catch (Throwable t) {
-            // do nothing
-        }
-    }
-
-    static int readInt(byte[] buf, int offset) {
-        return (buf[offset] & 0xff)
-                | ((buf[offset + 1] & 0xff) << 8)
-                | ((buf[offset + 2] & 0xff) << 16)
-                | ((buf[offset + 3] & 0xff) << 24);
-    }
-
-    static long readLong(byte[] buf, int offset) {
-        long result = buf[offset + 7] & 0xff;
-        for (int i = 6; i >= 0; i--) {
-            result = (result << 8) | (buf[offset + i] & 0xff);
-        }
-        return result;
-    }
-
-    static void writeInt(byte[] buf, int offset, int value) {
-        for (int i = 0; i < 4; i++) {
-            buf[offset + i] = (byte) (value & 0xff);
-            value >>= 8;
-        }
-    }
-
-    static void writeLong(byte[] buf, int offset, long value) {
-        for (int i = 0; i < 8; i++) {
-            buf[offset + i] = (byte) (value & 0xff);
-            value >>= 8;
-        }
+    public static class LookupRequest {
+        public long key;        // input: the key to find
+        public byte[] buffer;   // input/output: the buffer to store the blob
+        public int length;      // output: the length of the blob
     }
 }

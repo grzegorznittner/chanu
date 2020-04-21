@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
@@ -16,8 +17,7 @@ import com.chanapps.four.component.URLFormatComponent;
  * Time: 3:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PurchaseFragment extends PreferenceFragment
-{
+public class PurchaseFragment extends PreferenceFragment {
     protected static final boolean DEBUG = false;
     protected static String TAG = PurchaseFragment.class.getSimpleName();
 

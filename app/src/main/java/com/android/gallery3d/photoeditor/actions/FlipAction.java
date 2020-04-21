@@ -19,9 +19,9 @@ package com.android.gallery3d.photoeditor.actions;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.photoeditor.PhotoView;
 import com.android.gallery3d.photoeditor.filters.FlipFilter;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * An action handling flip effect.
@@ -49,12 +49,12 @@ public class FlipAction extends EffectAction {
         flipView.setOnFlipChangeListener(new FlipView.OnFlipChangeListener() {
 
             // Directly transform photo-view because running the flip filter isn't fast enough.
-            PhotoView photoView = (PhotoView) flipView.getRootView().findViewById(
+            PhotoView photoView = flipView.getRootView().findViewById(
                     R.id.photo_view);
 
             @Override
             public void onAngleChanged(float horizontalDegrees, float verticalDegrees,
-                    boolean fromUser) {
+                                       boolean fromUser) {
                 if (fromUser) {
                     horizontalFlipDegrees = horizontalDegrees;
                     verticalFlipDegrees = verticalDegrees;
@@ -77,7 +77,7 @@ public class FlipAction extends EffectAction {
             }
 
             private void transformPhotoView(final float horizontalDegrees,
-                    final float verticalDegrees) {
+                                            final float verticalDegrees) {
                 // Remove the outdated flip change before queuing a new one.
                 if (queuedFlipChange != null) {
                     photoView.remove(queuedFlipChange);

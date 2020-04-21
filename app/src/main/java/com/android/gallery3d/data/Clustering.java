@@ -20,7 +20,10 @@ import java.util.ArrayList;
 
 public abstract class Clustering {
     public abstract void run(MediaSet baseSet);
+
     public abstract int getNumberOfClusters();
+
     public abstract ArrayList<Path> getCluster(int index);
+
     public abstract String getClusterName(int index);
 }

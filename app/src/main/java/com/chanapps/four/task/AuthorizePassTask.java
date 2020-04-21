@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
@@ -17,6 +18,7 @@ import com.chanapps.four.multipartmime.MultipartEntity;
 import com.chanapps.four.multipartmime.Part;
 import com.chanapps.four.multipartmime.PartBase;
 import com.chanapps.four.multipartmime.StringPart;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
@@ -41,7 +43,7 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
 
     public static final String TAG = AuthorizePassTask.class.getSimpleName();
     private static final boolean DEBUG = false;
-
+    protected String errorMessage = null;
     private ChanIdentifiedActivity refreshableActivity;
     private Context context;
     private String passToken;
@@ -65,14 +67,12 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
             if (entity == null) {
                 Log.e(TAG, "Null entity returned building report post");
                 errorCode = R.string.authorize_pass_error;
-            }
-            else {
+            } else {
                 String response = executeReportPost(entity);
                 if (response == null || response.isEmpty()) {
                     Log.e(TAG, "Null response posting report post");
                     errorCode = R.string.authorize_pass_error;
-                }
-                else {
+                } else {
                     AuthorizePassResponse authorizePassResponse = new AuthorizePassResponse(context, response);
                     authorizePassResponse.processResponse();
 
@@ -80,18 +80,15 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
                         errorCode = R.string.authorize_pass_error;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Error posting", e);
             return R.string.authorize_pass_error;
-        }
-        finally {
+        } finally {
             if (errorCode != 0) {
                 persistAuthorizedState(false);
                 if (DEBUG) Log.i(TAG, "Unable to authorize 4chan pass");
                 return errorCode;
-            }
-            else {
+            } else {
                 persistAuthorizedState(true);
                 if (DEBUG) Log.i(TAG, "4chan pass successfully authorized");
                 return 0;
@@ -117,7 +114,7 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
         for (Part p : partsList) {
             if (!(p instanceof StringPart))
                 continue;
-            StringPart s = (StringPart)p;
+            StringPart s = (StringPart) p;
             String line = s.getName() + ": " + s.getValue() + ", ";
             if (DEBUG) Log.i(TAG, line);
         }
@@ -140,7 +137,8 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
                 dumpRequestContent(request.getEntity().getContent());
             if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse httpResponse = client.execute(request, localContext);
-            if (DEBUG) Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
+            if (DEBUG)
+                Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
             if (DEBUG) Log.i(TAG, "Cookies: " + cookieStore.dump());
 
             // check response
@@ -159,12 +157,10 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
             }
             String response = s.toString();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception while posting to url=" + url, e);
             return null;
-        }
-        finally {
+        } finally {
             if (client != null) {
                 client.close();
             }
@@ -178,13 +174,10 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
             String l;
             while ((l = r.readLine()) != null)
                 if (DEBUG) Log.i(TAG, l);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
         }
     }
-
-    protected String errorMessage = null;
 
     protected boolean postSuccessful(AuthorizePassResponse authorizePassResponse) {
         errorMessage = authorizePassResponse.getError(context);
@@ -220,8 +213,7 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
         if (result != 0) {
             String error = context.getString(result) + ("".equals(errorMessage) ? "" : ": " + errorMessage);
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             Toast.makeText(context, R.string.authorize_pass_successful, Toast.LENGTH_SHORT).show();
         }
         dialogFragment.dismiss();

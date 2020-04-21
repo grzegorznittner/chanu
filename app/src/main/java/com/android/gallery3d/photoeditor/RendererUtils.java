@@ -29,40 +29,27 @@ import java.nio.FloatBuffer;
  */
 public class RendererUtils {
 
-    public static class RenderContext {
-        private int shaderProgram;
-        private int texSamplerHandle;
-        private int texCoordHandle;
-        private int posCoordHandle;
-        private FloatBuffer texVertices;
-        private FloatBuffer posVertices;
-    }
-
     private static final float[] TEX_VERTICES = {
-        0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f
+            0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f
     };
-
     private static final float[] POS_VERTICES = {
-        -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f
+            -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f
     };
-
     private static final String VERTEX_SHADER =
             "attribute vec4 a_position;\n" +
-            "attribute vec2 a_texcoord;\n" +
-            "varying vec2 v_texcoord;\n" +
-            "void main() {\n" +
-            "  gl_Position = a_position;\n" +
-            "  v_texcoord = a_texcoord;\n" +
-            "}\n";
-
+                    "attribute vec2 a_texcoord;\n" +
+                    "varying vec2 v_texcoord;\n" +
+                    "void main() {\n" +
+                    "  gl_Position = a_position;\n" +
+                    "  v_texcoord = a_texcoord;\n" +
+                    "}\n";
     private static final String FRAGMENT_SHADER =
             "precision mediump float;\n" +
-            "uniform sampler2D tex_sampler;\n" +
-            "varying vec2 v_texcoord;\n" +
-            "void main() {\n" +
-            "  gl_FragColor = texture2D(tex_sampler, v_texcoord);\n" +
-            "}\n";
-
+                    "uniform sampler2D tex_sampler;\n" +
+                    "varying vec2 v_texcoord;\n" +
+                    "void main() {\n" +
+                    "  gl_FragColor = texture2D(tex_sampler, v_texcoord);\n" +
+                    "}\n";
     private static final int FLOAT_SIZE_BYTES = 4;
     private static final float DEGREE_TO_RADIAN = (float) Math.PI / 180.0f;
 
@@ -122,7 +109,7 @@ public class RendererUtils {
     }
 
     private static float[] getFitVertices(int srcWidth, int srcHeight, int dstWidth,
-            int dstHeight) {
+                                          int dstHeight) {
         float srcAspectRatio = ((float) srcWidth) / srcHeight;
         float dstAspectRatio = ((float) dstWidth) / dstHeight;
         float relativeAspectRatio = dstAspectRatio / srcAspectRatio;
@@ -145,13 +132,13 @@ public class RendererUtils {
     }
 
     public static void setRenderToFit(RenderContext context, int srcWidth, int srcHeight,
-            int dstWidth, int dstHeight) {
+                                      int dstWidth, int dstHeight) {
         context.posVertices = createVerticesBuffer(
                 getFitVertices(srcWidth, srcHeight, dstWidth, dstHeight));
     }
 
     public static void setRenderToRotate(RenderContext context, int srcWidth, int srcHeight,
-            int dstWidth, int dstHeight, float degrees) {
+                                         int dstWidth, int dstHeight, float degrees) {
         float radian = -degrees * DEGREE_TO_RADIAN;
         float cosTheta = (float) Math.cos(radian);
         float sinTheta = (float) Math.sin(radian);
@@ -182,7 +169,7 @@ public class RendererUtils {
     }
 
     public static void setRenderToFlip(RenderContext context, int srcWidth, int srcHeight,
-            int dstWidth, int dstHeight, float horizontalDegrees, float verticalDegrees) {
+                                       int dstWidth, int dstHeight, float horizontalDegrees, float verticalDegrees) {
         // Calculate the base flip coordinates.
         float[] base = getFitVertices(srcWidth, srcHeight, dstWidth, dstHeight);
         int horizontalRounds = (int) horizontalDegrees / 180;
@@ -351,5 +338,14 @@ public class RendererUtils {
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             throw new RuntimeException(op + ": glError " + error);
         }
+    }
+
+    public static class RenderContext {
+        private int shaderProgram;
+        private int texSamplerHandle;
+        private int texCoordHandle;
+        private int posCoordHandle;
+        private FloatBuffer texVertices;
+        private FloatBuffer posVertices;
     }
 }

@@ -16,10 +16,10 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.util.ThreadPool.Job;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapRegionDecoder;
+
+import com.android.gallery3d.util.ThreadPool.Job;
 
 // MediaItem represents an image or a video item.
 public abstract class MediaItem extends MediaObject {
@@ -35,12 +35,13 @@ public abstract class MediaItem extends MediaObject {
     // TODO: fix default value for latlng and change this.
     public static final double INVALID_LATLNG = 0f;
 
-    public abstract Job<Bitmap> requestImage(int type);
-    public abstract Job<BitmapRegionDecoder> requestLargeImage();
-
     public MediaItem(Path path, long version) {
         super(path, version);
     }
+
+    public abstract Job<Bitmap> requestImage(int type);
+
+    public abstract Job<BitmapRegionDecoder> requestLargeImage();
 
     public long getDateInMs() {
         return 0;
@@ -82,5 +83,6 @@ public abstract class MediaItem extends MediaObject {
     // Returns width and height of the media item.
     // Returns 0, 0 if the information is not available.
     public abstract int getWidth();
+
     public abstract int getHeight();
 }

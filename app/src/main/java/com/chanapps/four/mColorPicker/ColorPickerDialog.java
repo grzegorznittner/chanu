@@ -16,10 +16,6 @@
 
 package com.chanapps.four.mColorPicker;
 
-import com.chanapps.four.activity.R;
-import com.chanapps.four.mColorPicker.views.ColorPanelView;
-import com.chanapps.four.mColorPicker.views.ColorPickerView;
-import com.chanapps.four.mColorPicker.views.ColorPickerView.OnColorChangedListener;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -27,70 +23,75 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.chanapps.four.activity.R;
+import com.chanapps.four.mColorPicker.views.ColorPanelView;
+import com.chanapps.four.mColorPicker.views.ColorPickerView;
+import com.chanapps.four.mColorPicker.views.ColorPickerView.OnColorChangedListener;
+
 public class ColorPickerDialog extends AlertDialog implements
-		ColorPickerView.OnColorChangedListener {
+        ColorPickerView.OnColorChangedListener {
 
-	private ColorPickerView mColorPicker;
+    private ColorPickerView mColorPicker;
 
-	private ColorPanelView mOldColor;
-	private ColorPanelView mNewColor;
+    private ColorPanelView mOldColor;
+    private ColorPanelView mNewColor;
 
-	private OnColorChangedListener mListener;
+    private OnColorChangedListener mListener;
 
-	public ColorPickerDialog(Context context, int initialColor) {
-		super(context);
+    public ColorPickerDialog(Context context, int initialColor) {
+        super(context);
 
-		init(initialColor);
-	}
+        init(initialColor);
+    }
 
-	private void init(int color) {
-		// To fight color branding.
-		getWindow().setFormat(PixelFormat.RGBA_8888);
+    private void init(int color) {
+        // To fight color branding.
+        getWindow().setFormat(PixelFormat.RGBA_8888);
 
-		setUp(color);
+        setUp(color);
 
-	}
+    }
 
-	private void setUp(int color) {
-		LayoutInflater inflater = (LayoutInflater) getContext()
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.dialog_color_picker, null);
+    private void setUp(int color) {
+        LayoutInflater inflater = (LayoutInflater) getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.dialog_color_picker, null);
 
-		setView(layout);
+        setView(layout);
 
-		mColorPicker = (ColorPickerView) layout
-				.findViewById(R.id.color_picker_view);
-		mOldColor = (ColorPanelView) layout.findViewById(R.id.old_color_panel);
-		mNewColor = (ColorPanelView) layout.findViewById(R.id.new_color_panel);
+        mColorPicker = layout
+                .findViewById(R.id.color_picker_view);
+        mOldColor = layout.findViewById(R.id.old_color_panel);
+        mNewColor = layout.findViewById(R.id.new_color_panel);
 
-		((LinearLayout) mOldColor.getParent()).setPadding(Math
-				.round(mColorPicker.getDrawingOffset()), 0, Math
-				.round(mColorPicker.getDrawingOffset()), 0);
+        ((LinearLayout) mOldColor.getParent()).setPadding(Math
+                .round(mColorPicker.getDrawingOffset()), 0, Math
+                .round(mColorPicker.getDrawingOffset()), 0);
 
-		mColorPicker.setOnColorChangedListener(this);
+        mColorPicker.setOnColorChangedListener(this);
 
-		mOldColor.setColor(color);
-		mColorPicker.setColor(color, true);
+        mOldColor.setColor(color);
+        mColorPicker.setColor(color, true);
 
-	}
+    }
 
-	@Override
-	public void onColorChanged(int color) {
+    @Override
+    public void onColorChanged(int color) {
 
-		mNewColor.setColor(color);
+        mNewColor.setColor(color);
 
-		if (mListener != null) {
-			mListener.onColorChanged(color);
-		}
+        if (mListener != null) {
+            mListener.onColorChanged(color);
+        }
 
-	}
+    }
 
-	public void setAlphaSliderVisible(boolean visible) {
-		mColorPicker.setAlphaSliderVisible(visible);
-	}
+    public void setAlphaSliderVisible(boolean visible) {
+        mColorPicker.setAlphaSliderVisible(visible);
+    }
 
-	public int getColor() {
-		return mColorPicker.getColor();
-	}
+    public int getColor() {
+        return mColorPicker.getColor();
+    }
 
 }

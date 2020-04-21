@@ -16,18 +16,19 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.util.IntArray;
-
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.opengl.GLU;
 import android.opengl.Matrix;
 
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.util.IntArray;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Stack;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 import javax.microedition.khronos.opengles.GL11Ext;
@@ -45,48 +46,55 @@ public class GLCanvasImpl implements GLCanvas {
             0, 0, 1, 0, 0, 1, 1, 1,  // used for filling a rectangle
             0, 0, 1, 1,              // used for drawing a line
             0, 0, 0, 1, 1, 1, 1, 0}; // used for drawing the outline of a rectangle
-
+    // TODO: the code only work for 2D should get fixed for 3D or removed
+    private static final int MSKEW_X = 4;
+    private static final int MSKEW_Y = 1;
+    private static final int MSCALE_X = 0;
+    private static final int MSCALE_Y = 5;
     private final GL11 mGL;
-
-    private final float mMatrixValues[] = new float[16];
-    private final float mTextureMatrixValues[] = new float[16];
-
+    private final float[] mMatrixValues = new float[16];
+    private final float[] mTextureMatrixValues = new float[16];
     // mapPoints needs 10 input and output numbers.
-    private final float mMapPointsBuffer[] = new float[10];
-
-    private final float mTextureColor[] = new float[4];
-
-    private int mBoxCoords;
-
+    private final float[] mMapPointsBuffer = new float[10];
+    private final float[] mTextureColor = new float[4];
     private final GLState mGLState;
-
-    private long mAnimationTime;
-
-    private float mAlpha;
     private final Rect mClipRect = new Rect();
     private final Stack<ConfigState> mRestoreStack =
             new Stack<ConfigState>();
-    private ConfigState mRecycledRestoreAction;
-
     private final RectF mDrawTextureSourceRect = new RectF();
     private final RectF mDrawTextureTargetRect = new RectF();
     private final float[] mTempMatrix = new float[32];
     private final IntArray mUnboundTextures = new IntArray();
     private final IntArray mDeleteBuffers = new IntArray();
-    private int mHeight;
-    private boolean mBlendEnabled = true;
-
     // Drawing statistics
     int mCountDrawLine;
     int mCountFillRect;
     int mCountDrawMesh;
     int mCountTextureRect;
     int mCountTextureOES;
+    private int mBoxCoords;
+    private long mAnimationTime;
+    private float mAlpha;
+    private ConfigState mRecycledRestoreAction;
+    private int mHeight;
+    private boolean mBlendEnabled = true;
 
     GLCanvasImpl(GL11 gl) {
         mGL = gl;
         mGLState = new GLState(gl);
         initialize();
+    }
+
+    private static ByteBuffer allocateDirectNativeOrderBuffer(int size) {
+        return ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
+    }
+
+    private static boolean isMatrixRotatedOrFlipped(float[] matrix) {
+        final float eps = 1e-5f;
+        return Math.abs(matrix[MSKEW_X]) > eps
+                || Math.abs(matrix[MSKEW_Y]) > eps
+                || matrix[MSCALE_X] < -eps
+                || matrix[MSCALE_Y] > eps;
     }
 
     public void setSize(int width, int height) {
@@ -101,7 +109,7 @@ public class GLCanvasImpl implements GLCanvas {
 
         gl.glMatrixMode(GL11.GL_MODELVIEW);
         gl.glLoadIdentity();
-        float matrix[] = mMatrixValues;
+        float[] matrix = mMatrixValues;
 
         Matrix.setIdentityM(matrix, 0);
         Matrix.translateM(matrix, 0, 0, mHeight, 0);
@@ -115,11 +123,6 @@ public class GLCanvasImpl implements GLCanvas {
         return mAnimationTime;
     }
 
-    public void setAlpha(float alpha) {
-        Utils.assertTrue(alpha >= 0 && alpha <= 1);
-        mAlpha = alpha;
-    }
-
     public void multiplyAlpha(float alpha) {
         Utils.assertTrue(alpha >= 0 && alpha <= 1);
         mAlpha *= alpha;
@@ -129,8 +132,9 @@ public class GLCanvasImpl implements GLCanvas {
         return mAlpha;
     }
 
-    private static ByteBuffer allocateDirectNativeOrderBuffer(int size) {
-        return ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
+    public void setAlpha(float alpha) {
+        Utils.assertTrue(alpha >= 0 && alpha <= 1);
+        mAlpha = alpha;
     }
 
     private void initialize() {
@@ -229,7 +233,7 @@ public class GLCanvasImpl implements GLCanvas {
         System.arraycopy(temp, 16, mMatrixValues, 0, 16);
     }
 
-    public void multiplyMatrix(float matrix[], int offset) {
+    public void multiplyMatrix(float[] matrix, int offset) {
         float[] temp = mTempMatrix;
         Matrix.multiplyMM(temp, 0, mMatrixValues, 0, matrix, offset);
         System.arraycopy(temp, 0, mMatrixValues, 0, 16);
@@ -250,7 +254,7 @@ public class GLCanvasImpl implements GLCanvas {
     }
 
     public void drawMesh(BasicTexture tex, int x, int y, int xyBuffer,
-            int uvBuffer, int indexBuffer, int indexCount) {
+                         int uvBuffer, int indexBuffer, int indexCount) {
         float alpha = mAlpha;
         if (!bindTexture(tex)) return;
 
@@ -285,7 +289,7 @@ public class GLCanvasImpl implements GLCanvas {
         mCountDrawMesh++;
     }
 
-    private float[] mapPoints(float matrix[], int x1, int y1, int x2, int y2) {
+    private float[] mapPoints(float[] matrix, int x1, int y1, int x2, int y2) {
         float[] point = mMapPointsBuffer;
         int srcOffset = 6;
         point[srcOffset] = x1;
@@ -310,7 +314,7 @@ public class GLCanvasImpl implements GLCanvas {
     }
 
     public boolean clipRect(int left, int top, int right, int bottom) {
-        float point[] = mapPoints(mMatrixValues, left, top, right, bottom);
+        float[] point = mapPoints(mMatrixValues, left, top, right, bottom);
 
         // mMatrix could be a rotation matrix. In this case, we need to find
         // the boundaries after rotation. (only handle 90 * n degrees)
@@ -355,7 +359,7 @@ public class GLCanvasImpl implements GLCanvas {
             textureRect(x, y, width, height);
         } else {
             // draw the rect from bottom-left to top-right
-            float points[] = mapPoints(
+            float[] points = mapPoints(
                     mMatrixValues, x, y + height, x + width, y);
             x = Math.round(points[0]);
             y = Math.round(points[1]);
@@ -378,7 +382,7 @@ public class GLCanvasImpl implements GLCanvas {
     }
 
     public void drawTexture(BasicTexture texture,
-            int x, int y, int width, int height, float alpha) {
+                            int x, int y, int width, int height, float alpha) {
         if (width <= 0 || height <= 0) return;
 
         mGLState.setBlendEnabled(mBlendEnabled
@@ -410,7 +414,7 @@ public class GLCanvasImpl implements GLCanvas {
     // It also clips the source and target coordinates if it is beyond the
     // bound of the texture.
     private void convertCoordinate(RectF source, RectF target,
-            BasicTexture texture) {
+                                   BasicTexture texture) {
 
         int width = texture.getWidth();
         int height = texture.getHeight();
@@ -438,12 +442,12 @@ public class GLCanvasImpl implements GLCanvas {
     }
 
     public void drawMixed(BasicTexture from,
-            int toColor, float ratio, int x, int y, int w, int h) {
+                          int toColor, float ratio, int x, int y, int w, int h) {
         drawMixed(from, toColor, ratio, x, y, w, h, mAlpha);
     }
 
     public void drawMixed(BasicTexture from, BasicTexture to,
-            float ratio, int x, int y, int w, int h) {
+                          float ratio, int x, int y, int w, int h) {
         drawMixed(from, to, ratio, x, y, w, h, mAlpha);
     }
 
@@ -463,7 +467,7 @@ public class GLCanvasImpl implements GLCanvas {
     }
 
     private void drawMixed(BasicTexture from, int toColor,
-            float ratio, int x, int y, int width, int height, float alpha) {
+                           float ratio, int x, int y, int width, int height, float alpha) {
 
         if (ratio <= 0) {
             drawTexture(from, x, y, width, height, alpha);
@@ -528,7 +532,7 @@ public class GLCanvasImpl implements GLCanvas {
     }
 
     private void drawMixed(BasicTexture from, BasicTexture to,
-            float ratio, int x, int y, int width, int height, float alpha) {
+                           float ratio, int x, int y, int width, int height, float alpha) {
 
         if (ratio <= 0) {
             drawTexture(from, x, y, width, height, alpha);
@@ -605,26 +609,12 @@ public class GLCanvasImpl implements GLCanvas {
         gl.glActiveTexture(GL11.GL_TEXTURE0);
     }
 
-    // TODO: the code only work for 2D should get fixed for 3D or removed
-    private static final int MSKEW_X = 4;
-    private static final int MSKEW_Y = 1;
-    private static final int MSCALE_X = 0;
-    private static final int MSCALE_Y = 5;
-
-    private static boolean isMatrixRotatedOrFlipped(float matrix[]) {
-        final float eps = 1e-5f;
-        return Math.abs(matrix[MSKEW_X]) > eps
-                || Math.abs(matrix[MSKEW_Y]) > eps
-                || matrix[MSCALE_X] < -eps
-                || matrix[MSCALE_Y] > eps;
-    }
-
     public BasicTexture copyTexture(int x, int y, int width, int height) {
 
         if (isMatrixRotatedOrFlipped(mMatrixValues)) {
             throw new IllegalArgumentException("cannot support rotated matrix");
         }
-        float points[] = mapPoints(mMatrixValues, x, y + height, x + width, y);
+        float[] points = mapPoints(mMatrixValues, x, y + height, x + width, y);
         x = (int) points[0];
         y = (int) points[1];
         width = (int) points[2] - x;
@@ -636,7 +626,7 @@ public class GLCanvasImpl implements GLCanvas {
         gl.glBindTexture(GL11.GL_TEXTURE_2D, texture.getId());
         texture.setSize(width, height);
 
-        int[] cropRect = {0,  0, width, height};
+        int[] cropRect = {0, 0, width, height};
         gl.glTexParameteriv(GL11.GL_TEXTURE_2D,
                 GL11Ext.GL_TEXTURE_CROP_RECT_OES, cropRect, 0);
         gl.glTexParameteri(GL11.GL_TEXTURE_2D,
@@ -652,6 +642,139 @@ public class GLCanvasImpl implements GLCanvas {
                 texture.getTextureHeight(), 0);
 
         return texture;
+    }
+
+    public GL11 getGLInstance() {
+        return mGL;
+    }
+
+    public void setCurrentAnimationTimeMillis(long time) {
+        Utils.assertTrue(time >= 0);
+        mAnimationTime = time;
+    }
+
+    public void clearBuffer() {
+        mGL.glClear(GL10.GL_COLOR_BUFFER_BIT);
+    }
+
+    private void setTextureCoords(RectF source) {
+        setTextureCoords(source.left, source.top, source.right, source.bottom);
+    }
+
+    private void setTextureCoords(float left, float top,
+                                  float right, float bottom) {
+        mGL.glMatrixMode(GL11.GL_TEXTURE);
+        mTextureMatrixValues[0] = right - left;
+        mTextureMatrixValues[5] = bottom - top;
+        mTextureMatrixValues[10] = 1;
+        mTextureMatrixValues[12] = left;
+        mTextureMatrixValues[13] = top;
+        mTextureMatrixValues[15] = 1;
+        mGL.glLoadMatrixf(mTextureMatrixValues, 0);
+        mGL.glMatrixMode(GL11.GL_MODELVIEW);
+    }
+
+    // unloadTexture and deleteBuffer can be called from the finalizer thread,
+    // so we synchronized on the mUnboundTextures object.
+    public boolean unloadTexture(BasicTexture t) {
+        synchronized (mUnboundTextures) {
+            if (!t.isLoaded(this)) return false;
+            mUnboundTextures.add(t.mId);
+            return true;
+        }
+    }
+
+    public void deleteBuffer(int bufferId) {
+        synchronized (mUnboundTextures) {
+            mDeleteBuffers.add(bufferId);
+        }
+    }
+
+    public void deleteRecycledResources() {
+        synchronized (mUnboundTextures) {
+            IntArray ids = mUnboundTextures;
+            if (ids.size() > 0) {
+                mGL.glDeleteTextures(ids.size(), ids.getInternalArray(), 0);
+                ids.clear();
+            }
+
+            ids = mDeleteBuffers;
+            if (ids.size() > 0) {
+                mGL.glDeleteBuffers(ids.size(), ids.getInternalArray(), 0);
+                ids.clear();
+            }
+        }
+    }
+
+    public int save() {
+        return save(SAVE_FLAG_ALL);
+    }
+
+    public int save(int saveFlags) {
+        ConfigState config = obtainRestoreConfig();
+
+        if ((saveFlags & SAVE_FLAG_ALPHA) != 0) {
+            config.mAlpha = mAlpha;
+        } else {
+            config.mAlpha = -1;
+        }
+
+        if ((saveFlags & SAVE_FLAG_CLIP) != 0) {
+            config.mRect.set(mClipRect);
+        } else {
+            config.mRect.left = Integer.MAX_VALUE;
+        }
+
+        if ((saveFlags & SAVE_FLAG_MATRIX) != 0) {
+            System.arraycopy(mMatrixValues, 0, config.mMatrix, 0, 16);
+        } else {
+            config.mMatrix[0] = Float.NEGATIVE_INFINITY;
+        }
+
+        mRestoreStack.push(config);
+        return mRestoreStack.size() - 1;
+    }
+
+    public void restore() {
+        if (mRestoreStack.isEmpty()) throw new IllegalStateException();
+        ConfigState config = mRestoreStack.pop();
+        config.restore(this);
+        freeRestoreConfig(config);
+    }
+
+    private void freeRestoreConfig(ConfigState action) {
+        action.mNextFree = mRecycledRestoreAction;
+        mRecycledRestoreAction = action;
+    }
+
+    private ConfigState obtainRestoreConfig() {
+        if (mRecycledRestoreAction != null) {
+            ConfigState result = mRecycledRestoreAction;
+            mRecycledRestoreAction = result.mNextFree;
+            return result;
+        }
+        return new ConfigState();
+    }
+
+    public void dumpStatisticsAndClear() {
+        String line = String.format(
+                "MESH:%d, TEX_OES:%d, TEX_RECT:%d, FILL_RECT:%d, LINE:%d",
+                mCountDrawMesh, mCountTextureRect, mCountTextureOES,
+                mCountFillRect, mCountDrawLine);
+        mCountDrawMesh = 0;
+        mCountTextureRect = 0;
+        mCountTextureOES = 0;
+        mCountFillRect = 0;
+        mCountDrawLine = 0;
+        Log.d(TAG, line);
+    }
+
+    private void saveTransform() {
+        System.arraycopy(mMatrixValues, 0, mTempMatrix, 0, 16);
+    }
+
+    private void restoreTransform() {
+        System.arraycopy(mTempMatrix, 0, mMatrixValues, 0, 16);
     }
 
     private static class GLState {
@@ -766,122 +889,10 @@ public class GLCanvasImpl implements GLCanvas {
         }
     }
 
-    public GL11 getGLInstance() {
-        return mGL;
-    }
-
-    public void setCurrentAnimationTimeMillis(long time) {
-        Utils.assertTrue(time >= 0);
-        mAnimationTime = time;
-    }
-
-    public void clearBuffer() {
-        mGL.glClear(GL10.GL_COLOR_BUFFER_BIT);
-    }
-
-    private void setTextureCoords(RectF source) {
-        setTextureCoords(source.left, source.top, source.right, source.bottom);
-    }
-
-    private void setTextureCoords(float left, float top,
-            float right, float bottom) {
-        mGL.glMatrixMode(GL11.GL_TEXTURE);
-        mTextureMatrixValues[0] = right - left;
-        mTextureMatrixValues[5] = bottom - top;
-        mTextureMatrixValues[10] = 1;
-        mTextureMatrixValues[12] = left;
-        mTextureMatrixValues[13] = top;
-        mTextureMatrixValues[15] = 1;
-        mGL.glLoadMatrixf(mTextureMatrixValues, 0);
-        mGL.glMatrixMode(GL11.GL_MODELVIEW);
-    }
-
-    // unloadTexture and deleteBuffer can be called from the finalizer thread,
-    // so we synchronized on the mUnboundTextures object.
-    public boolean unloadTexture(BasicTexture t) {
-        synchronized (mUnboundTextures) {
-            if (!t.isLoaded(this)) return false;
-            mUnboundTextures.add(t.mId);
-            return true;
-        }
-    }
-
-    public void deleteBuffer(int bufferId) {
-        synchronized (mUnboundTextures) {
-            mDeleteBuffers.add(bufferId);
-        }
-    }
-
-    public void deleteRecycledResources() {
-        synchronized (mUnboundTextures) {
-            IntArray ids = mUnboundTextures;
-            if (ids.size() > 0) {
-                mGL.glDeleteTextures(ids.size(), ids.getInternalArray(), 0);
-                ids.clear();
-            }
-
-            ids = mDeleteBuffers;
-            if (ids.size() > 0) {
-                mGL.glDeleteBuffers(ids.size(), ids.getInternalArray(), 0);
-                ids.clear();
-            }
-        }
-    }
-
-    public int save() {
-        return save(SAVE_FLAG_ALL);
-    }
-
-    public int save(int saveFlags) {
-        ConfigState config = obtainRestoreConfig();
-
-        if ((saveFlags & SAVE_FLAG_ALPHA) != 0) {
-            config.mAlpha = mAlpha;
-        } else {
-            config.mAlpha = -1;
-        }
-
-        if ((saveFlags & SAVE_FLAG_CLIP) != 0) {
-            config.mRect.set(mClipRect);
-        } else {
-            config.mRect.left = Integer.MAX_VALUE;
-        }
-
-        if ((saveFlags & SAVE_FLAG_MATRIX) != 0) {
-            System.arraycopy(mMatrixValues, 0, config.mMatrix, 0, 16);
-        } else {
-            config.mMatrix[0] = Float.NEGATIVE_INFINITY;
-        }
-
-        mRestoreStack.push(config);
-        return mRestoreStack.size() - 1;
-    }
-
-    public void restore() {
-        if (mRestoreStack.isEmpty()) throw new IllegalStateException();
-        ConfigState config = mRestoreStack.pop();
-        config.restore(this);
-        freeRestoreConfig(config);
-    }
-
-    private void freeRestoreConfig(ConfigState action) {
-        action.mNextFree = mRecycledRestoreAction;
-        mRecycledRestoreAction = action;
-    }
-
-    private ConfigState obtainRestoreConfig() {
-        if (mRecycledRestoreAction != null) {
-            ConfigState result = mRecycledRestoreAction;
-            mRecycledRestoreAction = result.mNextFree;
-            return result;
-        }
-        return new ConfigState();
-    }
-
     private static class ConfigState {
         float mAlpha;
         Rect mRect = new Rect();
-        float mMatrix[] = new float[16];
+        float[] mMatrix = new float[16];
         ConfigState mNextFree;
 
         public void restore(GLCanvasImpl canvas) {
@@ -896,26 +907,5 @@ public class GLCanvasImpl implements GLCanvas {
                 System.arraycopy(mMatrix, 0, canvas.mMatrixValues, 0, 16);
             }
         }
-    }
-
-    public void dumpStatisticsAndClear() {
-        String line = String.format(
-                "MESH:%d, TEX_OES:%d, TEX_RECT:%d, FILL_RECT:%d, LINE:%d",
-                mCountDrawMesh, mCountTextureRect, mCountTextureOES,
-                mCountFillRect, mCountDrawLine);
-        mCountDrawMesh = 0;
-        mCountTextureRect = 0;
-        mCountTextureOES = 0;
-        mCountFillRect = 0;
-        mCountDrawLine = 0;
-        Log.d(TAG, line);
-    }
-
-    private void saveTransform() {
-        System.arraycopy(mMatrixValues, 0, mTempMatrix, 0, 16);
-    }
-
-    private void restoreTransform() {
-        System.arraycopy(mTempMatrix, 0, mMatrixValues, 0, 16);
     }
 }

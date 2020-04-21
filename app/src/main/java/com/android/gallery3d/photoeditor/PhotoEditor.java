@@ -45,7 +45,7 @@ public class PhotoEditor extends Activity {
             sourceUri = intent.getData();
         }
 
-        actionBar = (ActionBar) findViewById(R.id.action_bar);
+        actionBar = findViewById(R.id.action_bar);
         filterStack = new FilterStack((PhotoView) findViewById(R.id.photo_view),
                 new FilterStack.StackListener() {
 
@@ -53,9 +53,9 @@ public class PhotoEditor extends Activity {
                     public void onStackChanged(boolean canUndo, boolean canRedo) {
                         actionBar.updateButtons(canUndo, canRedo);
                     }
-        });
+                });
 
-        EffectsBar effectsBar = (EffectsBar) findViewById(R.id.effects_bar);
+        EffectsBar effectsBar = findViewById(R.id.effects_bar);
         effectsBar.initialize(filterStack);
 
         actionBar.setClickRunnable(R.id.undo_button, createUndoRedoRunnable(true, effectsBar));

@@ -2,20 +2,23 @@ package com.chanapps.four.viewer;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.text.*;
+import android.text.Editable;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.style.CharacterStyle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.LetterSpacingTextView;
@@ -46,16 +49,151 @@ public class BoardViewer {
     public static final int CATALOG_GRID = 0x01;
     public static final int ABBREV_BOARDS = 0x02;
     public static final int HIDE_LAST_REPLIES = 0x04;
-
+    public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
+    protected static final int NUM_BOARD_CODE_COLORS = 5;
+    protected static final float BOARD_CODE_LETTER_SPACING = 0.65f;
+    protected static final int DRAWABLE_ALPHA_LIGHT = 0xaa;
+    protected static final int DRAWABLE_ALPHA_DARK = 0xee;
+    protected static int colorIndex = -1;
     private static String TAG = BoardViewer.class.getSimpleName();
     private static boolean DEBUG = false;
-    public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
+    protected static ImageLoadingListener thumbLoadingListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+            if (view != null && view instanceof ImageView) {
+                ((ImageView) view).setImageDrawable(null);
+                view.setTag(R.id.IMG_URL, null);
+                view.setTag(R.id.IMG_HASH, null);
+            }
+        }
 
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            if (DEBUG)
+                Log.e(TAG, "Loading failed uri=" + imageUri + " reason=" + failReason.getType());
+            //displayDefaultItem(imageUri, view);
+            if (view != null) {
+                view.setTag(R.id.IMG_URL, null);
+                view.setTag(R.id.IMG_HASH, null);
+            }
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            if (view != null && view instanceof ImageView) {
+                ImageView iv = (ImageView) view;
+                iv.setTag(R.id.IMG_URL, imageUri);
+                iv.setTag(R.id.IMG_HASH, iv.getDrawable() == null ? null : iv.getDrawable().hashCode());
+                view.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            if (DEBUG) Log.e(TAG, "Loading cancelled uri=" + imageUri);
+            if (view != null) {
+                view.setTag(R.id.IMG_URL, null);
+                view.setTag(R.id.IMG_HASH, null);
+            }
+        }
+    };
+    /* similar to ThreadViewer version, but not clickable */
+    static private final Html.TagHandler spoilerTagHandler = new Html.TagHandler() {
+        static private final String SPOILER_TAG = "s";
+        SpanFactory spanFactory = new SpanFactory();
+
+        public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
+            if (SPOILER_TAG.equals(tag))
+                handleSpoiler(opening, output);
+        }
+
+        private void handleSpoiler(boolean opening, Editable output) {
+            if (opening)
+                handleSpoilerOpen(output);
+            else
+                handleSpoilerClose(output);
+        }
+
+        private void handleSpoilerOpen(Editable output) {
+            if (DEBUG) Log.i(TAG, "handleSpoilerOpen(" + output + ")");
+            int len = output.length();
+            output.setSpan(spanFactory.getSpan(len, len), len, len, Spannable.SPAN_MARK_MARK);
+        }
+
+        private void handleSpoilerClose(Editable output) {
+            if (DEBUG) Log.i(TAG, "handleSpoilerClose(" + output + ")");
+            int len = output.length();
+            Object obj = getFirst(output, spanFactory.getSpanClass());
+            int start = output.getSpanStart(obj);
+            output.removeSpan(obj);
+            if (start >= 0 && len >= 0 && start != len) {
+                output.setSpan(spanFactory.getSpan(start, len), start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                if (DEBUG) Log.i(TAG, "setSpan(" + start + ", " + len + ")");
+            }
+        }
+
+        private Object getFirst(Editable text, Class kind) {
+            Object[] objs = text.getSpans(0, text.length(), kind);
+            if (objs.length == 0)
+                return null;
+            if (DEBUG) Log.i(TAG, "Found " + objs.length + " matching spans");
+            for (int i = 0; i < objs.length; i++) {
+                Object span = objs[i];
+                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
+                    return span;
+            }
+            return null;
+        }
+
+        private Object getLast(Editable text, Class kind) {
+            Object[] objs = text.getSpans(0, text.length(), kind);
+            if (objs.length == 0)
+                return null;
+            for (int i = objs.length - 1; i >= 0; i--) {
+                Object span = objs[i];
+                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
+                    return span;
+            }
+            return null;
+        }
+
+        class SpoilerSpan extends CharacterStyle {
+            private int start = 0;
+            private int end = 0;
+            private boolean blackout = true;
+
+            public SpoilerSpan() {
+                super();
+            }
+
+            public SpoilerSpan(int start, int end) {
+                this();
+                this.start = start;
+                this.end = end;
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                if (blackout) {
+                    int textColor = ds.getColor();
+                    ds.bgColor = textColor;
+                }
+            }
+        }
+
+        class SpanFactory {
+            public Class getSpanClass() {
+                return SpoilerSpan.class;
+            }
+
+            public Object getSpan(final int start, final int end) {
+                return new SpoilerSpan(start, end);
+            }
+        }
+    };
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;
     private static Typeface subjectTypeface;
-
-    protected static final int NUM_BOARD_CODE_COLORS = 5;
 
     public static void initStatics(Context context, boolean isDark) {
         Resources res = context.getResources();
@@ -77,14 +215,13 @@ public class BoardViewer {
                                        View.OnClickListener overlayListener,
                                        View.OnClickListener overflowListener,
                                        int options,
-                                       Typeface titleTypeface)
-    {
+                                       Typeface titleTypeface) {
         if (imageLoader == null)
             throw new IllegalStateException("Must call initStatics() before calling setViewValue()");
 
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         boolean isDark = ThemeSelector.instance(view.getContext()).isDark();
-        BoardViewHolder viewHolder = (BoardViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        BoardViewHolder viewHolder = (BoardViewHolder) view.getTag(R.id.VIEW_HOLDER);
         setItem(viewHolder, overlayListener, overflowListener, flags, options);
         setSubject(viewHolder, cursor, flags);
         setSubjectLarge(viewHolder, cursor, flags, subjectTypeface);
@@ -122,14 +259,11 @@ public class BoardViewer {
         if (overflow != null) {
             if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0) {
                 overflow.setVisibility(View.GONE);
-            }
-            else if ((options & ABBREV_BOARDS) > 0) {
+            } else if ((options & ABBREV_BOARDS) > 0) {
                 overflow.setVisibility(View.GONE);
-            }
-            else if (overflowListener == null) {
+            } else if (overflowListener == null) {
                 overflow.setVisibility(View.GONE);
-            }
-            else {
+            } else {
                 overflow.setOnClickListener(overflowListener);
                 overflow.setVisibility(View.VISIBLE);
             }
@@ -141,14 +275,13 @@ public class BoardViewer {
             if (overlayListener != null && !isHeader) {
                 overlay.setOnClickListener(overlayListener);
                 overlay.setClickable(true);
-            }
-            else {
+            } else {
                 overlay.setClickable(false);
             }
         }
         return true;
     }
-    
+
     protected static String getBoardAbbrev(Context context, Cursor cursor, String groupBoardCode) {
         String threadAbbrev = "";
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
@@ -187,11 +320,10 @@ public class BoardViewer {
         if (!u.isEmpty()) {
             String html = ThreadViewer.markupHtml(u);
             Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(html, null, spoilerTagHandler));
-            
+
             tv.setText(spannable);
             tv.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             tv.setVisibility(View.GONE);
             tv.setText("");
         }
@@ -213,8 +345,7 @@ public class BoardViewer {
             tv.setText(u);
             tv.setTypeface(subjectTypeface);
             tv.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             tv.setVisibility(View.GONE);
             tv.setText("");
         }
@@ -228,7 +359,8 @@ public class BoardViewer {
         if (iv == null)
             return false;
         boolean isWideHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & CATALOG_GRID) == 0;
-        if (DEBUG) Log.i(TAG, "setImage() isWideHeader=" + isWideHeader + " no=" + cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO)));
+        if (DEBUG)
+            Log.i(TAG, "setImage() isWideHeader=" + isWideHeader + " no=" + cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO)));
         if (isWideHeader) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
@@ -264,19 +396,19 @@ public class BoardViewer {
             return false;
         }
         int drawHash = iv.getDrawable() == null ? 0 : iv.getDrawable().hashCode();
-        int tagHash = iv.getTag(R.id.IMG_HASH) == null ? 0 : (Integer)iv.getTag(R.id.IMG_HASH);
-        String tagUrl = (String)iv.getTag(R.id.IMG_URL);
-        if (DEBUG) Log.i(TAG, "displayImage() checking url=" + url + " tagUrl=" + tagUrl + " drawHash=" + drawHash + " tagHash=" + tagHash);
+        int tagHash = iv.getTag(R.id.IMG_HASH) == null ? 0 : (Integer) iv.getTag(R.id.IMG_HASH);
+        String tagUrl = (String) iv.getTag(R.id.IMG_URL);
+        if (DEBUG)
+            Log.i(TAG, "displayImage() checking url=" + url + " tagUrl=" + tagUrl + " drawHash=" + drawHash + " tagHash=" + tagHash);
         if (drawHash != 0 && drawHash == tagHash && tagUrl != null && !tagUrl.isEmpty() && url.equals(tagUrl)) {
-            if (DEBUG) Log.i(TAG, "displayImage() skipping url=" + url + " drawable=" + iv.getDrawable());
+            if (DEBUG)
+                Log.i(TAG, "displayImage() skipping url=" + url + " drawable=" + iv.getDrawable());
             return true;
         }
         iv.setVisibility(View.GONE);
         imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         return true;
     }
-    
-    protected static final float BOARD_CODE_LETTER_SPACING = 0.65f;
 
     protected static void displayBoardCode(BoardViewHolder viewHolder,
                                            Cursor cursor,
@@ -294,8 +426,7 @@ public class BoardViewer {
                 viewHolder.grid_item_bottom_frame.setVisibility(View.GONE);
             displayNicelyFormattedBoardCode(titleTypeface, boardCode, viewHolder.grid_item_thread_subject_header_abbr);
             colorBoardFrame(boardCode, viewHolder.grid_item_thread_subject_header_abbr);
-        }
-        else if (groupBoardCode != null
+        } else if (groupBoardCode != null
                 && !ChanBoard.isVirtualBoard(groupBoardCode)
                 && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
                 && (options & CATALOG_GRID) > 0
@@ -308,8 +439,7 @@ public class BoardViewer {
                 viewHolder.grid_item_bottom_frame.setVisibility(View.VISIBLE);
             displayNicelyFormattedBoardCode(titleTypeface, boardCode, viewHolder.grid_item_thread_subject_header_abbr);
             //colorBoardFrame(boardCode, viewHolder.grid_item_thumb_frame);
-        }
-        else if (boardCode == null || boardCode.equals(groupBoardCode)) {
+        } else if (boardCode == null || boardCode.equals(groupBoardCode)) {
             if (viewHolder.grid_item_thread_subject_header_abbr != null)
                 viewHolder.grid_item_thread_subject_header_abbr.setText("");
             if (viewHolder.grid_item_board_code != null) {
@@ -318,8 +448,7 @@ public class BoardViewer {
             }
             if (viewHolder.grid_item_bottom_frame != null)
                 viewHolder.grid_item_bottom_frame.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             if (viewHolder.grid_item_thread_subject_header_abbr != null)
                 viewHolder.grid_item_thread_subject_header_abbr.setText("");
             if (viewHolder.grid_item_board_code != null)
@@ -411,8 +540,6 @@ public class BoardViewer {
         */
     }
 
-
-    protected static int colorIndex = -1;
     /*
     protected static void displayBoardCode(ImageView iv, TextView tv, String boardCode) {
         int idx = (colorIndex = (colorIndex + 1) % NUM_BOARD_CODE_COLORS);
@@ -446,7 +573,8 @@ public class BoardViewer {
         //int colorIndex = boardCode.hashCode() % NUM_BOARD_CODE_COLORS;
         colorIndex = (colorIndex + 1) % NUM_BOARD_CODE_COLORS;
         int colorId = pickColor(colorIndex);
-        if (DEBUG) Log.i(TAG, "colorBoardFrame /" + boardCode + "/ idx=" + colorIndex + " id=" + colorId);
+        if (DEBUG)
+            Log.i(TAG, "colorBoardFrame /" + boardCode + "/ idx=" + colorIndex + " id=" + colorId);
         v.setTextColor(v.getResources().getColor(R.color.PaletteBoardTextColor));
         v.setBackgroundColor(v.getResources().getColor(colorId));
         //v.getBackground().setColorFilter(v.getResources().getColor(colorId), PorterDuff.Mode.DARKEN);
@@ -458,58 +586,43 @@ public class BoardViewer {
         int color;
         switch (colorIndex) {
             default:
-            case 0: color = R.color.PaletteBoardColor0; break;
-            case 1: color = R.color.PaletteBoardColor1; break;
-            case 2: color = R.color.PaletteBoardColor2; break;
-            case 3: color = R.color.PaletteBoardColor3; break;
-            case 4: color = R.color.PaletteBoardColor4; break;
+            case 0:
+                color = R.color.PaletteBoardColor0;
+                break;
+            case 1:
+                color = R.color.PaletteBoardColor1;
+                break;
+            case 2:
+                color = R.color.PaletteBoardColor2;
+                break;
+            case 3:
+                color = R.color.PaletteBoardColor3;
+                break;
+            case 4:
+                color = R.color.PaletteBoardColor4;
+                break;
 
-            case 5: color = R.color.PaletteBoardColor5; break;
-            case 6: color = R.color.PaletteBoardColor6; break;
-            case 7: color = R.color.PaletteBoardColor7; break;
-            case 8: color = R.color.PaletteBoardColor8; break;
-            case 9: color = R.color.PaletteBoardColor9; break;
-            case 10: color = R.color.PaletteBoardColor10; break;
+            case 5:
+                color = R.color.PaletteBoardColor5;
+                break;
+            case 6:
+                color = R.color.PaletteBoardColor6;
+                break;
+            case 7:
+                color = R.color.PaletteBoardColor7;
+                break;
+            case 8:
+                color = R.color.PaletteBoardColor8;
+                break;
+            case 9:
+                color = R.color.PaletteBoardColor9;
+                break;
+            case 10:
+                color = R.color.PaletteBoardColor10;
+                break;
         }
         return color;
     }
-
-    protected static ImageLoadingListener thumbLoadingListener = new ImageLoadingListener() {
-        @Override
-        public void onLoadingStarted(String imageUri, View view) {
-            if (view != null && view instanceof ImageView) {
-                ((ImageView)view).setImageDrawable(null);
-                view.setTag(R.id.IMG_URL, null);
-                view.setTag(R.id.IMG_HASH, null);
-            }
-        }
-        @Override
-        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            if (DEBUG) Log.e(TAG, "Loading failed uri=" + imageUri + " reason=" + failReason.getType());
-            //displayDefaultItem(imageUri, view);
-            if (view != null) {
-                view.setTag(R.id.IMG_URL, null);
-                view.setTag(R.id.IMG_HASH, null);
-            }
-        }
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            if (view != null && view instanceof ImageView) {
-                ImageView iv = (ImageView)view;
-                iv.setTag(R.id.IMG_URL, imageUri);
-                iv.setTag(R.id.IMG_HASH, iv.getDrawable() == null ? null : iv.getDrawable().hashCode());
-                view.setVisibility(View.VISIBLE);
-            }
-        }
-        @Override
-        public void onLoadingCancelled(String imageUri, View view) {
-            if (DEBUG) Log.e(TAG, "Loading cancelled uri=" + imageUri);
-            if (view != null) {
-                view.setTag(R.id.IMG_URL, null);
-                view.setTag(R.id.IMG_HASH, null);
-            }
-        }
-    };
 
     protected static boolean setCountryFlag(BoardViewHolder viewHolder, Cursor cursor) {
         ImageView iv = viewHolder.grid_item_country_flag;
@@ -586,7 +699,7 @@ public class BoardViewer {
         if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0
                 || (ChanBoard.isVirtualBoard(groupBoardCode) && !ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
                 || ((options & ABBREV_BOARDS) > 0)
-            ) {
+        ) {
             if (numReplies != null)
                 numReplies.setVisibility(View.GONE);
             if (numImages != null)
@@ -660,9 +773,6 @@ public class BoardViewer {
         return true;
     }
 
-    protected static final int DRAWABLE_ALPHA_LIGHT = 0xaa;
-    protected static final int DRAWABLE_ALPHA_DARK = 0xee;
-
     @TargetApi(16)
     protected static void setAlpha(ImageView iv, int alpha) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
@@ -699,85 +809,6 @@ public class BoardViewer {
         return true;
     }
 
-    /* similar to ThreadViewer version, but not clickable */
-    static private final Html.TagHandler spoilerTagHandler = new Html.TagHandler() {
-        static private final String SPOILER_TAG = "s";
-        class SpoilerSpan extends CharacterStyle {
-            private int start = 0;
-            private int end = 0;
-            private boolean blackout = true;
-            public SpoilerSpan() {
-                super();
-            }
-            public SpoilerSpan(int start, int end) {
-                this();
-                this.start = start;
-                this.end = end;
-            }
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                if (blackout) {
-                    int textColor = ds.getColor();
-                    ds.bgColor = textColor;
-                }
-            }
-        }
-        class SpanFactory {
-            public Class getSpanClass() { return SpoilerSpan.class; }
-            public Object getSpan(final int start, final int end) { return new SpoilerSpan(start, end); }
-        }
-        SpanFactory spanFactory = new SpanFactory();
-        public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
-            if (SPOILER_TAG.equals(tag))
-                handleSpoiler(opening, output);
-        }
-        private void handleSpoiler(boolean opening, Editable output) {
-            if (opening)
-                handleSpoilerOpen(output);
-            else
-                handleSpoilerClose(output);
-        }
-        private void handleSpoilerOpen(Editable output) {
-            if (DEBUG) Log.i(TAG, "handleSpoilerOpen(" + output + ")");
-            int len = output.length();
-            output.setSpan(spanFactory.getSpan(len, len), len, len, Spannable.SPAN_MARK_MARK);
-        }
-        private void handleSpoilerClose(Editable output) {
-            if (DEBUG) Log.i(TAG, "handleSpoilerClose(" + output + ")");
-            int len = output.length();
-            Object obj = getFirst(output, spanFactory.getSpanClass());
-            int start = output.getSpanStart(obj);
-            output.removeSpan(obj);
-            if (start >= 0 && len >= 0 && start != len)  {
-                output.setSpan(spanFactory.getSpan(start, len), start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                if (DEBUG) Log.i(TAG, "setSpan(" + start + ", " + len + ")");
-            }
-        }
-        private Object getFirst(Editable text, Class kind) {
-            Object[] objs = text.getSpans(0, text.length(), kind);
-            if (objs.length == 0)
-                return null;
-            if (DEBUG) Log.i(TAG, "Found " + objs.length + " matching spans");
-            for (int i = 0; i < objs.length; i++) {
-                Object span = objs[i];
-                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
-                    return span;
-            }
-            return null;
-        }
-        private Object getLast(Editable text, Class kind) {
-            Object[] objs = text.getSpans(0, text.length(), kind);
-            if (objs.length == 0)
-                return null;
-            for (int i = objs.length - 1; i >= 0; i--) {
-                Object span = objs[i];
-                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
-                    return span;
-            }
-            return null;
-        }
-    };
-
     protected static void setLastReplies(final BoardViewHolder viewHolder, final Cursor cursor, final int options) {
         boolean[] isSet = new boolean[5];
         try {
@@ -798,41 +829,29 @@ public class BoardViewer {
             if (DEBUG) Log.i(TAG, "lastReplies len=" + lastReplies.length);
             if (lastReplies.length == 0)
                 return;
-            isSet[0] = lastReplies.length < 1
-                    ? false
-                    : displayLastReply(viewHolder.grid_item_thread_subject_1,
+            isSet[0] = lastReplies.length >= 1 && displayLastReply(viewHolder.grid_item_thread_subject_1,
                     viewHolder.grid_item_thread_thumb_1,
                     viewHolder.grid_item_country_flag_1,
                     lastReplies[0], boardCode);
-            isSet[1] = lastReplies.length < 2
-                    ? false
-                    : displayLastReply(viewHolder.grid_item_thread_subject_2,
+            isSet[1] = lastReplies.length >= 2 && displayLastReply(viewHolder.grid_item_thread_subject_2,
                     viewHolder.grid_item_thread_thumb_2,
                     viewHolder.grid_item_country_flag_2,
                     lastReplies[1], boardCode);
-            isSet[2] = lastReplies.length < 3
-                    ? false
-                    : displayLastReply(viewHolder.grid_item_thread_subject_3,
+            isSet[2] = lastReplies.length >= 3 && displayLastReply(viewHolder.grid_item_thread_subject_3,
                     viewHolder.grid_item_thread_thumb_3,
                     viewHolder.grid_item_country_flag_3,
                     lastReplies[2], boardCode);
-            isSet[3] = lastReplies.length < 4
-                    ? false
-                    : displayLastReply(viewHolder.grid_item_thread_subject_4,
+            isSet[3] = lastReplies.length >= 4 && displayLastReply(viewHolder.grid_item_thread_subject_4,
                     viewHolder.grid_item_thread_thumb_4,
                     viewHolder.grid_item_country_flag_4,
                     lastReplies[3], boardCode);
-            isSet[4] = lastReplies.length < 5
-                    ? false
-                    : displayLastReply(viewHolder.grid_item_thread_subject_5,
+            isSet[4] = lastReplies.length >= 5 && displayLastReply(viewHolder.grid_item_thread_subject_5,
                     viewHolder.grid_item_thread_thumb_5,
                     viewHolder.grid_item_country_flag_5,
                     lastReplies[4], boardCode);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception reading lastRepliesBlob", e);
-        }
-        finally {
+        } finally {
             /*
             if (viewHolder.grid_item_thread_1 != null)
                 viewHolder.grid_item_thread_1.setVisibility(isSet[0] ? View.VISIBLE : View.GONE);
@@ -849,8 +868,8 @@ public class BoardViewer {
     }
 
     protected static boolean displayLastReply(final TextView subject, final ImageView thumb, final ImageView countryFlag,
-                                      final ChanPost post, final String boardCode) {
-        String[] textComponents = post == null ? new String[]{ "", "" } : post.textComponents("");
+                                              final ChanPost post, final String boardCode) {
+        String[] textComponents = post == null ? new String[]{"", ""} : post.textComponents("");
         String countryFlagUrl = post == null ? null : post.lastReplyCountryFlagUrl(countryFlag.getContext(), boardCode);
         String thumbUrl = post == null ? null : post.lastReplyThumbnailUrl(thumb.getContext(), boardCode);
         if (subject != null)

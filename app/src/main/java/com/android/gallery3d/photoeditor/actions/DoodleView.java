@@ -33,16 +33,6 @@ import android.view.MotionEvent;
  */
 class DoodleView extends FullscreenToolView {
 
-    /**
-     * Listener of doodle paths.
-     */
-    public interface OnDoodleChangeListener {
-
-        void onDoodleInPhotoBounds();
-
-        void onDoodleFinished(Path path, int color);
-    }
-
     private final Path normalizedPath = new Path();
     private final Path drawingPath = new Path();
     private final Paint doodlePaint = new DoodlePaint();
@@ -50,11 +40,9 @@ class DoodleView extends FullscreenToolView {
     private final PointF lastPoint = new PointF();
     private final Matrix pathMatrix = new Matrix();
     private final Matrix displayMatrix = new Matrix();
-
     private Bitmap bitmap;
     private Canvas bitmapCanvas;
     private OnDoodleChangeListener listener;
-
     public DoodleView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -167,5 +155,15 @@ class DoodleView extends FullscreenToolView {
         }
         drawDoodle(canvas);
         canvas.restore();
+    }
+
+    /**
+     * Listener of doodle paths.
+     */
+    public interface OnDoodleChangeListener {
+
+        void onDoodleInPhotoBounds();
+
+        void onDoodleFinished(Path path, int color);
     }
 }

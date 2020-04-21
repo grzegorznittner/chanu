@@ -16,6 +16,8 @@
 
 package com.android.gallery3d.app;
 
+import android.graphics.Bitmap;
+
 import com.android.gallery3d.app.SlideshowPage.Slide;
 import com.android.gallery3d.data.ContentListener;
 import com.android.gallery3d.data.MediaItem;
@@ -26,8 +28,6 @@ import com.android.gallery3d.util.ThreadPool;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 
-import android.graphics.Bitmap;
-
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,31 +36,18 @@ public class SlideshowDataAdapter implements SlideshowPage.Model {
     private static final String TAG = "SlideshowDataAdapter";
 
     private static final int IMAGE_QUEUE_CAPACITY = 3;
-
-    public interface SlideshowSource {
-        public void addContentListener(ContentListener listener);
-        public void removeContentListener(ContentListener listener);
-        public long reload();
-        public MediaItem getMediaItem(int index);
-    }
-
     private final SlideshowSource mSource;
-
+    private final LinkedList<Slide> mImageQueue = new LinkedList<Slide>();
+    private final ThreadPool mThreadPool;
+    private final AtomicBoolean mNeedReload = new AtomicBoolean(false);
+    private final SourceListener mSourceListener = new SourceListener();
     private int mLoadIndex = 0;
     private int mNextOutput = 0;
     private boolean mIsActive = false;
     private boolean mNeedReset;
     private boolean mDataReady;
-
-    private final LinkedList<Slide> mImageQueue = new LinkedList<Slide>();
-
     private Future<Void> mReloadTask;
-    private final ThreadPool mThreadPool;
-
     private long mDataVersion = MediaObject.INVALID_DATA_VERSION;
-    private final AtomicBoolean mNeedReload = new AtomicBoolean(false);
-    private final SourceListener mSourceListener = new SourceListener();
-
     public SlideshowDataAdapter(GalleryContext context, SlideshowSource source, int index) {
         mSource = source;
         mLoadIndex = index;
@@ -78,6 +65,58 @@ public class SlideshowDataAdapter implements SlideshowPage.Model {
             }
         }
         return mSource.getMediaItem(mLoadIndex);
+    }
+
+    private synchronized Slide innerNextBitmap() {
+        while (mIsActive && mDataReady && mImageQueue.isEmpty()) {
+            try {
+                wait();
+            } catch (InterruptedException t) {
+                throw new AssertionError();
+            }
+        }
+        if (mImageQueue.isEmpty()) return null;
+        mNextOutput++;
+        this.notifyAll();
+        return mImageQueue.removeFirst();
+    }
+
+    public Future<Slide> nextSlide(FutureListener<Slide> listener) {
+        return mThreadPool.submit(new Job<Slide>() {
+            public Slide run(JobContext jc) {
+                jc.setMode(ThreadPool.MODE_NONE);
+                return innerNextBitmap();
+            }
+        }, listener);
+    }
+
+    public void pause() {
+        synchronized (this) {
+            mIsActive = false;
+            notifyAll();
+        }
+        mSource.removeContentListener(mSourceListener);
+        mReloadTask.cancel();
+        mReloadTask.waitDone();
+        mReloadTask = null;
+    }
+
+    public synchronized void resume() {
+        mIsActive = true;
+        mSource.addContentListener(mSourceListener);
+        mNeedReload.set(true);
+        mDataReady = true;
+        mReloadTask = mThreadPool.submit(new ReloadTask());
+    }
+
+    public interface SlideshowSource {
+        void addContentListener(ContentListener listener);
+
+        void removeContentListener(ContentListener listener);
+
+        long reload();
+
+        MediaItem getMediaItem(int index);
     }
 
     private class ReloadTask implements Job<Void> {
@@ -141,47 +180,5 @@ public class SlideshowDataAdapter implements SlideshowPage.Model {
                 SlideshowDataAdapter.this.notifyAll();
             }
         }
-    }
-
-    private synchronized Slide innerNextBitmap() {
-        while (mIsActive && mDataReady && mImageQueue.isEmpty()) {
-            try {
-                wait();
-            } catch (InterruptedException t) {
-                throw new AssertionError();
-            }
-        }
-        if (mImageQueue.isEmpty()) return null;
-        mNextOutput++;
-        this.notifyAll();
-        return mImageQueue.removeFirst();
-    }
-
-    public Future<Slide> nextSlide(FutureListener<Slide> listener) {
-        return mThreadPool.submit(new Job<Slide>() {
-            public Slide run(JobContext jc) {
-                jc.setMode(ThreadPool.MODE_NONE);
-                return innerNextBitmap();
-            }
-        }, listener);
-    }
-
-    public void pause() {
-        synchronized (this) {
-            mIsActive = false;
-            notifyAll();
-        }
-        mSource.removeContentListener(mSourceListener);
-        mReloadTask.cancel();
-        mReloadTask.waitDone();
-        mReloadTask = null;
-    }
-
-    public synchronized void resume() {
-        mIsActive = true;
-        mSource.addContentListener(mSourceListener);
-        mNeedReload.set(true);
-        mDataReady = true;
-        mReloadTask = mThreadPool.submit(new ReloadTask());
     }
 }

@@ -3,6 +3,7 @@ package com.chanapps.four.component;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+
 import com.chanapps.four.activity.R;
 
 /**
@@ -13,7 +14,7 @@ import com.chanapps.four.activity.R;
  * To change this template use File | Settings | File Templates.
  */
 public class SendFeedback {
-    
+
     public static boolean email(final Activity activity) {
         String email = activity.getString(R.string.pref_about_contact_email);
         Uri uri = Uri.fromParts("mailto", email, null);

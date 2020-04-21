@@ -31,29 +31,15 @@ import com.chanapps.four.gallery3d.R;
  */
 class RotateView extends FullscreenToolView {
 
-    /**
-     * Listens to rotate changes.
-     */
-    public interface OnRotateChangeListener {
-
-        void onAngleChanged(float degrees, boolean fromUser);
-
-        void onStartTrackingTouch();
-
-        void onStopTrackingTouch();
-    }
-
     // All angles used are defined between PI and -PI.
     private static final float MATH_PI = (float) Math.PI;
     private static final float MATH_HALF_PI = MATH_PI / 2;
     private static final float RADIAN_TO_DEGREE = 180f / MATH_PI;
-
     private final Paint dashStrokePaint;
     private final Path grids = new Path();
     private final Path referenceLine = new Path();
     private final int gridsColor;
     private final int referenceColor;
-
     private OnRotateChangeListener listener;
     private boolean drawGrids;
     private int centerX;
@@ -63,14 +49,13 @@ class RotateView extends FullscreenToolView {
     private float currentRotatedAngle;
     private float lastRotatedAngle;
     private float touchStartAngle;
-
     public RotateView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         dashStrokePaint = new Paint();
         dashStrokePaint.setAntiAlias(true);
         dashStrokePaint.setStyle(Paint.Style.STROKE);
-        dashStrokePaint.setPathEffect(new DashPathEffect(new float[] {15.0f, 5.0f}, 1.0f));
+        dashStrokePaint.setPathEffect(new DashPathEffect(new float[]{15.0f, 5.0f}, 1.0f));
         dashStrokePaint.setStrokeWidth(2f);
         gridsColor = context.getResources().getColor(R.color.translucent_white);
         referenceColor = context.getResources().getColor(R.color.translucent_cyan);
@@ -214,5 +199,17 @@ class RotateView extends FullscreenToolView {
             listener.onAngleChanged(degrees, fromUser);
         }
         invalidate();
+    }
+
+    /**
+     * Listens to rotate changes.
+     */
+    public interface OnRotateChangeListener {
+
+        void onAngleChanged(float degrees, boolean fromUser);
+
+        void onStartTrackingTouch();
+
+        void onStopTrackingTouch();
     }
 }

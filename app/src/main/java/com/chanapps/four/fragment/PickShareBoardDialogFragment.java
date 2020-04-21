@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import com.chanapps.four.activity.PostReplyShareActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
@@ -17,12 +18,12 @@ import com.chanapps.four.data.ChanBoard;
 import java.util.List;
 
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 12/14/12
-* Time: 12:44 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 12/14/12
+ * Time: 12:44 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public class PickShareBoardDialogFragment extends ListDialogFragment {
 
     public static final String TAG = PickShareBoardDialogFragment.class.getSimpleName();
@@ -31,6 +32,16 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
 
     private String[] boards;
     private Handler activityHandler;
+
+    public PickShareBoardDialogFragment() {
+        super();
+        activityHandler = null;
+    }
+
+    public PickShareBoardDialogFragment(Handler handler) {
+        super();
+        activityHandler = handler;
+    }
 
     private void initBoards(Context context) {
         List<ChanBoard> chanBoards = ChanBoard.getNewThreadBoardsRespectingNSFW(context);
@@ -43,16 +54,6 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
             boards[i] = boardLine;
             i++;
         }
-    }
-
-    public PickShareBoardDialogFragment() {
-        super();
-        activityHandler = null;
-    }
-
-    public PickShareBoardDialogFragment(Handler handler) {
-        super();
-        activityHandler = handler;
     }
 
     @Override

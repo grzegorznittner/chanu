@@ -24,34 +24,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.photoeditor.FilterStack;
 import com.android.gallery3d.photoeditor.OnDoneCallback;
 import com.android.gallery3d.photoeditor.filters.Filter;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * An action binding UI controls and effect operation for editing photo.
  */
 public abstract class EffectAction extends LinearLayout {
 
-    /**
-     * Listener of effect action.
-     */
-    public interface Listener {
-
-        void onClick();
-
-        void onDone();
-    }
-
     protected EffectToolFactory factory;
-
     private Listener listener;
     private Toast tooltip;
     private FilterStack filterStack;
     private boolean pushedFilter;
     private FilterChangedCallback lastFilterChangedCallback;
-
     public EffectAction(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -61,11 +49,11 @@ public abstract class EffectAction extends LinearLayout {
         findViewById(R.id.effect_button).setOnClickListener(
                 (listener == null) ? null : new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                listener.onClick();
-            }
-        });
+                    @Override
+                    public void onClick(View v) {
+                        listener.onClick();
+                    }
+                });
     }
 
     public CharSequence name() {
@@ -147,6 +135,16 @@ public abstract class EffectAction extends LinearLayout {
      * Subclasses could do specific ending operations here when the action is about to end.
      */
     protected abstract void doEnd();
+
+    /**
+     * Listener of effect action.
+     */
+    public interface Listener {
+
+        void onClick();
+
+        void onDone();
+    }
 
     /**
      * Done callback for executing top filter changes.

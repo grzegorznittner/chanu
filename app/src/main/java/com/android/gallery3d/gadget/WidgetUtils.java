@@ -16,17 +16,17 @@
 
 package com.android.gallery3d.gadget;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.data.MediaItem;
-import com.android.gallery3d.util.ThreadPool;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Bitmap.Config;
 import android.util.Log;
+
+import com.android.gallery3d.data.MediaItem;
+import com.android.gallery3d.util.ThreadPool;
+import com.chanapps.four.gallery3d.R;
 
 public class WidgetUtils {
 
@@ -46,7 +46,7 @@ public class WidgetUtils {
 
     public static Bitmap createWidgetBitmap(MediaItem image) {
         Bitmap bitmap = image.requestImage(MediaItem.TYPE_THUMBNAIL)
-               .run(ThreadPool.JOB_CONTEXT_STUB);
+                .run(ThreadPool.JOB_CONTEXT_STUB);
         if (bitmap == null) {
             Log.w(TAG, "fail to get image of " + image.toString());
             return null;

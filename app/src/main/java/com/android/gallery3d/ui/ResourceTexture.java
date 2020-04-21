@@ -16,11 +16,11 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.common.Utils;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import com.android.gallery3d.common.Utils;
 
 // ResourceTexture is a texture whose Bitmap is decoded from a resource.
 // By default ResourceTexture is not opaque.
@@ -44,9 +44,8 @@ public class ResourceTexture extends UploadedTexture {
         Bitmap b = null;
         try {
             b = BitmapFactory.decodeResource(
-                mContext.getResources(), mResId, options);
-        }
-        catch (OutOfMemoryError e) {
+                    mContext.getResources(), mResId, options);
+        } catch (OutOfMemoryError e) {
             Log.e(TAG, "Couldn't get memory allocated for bitmap resId=" + mResId, e);
         }
         return b;
@@ -60,8 +59,7 @@ public class ResourceTexture extends UploadedTexture {
         try {
             BitmapFactory.decodeResource(
                     mContext.getResources(), mResId, options);
-        }
-        catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             Log.e(TAG, "Couldn't get memory allocated for bitmap bounds resId=" + mResId, e);
         }
         return options;

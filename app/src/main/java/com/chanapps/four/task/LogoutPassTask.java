@@ -5,6 +5,7 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.URLFormatComponent;
@@ -15,6 +16,7 @@ import com.chanapps.four.multipartmime.MultipartEntity;
 import com.chanapps.four.multipartmime.Part;
 import com.chanapps.four.multipartmime.PartBase;
 import com.chanapps.four.multipartmime.StringPart;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
@@ -39,7 +41,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
 
     public static final String TAG = LogoutPassTask.class.getSimpleName();
     public static final boolean DEBUG = false;
-
+    protected String errorMessage = null;
     private ChanIdentifiedActivity refreshableActivity;
     private Context context;
     private String passToken;
@@ -63,14 +65,12 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
             if (entity == null) {
                 Log.e(TAG, "Null entity returned building report post");
                 errorCode = R.string.logout_pass_error;
-            }
-            else {
+            } else {
                 String response = executeReportPost(entity);
                 if (response == null || response.isEmpty()) {
                     Log.e(TAG, "Null response posting report post");
                     errorCode = R.string.logout_pass_error;
-                }
-                else {
+                } else {
                     LogoutPassResponse logoutPassResponse = new LogoutPassResponse(context, response);
                     logoutPassResponse.processResponse();
 
@@ -78,17 +78,14 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
                         errorCode = R.string.logout_pass_error;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Error posting", e);
             return R.string.logout_pass_error;
-        }
-        finally {
+        } finally {
             if (errorCode != 0) {
                 if (DEBUG) Log.i(TAG, "Unable to logout 4chan pass");
                 return errorCode;
-            }
-            else {
+            } else {
                 if (DEBUG) Log.i(TAG, "4chan pass successfully logged out");
                 return 0;
             }
@@ -112,7 +109,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
         for (Part p : partsList) {
             if (!(p instanceof StringPart))
                 continue;
-            StringPart s = (StringPart)p;
+            StringPart s = (StringPart) p;
             String line = s.getName() + ": " + s.getValue() + ", ";
             if (DEBUG) Log.i(TAG, line);
         }
@@ -135,7 +132,8 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
                 dumpRequestContent(request.getEntity().getContent());
             if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse httpResponse = client.execute(request, localContext);
-            if (DEBUG) Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
+            if (DEBUG)
+                Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
             if (DEBUG) Log.i(TAG, "Cookies: " + cookieStore.dump());
 
             // check response
@@ -154,12 +152,10 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
             }
             String response = s.toString();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception while posting to url=" + url, e);
             return null;
-        }
-        finally {
+        } finally {
             if (client != null) {
                 client.close();
             }
@@ -173,13 +169,10 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
             String l;
             while ((l = r.readLine()) != null)
                 if (DEBUG) Log.i(TAG, l);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
         }
     }
-
-    protected String errorMessage = null;
 
     protected boolean postSuccessful(LogoutPassResponse logoutPassResponse) {
         errorMessage = logoutPassResponse.getError(context);
@@ -207,8 +200,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
         if (result != 0) {
             String error = context.getString(result) + ("".equals(errorMessage) ? "" : ": " + errorMessage);
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             Toast.makeText(context, R.string.logout_pass_successful, Toast.LENGTH_SHORT).show();
         }
         dialogFragment.dismiss();

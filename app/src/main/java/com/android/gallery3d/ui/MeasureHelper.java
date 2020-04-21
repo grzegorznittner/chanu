@@ -36,6 +36,18 @@ class MeasureHelper {
         return sInstance;
     }
 
+    private static int getLength(int measureSpec, int prefered) {
+        int specLength = MeasureSpec.getSize(measureSpec);
+        switch (MeasureSpec.getMode(measureSpec)) {
+            case MeasureSpec.EXACTLY:
+                return specLength;
+            case MeasureSpec.AT_MOST:
+                return Math.min(prefered, specLength);
+            default:
+                return prefered;
+        }
+    }
+
     public MeasureHelper setPreferredContentSize(int width, int height) {
         mPreferredWidth = width;
         mPreferredHeight = height;
@@ -47,15 +59,6 @@ class MeasureHelper {
         setMeasuredSize(
                 getLength(widthSpec, mPreferredWidth + p.left + p.right),
                 getLength(heightSpec, mPreferredHeight + p.top + p.bottom));
-    }
-
-    private static int getLength(int measureSpec, int prefered) {
-        int specLength = MeasureSpec.getSize(measureSpec);
-        switch(MeasureSpec.getMode(measureSpec)) {
-            case MeasureSpec.EXACTLY: return specLength;
-            case MeasureSpec.AT_MOST: return Math.min(prefered, specLength);
-            default: return prefered;
-        }
     }
 
     protected void setMeasuredSize(int width, int height) {

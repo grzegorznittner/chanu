@@ -16,15 +16,15 @@
 
 package com.android.gallery3d.gadget;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Binder;
+
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.ContentListener;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
-
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Binder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class MediaSetSource implements WidgetSource, ContentListener {
     private static final String TAG = "MediaSetSource";
 
     private MediaSet mSource;
-    private MediaItem mCache[] = new MediaItem[CACHE_SIZE];
+    private MediaItem[] mCache = new MediaItem[CACHE_SIZE];
     private int mCacheStart;
     private int mCacheEnd;
     private long mSourceVersion = MediaObject.INVALID_DATA_VERSION;

@@ -16,12 +16,12 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.anim.CanvasAnimation;
-import com.android.gallery3d.common.Utils;
-
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
+
+import com.android.gallery3d.anim.CanvasAnimation;
+import com.android.gallery3d.common.Utils;
 
 import java.util.ArrayList;
 
@@ -41,37 +41,29 @@ import java.util.ArrayList;
 // lockRendering() if the rendering thread should not run at the same time.
 //
 public class GLView {
-    private static final String TAG = "GLView";
-
     public static final int VISIBLE = 0;
     public static final int INVISIBLE = 1;
-
+    private static final String TAG = "GLView";
     private static final int FLAG_INVISIBLE = 1;
     private static final int FLAG_SET_MEASURED_SIZE = 2;
     private static final int FLAG_LAYOUT_REQUESTED = 4;
 
     protected final Rect mBounds = new Rect();
     protected final Rect mPaddings = new Rect();
-
-    private GLRoot mRoot;
     protected GLView mParent;
-    private ArrayList<GLView> mComponents;
-    private GLView mMotionTarget;
-
-    private CanvasAnimation mAnimation;
-
-    private int mViewFlags = 0;
-
     protected int mMeasuredWidth = 0;
     protected int mMeasuredHeight = 0;
-
-    private int mLastWidthSpec = -1;
-    private int mLastHeightSpec = -1;
-
     protected int mScrollY = 0;
     protected int mScrollX = 0;
     protected int mScrollHeight = 0;
     protected int mScrollWidth = 0;
+    private GLRoot mRoot;
+    private ArrayList<GLView> mComponents;
+    private GLView mMotionTarget;
+    private CanvasAnimation mAnimation;
+    private int mViewFlags = 0;
+    private int mLastWidthSpec = -1;
+    private int mLastHeightSpec = -1;
 
     public void startAnimation(CanvasAnimation animation) {
         GLRoot root = getGLRoot();
@@ -82,6 +74,11 @@ public class GLView {
             root.registerLaunchedAnimation(mAnimation);
         }
         invalidate();
+    }
+
+    // Returns GLView.VISIBLE or GLView.INVISIBLE
+    public int getVisibility() {
+        return (mViewFlags & FLAG_INVISIBLE) == 0 ? VISIBLE : INVISIBLE;
     }
 
     // Sets the visiblity of this GLView (either GLView.VISIBLE or
@@ -95,11 +92,6 @@ public class GLView {
         }
         onVisibilityChanged(visibility);
         invalidate();
-    }
-
-    // Returns GLView.VISIBLE or GLView.INVISIBLE
-    public int getVisibility() {
-        return (mViewFlags & FLAG_INVISIBLE) == 0 ? VISIBLE : INVISIBLE;
     }
 
     // This should only be called on the content pane (the topmost GLView).
@@ -252,7 +244,7 @@ public class GLView {
     }
 
     protected boolean dispatchTouchEvent(MotionEvent event,
-            int x, int y, GLView component, boolean checkBounds) {
+                                         int x, int y, GLView component, boolean checkBounds) {
         Rect rect = component.mBounds;
         int left = rect.left;
         int top = rect.top;
@@ -317,7 +309,7 @@ public class GLView {
         if (sizeChanged) {
             mViewFlags &= ~FLAG_LAYOUT_REQUESTED;
             onLayout(true, left, top, right, bottom);
-        } else if ((mViewFlags & FLAG_LAYOUT_REQUESTED)!= 0) {
+        } else if ((mViewFlags & FLAG_LAYOUT_REQUESTED) != 0) {
             mViewFlags &= ~FLAG_LAYOUT_REQUESTED;
             onLayout(false, left, top, right, bottom);
         }

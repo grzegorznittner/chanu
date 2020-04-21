@@ -7,6 +7,7 @@ package com.chanapps.four.component;
  * Time: 8:18 PM
  * To change this template use File | Settings | File Templates.
  */
+
 import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -24,11 +25,11 @@ public class LetterSpacingTextView extends TextView {
         super(context);
     }
 
-    public LetterSpacingTextView(Context context, AttributeSet attrs){
+    public LetterSpacingTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public LetterSpacingTextView(Context context, AttributeSet attrs, int defStyle){
+    public LetterSpacingTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -54,16 +55,16 @@ public class LetterSpacingTextView extends TextView {
 
     private void applyLetterSpacing() {
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < originalText.length(); i++) {
+        for (int i = 0; i < originalText.length(); i++) {
             builder.append(originalText.charAt(i));
-            if(i+1 < originalText.length()) {
+            if (i + 1 < originalText.length()) {
                 builder.append("\u00A0");
             }
         }
         SpannableString finalText = new SpannableString(builder.toString());
-        if(builder.toString().length() > 1) {
-            for(int i = 1; i < builder.toString().length(); i+=2) {
-                finalText.setSpan(new ScaleXSpan((textSpacing+1)/10), i, i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (builder.toString().length() > 1) {
+            for (int i = 1; i < builder.toString().length(); i += 2) {
+                finalText.setSpan(new ScaleXSpan((textSpacing + 1) / 10), i, i + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
         super.setText(finalText, BufferType.SPANNABLE);

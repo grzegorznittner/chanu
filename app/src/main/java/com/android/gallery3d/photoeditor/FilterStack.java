@@ -27,27 +27,16 @@ import java.util.Stack;
  */
 public class FilterStack {
 
-    /**
-     * Listener of stack changes.
-     */
-    public interface StackListener {
-
-        void onStackChanged(boolean canUndo, boolean canRedo);
-    }
-
     private final Stack<Filter> appliedStack = new Stack<Filter>();
     private final Stack<Filter> redoStack = new Stack<Filter>();
-
     // Use two photo buffers as in and out in turns to apply filters in the stack.
     private final Photo[] buffers = new Photo[2];
     private final PhotoView photoView;
     private final StackListener stackListener;
-
     private Photo source;
     private Runnable queuedTopFilterChange;
     private boolean topFilterOutputted;
     private volatile boolean paused;
-
     public FilterStack(PhotoView photoView, StackListener stackListener) {
         this.photoView = photoView;
         this.stackListener = stackListener;
@@ -252,5 +241,13 @@ public class FilterStack {
     public void onResume() {
         photoView.onResume();
         paused = false;
+    }
+
+    /**
+     * Listener of stack changes.
+     */
+    public interface StackListener {
+
+        void onStackChanged(boolean canUndo, boolean canRedo);
     }
 }

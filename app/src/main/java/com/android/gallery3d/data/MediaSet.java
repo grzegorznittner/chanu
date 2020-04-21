@@ -39,18 +39,32 @@ public abstract class MediaSet extends MediaObject {
     public static final int SYNC_RESULT_SUCCESS = 0;
     public static final int SYNC_RESULT_CANCELLED = 1;
     public static final int SYNC_RESULT_ERROR = 2;
+    private static final Future<Integer> FUTURE_STUB = new Future<Integer>() {
+        @Override
+        public void cancel() {
+        }
 
-    /** Listener to be used with requestSync(SyncListener). */
-    public static interface SyncListener {
-        /**
-         * Called when the sync task completed. Completion may be due to normal termination,
-         * an exception, or cancellation.
-         *
-         * @param mediaSet the MediaSet that's done with sync
-         * @param resultCode one of the SYNC_RESULT_* constants
-         */
-        void onSyncDone(MediaSet mediaSet, int resultCode);
-    }
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+
+        @Override
+        public Integer get() {
+            return SYNC_RESULT_SUCCESS;
+        }
+
+        @Override
+        public void waitDone() {
+        }
+    };
+    private WeakHashMap<ContentListener, Object> mListeners =
+            new WeakHashMap<ContentListener, Object>();
 
     public MediaSet(Path path, long version) {
         super(path, version);
@@ -123,9 +137,6 @@ public abstract class MediaSet extends MediaObject {
 
     public abstract String getName();
 
-    private WeakHashMap<ContentListener, Object> mListeners =
-            new WeakHashMap<ContentListener, Object>();
-
     // NOTE: The MediaSet only keeps a weak reference to the listener. The
     // listener is automatically removed when there is no other reference to
     // the listener.
@@ -172,10 +183,6 @@ public abstract class MediaSet extends MediaObject {
         enumerateTotalMediaItems(consumer, 0);
     }
 
-    public static interface ItemConsumer {
-        void consume(int index, MediaItem item);
-    }
-
     // The default implementation uses getMediaItem() for enumerateMediaItems().
     // Subclasses may override this and use more efficient implementations.
     // Returns the number of items enumerated.
@@ -212,9 +219,9 @@ public abstract class MediaSet extends MediaObject {
      * Requests sync on this MediaSet. It returns a Future object that can be used by the caller
      * to query the status of the sync. The sync result code is one of the SYNC_RESULT_* constants
      * defined in this class and can be obtained by Future.get().
-     *
+     * <p>
      * Subclasses should perform sync on a different thread.
-     *
+     * <p>
      * The default implementation here returns a Future stub that does nothing and returns
      * SYNC_RESULT_SUCCESS by get().
      */
@@ -222,33 +229,28 @@ public abstract class MediaSet extends MediaObject {
         return FUTURE_STUB;
     }
 
-    private static final Future<Integer> FUTURE_STUB = new Future<Integer>() {
-        @Override
-        public void cancel() {}
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
-
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-
-        @Override
-        public Integer get() {
-            return SYNC_RESULT_SUCCESS;
-        }
-
-        @Override
-        public void waitDone() {}
-    };
-
     protected Future<Integer> requestSyncOnEmptySets(MediaSet[] sets, SyncListener listener) {
         MultiSetSyncFuture future = new MultiSetSyncFuture(listener);
         future.requestSyncOnEmptySets(sets);
         return future;
+    }
+
+    /**
+     * Listener to be used with requestSync(SyncListener).
+     */
+    public interface SyncListener {
+        /**
+         * Called when the sync task completed. Completion may be due to normal termination,
+         * an exception, or cancellation.
+         *
+         * @param mediaSet   the MediaSet that's done with sync
+         * @param resultCode one of the SYNC_RESULT_* constants
+         */
+        void onSyncDone(MediaSet mediaSet, int resultCode);
+    }
+
+    public interface ItemConsumer {
+        void consume(int index, MediaItem item);
     }
 
     private class MultiSetSyncFuture implements Future<Integer>, SyncListener {

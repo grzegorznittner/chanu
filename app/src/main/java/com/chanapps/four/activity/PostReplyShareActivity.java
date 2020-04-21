@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.fragment.PickShareBoardDialogFragment;
@@ -32,15 +33,13 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
         ensureHandler();
         Intent intent = getIntent();
         String type = intent.getType();
-        Uri imageUri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         if (Intent.ACTION_SEND.equals(intent.getAction())
                 && type != null
                 && type.startsWith("image/")
-                && !"".equals(imageUri))
-        {
+                && !"".equals(imageUri)) {
             handleSendImage(imageUri);
-        }
-        else {
+        } else {
             Toast.makeText(this, R.string.post_reply_share_error, Toast.LENGTH_SHORT).show();
         }
     }
@@ -57,9 +56,28 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
         return handler;
     }
 
+    @Override
+    public void closeSearch() {
+    }
+
+    @Override
+    public void setProgress(boolean on) {
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
     public class ShareHandler extends Handler {
 
-        public ShareHandler() {}
+        public ShareHandler() {
+        }
 
         @Override
         public void handleMessage(Message msg) {
@@ -90,27 +108,10 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
                     default:
                         finish();
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Couldn't handle message " + msg, e);
             }
         }
-    }
-
-    @Override
-    public void closeSearch() {}
-
-    @Override
-    public void setProgress(boolean on) {}
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
 }

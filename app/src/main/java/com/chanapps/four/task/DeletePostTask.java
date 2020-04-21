@@ -5,17 +5,25 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.URLFormatComponent;
-import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.DeletePostResponse;
 import com.chanapps.four.fragment.DeletingPostDialogFragment;
-import com.chanapps.four.multipartmime.*;
+import com.chanapps.four.multipartmime.MultipartEntity;
+import com.chanapps.four.multipartmime.Part;
 import com.chanapps.four.multipartmime.PartBase;
+import com.chanapps.four.multipartmime.StringPart;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +38,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
 
     public static final String TAG = DeletePostTask.class.getSimpleName();
     public static final boolean DEBUG = false;
-
+    protected String errorMessage = null;
     private ChanIdentifiedActivity activity = null;
     private String boardCode = null;
     private long threadNo = 0;
@@ -74,8 +82,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
                 return R.string.delete_post_error;
 
             return updateLastFetched();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Error posting", e);
             return R.string.delete_post_error;
         }
@@ -102,7 +109,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
         for (Part p : partsList) {
             if (!(p instanceof StringPart))
                 continue;
-            StringPart s = (StringPart)p;
+            StringPart s = (StringPart) p;
             String line = s.getName() + ": " + s.getValue() + ", ";
             if (DEBUG) Log.i(TAG, line);
         }
@@ -120,7 +127,8 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
                 dumpRequestContent(request.getEntity().getContent());
             if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse httpResponse = client.execute(request);
-            if (DEBUG) Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
+            if (DEBUG)
+                Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
             if (httpResponse == null) {
                 Log.e(TAG, context.getString(R.string.delete_post_no_response));
                 return null;
@@ -134,12 +142,10 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
             }
             String response = s.toString();
             return response;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception while posting to url=" + url, e);
             return null;
-        }
-        finally {
+        } finally {
             if (client != null) {
                 client.close();
             }
@@ -153,13 +159,10 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
             String l;
             while ((l = r.readLine()) != null)
                 if (DEBUG) Log.i(TAG, l);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
         }
     }
-
-    protected String errorMessage = null;
 
     protected boolean postSuccessful(DeletePostResponse deletePostResponse) {
         errorMessage = deletePostResponse.getError(context);

@@ -24,9 +24,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.photoeditor.actions.EffectAction;
 import com.android.gallery3d.photoeditor.actions.EffectToolFactory;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * Effects bar that contains all effects and shows them in categorized views.
@@ -48,7 +48,7 @@ public class EffectsBar extends LinearLayout {
     public void initialize(FilterStack filterStack) {
         this.filterStack = filterStack;
 
-        effectsMenu = (EffectsMenu) findViewById(R.id.effects_menu);
+        effectsMenu = findViewById(R.id.effects_menu);
         effectsMenu.setOnToggleListener(new EffectsMenu.OnToggleListener() {
 
             @Override
@@ -74,7 +74,7 @@ public class EffectsBar extends LinearLayout {
     private void createEffectsGallery(int effectsId) {
         // Inflate scrollable effects-gallery and desired effects into effects-bar.
         effectsGallery = inflater.inflate(R.layout.photoeditor_effects_gallery, this, false);
-        ViewGroup scrollView = (ViewGroup) effectsGallery.findViewById(R.id.scroll_view);
+        ViewGroup scrollView = effectsGallery.findViewById(R.id.scroll_view);
         ViewGroup effects = (ViewGroup) inflater.inflate(effectsId, scrollView, false);
         for (int i = 0; i < effects.getChildCount(); i++) {
             setupEffectListener((EffectAction) effects.getChildAt(i));
@@ -118,7 +118,7 @@ public class EffectsBar extends LinearLayout {
         if (effectsGallery != null) {
             if (activeEffect != null) {
                 // Detach the active effect to prevent it stopping effects-gallery from gc.
-                ViewGroup scrollView = (ViewGroup) effectsGallery.findViewById(R.id.scroll_view);
+                ViewGroup scrollView = effectsGallery.findViewById(R.id.scroll_view);
                 ((ViewGroup) scrollView.getChildAt(0)).removeView(activeEffect);
             }
             removeView(effectsGallery);

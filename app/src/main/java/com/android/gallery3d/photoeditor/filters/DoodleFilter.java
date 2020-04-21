@@ -35,16 +35,6 @@ import java.util.Vector;
  */
 public class DoodleFilter extends Filter {
 
-    private static class ColorPath {
-        private final int color;
-        private final Path path;
-
-        ColorPath(int color, Path path) {
-            this.color = color;
-            this.path = path;
-        }
-    }
-
     private final Vector<ColorPath> doodles = new Vector<ColorPath>();
 
     /**
@@ -83,5 +73,15 @@ public class DoodleFilter extends Filter {
         Effect effect = getEffect(EffectFactory.EFFECT_BITMAPOVERLAY);
         effect.setParameter("bitmap", bitmap);
         effect.apply(src.texture(), src.width(), src.height(), dst.texture());
+    }
+
+    private static class ColorPath {
+        private final int color;
+        private final Path path;
+
+        ColorPath(int color, Path path) {
+            this.color = color;
+            this.path = path;
+        }
     }
 }

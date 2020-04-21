@@ -27,30 +27,7 @@ import android.view.MotionEvent;
  */
 class TouchView extends FullscreenToolView {
 
-    /**
-     * Listener of swipes.
-     */
-    public interface SwipeListener {
-
-        void onSwipeLeft();
-
-        void onSwipeRight();
-
-        void onSwipeUp();
-
-        void onSwipeDown();
-    }
-
-    /**
-     * Listener of single tap on a point (relative to photo coordinates).
-     */
-    public interface SingleTapListener {
-
-        void onSingleTap(PointF point);
-    }
-
     private final GestureDetector gestureDetector;
-
     private SwipeListener swipeListener;
     private SingleTapListener singleTapListener;
 
@@ -115,5 +92,27 @@ class TouchView extends FullscreenToolView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return isEnabled() && gestureDetector.onTouchEvent(event);
+    }
+
+    /**
+     * Listener of swipes.
+     */
+    public interface SwipeListener {
+
+        void onSwipeLeft();
+
+        void onSwipeRight();
+
+        void onSwipeUp();
+
+        void onSwipeDown();
+    }
+
+    /**
+     * Listener of single tap on a point (relative to photo coordinates).
+     */
+    public interface SingleTapListener {
+
+        void onSingleTap(PointF point);
     }
 }

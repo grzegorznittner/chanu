@@ -16,12 +16,6 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.provider.GalleryProvider;
-import com.android.gallery3d.util.ThreadPool;
-import com.android.gallery3d.util.ThreadPool.Job;
-import com.android.gallery3d.util.ThreadPool.JobContext;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapRegionDecoder;
@@ -30,6 +24,12 @@ import android.mtp.MtpObjectInfo;
 import android.net.Uri;
 import android.util.Log;
 
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.provider.GalleryProvider;
+import com.android.gallery3d.util.ThreadPool;
+import com.android.gallery3d.util.ThreadPool.Job;
+import com.android.gallery3d.util.ThreadPool.JobContext;
+
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -37,19 +37,19 @@ public class MtpImage extends MediaItem {
     private static final String TAG = "MtpImage";
 
     private final int mDeviceId;
-    private int mObjectId;
-    private int mObjectSize;
-    private long mDateTaken;
-    private String mFileName;
     private final ThreadPool mThreadPool;
     private final MtpContext mMtpContext;
     private final MtpObjectInfo mObjInfo;
     private final int mImageWidth;
     private final int mImageHeight;
     private final Context mContext;
+    private int mObjectId;
+    private int mObjectSize;
+    private long mDateTaken;
+    private String mFileName;
 
     MtpImage(Path path, GalleryApp application, int deviceId,
-            MtpObjectInfo objInfo, MtpContext mtpContext) {
+             MtpObjectInfo objInfo, MtpContext mtpContext) {
         super(path, nextVersionNumber());
         mContext = application.getAndroidContext();
         mDeviceId = deviceId;

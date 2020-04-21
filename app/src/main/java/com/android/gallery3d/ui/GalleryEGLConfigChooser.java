@@ -30,15 +30,27 @@ import javax.microedition.khronos.egl.EGLDisplay;
 class GalleryEGLConfigChooser implements EGLConfigChooser {
 
     private static final String TAG = "GalleryEGLConfigChooser";
-    private int mStencilBits;
-
-    private final int mConfigSpec[] = new int[] {
+    private static final int[] ATTR_ID = {
+            EGL10.EGL_RED_SIZE,
+            EGL10.EGL_GREEN_SIZE,
+            EGL10.EGL_BLUE_SIZE,
+            EGL10.EGL_ALPHA_SIZE,
+            EGL10.EGL_DEPTH_SIZE,
+            EGL10.EGL_STENCIL_SIZE,
+            EGL10.EGL_CONFIG_ID,
+            EGL10.EGL_CONFIG_CAVEAT
+    };
+    private static final String[] ATTR_NAME = {
+            "R", "G", "B", "A", "D", "S", "ID", "CAVEAT"
+    };
+    private final int[] mConfigSpec = new int[]{
             EGL10.EGL_RED_SIZE, 5,
             EGL10.EGL_GREEN_SIZE, 6,
             EGL10.EGL_BLUE_SIZE, 5,
             EGL10.EGL_ALPHA_SIZE, 0,
             EGL10.EGL_NONE
     };
+    private int mStencilBits;
 
     public int getStencilBits() {
         return mStencilBits;
@@ -64,18 +76,18 @@ class GalleryEGLConfigChooser implements EGLConfigChooser {
     }
 
     private EGLConfig chooseConfig(
-            EGL10 egl, EGLDisplay display, EGLConfig configs[]) {
+            EGL10 egl, EGLDisplay display, EGLConfig[] configs) {
 
         EGLConfig result = null;
         int minStencil = Integer.MAX_VALUE;
-        int value[] = new int[1];
+        int[] value = new int[1];
 
         // Because we need only one bit of stencil, try to choose a config that
         // has stencil support but with smallest number of stencil bits. If
         // none is found, choose any one.
         for (int i = 0, n = configs.length; i < n; ++i) {
             if (egl.eglGetConfigAttrib(
-                display, configs[i], EGL10.EGL_RED_SIZE, value)) {
+                    display, configs[i], EGL10.EGL_RED_SIZE, value)) {
                 // Filter out ARGB 8888 configs.
                 if (value[0] == 8) continue;
             }
@@ -99,23 +111,8 @@ class GalleryEGLConfigChooser implements EGLConfigChooser {
         return result;
     }
 
-    private static final int[] ATTR_ID = {
-            EGL10.EGL_RED_SIZE,
-            EGL10.EGL_GREEN_SIZE,
-            EGL10.EGL_BLUE_SIZE,
-            EGL10.EGL_ALPHA_SIZE,
-            EGL10.EGL_DEPTH_SIZE,
-            EGL10.EGL_STENCIL_SIZE,
-            EGL10.EGL_CONFIG_ID,
-            EGL10.EGL_CONFIG_CAVEAT
-    };
-
-    private static final String[] ATTR_NAME = {
-        "R", "G", "B", "A", "D", "S", "ID", "CAVEAT"
-    };
-
     private void logConfig(EGL10 egl, EGLDisplay display, EGLConfig config) {
-        int value[] = new int[1];
+        int[] value = new int[1];
         StringBuilder sb = new StringBuilder();
         for (int j = 0; j < ATTR_ID.length; j++) {
             egl.eglGetConfigAttrib(display, config, ATTR_ID[j], value);

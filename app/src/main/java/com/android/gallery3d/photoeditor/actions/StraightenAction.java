@@ -43,7 +43,7 @@ public class StraightenAction extends EffectAction {
         rotateView.setOnRotateChangeListener(new RotateView.OnRotateChangeListener() {
 
             @Override
-            public void onAngleChanged(float degrees, boolean fromUser){
+            public void onAngleChanged(float degrees, boolean fromUser) {
                 if (fromUser) {
                     filter.setAngle(degrees);
                     notifyFilterChanged(filter, true);

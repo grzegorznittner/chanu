@@ -47,8 +47,8 @@ public class BitmapUtils {
     private static final int DEFAULT_COMPRESS_QUALITY = 90;
     private static final int INDEX_ORIENTATION = 0;
 
-    private static final String[] IMAGE_PROJECTION = new String[] {
-        ImageColumns.ORIENTATION
+    private static final String[] IMAGE_PROJECTION = new String[]{
+            ImageColumns.ORIENTATION
     };
 
     private final Context context;

@@ -17,5 +17,5 @@
 package com.android.gallery3d.util;
 
 public interface FutureListener<T> {
-    public void onFutureDone(Future<T> future);
+    void onFutureDone(Future<T> future);
 }

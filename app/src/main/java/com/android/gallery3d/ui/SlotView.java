@@ -31,61 +31,34 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SlotView extends GLView {
-    @SuppressWarnings("unused")
-    private static final String TAG = "SlotView";
-
-    private static final boolean WIDE = true;
-
-    private static final int INDEX_NONE = -1;
-
-    public interface Listener {
-        public void onDown(int index);
-        public void onUp();
-        public void onSingleTapUp(int index);
-        public void onLongTap(int index);
-        public void onScrollPositionChanged(int position, int total);
-    }
-
-    public static class SimpleListener implements Listener {
-        public void onDown(int index) {}
-        public void onUp() {}
-        public void onSingleTapUp(int index) {}
-        public void onLongTap(int index) {}
-        public void onScrollPositionChanged(int position, int total) {}
-    }
-
-    private final GestureDetector mGestureDetector;
-    private final ScrollerHelper mScroller;
-    private final Paper mPaper = new Paper();
-
-    private Listener mListener;
-    private UserInteractionListener mUIListener;
-
-    // Use linked hash map to keep the rendering order
-    private final HashMap<DisplayItem, ItemEntry> mItems =
-            new HashMap<DisplayItem, ItemEntry>();
-
-    public LinkedNode.List<ItemEntry> mItemList = LinkedNode.newList();
-
-    // This is used for multipass rendering
-    private ArrayList<ItemEntry> mCurrentItems = new ArrayList<ItemEntry>();
-    private ArrayList<ItemEntry> mNextItems = new ArrayList<ItemEntry>();
-
-    private boolean mMoreAnimation = false;
-    private MyAnimation mAnimation = null;
-    private final Position mTempPosition = new Position();
-    private final Layout mLayout = new Layout();
-    private PositionProvider mPositions;
-    private int mStartIndex = INDEX_NONE;
-
-    // whether the down action happened while the view is scrolling.
-    private boolean mDownInScrolling;
-    private int mOverscrollEffect = OVERSCROLL_3D;
-
     public static final int OVERSCROLL_3D = 0;
     public static final int OVERSCROLL_SYSTEM = 1;
     public static final int OVERSCROLL_NONE = 2;
-
+    @SuppressWarnings("unused")
+    private static final String TAG = "SlotView";
+    private static final boolean WIDE = true;
+    private static final int INDEX_NONE = -1;
+    private final GestureDetector mGestureDetector;
+    private final ScrollerHelper mScroller;
+    private final Paper mPaper = new Paper();
+    // Use linked hash map to keep the rendering order
+    private final HashMap<DisplayItem, ItemEntry> mItems =
+            new HashMap<DisplayItem, ItemEntry>();
+    private final Position mTempPosition = new Position();
+    private final Layout mLayout = new Layout();
+    public LinkedNode.List<ItemEntry> mItemList = LinkedNode.newList();
+    private Listener mListener;
+    private UserInteractionListener mUIListener;
+    // This is used for multipass rendering
+    private ArrayList<ItemEntry> mCurrentItems = new ArrayList<ItemEntry>();
+    private ArrayList<ItemEntry> mNextItems = new ArrayList<ItemEntry>();
+    private boolean mMoreAnimation = false;
+    private MyAnimation mAnimation = null;
+    private PositionProvider mPositions;
+    private int mStartIndex = INDEX_NONE;
+    // whether the down action happened while the view is scrolling.
+    private boolean mDownInScrolling;
+    private int mOverscrollEffect = OVERSCROLL_3D;
     public SlotView(Context context) {
         mGestureDetector =
                 new GestureDetector(context, new MyGestureListener());
@@ -289,7 +262,7 @@ public class SlotView extends GLView {
         }
 
         LinkedNode.List<ItemEntry> list = mItemList;
-        for (ItemEntry entry = list.getLast(); entry != null;) {
+        for (ItemEntry entry = list.getLast(); entry != null; ) {
             int r = renderItem(canvas, entry, interpolate, 0, paperActive);
             if ((r & DisplayItem.RENDER_MORE_PASS) != 0) {
                 mCurrentItems.add(entry);
@@ -330,7 +303,7 @@ public class SlotView extends GLView {
     }
 
     private int renderItem(GLCanvas canvas, ItemEntry entry,
-            float interpolate, int pass, boolean paperActive) {
+                           float interpolate, int pass, boolean paperActive) {
         canvas.save(GLCanvas.SAVE_FLAG_ALPHA | GLCanvas.SAVE_FLAG_MATRIX);
         Position position = entry.target;
         if (mPositions != null) {
@@ -357,6 +330,68 @@ public class SlotView extends GLView {
         int more = entry.item.render(canvas, pass);
         canvas.restore();
         return more;
+    }
+
+    public void setStartIndex(int index) {
+        mStartIndex = index;
+    }
+
+    // Return true if the layout parameters have been changed
+    public boolean setSlotCount(int slotCount) {
+        boolean changed = mLayout.setSlotCount(slotCount);
+
+        // mStartIndex is applied the first time setSlotCount is called.
+        if (mStartIndex != INDEX_NONE) {
+            setCenterIndex(mStartIndex);
+            mStartIndex = INDEX_NONE;
+        }
+        updateScrollPosition(WIDE ? mScrollX : mScrollY, true);
+        return changed;
+    }
+
+    public int getVisibleStart() {
+        return mLayout.getVisibleStart();
+    }
+
+    public int getVisibleEnd() {
+        return mLayout.getVisibleEnd();
+    }
+
+    public int getScrollX() {
+        return mScrollX;
+    }
+
+    public int getScrollY() {
+        return mScrollY;
+    }
+
+    public interface Listener {
+        void onDown(int index);
+
+        void onUp();
+
+        void onSingleTapUp(int index);
+
+        void onLongTap(int index);
+
+        void onScrollPositionChanged(int position, int total);
+    }
+
+    public static class SimpleListener implements Listener {
+        public void onDown(int index) {
+        }
+
+        public void onUp() {
+        }
+
+        public void onSingleTapUp(int index) {
+        }
+
+        public void onLongTap(int index) {
+        }
+
+        public void onScrollPositionChanged(int position, int total) {
+        }
     }
 
     public static class MyAnimation extends Animation {
@@ -660,7 +695,7 @@ public class SlotView extends GLView {
 
         @Override
         public boolean onFling(MotionEvent e1,
-                MotionEvent e2, float velocityX, float velocityY) {
+                               MotionEvent e2, float velocityX, float velocityY) {
             cancelDown();
             int scrollLimit = mLayout.getScrollLimit();
             if (scrollLimit == 0) return false;
@@ -673,7 +708,7 @@ public class SlotView extends GLView {
 
         @Override
         public boolean onScroll(MotionEvent e1,
-                MotionEvent e2, float distanceX, float distanceY) {
+                                MotionEvent e2, float distanceX, float distanceY) {
             cancelDown();
             float distance = WIDE ? distanceX : distanceY;
             int overDistance = mScroller.startScroll(
@@ -706,38 +741,5 @@ public class SlotView extends GLView {
                 unlockRendering();
             }
         }
-    }
-
-    public void setStartIndex(int index) {
-        mStartIndex = index;
-    }
-
-    // Return true if the layout parameters have been changed
-    public boolean setSlotCount(int slotCount) {
-        boolean changed = mLayout.setSlotCount(slotCount);
-
-        // mStartIndex is applied the first time setSlotCount is called.
-        if (mStartIndex != INDEX_NONE) {
-            setCenterIndex(mStartIndex);
-            mStartIndex = INDEX_NONE;
-        }
-        updateScrollPosition(WIDE ? mScrollX : mScrollY, true);
-        return changed;
-    }
-
-    public int getVisibleStart() {
-        return mLayout.getVisibleStart();
-    }
-
-    public int getVisibleEnd() {
-        return mLayout.getVisibleEnd();
-    }
-
-    public int getScrollX() {
-        return mScrollX;
-    }
-
-    public int getScrollY() {
-        return mScrollY;
     }
 }

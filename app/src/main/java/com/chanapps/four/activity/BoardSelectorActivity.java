@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.util.Log;
+
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
@@ -29,8 +30,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
     public void switchBoard(String boardCode, String query) {
         if (ChanBoard.isTopBoard(boardCode)) {
             switchBoardInternal(boardCode, query);
-        }
-        else {
+        } else {
             Intent intent = BoardActivity.createIntent(this, boardCode, query);
             startActivity(intent);
         }
@@ -43,7 +43,8 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
             @Override
             public void run() {
                 if (NetworkProfileManager.instance().getActivity() != activity) {
-                    if (DEBUG) Log.i(TAG, "boardSelector onResume() activityChange to /" + boardCode + "/");
+                    if (DEBUG)
+                        Log.i(TAG, "boardSelector onResume() activityChange to /" + boardCode + "/");
                     NetworkProfileManager.instance().activityChange(activity);
                     if (handler != null)
                         handler.post(new Runnable() {

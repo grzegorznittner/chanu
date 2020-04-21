@@ -7,6 +7,7 @@ package com.chanapps.four.component;
  * Time: 5:46 PM
  * To change this template use File | Settings | File Templates.
  */
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 public class CheckableLinearLayout extends LinearLayout implements Checkable {
 
     boolean isChecked = false;
+
     public CheckableLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -53,9 +55,7 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
             if (v != null)
                 v.setBackgroundColor(R.color.blue_base);
                 */
-            ;
-        }
-        else {
+        } else {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 deprecatedSetBackgroundDrawable(null);
             else

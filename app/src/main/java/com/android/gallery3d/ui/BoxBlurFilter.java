@@ -20,6 +20,8 @@ import android.graphics.Bitmap;
 
 
 public class BoxBlurFilter {
+    public static final int MODE_REPEAT = 1;
+    public static final int MODE_CLAMP = 2;
     private static final int RED_MASK = 0xff0000;
     private static final int RED_MASK_SHIFT = 16;
     private static final int GREEN_MASK = 0x00ff00;
@@ -29,9 +31,6 @@ public class BoxBlurFilter {
     private static final int KERNEL_SIZE = RADIUS * 2 + 1;
     private static final int NUM_COLORS = 256;
     private static final int[] KERNEL_NORM = new int[KERNEL_SIZE * NUM_COLORS];
-
-    public static final int MODE_REPEAT = 1;
-    public static final int MODE_CLAMP = 2;
 
     static {
         int index = 0;
@@ -59,9 +58,9 @@ public class BoxBlurFilter {
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        int data[] = new int[width * height];
+        int[] data = new int[width * height];
         bitmap.getPixels(data, 0, width, 0, 0, width, height);
-        int temp[] = new int[width * height];
+        int[] temp = new int[width * height];
         applyOneDimension(data, temp, width, height, horizontalMode);
         applyOneDimension(temp, data, height, width, verticalMode);
         bitmap.setPixels(data, 0, width, 0, 0, width, height);

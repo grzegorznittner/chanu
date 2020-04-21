@@ -3,13 +3,15 @@ package com.chanapps.four.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+
+import androidx.fragment.app.FragmentActivity;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanPost;
@@ -68,7 +70,7 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
 
     protected int getItemViewLayout(int tag) {
         int id;
-        switch(tag) {
+        switch (tag) {
             case TYPE_HEADER:
                 id = R.layout.thread_list_header;
                 break;
@@ -105,6 +107,7 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
                         p.setVisibility(View.VISIBLE);
                     }
                 }
+
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     if (view != null)
@@ -113,6 +116,7 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
                         p.setVisibility(View.GONE);
                     }
                 }
+
                 @Override
                 public void onReceivedError(WebView view, int errorCode,
                                             String description, String failingUrl) {
@@ -127,7 +131,7 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
             v.getSettings().setBuiltInZoomControls(false);
         }
     }
-    
+
     @Override
     public int getViewTypeCount() {
         return TYPE_MAX_COUNT;
@@ -140,13 +144,14 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO)); // resto of item is the threadNo
         final long threadNo = resto > 0 ? resto : postId;
         final long postNo = resto > 0 ? postId : 0;
-        ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        ThreadViewHolder viewHolder = (ThreadViewHolder) view.getTag(R.id.VIEW_HOLDER);
         final ThreadFragment fragment = context != null && context instanceof ThreadActivity
-                ? ((ThreadActivity)context).getCurrentFragment()
+                ? ((ThreadActivity) context).getCurrentFragment()
                 : null;
         final String query = fragment == null ? "" : fragment.getQuery();
         if (resto == 0) { // it's a header
-            if (DEBUG) Log.i(TAG, "view already set for thread header, only adjusting status icons and num comments/images/replies");
+            if (DEBUG)
+                Log.i(TAG, "view already set for thread header, only adjusting status icons and num comments/images/replies");
             int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
             int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
             ThreadViewer.setSubjectIcons(viewHolder, flags);
@@ -165,15 +170,15 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
                             onDismissCallback.run();
                         //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
                         (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, ThreadPopupDialogFragment.PopupType.REPLIES, query))
-                                .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                                .show(((FragmentActivity) context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
                     }
                 }
             });
             return;
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "view already set for thread item, only adjusting num replies");
-            if (DEBUG) Log.i(TAG, "displayNumDirectReplies showContextMenu=" + showContextMenu + " cursor count" + cursor.getCount());
+            if (DEBUG)
+                Log.i(TAG, "displayNumDirectReplies showContextMenu=" + showContextMenu + " cursor count" + cursor.getCount());
             ThreadViewer.displayNumDirectReplies(viewHolder, cursor, showContextMenu, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -183,7 +188,7 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
                             onDismissCallback.run();
                         //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
                         (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, ThreadPopupDialogFragment.PopupType.REPLIES, query))
-                                .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                                .show(((FragmentActivity) context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
                     }
                 }
             });

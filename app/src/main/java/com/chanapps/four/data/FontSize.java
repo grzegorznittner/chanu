@@ -4,6 +4,7 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.widget.TextView;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 
@@ -40,10 +41,6 @@ public enum FontSize {
         tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
     }
 
-    public int displayStringId() {
-        return displayStringId;
-    }
-
     public static FontSize loadFromPrefs(Context context) {
         return FontSize.valueOfDisplayString(context, PreferenceManager
                 .getDefaultSharedPreferences(context)
@@ -58,6 +55,10 @@ public enum FontSize {
                 .putString(SettingsActivity.PREF_FONT_SIZE,
                         context.getString(boardSortType.displayStringId()))
                 .commit();
+    }
+
+    public int displayStringId() {
+        return displayStringId;
     }
 
 }

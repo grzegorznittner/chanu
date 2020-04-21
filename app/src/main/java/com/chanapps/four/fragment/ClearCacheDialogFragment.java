@@ -1,6 +1,8 @@
 package com.chanapps.four.fragment;
 
-import android.app.*;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -11,29 +13,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.NotificationComponent;
 import com.chanapps.four.data.ChanFileStorage;
 
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 12/14/12
-* Time: 12:44 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 12/14/12
+ * Time: 12:44 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public class ClearCacheDialogFragment extends DialogFragment {
 
     public static final String TAG = ClearCacheDialogFragment.class.getSimpleName();
 
     private static final boolean DEBUG = false;
-
+    private static ClearCacheAsyncTask clearCacheAsyncTask;
     private SettingsFragment fragment;
 
-    private static ClearCacheAsyncTask clearCacheAsyncTask;
-
-    public ClearCacheDialogFragment() {}
+    public ClearCacheDialogFragment() {
+    }
 
     public ClearCacheDialogFragment(SettingsFragment fragment) {
         super();
@@ -44,8 +46,8 @@ public class ClearCacheDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
-        TextView title = (TextView)layout.findViewById(R.id.title);
-        TextView message = (TextView)layout.findViewById(R.id.message);
+        TextView title = layout.findViewById(R.id.title);
+        TextView message = layout.findViewById(R.id.message);
         title.setText(R.string.pref_cache_category);
         message.setText(R.string.dialog_clear_cache_confirm);
         setStyle(STYLE_NO_TITLE, 0);
@@ -70,10 +72,11 @@ public class ClearCacheDialogFragment extends DialogFragment {
 
     private static class ClearCacheAsyncTask extends AsyncTask<Void, Void, String> {
 
-        private Context context;
         private static boolean runningDelete = false;
+        private Context context;
 
-        public ClearCacheAsyncTask() {}
+        public ClearCacheAsyncTask() {
+        }
 
         public ClearCacheAsyncTask(Context context) {
             this.context = context;
@@ -100,8 +103,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
             if (ChanFileStorage.deleteCacheDirectory(context)) {
                 if (DEBUG) Log.i(TAG, "Successfully cleared cache");
                 contentText = context.getString(R.string.pref_clear_cache_success);
-            }
-            else {
+            } else {
                 Log.e(TAG, "Failed to run clear cache command");
                 contentText = context.getString(R.string.pref_clear_cache_error);
             }

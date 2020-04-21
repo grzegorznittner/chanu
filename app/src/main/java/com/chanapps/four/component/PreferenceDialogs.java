@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 
@@ -19,7 +20,8 @@ public class PreferenceDialogs {
 
     Activity mActivity;
 
-    public PreferenceDialogs() {}
+    public PreferenceDialogs() {
+    }
 
     public PreferenceDialogs(Activity activity) {
         mActivity = activity;

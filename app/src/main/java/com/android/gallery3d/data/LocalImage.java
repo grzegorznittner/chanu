@@ -16,13 +16,6 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.common.BitmapUtils;
-import com.android.gallery3d.util.GalleryUtils;
-import com.android.gallery3d.util.ThreadPool.Job;
-import com.android.gallery3d.util.ThreadPool.JobContext;
-import com.android.gallery3d.util.UpdateHelper;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -35,36 +28,20 @@ import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.util.Log;
 
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.common.BitmapUtils;
+import com.android.gallery3d.util.GalleryUtils;
+import com.android.gallery3d.util.ThreadPool.Job;
+import com.android.gallery3d.util.ThreadPool.JobContext;
+import com.android.gallery3d.util.UpdateHelper;
+
 import java.io.File;
 import java.io.IOException;
 
 // LocalImage represents an image in the local storage.
 public class LocalImage extends LocalMediaItem {
-    private static final int THUMBNAIL_TARGET_SIZE = 640;
-    private static final int MICROTHUMBNAIL_TARGET_SIZE = 200;
-
-    private static final String TAG = "LocalImage";
-
     static final Path ITEM_PATH = Path.fromString("/local/image/item");
-
-    // Must preserve order between these indices and the order of the terms in
-    // the following PROJECTION array.
-    private static final int INDEX_ID = 0;
-    private static final int INDEX_CAPTION = 1;
-    private static final int INDEX_MIME_TYPE = 2;
-    private static final int INDEX_LATITUDE = 3;
-    private static final int INDEX_LONGITUDE = 4;
-    private static final int INDEX_DATE_TAKEN = 5;
-    private static final int INDEX_DATE_ADDED = 6;
-    private static final int INDEX_DATE_MODIFIED = 7;
-    private static final int INDEX_DATA = 8;
-    private static final int INDEX_ORIENTATION = 9;
-    private static final int INDEX_BUCKET_ID = 10;
-    private static final int INDEX_SIZE_ID = 11;
-    private static final int INDEX_WIDTH = 12;
-    private static final int INDEX_HEIGHT = 13;
-
-    static final String[] PROJECTION =  {
+    static final String[] PROJECTION = {
             ImageColumns._ID,           // 0
             ImageColumns.TITLE,         // 1
             ImageColumns.MIME_TYPE,     // 2
@@ -81,7 +58,25 @@ public class LocalImage extends LocalMediaItem {
             "width", // ImageColumns.WIDTH,         // 12
             "height", // ImageColumns.HEIGHT         // 13
     };
-
+    private static final int THUMBNAIL_TARGET_SIZE = 640;
+    private static final int MICROTHUMBNAIL_TARGET_SIZE = 200;
+    private static final String TAG = "LocalImage";
+    // Must preserve order between these indices and the order of the terms in
+    // the following PROJECTION array.
+    private static final int INDEX_ID = 0;
+    private static final int INDEX_CAPTION = 1;
+    private static final int INDEX_MIME_TYPE = 2;
+    private static final int INDEX_LATITUDE = 3;
+    private static final int INDEX_LONGITUDE = 4;
+    private static final int INDEX_DATE_TAKEN = 5;
+    private static final int INDEX_DATE_ADDED = 6;
+    private static final int INDEX_DATE_MODIFIED = 7;
+    private static final int INDEX_DATA = 8;
+    private static final int INDEX_ORIENTATION = 9;
+    private static final int INDEX_BUCKET_ID = 10;
+    private static final int INDEX_SIZE_ID = 11;
+    private static final int INDEX_WIDTH = 12;
+    private static final int INDEX_HEIGHT = 13;
     private final GalleryApp mApplication;
 
     public int rotation;
@@ -111,6 +106,33 @@ public class LocalImage extends LocalMediaItem {
             }
         } finally {
             cursor.close();
+        }
+    }
+
+    static int getTargetSize(int type) {
+        switch (type) {
+            case TYPE_THUMBNAIL:
+                return THUMBNAIL_TARGET_SIZE;
+            case TYPE_MICROTHUMBNAIL:
+                return MICROTHUMBNAIL_TARGET_SIZE;
+            default:
+                throw new RuntimeException(
+                        "should only request thumb/microthumb from cache");
+        }
+    }
+
+    private static String getExifOrientation(int orientation) {
+        switch (orientation) {
+            case 0:
+                return String.valueOf(ExifInterface.ORIENTATION_NORMAL);
+            case 90:
+                return String.valueOf(ExifInterface.ORIENTATION_ROTATE_90);
+            case 180:
+                return String.valueOf(ExifInterface.ORIENTATION_ROTATE_180);
+            case 270:
+                return String.valueOf(ExifInterface.ORIENTATION_ROTATE_270);
+            default:
+                throw new AssertionError("invalid: " + orientation);
         }
     }
 
@@ -157,72 +179,9 @@ public class LocalImage extends LocalMediaItem {
         return new LocalImageRequest(mApplication, mPath, type, filePath);
     }
 
-    public static class LocalImageRequest extends ImageCacheRequest {
-        private String mLocalFilePath;
-
-        LocalImageRequest(GalleryApp application, Path path, int type,
-                String localFilePath) {
-            super(application, path, type, getTargetSize(type));
-            mLocalFilePath = localFilePath;
-        }
-
-        @Override
-        public Bitmap onDecodeOriginal(JobContext jc, int type) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-            // try to decode from JPEG EXIF
-            if (type == MediaItem.TYPE_MICROTHUMBNAIL) {
-                ExifInterface exif = null;
-                byte [] thumbData = null;
-                try {
-                    exif = new ExifInterface(mLocalFilePath);
-                    if (exif != null) {
-                        thumbData = exif.getThumbnail();
-                    }
-                } catch (Throwable t) {
-                    Log.w(TAG, "fail to get exif thumb", t);
-                }
-                if (thumbData != null) {
-                    Bitmap bitmap = DecodeUtils.requestDecodeIfBigEnough(
-                            jc, thumbData, options, getTargetSize(type));
-                    if (bitmap != null) return bitmap;
-                }
-            }
-            return DecodeUtils.requestDecode(
-                    jc, mLocalFilePath, options, getTargetSize(type));
-        }
-    }
-
-    static int getTargetSize(int type) {
-        switch (type) {
-            case TYPE_THUMBNAIL:
-                return THUMBNAIL_TARGET_SIZE;
-            case TYPE_MICROTHUMBNAIL:
-                return MICROTHUMBNAIL_TARGET_SIZE;
-            default:
-                throw new RuntimeException(
-                    "should only request thumb/microthumb from cache");
-        }
-    }
-
     @Override
     public Job<BitmapRegionDecoder> requestLargeImage() {
         return new LocalLargeImageRequest(filePath);
-    }
-
-    public static class LocalLargeImageRequest
-            implements Job<BitmapRegionDecoder> {
-        String mLocalFilePath;
-
-        public LocalLargeImageRequest(String localFilePath) {
-            mLocalFilePath = localFilePath;
-        }
-
-        public BitmapRegionDecoder run(JobContext jc) {
-            return DecodeUtils.requestCreateBitmapRegionDecoder(
-                    jc, mLocalFilePath, false);
-        }
     }
 
     @Override
@@ -249,21 +208,6 @@ public class LocalImage extends LocalMediaItem {
         Uri baseUri = Images.Media.EXTERNAL_CONTENT_URI;
         mApplication.getContentResolver().delete(baseUri, "_id=?",
                 new String[]{String.valueOf(id)});
-    }
-
-    private static String getExifOrientation(int orientation) {
-        switch (orientation) {
-            case 0:
-                return String.valueOf(ExifInterface.ORIENTATION_NORMAL);
-            case 90:
-                return String.valueOf(ExifInterface.ORIENTATION_ROTATE_90);
-            case 180:
-                return String.valueOf(ExifInterface.ORIENTATION_ROTATE_180);
-            case 270:
-                return String.valueOf(ExifInterface.ORIENTATION_ROTATE_270);
-            default:
-                throw new AssertionError("invalid: " + orientation);
-        }
     }
 
     @Override
@@ -326,5 +270,56 @@ public class LocalImage extends LocalMediaItem {
     @Override
     public int getHeight() {
         return height;
+    }
+
+    public static class LocalImageRequest extends ImageCacheRequest {
+        private String mLocalFilePath;
+
+        LocalImageRequest(GalleryApp application, Path path, int type,
+                          String localFilePath) {
+            super(application, path, type, getTargetSize(type));
+            mLocalFilePath = localFilePath;
+        }
+
+        @Override
+        public Bitmap onDecodeOriginal(JobContext jc, int type) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            // try to decode from JPEG EXIF
+            if (type == MediaItem.TYPE_MICROTHUMBNAIL) {
+                ExifInterface exif = null;
+                byte[] thumbData = null;
+                try {
+                    exif = new ExifInterface(mLocalFilePath);
+                    if (exif != null) {
+                        thumbData = exif.getThumbnail();
+                    }
+                } catch (Throwable t) {
+                    Log.w(TAG, "fail to get exif thumb", t);
+                }
+                if (thumbData != null) {
+                    Bitmap bitmap = DecodeUtils.requestDecodeIfBigEnough(
+                            jc, thumbData, options, getTargetSize(type));
+                    if (bitmap != null) return bitmap;
+                }
+            }
+            return DecodeUtils.requestDecode(
+                    jc, mLocalFilePath, options, getTargetSize(type));
+        }
+    }
+
+    public static class LocalLargeImageRequest
+            implements Job<BitmapRegionDecoder> {
+        String mLocalFilePath;
+
+        public LocalLargeImageRequest(String localFilePath) {
+            mLocalFilePath = localFilePath;
+        }
+
+        public BitmapRegionDecoder run(JobContext jc) {
+            return DecodeUtils.requestCreateBitmapRegionDecoder(
+                    jc, mLocalFilePath, false);
+        }
     }
 }

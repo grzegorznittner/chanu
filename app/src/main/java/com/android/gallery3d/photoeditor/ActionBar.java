@@ -46,7 +46,7 @@ public class ActionBar extends RestorableView {
         for (int i = 0; i < getChildCount(); i++) {
             width += getChildAt(i).getWidth();
         }
-        findViewById(R.id.action_bar_title).setVisibility(((width > r - l)) ? INVISIBLE: VISIBLE);
+        findViewById(R.id.action_bar_title).setVisibility(((width > r - l)) ? INVISIBLE : VISIBLE);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ActionBar extends RestorableView {
         // Show share-button only after photo is edited and saved; otherwise, show save-button.
         boolean showShare = findViewById(R.id.undo_button).isEnabled()
                 && !findViewById(R.id.save_button).isEnabled();
-        ViewSwitcher switcher = (ViewSwitcher) findViewById(R.id.save_share_buttons);
+        ViewSwitcher switcher = findViewById(R.id.save_share_buttons);
         int next = switcher.getNextView().getId();
         if ((showShare && (next == R.id.share_button))
                 || (!showShare && (next == R.id.save_button))) {

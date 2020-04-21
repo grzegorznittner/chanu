@@ -16,8 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -31,6 +29,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.chanapps.four.gallery3d.R;
 
 /**
  * This activity plays a video from a specified URI.
@@ -88,7 +88,7 @@ public class MovieActivity extends Activity {
             Cursor cursor = null;
             try {
                 cursor = getContentResolver().query(intent.getData(),
-                        new String[] {VideoColumns.TITLE}, null, null, null);
+                        new String[]{VideoColumns.TITLE}, null, null, null);
                 if (cursor != null && cursor.moveToNext()) {
                     title = cursor.getString(0);
                 }
@@ -114,7 +114,7 @@ public class MovieActivity extends Activity {
     public void onStart() {
         ((AudioManager) getSystemService(AUDIO_SERVICE))
                 .requestAudioFocus(null, AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+                        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         super.onStart();
     }
 

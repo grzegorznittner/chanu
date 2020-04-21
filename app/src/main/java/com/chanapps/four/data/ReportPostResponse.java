@@ -1,6 +1,7 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
+
 import com.chanapps.four.activity.R;
 
 import java.util.regex.Matcher;
@@ -15,10 +16,10 @@ import java.util.regex.Pattern;
  */
 public class ReportPostResponse {
 
-    private Context ctx = null;
-    private String response = null;
-    private boolean isPosted = false;
-    private String error = null;
+    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
+    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
+    private static final Pattern GENERIC_ERROR_REG = Pattern.compile("<h3>(<font[^>]*>)?([^<]*)");
+    private static final Pattern SUCCESS_REG = Pattern.compile("<h3>(<font[^>]*>)?([^<]*Report submitted[^<]*)");
 
     /*
     RESPONSE GOOD:
@@ -33,11 +34,10 @@ RESPONSE ERROR:
 <span id="errmsg" style="color: red;">Error: Our system thinks your post is spam.</span>
 
      */
-
-    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
-    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
-    private static final Pattern GENERIC_ERROR_REG = Pattern.compile("<h3>(<font[^>]*>)?([^<]*)");
-    private static final Pattern SUCCESS_REG = Pattern.compile("<h3>(<font[^>]*>)?([^<]*Report submitted[^<]*)");
+    private Context ctx = null;
+    private String response = null;
+    private boolean isPosted = false;
+    private String error = null;
 
     public ReportPostResponse(Context ctx, String response) {
         this.ctx = ctx;
@@ -61,8 +61,7 @@ RESPONSE ERROR:
                 error = errorMatch.group(2).replaceFirst("Error: ", "");
             else if (genericErrorMatch.find())
                 error = genericErrorMatch.group(2).replaceFirst("Error: ", "");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             error = e.getLocalizedMessage();
             isPosted = false;
         }

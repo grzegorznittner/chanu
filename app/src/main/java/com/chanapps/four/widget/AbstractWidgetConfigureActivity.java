@@ -6,10 +6,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import androidx.fragment.app.FragmentActivity;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
@@ -94,7 +103,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void setupSpinner() {
-        Spinner spinner = (Spinner) findViewById(R.id.board_spinner);
+        Spinner spinner = findViewById(R.id.board_spinner);
         ArrayAdapter<String> spinnerAdapter = createSpinnerAdapter();
         spinner.setAdapter(spinnerAdapter);
         int position = 0;
@@ -102,7 +111,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
             position = 0;
         } else {
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
-                String boardText = (String) spinnerAdapter.getItem(i);
+                String boardText = spinnerAdapter.getItem(i);
                 if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
                         && ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)
                         && boardText.matches(getString(R.string.board_watch))) {
@@ -147,10 +156,12 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
                     if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
                         freshFetch = false;
                     } else if (ChanBoard.isPopularBoard(widgetConf.boardCode)) {
-                        if (DEBUG) Log.i(TAG, "scheduling popular fetch for board=" + widgetConf.boardCode);
+                        if (DEBUG)
+                            Log.i(TAG, "scheduling popular fetch for board=" + widgetConf.boardCode);
                         freshFetch = FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
                     } else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
-                        if (DEBUG) Log.i(TAG, "skipping fetch for non-popular virtual board=" + widgetConf.boardCode);
+                        if (DEBUG)
+                            Log.i(TAG, "skipping fetch for non-popular virtual board=" + widgetConf.boardCode);
                         freshFetch = false;
                     } else {
                         if (DEBUG) Log.i(TAG, "scheduling fetch for board=" + widgetConf.boardCode);
@@ -176,10 +187,10 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void setupCheckboxes() {
-        CheckBox roundedCorners = (CheckBox) findViewById(R.id.rounded_corners);
-        CheckBox showBoardButton = (CheckBox) findViewById(R.id.show_board);
-        CheckBox showRefreshButton = (CheckBox) findViewById(R.id.show_refresh);
-        CheckBox showConfigureButton = (CheckBox) findViewById(R.id.show_configure);
+        CheckBox roundedCorners = findViewById(R.id.rounded_corners);
+        CheckBox showBoardButton = findViewById(R.id.show_board);
+        CheckBox showRefreshButton = findViewById(R.id.show_refresh);
+        CheckBox showConfigureButton = findViewById(R.id.show_configure);
         roundedCorners.setChecked(widgetConf.roundedCorners);
         showBoardButton.setChecked(widgetConf.showBoardTitle);
         showRefreshButton.setChecked(widgetConf.showRefreshButton);
@@ -215,7 +226,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void addColorClickHandler() {
-        EditText backgroundColorButton = (EditText) findViewById(R.id.board_title_color);
+        EditText backgroundColorButton = findViewById(R.id.board_title_color);
         if (backgroundColorButton == null)
             return;
         backgroundColorButton.setOnClickListener(new View.OnClickListener() {
@@ -299,7 +310,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
             boardTitle = board.getName(this) + " /" + board.link + "/";
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
-        TextView tv = (TextView) findViewById(R.id.board_title);
+        TextView tv = findViewById(R.id.board_title);
         tv.setText(boardTitle);
         tv.setTextColor(boardTitleColor);
         tv.setVisibility(boardTitleVisibility);
@@ -307,13 +318,13 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
 
     protected void updateRefreshButtonState() {
         int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
-        ImageView refresh = (ImageView) findViewById(R.id.refresh_board);
+        ImageView refresh = findViewById(R.id.refresh_board);
         refresh.setImageResource(refreshDrawable);
     }
 
     protected void updateConfigButtonState() {
         int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
-        ImageView configure = (ImageView) findViewById(R.id.configure);
+        ImageView configure = findViewById(R.id.configure);
         configure.setImageResource(configureDrawable);
     }
 

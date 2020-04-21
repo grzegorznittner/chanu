@@ -1,7 +1,5 @@
 package com.chanapps.four.fragment;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -21,6 +19,8 @@ import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.activity.StartupActivity;
 import com.chanapps.four.data.ChanFileStorage;
 
+import java.io.File;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,10 +39,30 @@ public class SettingsFragment
 
     protected static final int STARTUP_INTENT = 0x80134148; // magic number
     protected static final int RESTART_DELAY_MS = 250;
-
-    protected Preference downloadLocationButton;
-
     public Handler handler;
+    protected Preference downloadLocationButton;
+    protected DialogChooseDirectory.Result chooseDirectoryHandler = new DialogChooseDirectory.Result() {
+        @Override
+        public void onChooseDirectory(String dir) {
+            try {
+                File file = new File(dir);
+                if (file.exists() && file.isDirectory() && file.canWrite()) {
+                    String msg = String.format(getString(R.string.pref_download_location_set), file.getAbsolutePath());
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                    getPreferenceManager()
+                            .getSharedPreferences()
+                            .edit()
+                            .putString(SettingsActivity.PREF_DOWNLOAD_LOCATION, file.getAbsolutePath())
+                            .commit();
+                    downloadLocationButton.setSummary(file.getAbsolutePath());
+                } else {
+                    Toast.makeText(getActivity(), R.string.pref_download_location_error, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(getActivity(), R.string.pref_download_location_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,95 +70,6 @@ public class SettingsFragment
         initPreferenceScreen();
 //        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
-
-    public void initPreferenceScreen() {
-        addPreferencesFromResource(R.xml.preferences);
-        /*
-        Preference blocklistButton = findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
-        blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                List<Pair<String, ChanBlocklist.BlockType>> blocks = ChanBlocklist.getSorted(getActivity());
-                (new BlocklistViewAllDialogFragment(blocks)).show(getFragmentManager(),TAG);
-                return true;
-            }
-        });
-        */
-        Preference resetPrefsButton = findPreference(SettingsActivity.PREF_RESET_TO_DEFAULTS);
-        resetPrefsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                (new ResetPreferencesDialogFragment(SettingsFragment.this))
-                        .show(getFragmentManager(), SettingsFragment.TAG);
-                return true;
-            }
-        });
-
-        Preference clearCacheButton = findPreference(SettingsActivity.PREF_CLEAR_CACHE);
-        clearCacheButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                (new ClearCacheDialogFragment(SettingsFragment.this))
-                        .show(getFragmentManager(), SettingsFragment.TAG);
-                return true;
-            }
-        });
-        /*
-        Preference clearWatchlistButton = findPreference(SettingsActivity.PREF_CLEAR_WATCHLIST);
-        clearWatchlistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                (new WatchlistClearDialogFragment())
-                        .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
-                return true;
-            }
-        });
-
-        Preference clearFavoritesButton = findPreference(SettingsActivity.PREF_CLEAR_FAVORITES);
-        clearFavoritesButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                (new FavoritesClearDialogFragment())
-                        .show(getFragmentManager(), FavoritesClearDialogFragment.TAG);
-                return true;
-            }
-        });
-        */
-        Preference aboutButton = findPreference(SettingsActivity.PREF_ABOUT);
-        aboutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getActivity(), AboutActivity.class);
-                startActivity(intent);
-                return true;
-            }
-        });
-
-        downloadLocationButton = findPreference(SettingsActivity.PREF_DOWNLOAD_LOCATION);
-        downloadLocationButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
-                DialogChooseDirectory d = new DialogChooseDirectory(getActivity(), chooseDirectoryHandler,
-                        downloadFolder.getAbsolutePath());
-                return true;
-            }
-        });
-        File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
-        downloadLocationButton.setSummary(downloadFolder.getAbsolutePath());
-
-        Preference forceEnglish = findPreference(SettingsActivity.PREF_FORCE_ENGLISH);
-
-        forceEnglish.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                //Toast.makeText(getActivity(), "onChange", Toast.LENGTH_SHORT).show();
-                restartApp();
-                return true;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        });
-
-    };
 
 
         /*
@@ -233,23 +164,93 @@ public class SettingsFragment
         theme.setOnPreferenceChangeListener(themeListener);
         */
 
-    private void restartApp() {
-        new Handler().postDelayed(new Runnable() {
+    public void initPreferenceScreen() {
+        addPreferencesFromResource(R.xml.preferences);
+        /*
+        Preference blocklistButton = findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
+        blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
-            public void run() {
-                Context context = getActivity();
-                if (context == null) {
-                    return;
-                }
-                Intent mStartActivity = new Intent(context, StartupActivity.class);
-                int mPendingIntentId = STARTUP_INTENT;
-                PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, mStartActivity,
-                        PendingIntent.FLAG_CANCEL_CURRENT);
-                AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + RESTART_DELAY_MS, mPendingIntent);
-                System.exit(0);
+            public boolean onPreferenceClick(Preference preference) {
+                List<Pair<String, ChanBlocklist.BlockType>> blocks = ChanBlocklist.getSorted(getActivity());
+                (new BlocklistViewAllDialogFragment(blocks)).show(getFragmentManager(),TAG);
+                return true;
             }
-        }, RESTART_DELAY_MS);
+        });
+        */
+        Preference resetPrefsButton = findPreference(SettingsActivity.PREF_RESET_TO_DEFAULTS);
+        resetPrefsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                (new ResetPreferencesDialogFragment(SettingsFragment.this))
+                        .show(getFragmentManager(), SettingsFragment.TAG);
+                return true;
+            }
+        });
+
+        Preference clearCacheButton = findPreference(SettingsActivity.PREF_CLEAR_CACHE);
+        clearCacheButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                (new ClearCacheDialogFragment(SettingsFragment.this))
+                        .show(getFragmentManager(), SettingsFragment.TAG);
+                return true;
+            }
+        });
+        /*
+        Preference clearWatchlistButton = findPreference(SettingsActivity.PREF_CLEAR_WATCHLIST);
+        clearWatchlistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                (new WatchlistClearDialogFragment())
+                        .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
+                return true;
+            }
+        });
+
+        Preference clearFavoritesButton = findPreference(SettingsActivity.PREF_CLEAR_FAVORITES);
+        clearFavoritesButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                (new FavoritesClearDialogFragment())
+                        .show(getFragmentManager(), FavoritesClearDialogFragment.TAG);
+                return true;
+            }
+        });
+        */
+        Preference aboutButton = findPreference(SettingsActivity.PREF_ABOUT);
+        aboutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getActivity(), AboutActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
+
+        downloadLocationButton = findPreference(SettingsActivity.PREF_DOWNLOAD_LOCATION);
+        downloadLocationButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
+                DialogChooseDirectory d = new DialogChooseDirectory(getActivity(), chooseDirectoryHandler,
+                        downloadFolder.getAbsolutePath());
+                return true;
+            }
+        });
+        File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
+        downloadLocationButton.setSummary(downloadFolder.getAbsolutePath());
+
+        Preference forceEnglish = findPreference(SettingsActivity.PREF_FORCE_ENGLISH);
+
+        forceEnglish.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                //Toast.makeText(getActivity(), "onChange", Toast.LENGTH_SHORT).show();
+                restartApp();
+                return true;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
+
     }
 
     /*
@@ -291,22 +292,29 @@ public class SettingsFragment
     }
 */
 
+    private void restartApp() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Context context = getActivity();
+                if (context == null) {
+                    return;
+                }
+                Intent mStartActivity = new Intent(context, StartupActivity.class);
+                int mPendingIntentId = STARTUP_INTENT;
+                PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, mStartActivity,
+                        PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + RESTART_DELAY_MS, mPendingIntent);
+                System.exit(0);
+            }
+        }, RESTART_DELAY_MS);
+    }
+
     public Handler ensureHandler() {
         if (handler == null)
             handler = new ReloadPrefsHandler(this);
         return handler;
-    }
-
-    protected class ReloadPrefsHandler extends Handler {
-        SettingsFragment fragment;
-        public ReloadPrefsHandler() {}
-        public ReloadPrefsHandler(SettingsFragment fragment) {
-            this.fragment = fragment;
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            ((BaseAdapter)fragment.getPreferenceScreen().getRootAdapter()).notifyDataSetInvalidated();
-        }
     }
 
     @Override
@@ -319,28 +327,20 @@ public class SettingsFragment
         super.onDetach();
     }
 
-    protected DialogChooseDirectory.Result chooseDirectoryHandler = new DialogChooseDirectory.Result() {
-        @Override
-        public void onChooseDirectory(String dir) {
-            try {
-                File file = new File(dir);
-                if (file.exists() && file.isDirectory() && file.canWrite()) {
-                    String msg = String.format(getString(R.string.pref_download_location_set), file.getAbsolutePath());
-                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-                    getPreferenceManager()
-                            .getSharedPreferences()
-                            .edit()
-                            .putString(SettingsActivity.PREF_DOWNLOAD_LOCATION, file.getAbsolutePath())
-                            .commit();
-                    downloadLocationButton.setSummary(file.getAbsolutePath());
-                }
-                else {
-                    Toast.makeText(getActivity(), R.string.pref_download_location_error, Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception e) {
-                Toast.makeText(getActivity(), R.string.pref_download_location_error, Toast.LENGTH_SHORT).show();
-            }
+    protected class ReloadPrefsHandler extends Handler {
+        SettingsFragment fragment;
+
+        public ReloadPrefsHandler() {
         }
-    };
+
+        public ReloadPrefsHandler(SettingsFragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            ((BaseAdapter) fragment.getPreferenceScreen().getRootAdapter()).notifyDataSetInvalidated();
+        }
+    }
 
 }

@@ -9,7 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.StackView;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.loader.ChanImageLoader;
 
@@ -24,9 +28,8 @@ import java.util.Arrays;
 public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureActivity {
 
     public static final String TAG = WidgetConfigureCoverFlowActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
     protected static final int MAX_CONFIG_THREADS = 6;
-
+    private static final boolean DEBUG = false;
     private StackView stackView = null;
     private View emptyView = null;
     private String[] urls = {};
@@ -47,8 +50,9 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
             @Override
             public void run() {
                 urls = boardThreadUrls(context, widgetConf.boardCode, MAX_CONFIG_THREADS);
-                if (DEBUG) Log.i(TAG, "setBoardImages() /" + widgetConf.boardCode + "/ found " + urls.length
-                        + " urls=" + Arrays.toString(urls));
+                if (DEBUG)
+                    Log.i(TAG, "setBoardImages() /" + widgetConf.boardCode + "/ found " + urls.length
+                            + " urls=" + Arrays.toString(urls));
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -57,15 +61,15 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
                         if (emptyView != null)
                             emptyView.setVisibility(View.VISIBLE);
                         if (stackView == null)
-                            stackView = (StackView)findViewById(R.id.stack_view_coverflow);
+                            stackView = findViewById(R.id.stack_view_coverflow);
                         if (stackView == null)
                             return;
                         if (adapter == null) {
-                            if (DEBUG) Log.i(TAG, "setBoardImages() /" + widgetConf.boardCode + "/ stackView.setAdapter");
+                            if (DEBUG)
+                                Log.i(TAG, "setBoardImages() /" + widgetConf.boardCode + "/ stackView.setAdapter");
                             adapter = createAdapter();
                             stackView.setAdapter(adapter);
-                        }
-                        else {
+                        } else {
                             adapter.notifyDataSetChanged();
                         }
                     }
@@ -85,7 +89,7 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
 
     @Override
     protected void addDoneClickHandler() {
-        Button doneButton = (Button) findViewById(R.id.done);
+        Button doneButton = findViewById(R.id.done);
         if (doneButton == null)
             return;
         final WidgetConfigureCoverFlowActivity activity = this;
@@ -114,6 +118,16 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
         return new CoverflowStackAdapter(this, R.layout.widget_coverflow_item, R.id.image_coverflow_item);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
     protected class CoverflowStackAdapter extends BaseAdapter {
         protected Context context;
         protected int layoutId;
@@ -138,7 +152,7 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
 
         @Override
         public long getItemId(int position) {
-            return (new String(widgetConf.boardCode + "/" + position)).hashCode();
+            return (widgetConf.boardCode + "/" + position).hashCode();
         }
 
         @Override
@@ -151,26 +165,16 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
             if (DEBUG) Log.i(TAG, "getView() pos=" + position + " url=" + urls[position]);
             if (view == null) {
                 if (inflater == null)
-                    inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(layoutId, parent, false);
             }
-            ImageView imageView = (ImageView) view.findViewById(imageId);
+            ImageView imageView = view.findViewById(imageId);
             imageView.setImageDrawable(null);
             ChanImageLoader.getInstance(context).displayImage(urls[position], imageView);
             if (emptyView != null && emptyView.getVisibility() != View.GONE)
                 emptyView.setVisibility(View.GONE);
             return view;
         }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
 }

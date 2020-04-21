@@ -16,9 +16,9 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.app.GalleryApp;
-
 import android.net.Uri;
+
+import com.android.gallery3d.app.GalleryApp;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -37,15 +37,14 @@ public class UriSource extends MediaSource {
 
     @Override
     public MediaObject createMediaObject(Path path) {
-        String segment[] = path.split();
+        String[] segment = path.split();
         if (segment.length != 2) {
             throw new RuntimeException("bad path: " + path);
         }
         String decoded;
         try {
             decoded = URLDecoder.decode(segment[1], "UTF-8");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Unsupported encoding for url:" + segment[1]);
             decoded = segment[1];
         }
@@ -61,8 +60,7 @@ public class UriSource extends MediaSource {
             String encoded;
             try {
                 encoded = URLEncoder.encode(uri.toString(), "UTF-8");
-            }
-            catch (UnsupportedEncodingException e) {
+            } catch (UnsupportedEncodingException e) {
                 Log.e(TAG, "Unsupported encoding for url:" + uri.toString());
                 encoded = uri.toString();
             }

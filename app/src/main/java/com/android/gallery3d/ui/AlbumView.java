@@ -26,31 +26,17 @@ public class AlbumView extends SlotView {
     @SuppressWarnings("unused")
     private static final String TAG = "AlbumView";
     private static final int CACHE_SIZE = 128;
-
+    private final GalleryActivity mActivity;
     private int mVisibleStart = 0;
     private int mVisibleEnd = 0;
-
     private AlbumSlidingWindow mDataWindow;
-    private final GalleryActivity mActivity;
     private SelectionDrawer mSelectionDrawer;
     private int mCacheThumbSize;
 
     private boolean mIsActive = false;
 
-    public static interface Model {
-        public int size();
-        public MediaItem get(int index);
-        public void setActiveWindow(int start, int end);
-        public void setModelListener(ModelListener listener);
-    }
-
-    public static interface ModelListener {
-        public void onWindowContentChanged(int index);
-        public void onSizeChanged(int size);
-    }
-
     public AlbumView(GalleryActivity activity, SlotView.Spec spec,
-            int cacheThumbSize) {
+                     int cacheThumbSize) {
         super(activity.getAndroidContext());
         mCacheThumbSize = cacheThumbSize;
         setSlotSpec(spec);
@@ -156,6 +142,38 @@ public class AlbumView extends SlotView {
         super.render(canvas);
     }
 
+    public void resume() {
+        mIsActive = true;
+        mDataWindow.resume();
+        for (int i = mVisibleStart, n = mVisibleEnd; i < n; ++i) {
+            putSlotContent(i, mDataWindow.get(i));
+        }
+    }
+
+    public void pause() {
+        mIsActive = false;
+        for (int i = mVisibleStart, n = mVisibleEnd; i < n; ++i) {
+            removeDisplayItem(mDataWindow.get(i));
+        }
+        mDataWindow.pause();
+    }
+
+    public interface Model {
+        int size();
+
+        MediaItem get(int index);
+
+        void setActiveWindow(int start, int end);
+
+        void setModelListener(ModelListener listener);
+    }
+
+    public interface ModelListener {
+        void onWindowContentChanged(int index);
+
+        void onSizeChanged(int size);
+    }
+
     private class MyDataModelListener implements AlbumSlidingWindow.Listener {
 
         public void onContentInvalidated() {
@@ -181,21 +199,5 @@ public class AlbumView extends SlotView {
             removeDisplayItem(old);
             putSlotContent(slotIndex, update);
         }
-    }
-
-    public void resume() {
-        mIsActive = true;
-        mDataWindow.resume();
-        for (int i = mVisibleStart, n = mVisibleEnd; i < n; ++i) {
-            putSlotContent(i, mDataWindow.get(i));
-        }
-    }
-
-    public void pause() {
-        mIsActive = false;
-        for (int i = mVisibleStart, n = mVisibleEnd; i < n; ++i) {
-            removeDisplayItem(mDataWindow.get(i));
-        }
-        mDataWindow.pause();
     }
 }

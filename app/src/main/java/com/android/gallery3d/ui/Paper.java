@@ -16,12 +16,13 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.ui.PositionRepository.Position;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.ui.PositionRepository.Position;
 
 // This class does the overscroll effect.
 class Paper {
@@ -66,7 +67,7 @@ class Paper {
     }
 
     public float[] getTransform(Position target, Position base,
-            float scrollX, float scrollY) {
+                                float scrollX, float scrollY) {
         float left = mAnimationLeft.getValue();
         float right = mAnimationRight.getValue();
         float screenX = target.x - scrollX;
@@ -122,7 +123,7 @@ class EdgeAnimation {
     }
 
     private void startAnimation(float start, float finish, long duration,
-            int newState) {
+                                int newState) {
         mValueStart = start;
         mValueFinish = finish;
         mDuration = duration;
@@ -154,7 +155,7 @@ class EdgeAnimation {
         if (mState == STATE_IDLE) return false;
         if (mState == STATE_PULL) return true;
 
-        float t = Utils.clamp((float)(now() - mStartTime) / mDuration, 0.0f, 1.0f);
+        float t = Utils.clamp((float) (now() - mStartTime) / mDuration, 0.0f, 1.0f);
         /* Use linear interpolation for absorb, quadratic for others */
         float interp = (mState == STATE_ABSORB)
                 ? t : mInterpolator.getInterpolation(t);

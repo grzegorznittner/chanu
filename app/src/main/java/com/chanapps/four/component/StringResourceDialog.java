@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.chanapps.four.activity.R;
 
 public class StringResourceDialog extends Dialog {
@@ -37,13 +38,12 @@ public class StringResourceDialog extends Dialog {
         setTitle(headerId);
         View v = findViewById(R.id.detail_html);
         if (v instanceof TextView) {
-            TextView detail = (TextView)v;
+            TextView detail = (TextView) v;
             detail.setText(Html.fromHtml(v.getContext().getString(detailId)));
-        }
-        else {
+        } else {
             Log.e(TAG, "Unsupported view class=" + v.getClass() + " for resourceId=" + detailId);
         }
-        Button doneButton = (Button)findViewById(R.id.done);
+        Button doneButton = findViewById(R.id.done);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

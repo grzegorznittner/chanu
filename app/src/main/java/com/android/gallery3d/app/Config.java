@@ -16,12 +16,12 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.ui.SlotView;
-import com.android.gallery3d.ui.AlbumSetView;
-
 import android.content.Context;
 import android.content.res.Resources;
+
+import com.android.gallery3d.ui.AlbumSetView;
+import com.android.gallery3d.ui.SlotView;
+import com.chanapps.four.gallery3d.R;
 
 final class Config {
     public static class AlbumSetPage {
@@ -29,13 +29,6 @@ final class Config {
 
         public SlotView.Spec slotViewSpec;
         public AlbumSetView.LabelSpec labelSpec;
-
-        public static synchronized AlbumSetPage get(Context context) {
-            if (sInstance == null) {
-                sInstance = new AlbumSetPage(context);
-            }
-            return sInstance;
-        }
 
         private AlbumSetPage(Context context) {
             Resources r = context.getResources();
@@ -61,19 +54,19 @@ final class Config {
             labelSpec.iconSize = r.getDimensionPixelSize(
                     R.dimen.albumset_icon_size);
         }
+
+        public static synchronized AlbumSetPage get(Context context) {
+            if (sInstance == null) {
+                sInstance = new AlbumSetPage(context);
+            }
+            return sInstance;
+        }
     }
 
     public static class AlbumPage {
         private static AlbumPage sInstance;
 
         public SlotView.Spec slotViewSpec;
-
-        public static synchronized AlbumPage get(Context context) {
-            if (sInstance == null) {
-                sInstance = new AlbumPage(context);
-            }
-            return sInstance;
-        }
 
         private AlbumPage(Context context) {
             Resources r = context.getResources();
@@ -83,6 +76,13 @@ final class Config {
             slotViewSpec.rowsPort = r.getInteger(R.integer.album_rows_port);
             slotViewSpec.slotGap = r.getDimensionPixelSize(R.dimen.album_slot_gap);
         }
+
+        public static synchronized AlbumPage get(Context context) {
+            if (sInstance == null) {
+                sInstance = new AlbumPage(context);
+            }
+            return sInstance;
+        }
     }
 
     public static class ManageCachePage extends AlbumSetPage {
@@ -91,18 +91,18 @@ final class Config {
         public final int cachePinSize;
         public final int cachePinMargin;
 
-        public static synchronized ManageCachePage get(Context context) {
-            if (sInstance == null) {
-                sInstance = new ManageCachePage(context);
-            }
-            return sInstance;
-        }
-
         public ManageCachePage(Context context) {
             super(context);
             Resources r = context.getResources();
             cachePinSize = r.getDimensionPixelSize(R.dimen.cache_pin_size);
             cachePinMargin = r.getDimensionPixelSize(R.dimen.cache_pin_margin);
+        }
+
+        public static synchronized ManageCachePage get(Context context) {
+            if (sInstance == null) {
+                sInstance = new ManageCachePage(context);
+            }
+            return sInstance;
         }
     }
 
@@ -122,13 +122,6 @@ final class Config {
         // These are width values.
         public final int filmstripGripWidth;
 
-        public static synchronized PhotoPage get(Context context) {
-            if (sInstance == null) {
-                sInstance = new PhotoPage(context);
-            }
-            return sInstance;
-        }
-
         public PhotoPage(Context context) {
             Resources r = context.getResources();
             filmstripTopMargin = r.getDimensionPixelSize(R.dimen.filmstrip_top_margin);
@@ -139,6 +132,13 @@ final class Config {
             filmstripGripSize = r.getDimensionPixelSize(R.dimen.filmstrip_grip_size);
             filmstripBarSize = r.getDimensionPixelSize(R.dimen.filmstrip_bar_size);
             filmstripGripWidth = r.getDimensionPixelSize(R.dimen.filmstrip_grip_width);
+        }
+
+        public static synchronized PhotoPage get(Context context) {
+            if (sInstance == null) {
+                sInstance = new PhotoPage(context);
+            }
+            return sInstance;
         }
     }
 }

@@ -30,20 +30,10 @@ import com.chanapps.four.gallery3d.R;
  */
 public class LoadScreennailTask extends AsyncTask<Uri, Void, Bitmap> {
 
-    /**
-     * Callback for the completed asynchronous task.
-     */
-    public interface Callback {
-
-        void onComplete(Bitmap result);
-    }
-
     private static final int SCREENNAIL_WIDTH = 1280;
     private static final int SCREENNAIL_HEIGHT = 960;
-
     private final Context context;
     private final Callback callback;
-
     public LoadScreennailTask(Context context, Callback callback) {
         this.context = context;
         this.callback = callback;
@@ -68,5 +58,13 @@ public class LoadScreennailTask extends AsyncTask<Uri, Void, Bitmap> {
             toast.show();
         }
         callback.onComplete(result);
+    }
+
+    /**
+     * Callback for the completed asynchronous task.
+     */
+    public interface Callback {
+
+        void onComplete(Bitmap result);
     }
 }

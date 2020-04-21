@@ -16,6 +16,9 @@
 
 package com.android.gallery3d.app;
 
+import android.os.Handler;
+import android.os.Message;
+
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.ContentListener;
 import com.android.gallery3d.data.DataManager;
@@ -24,9 +27,6 @@ import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.ui.AlbumView;
 import com.android.gallery3d.ui.SynchronizedHandler;
-
-import android.os.Handler;
-import android.os.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,17 +49,13 @@ public class AlbumDataAdapter implements AlbumView.Model {
     private final MediaItem[] mData;
     private final long[] mItemVersion;
     private final long[] mSetVersion;
-
+    private final MediaSet mSource;
+    private final Handler mMainHandler;
     private int mActiveStart = 0;
     private int mActiveEnd = 0;
-
     private int mContentStart = 0;
     private int mContentEnd = 0;
-
-    private final MediaSet mSource;
     private long mSourceVersion = MediaObject.INVALID_DATA_VERSION;
-
-    private final Handler mMainHandler;
     private int mSize = 0;
 
     private AlbumView.ModelListener mModelListener;
@@ -188,12 +184,6 @@ public class AlbumDataAdapter implements AlbumView.Model {
         }
     }
 
-    private class MySourceListener implements ContentListener {
-        public void onContentDirty() {
-            if (mReloadTask != null) mReloadTask.notifyDirty();
-        }
-    }
-
     public void setModelListener(AlbumView.ModelListener listener) {
         mModelListener = listener;
     }
@@ -224,6 +214,12 @@ public class AlbumDataAdapter implements AlbumView.Model {
         public ArrayList<MediaItem> items;
     }
 
+    private class MySourceListener implements ContentListener {
+        public void onContentDirty() {
+            if (mReloadTask != null) mReloadTask.notifyDirty();
+        }
+    }
+
     private class GetUpdateInfo implements Callable<UpdateInfo> {
         private final long mVersion;
 
@@ -236,7 +232,7 @@ public class AlbumDataAdapter implements AlbumView.Model {
             long version = mVersion;
             info.version = mSourceVersion;
             info.size = mSize;
-            long setVersion[] = mSetVersion;
+            long[] setVersion = mSetVersion;
             for (int i = mContentStart, n = mContentEnd; i < n; ++i) {
                 int index = i % DATA_CACHE_SIZE;
                 if (setVersion[index] != version) {

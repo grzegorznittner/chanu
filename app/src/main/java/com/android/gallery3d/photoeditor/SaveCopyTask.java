@@ -40,31 +40,20 @@ import java.text.SimpleDateFormat;
  */
 public class SaveCopyTask extends AsyncTask<Bitmap, Void, Uri> {
 
-    /**
-     * Callback for the completed asynchronous task.
-     */
-    public interface Callback {
-
-        void onComplete(Uri result);
-    }
-
     private static final String TIME_STAMP_NAME = "'IMG'_yyyyMMdd_HHmmss";
     private static final int INDEX_DATE_TAKEN = 0;
     private static final int INDEX_LATITUDE = 1;
     private static final int INDEX_LONGITUDE = 2;
-
-    private static final String[] IMAGE_PROJECTION = new String[] {
-        ImageColumns.DATE_TAKEN,
-        ImageColumns.LATITUDE,
-        ImageColumns.LONGITUDE,
+    private static final String[] IMAGE_PROJECTION = new String[]{
+            ImageColumns.DATE_TAKEN,
+            ImageColumns.LATITUDE,
+            ImageColumns.LONGITUDE,
     };
-
     private final Context context;
     private final Uri sourceUri;
     private final Callback callback;
     private final String albumName;
     private final String saveFileName;
-
     public SaveCopyTask(Context context, Uri sourceUri, Callback callback) {
         this.context = context;
         this.sourceUri = sourceUri;
@@ -151,5 +140,13 @@ public class SaveCopyTask extends AsyncTask<Bitmap, Void, Uri> {
             values.put(Images.Media.LONGITUDE, longitude);
         }
         return contentResolver.insert(Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
+    /**
+     * Callback for the completed asynchronous task.
+     */
+    public interface Callback {
+
+        void onComplete(Uri result);
     }
 }

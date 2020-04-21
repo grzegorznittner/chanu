@@ -16,11 +16,6 @@
 
 package com.chanapps.four.widget;
 
-import com.chanapps.four.gallery3d.R;
-import com.chanapps.four.widget.WidgetDatabaseHelper.Entry;
-import com.android.gallery3d.gadget.WidgetClickHandler;
-import com.android.gallery3d.gadget.WidgetService;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -31,6 +26,11 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
+
+import com.android.gallery3d.gadget.WidgetClickHandler;
+import com.android.gallery3d.gadget.WidgetService;
+import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.widget.WidgetDatabaseHelper.Entry;
 
 public class PhotoAppWidgetProvider extends AppWidgetProvider {
 
@@ -46,26 +46,6 @@ public class PhotoAppWidgetProvider extends AppWidgetProvider {
                 return buildFrameWidget(context, id, entry);
         }
         throw new RuntimeException("invalid type - " + entry.type);
-    }
-
-    @Override
-    public void onUpdate(Context context,
-            AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        WidgetDatabaseHelper helper = new WidgetDatabaseHelper(context);
-        try {
-            for (int id : appWidgetIds) {
-                Entry entry = helper.getEntry(id);
-                if (entry != null) {
-                    RemoteViews views = buildWidget(context, id, entry);
-                    appWidgetManager.updateAppWidget(id, views);
-                } else {
-                    Log.e(TAG, "cannot load widget: " + id);
-                }
-            }
-        } finally {
-            helper.close();
-        }
-        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     private static RemoteViews buildStackWidget(Context context, int widgetId, Entry entry) {
@@ -113,6 +93,26 @@ public class PhotoAppWidgetProvider extends AppWidgetProvider {
             }
         }
         return views;
+    }
+
+    @Override
+    public void onUpdate(Context context,
+                         AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        WidgetDatabaseHelper helper = new WidgetDatabaseHelper(context);
+        try {
+            for (int id : appWidgetIds) {
+                Entry entry = helper.getEntry(id);
+                if (entry != null) {
+                    RemoteViews views = buildWidget(context, id, entry);
+                    appWidgetManager.updateAppWidget(id, views);
+                } else {
+                    Log.e(TAG, "cannot load widget: " + id);
+                }
+            }
+        } finally {
+            helper.close();
+        }
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     @Override

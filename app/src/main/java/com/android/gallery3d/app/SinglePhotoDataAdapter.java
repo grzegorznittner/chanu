@@ -16,6 +16,13 @@
 
 package com.android.gallery3d.app;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Message;
+
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaItem;
@@ -27,13 +34,6 @@ import com.android.gallery3d.ui.TileImageViewAdapter;
 import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.FutureListener;
 import com.android.gallery3d.util.ThreadPool;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapRegionDecoder;
-import android.graphics.Rect;
-import android.os.Handler;
-import android.os.Message;
 
 public class SinglePhotoDataAdapter extends TileImageViewAdapter
         implements PhotoPage.Model {
@@ -49,6 +49,28 @@ public class SinglePhotoDataAdapter extends TileImageViewAdapter
 
     private PhotoView mPhotoView;
     private ThreadPool mThreadPool;
+    private FutureListener<BitmapRegionDecoder> mLargeListener =
+            new FutureListener<BitmapRegionDecoder>() {
+                public void onFutureDone(Future<BitmapRegionDecoder> future) {
+                    BitmapRegionDecoder decoder = future.get();
+                    if (decoder == null) return;
+                    int width = decoder.getWidth();
+                    int height = decoder.getHeight();
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = BitmapUtils.computeSampleSize(
+                            (float) SIZE_BACKUP / Math.max(width, height));
+                    Bitmap bitmap = decoder.decodeRegion(new Rect(0, 0, width, height), options);
+                    mHandler.sendMessage(mHandler.obtainMessage(
+                            MSG_UPDATE_IMAGE, new ImageBundle(decoder, bitmap)));
+                }
+            };
+    private FutureListener<Bitmap> mThumbListener =
+            new FutureListener<Bitmap>() {
+                public void onFutureDone(Future<Bitmap> future) {
+                    mHandler.sendMessage(
+                            mHandler.obtainMessage(MSG_UPDATE_IMAGE, future));
+                }
+            };
 
     public SinglePhotoDataAdapter(
             GalleryActivity activity, PhotoView view, MediaItem item) {
@@ -70,40 +92,6 @@ public class SinglePhotoDataAdapter extends TileImageViewAdapter
         };
         mThreadPool = activity.getThreadPool();
     }
-
-    private static class ImageBundle {
-        public final BitmapRegionDecoder decoder;
-        public final Bitmap backupImage;
-
-        public ImageBundle(BitmapRegionDecoder decoder, Bitmap backupImage) {
-            this.decoder = decoder;
-            this.backupImage = backupImage;
-        }
-    }
-
-    private FutureListener<BitmapRegionDecoder> mLargeListener =
-            new FutureListener<BitmapRegionDecoder>() {
-        public void onFutureDone(Future<BitmapRegionDecoder> future) {
-            BitmapRegionDecoder decoder = future.get();
-            if (decoder == null) return;
-            int width = decoder.getWidth();
-            int height = decoder.getHeight();
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = BitmapUtils.computeSampleSize(
-                    (float) SIZE_BACKUP / Math.max(width, height));
-            Bitmap bitmap = decoder.decodeRegion(new Rect(0, 0, width, height), options);
-            mHandler.sendMessage(mHandler.obtainMessage(
-                    MSG_UPDATE_IMAGE, new ImageBundle(decoder, bitmap)));
-        }
-    };
-
-    private FutureListener<Bitmap> mThumbListener =
-            new FutureListener<Bitmap>() {
-        public void onFutureDone(Future<Bitmap> future) {
-            mHandler.sendMessage(
-                    mHandler.obtainMessage(MSG_UPDATE_IMAGE, future));
-        }
-    };
 
     public boolean isEmpty() {
         return false;
@@ -188,5 +176,15 @@ public class SinglePhotoDataAdapter extends TileImageViewAdapter
 
     public void setCurrentPhoto(Path path, int indexHint) {
         // ignore
+    }
+
+    private static class ImageBundle {
+        public final BitmapRegionDecoder decoder;
+        public final Bitmap backupImage;
+
+        public ImageBundle(BitmapRegionDecoder decoder, Bitmap backupImage) {
+            this.decoder = decoder;
+            this.backupImage = backupImage;
+        }
     }
 }

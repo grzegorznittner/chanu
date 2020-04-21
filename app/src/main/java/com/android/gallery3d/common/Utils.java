@@ -28,6 +28,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.text.TextUtils;
 import android.util.Log;
+
 import java.io.Closeable;
 import java.io.InterruptedIOException;
 import java.util.Random;
@@ -38,13 +39,22 @@ public class Utils {
 
     private static final long POLY64REV = 0x95AC9329AC4BC9B5L;
     private static final long INITIALCRC = 0xFFFFFFFFFFFFFFFFL;
-
-    private static long[] sCrcTable = new long[256];
-
     private static final boolean IS_DEBUG_BUILD =
             Build.TYPE.equals("eng") || Build.TYPE.equals("userdebug");
-
     private static final String MASK_STRING = "********************************";
+    private static long[] sCrcTable = new long[256];
+
+    static {
+        long part;
+        for (int i = 0; i < 256; i++) {
+            part = i;
+            for (int j = 0; j < 8; j++) {
+                long x = ((int) part & 1) != 0 ? POLY64REV : 0;
+                part = (part >> 1) ^ x;
+            }
+            sCrcTable[i] = part;
+        }
+    }
 
     // Throws AssertionError if the input is false.
     public static void assertTrue(boolean cond) {
@@ -54,7 +64,7 @@ public class Utils {
     }
 
     // Throws AssertionError if the input is false.
-    public static void assertTrue(boolean cond, String message, Object ... args) {
+    public static void assertTrue(boolean cond, String message, Object... args) {
         if (!cond) {
             throw new AssertionError(
                     args.length == 0 ? message : String.format(message, args));
@@ -70,7 +80,7 @@ public class Utils {
     // Returns true if two input Object are both null or equal
     // to each other.
     public static boolean equals(Object a, Object b) {
-        return (a == b) || (a == null ? false : a.equals(b));
+        return (a == b) || (a != null && a.equals(b));
     }
 
     // Returns true if the input is power of 2.
@@ -160,18 +170,6 @@ public class Utils {
         return crc64Long(getBytes(in));
     }
 
-    static {
-        long part;
-        for (int i = 0; i < 256; i++) {
-            part = i;
-            for (int j = 0; j < 8; j++) {
-                long x = ((int) part & 1) != 0 ? POLY64REV : 0;
-                part = (part >> 1) ^ x;
-            }
-            sCrcTable[i] = part;
-        }
-    }
-
     public static final long crc64Long(byte[] buffer) {
         long crc = INITIALCRC;
         for (int k = 0, n = buffer.length; k < n; ++k) {
@@ -258,7 +256,7 @@ public class Utils {
     }
 
     // Used for debugging. Should be removed before submitting.
-    public static void debug(String format, Object ... args) {
+    public static void debug(String format, Object... args) {
         if (args.length == 0) {
             Log.d(DEBUG_TAG, format);
         } else {
@@ -326,7 +324,7 @@ public class Utils {
         }
     }
 
-    public static void shuffle(int array[], Random random) {
+    public static void shuffle(int[] array, Random random) {
         for (int i = array.length; i > 0; --i) {
             int t = random.nextInt(i);
             if (t == i - 1) continue;
@@ -355,12 +353,23 @@ public class Utils {
         for (int i = 0, len = s.length(); i < len; ++i) {
             char c = s.charAt(i);
             switch (c) {
-                case '<':  sb.append("&lt;"); break;
-                case '>':  sb.append("&gt;"); break;
-                case '\"': sb.append("&quot;"); break;
-                case '\'': sb.append("&#039;"); break;
-                case '&':  sb.append("&amp;"); break;
-                default: sb.append(c);
+                case '<':
+                    sb.append("&lt;");
+                    break;
+                case '>':
+                    sb.append("&gt;");
+                    break;
+                case '\"':
+                    sb.append("&quot;");
+                    break;
+                case '\'':
+                    sb.append("&#039;");
+                    break;
+                case '&':
+                    sb.append("&amp;");
+                    break;
+                default:
+                    sb.append(c);
             }
         }
         return sb.toString();

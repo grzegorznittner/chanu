@@ -24,7 +24,7 @@ import com.android.gallery3d.photoeditor.filters.SepiaFilter;
 /**
  * An action handling sepia effect.
  */
-public class SepiaAction  extends EffectAction {
+public class SepiaAction extends EffectAction {
 
     public SepiaAction(Context context, AttributeSet attrs) {
         super(context, attrs);

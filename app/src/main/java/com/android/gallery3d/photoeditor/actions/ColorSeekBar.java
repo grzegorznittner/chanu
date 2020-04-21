@@ -35,17 +35,8 @@ import com.chanapps.four.gallery3d.R;
  */
 class ColorSeekBar extends AbstractSeekBar {
 
-    /**
-     * Listens to color changes.
-     */
-    public interface OnColorChangeListener {
-
-        void onColorChanged(int color, boolean fromUser);
-    }
-
     private final int[] colors;
     private Bitmap background;
-
     public ColorSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -139,5 +130,13 @@ class ColorSeekBar extends AbstractSeekBar {
 
     public int getColor() {
         return colors[getProgress()];
+    }
+
+    /**
+     * Listens to color changes.
+     */
+    public interface OnColorChangeListener {
+
+        void onColorChanged(int color, boolean fromUser);
     }
 }

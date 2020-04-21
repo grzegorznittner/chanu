@@ -19,9 +19,9 @@ package com.android.gallery3d.photoeditor.actions;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.photoeditor.PhotoView;
 import com.android.gallery3d.photoeditor.filters.RotateFilter;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * An action handling rotate effect.
@@ -48,11 +48,11 @@ public class RotateAction extends EffectAction {
         rotateView.setOnRotateChangeListener(new RotateView.OnRotateChangeListener() {
 
             // Directly transform photo-view because running the rotate filter isn't fast enough.
-            PhotoView photoView = (PhotoView) rotateView.getRootView().findViewById(
+            PhotoView photoView = rotateView.getRootView().findViewById(
                     R.id.photo_view);
 
             @Override
-            public void onAngleChanged(float degrees, boolean fromUser){
+            public void onAngleChanged(float degrees, boolean fromUser) {
                 if (fromUser) {
                     rotateDegrees = degrees;
                     updateRotateFilter(false);

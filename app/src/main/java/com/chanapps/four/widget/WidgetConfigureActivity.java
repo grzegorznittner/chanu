@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -49,9 +50,10 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
                     public void run() {
                         for (int i = 0; i < imageIds.length; i++) {
                             final int imageResourceId = imageIds[i];
-                            final ImageView iv = (ImageView) findViewById(imageResourceId);
+                            final ImageView iv = findViewById(imageResourceId);
                             iv.setImageBitmap(null);
-                            if (DEBUG) Log.i(TAG, "Calling displayImage i=" + i + " url=" + urls[i]);
+                            if (DEBUG)
+                                Log.i(TAG, "Calling displayImage i=" + i + " url=" + urls[i]);
                             ChanImageLoader.getInstance(context).displayImage(urls[i], iv);
                         }
                     }
@@ -62,7 +64,7 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
 
     @Override
     protected void addDoneClickHandler() {
-        Button doneButton = (Button) findViewById(R.id.done);
+        Button doneButton = findViewById(R.id.done);
         if (doneButton == null)
             return;
         doneButton.setOnClickListener(new View.OnClickListener() {

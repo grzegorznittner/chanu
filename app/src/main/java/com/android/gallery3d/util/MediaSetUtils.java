@@ -16,11 +16,11 @@
 
 package com.android.gallery3d.util;
 
+import android.os.Environment;
+
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.MtpContext;
 import com.android.gallery3d.data.Path;
-
-import android.os.Environment;
 
 import java.util.Comparator;
 
@@ -33,7 +33,7 @@ public class MediaSetUtils {
             Environment.getExternalStorageDirectory().toString() + "/download");
     public static final int IMPORTED_BUCKET_ID = GalleryUtils.getBucketId(
             Environment.getExternalStorageDirectory().toString() + "/"
-            + MtpContext.NAME_IMPORTED_FOLDER);
+                    + MtpContext.NAME_IMPORTED_FOLDER);
 
     private static final Path[] CAMERA_PATHS = {
             Path.fromString("/local/all/" + CAMERA_BUCKET_ID),

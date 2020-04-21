@@ -16,12 +16,12 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.content.Context;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
+
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.util.GalleryUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,25 +52,22 @@ public class TimeClustering extends Clustering {
     // The max cluster size can range from 20 to 50.
     private static final int MIN_MAX_CLUSTER_SIZE = 20;
     private static final int MAX_MAX_CLUSTER_SIZE = 50;
-
-    // Initially put 2 items in the same cluster as long as they are within
-    // 3 cluster frequencies of each other.
-    private static int CLUSTER_SPLIT_MULTIPLIER = 3;
-
     // The minimum change factor in the time between items to consider a
     // partition.
     // Example: (Item 3 - Item 2) / (Item 2 - Item 1).
     private static final int MIN_PARTITION_CHANGE_FACTOR = 2;
-
     // Make the cluster split time of a large cluster half that of a regular
     // cluster.
     private static final int PARTITION_CLUSTER_SPLIT_TIME_FACTOR = 2;
-
+    private static final Comparator<SmallItem> sDateComparator =
+            new DateComparator();
+    // Initially put 2 items in the same cluster as long as they are within
+    // 3 cluster frequencies of each other.
+    private static int CLUSTER_SPLIT_MULTIPLIER = 3;
     private Context mContext;
     private ArrayList<Cluster> mClusters;
     private String[] mNames;
     private Cluster mCurrCluster;
-
     private long mClusterSplitTime =
             (MIN_CLUSTER_SPLIT_TIME_IN_MS + MAX_CLUSTER_SPLIT_TIME_IN_MS) / 2;
     private long mLargeClusterSplitTime =
@@ -78,20 +75,30 @@ public class TimeClustering extends Clustering {
     private int mMinClusterSize = (MIN_MIN_CLUSTER_SIZE + MAX_MIN_CLUSTER_SIZE) / 2;
     private int mMaxClusterSize = (MIN_MAX_CLUSTER_SIZE + MAX_MAX_CLUSTER_SIZE) / 2;
 
-
-    private static final Comparator<SmallItem> sDateComparator =
-            new DateComparator();
-
-    private static class DateComparator implements Comparator<SmallItem> {
-        public int compare(SmallItem item1, SmallItem item2) {
-            return -Utils.compare(item1.dateInMs, item2.dateInMs);
-        }
-    }
-
     public TimeClustering(Context context) {
         mContext = context;
         mClusters = new ArrayList<Cluster>();
         mCurrCluster = new Cluster();
+    }
+
+    // Returns true if a, b are sufficiently geographically separated.
+    private static boolean isGeographicallySeparated(SmallItem itemA, SmallItem itemB) {
+        if (!GalleryUtils.isValidLocation(itemA.lat, itemA.lng)
+                || !GalleryUtils.isValidLocation(itemB.lat, itemB.lng)) {
+            return false;
+        }
+
+        double distance = GalleryUtils.fastDistanceMeters(
+                Math.toRadians(itemA.lat),
+                Math.toRadians(itemA.lng),
+                Math.toRadians(itemB.lat),
+                Math.toRadians(itemB.lng));
+        return (GalleryUtils.toMile(distance) > GEOGRAPHIC_DISTANCE_CUTOFF_IN_MILES);
+    }
+
+    // Returns the time interval between the two items in milliseconds.
+    private static long timeDistance(SmallItem a, SmallItem b) {
+        return Math.abs(a.dateInMs - b.dateInMs);
     }
 
     @Override
@@ -315,24 +322,10 @@ public class TimeClustering extends Clustering {
         }
     }
 
-    // Returns true if a, b are sufficiently geographically separated.
-    private static boolean isGeographicallySeparated(SmallItem itemA, SmallItem itemB) {
-        if (!GalleryUtils.isValidLocation(itemA.lat, itemA.lng)
-                || !GalleryUtils.isValidLocation(itemB.lat, itemB.lng)) {
-            return false;
+    private static class DateComparator implements Comparator<SmallItem> {
+        public int compare(SmallItem item1, SmallItem item2) {
+            return -Utils.compare(item1.dateInMs, item2.dateInMs);
         }
-
-        double distance = GalleryUtils.fastDistanceMeters(
-            Math.toRadians(itemA.lat),
-            Math.toRadians(itemA.lng),
-            Math.toRadians(itemB.lat),
-            Math.toRadians(itemB.lng));
-        return (GalleryUtils.toMile(distance) > GEOGRAPHIC_DISTANCE_CUTOFF_IN_MILES);
-    }
-
-    // Returns the time interval between the two items in milliseconds.
-    private static long timeDistance(SmallItem a, SmallItem b) {
-        return Math.abs(a.dateInMs - b.dateInMs);
     }
 }
 

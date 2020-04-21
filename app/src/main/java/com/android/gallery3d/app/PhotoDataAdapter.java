@@ -16,6 +16,11 @@
 
 package com.android.gallery3d.app;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapRegionDecoder;
+import android.os.Handler;
+import android.os.Message;
+
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.ContentListener;
@@ -33,11 +38,6 @@ import com.android.gallery3d.util.FutureListener;
 import com.android.gallery3d.util.ThreadPool;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapRegionDecoder;
-import android.os.Handler;
-import android.os.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,15 +71,6 @@ public class PhotoDataAdapter implements PhotoPage.Model {
     // of them because of we don't want to use too much memory).
     private static ImageFetch[] sImageFetchSeq;
 
-    private static class ImageFetch {
-        int indexOffset;
-        int imageBit;
-        public ImageFetch(int offset, int bit) {
-            indexOffset = offset;
-            imageBit = bit;
-        }
-    }
-
     static {
         int k = 0;
         sImageFetchSeq = new ImageFetch[1 + (IMAGE_CACHE_SIZE - 1) * 2 + 3];
@@ -96,7 +87,6 @@ public class PhotoDataAdapter implements PhotoPage.Model {
     }
 
     private final TileImageViewAdapter mTileProvider = new TileImageViewAdapter();
-
     // PhotoDataAdapter caches MediaItems (data) and ImageEntries (image).
     //
     // The MediaItems are stored in the mData array, which has DATA_CACHE_SIZE
@@ -108,10 +98,18 @@ public class PhotoDataAdapter implements PhotoPage.Model {
     // smaller than DATA_CACHE_SIZE because we only update the window and reload
     // the MediaItems when there are significant changes to the window position
     // (>= MIN_LOAD_COUNT).
-    private final MediaItem mData[] = new MediaItem[DATA_CACHE_SIZE];
+    private final MediaItem[] mData = new MediaItem[DATA_CACHE_SIZE];
+    // mChanges keeps the version number (of MediaItem) about the previous,
+    // current, and next image. If the version number changes, we invalidate
+    // the model. This is used after a database reload or mCurrentIndex changes.
+    private final long[] mChanges = new long[3];
+    private final Handler mMainHandler;
+    private final ThreadPool mThreadPool;
+    private final PhotoView mPhotoView;
+    private final MediaSet mSource;
+    private final SourceListener mSourceListener = new SourceListener();
     private int mContentStart = 0;
     private int mContentEnd = 0;
-
     /*
      * The ImageCache is a version-to-ImageEntry map. It only holds
      * the ImageEntries in the range of [mActiveStart, mActiveEnd).
@@ -122,43 +120,23 @@ public class PhotoDataAdapter implements PhotoPage.Model {
     private HashMap<Long, ImageEntry> mImageCache = new HashMap<Long, ImageEntry>();
     private int mActiveStart = 0;
     private int mActiveEnd = 0;
-
     // mCurrentIndex is the "center" image the user is viewing. The change of
     // mCurrentIndex triggers the data loading and image loading.
     private int mCurrentIndex;
-
-    // mChanges keeps the version number (of MediaItem) about the previous,
-    // current, and next image. If the version number changes, we invalidate
-    // the model. This is used after a database reload or mCurrentIndex changes.
-    private final long mChanges[] = new long[3];
-
-    private final Handler mMainHandler;
-    private final ThreadPool mThreadPool;
-
-    private final PhotoView mPhotoView;
-    private final MediaSet mSource;
     private ReloadTask mReloadTask;
 
     private long mSourceVersion = MediaObject.INVALID_DATA_VERSION;
     private int mSize = 0;
     private Path mItemPath;
     private boolean mIsActive;
-
-    public interface DataListener extends LoadingListener {
-        public void onPhotoAvailable(long version, boolean fullImage);
-        public void onPhotoChanged(int index, Path item);
-    }
-
     private DataListener mDataListener;
-
-    private final SourceListener mSourceListener = new SourceListener();
 
     // The path of the current viewing item will be stored in mItemPath.
     // If mItemPath is not null, mCurrentIndex is only a hint for where we
     // can find the item. If mItemPath is null, then we use the mCurrentIndex to
     // find the image being viewed.
     public PhotoDataAdapter(GalleryActivity activity,
-            PhotoView view, MediaSet mediaSet, Path itemPath, int indexHint) {
+                            PhotoView view, MediaSet mediaSet, Path itemPath, int indexHint) {
         mSource = Utils.checkNotNull(mediaSet);
         mPhotoView = Utils.checkNotNull(view);
         mItemPath = Utils.checkNotNull(itemPath);
@@ -183,7 +161,8 @@ public class PhotoDataAdapter implements PhotoPage.Model {
                         if (mDataListener != null) mDataListener.onLoadingFinished();
                         return;
                     }
-                    default: throw new AssertionError();
+                    default:
+                        throw new AssertionError();
                 }
             }
         };
@@ -232,7 +211,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
             if (mDataListener != null) {
                 mDataListener.onPhotoAvailable(version, false);
             }
-            for (int i = -1; i <=1; ++i) {
+            for (int i = -1; i <= 1; ++i) {
                 if (version == getVersion(mCurrentIndex + i)) {
                     if (i == 0) updateTileProvider(entry);
                     mPhotoView.notifyImageInvalidated(i);
@@ -490,25 +469,6 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         }
     }
 
-    private static class ScreenNailJob implements Job<Bitmap> {
-        private MediaItem mItem;
-
-        public ScreenNailJob(MediaItem item) {
-            mItem = item;
-        }
-
-        @Override
-        public Bitmap run(JobContext jc) {
-            Bitmap bitmap = mItem.requestImage(MediaItem.TYPE_THUMBNAIL).run(jc);
-            if (jc.isCancelled()) return null;
-            if (bitmap != null) {
-                bitmap = BitmapUtils.rotateBitmap(bitmap,
-                    mItem.getRotation() - mItem.getFullImageRotation(), true);
-            }
-            return bitmap;
-        }
-    }
-
     // Returns the task if we started the task or the task is already started.
     private Future<?> startTaskIfNeeded(int index, int which) {
         if (index < mActiveStart || index >= mActiveEnd) return null;
@@ -582,6 +542,76 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         }
     }
 
+    private <T> T executeAndWait(Callable<T> callable) {
+        FutureTask<T> task = new FutureTask<T>(callable);
+        mMainHandler.sendMessage(
+                mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
+        try {
+            return task.get();
+        } catch (InterruptedException e) {
+            return null;
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public interface DataListener extends LoadingListener {
+        void onPhotoAvailable(long version, boolean fullImage);
+
+        void onPhotoChanged(int index, Path item);
+    }
+
+    private static class ImageFetch {
+        int indexOffset;
+        int imageBit;
+
+        public ImageFetch(int offset, int bit) {
+            indexOffset = offset;
+            imageBit = bit;
+        }
+    }
+
+    private static class ScreenNailJob implements Job<Bitmap> {
+        private MediaItem mItem;
+
+        public ScreenNailJob(MediaItem item) {
+            mItem = item;
+        }
+
+        @Override
+        public Bitmap run(JobContext jc) {
+            Bitmap bitmap = mItem.requestImage(MediaItem.TYPE_THUMBNAIL).run(jc);
+            if (jc.isCancelled()) return null;
+            if (bitmap != null) {
+                bitmap = BitmapUtils.rotateBitmap(bitmap,
+                        mItem.getRotation() - mItem.getFullImageRotation(), true);
+            }
+            return bitmap;
+        }
+    }
+
+    private static class ImageEntry {
+        public int requestedBits = 0;
+        public int rotation;
+        public BitmapRegionDecoder fullImage;
+        public Bitmap screenNail;
+        public Future<Bitmap> screenNailTask;
+        public Future<BitmapRegionDecoder> fullImageTask;
+        public boolean failToLoad = false;
+    }
+
+    private static class UpdateInfo {
+        public long version;
+        public boolean reloadContent;
+        public Path target;
+        public int indexHint;
+        public int contentStart;
+        public int contentEnd;
+
+        public int size;
+        public ArrayList<MediaItem> items;
+    }
+
     private class FullImageListener
             implements Runnable, FutureListener<BitmapRegionDecoder> {
         private final long mVersion;
@@ -626,45 +656,10 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         }
     }
 
-    private static class ImageEntry {
-        public int requestedBits = 0;
-        public int rotation;
-        public BitmapRegionDecoder fullImage;
-        public Bitmap screenNail;
-        public Future<Bitmap> screenNailTask;
-        public Future<BitmapRegionDecoder> fullImageTask;
-        public boolean failToLoad = false;
-    }
-
     private class SourceListener implements ContentListener {
         public void onContentDirty() {
             if (mReloadTask != null) mReloadTask.notifyDirty();
         }
-    }
-
-    private <T> T executeAndWait(Callable<T> callable) {
-        FutureTask<T> task = new FutureTask<T>(callable);
-        mMainHandler.sendMessage(
-                mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
-        try {
-            return task.get();
-        } catch (InterruptedException e) {
-            return null;
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static class UpdateInfo {
-        public long version;
-        public boolean reloadContent;
-        public Path target;
-        public int indexHint;
-        public int contentStart;
-        public int contentEnd;
-
-        public int size;
-        public ArrayList<MediaItem> items;
     }
 
     private class GetUpdateInfo implements Callable<UpdateInfo> {
@@ -786,7 +781,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
                         info.size = mSource.getMediaItemCount();
                     }
                     if (!info.reloadContent) continue;
-                    info.items =  mSource.getMediaItem(info.contentStart, info.contentEnd);
+                    info.items = mSource.getMediaItem(info.contentStart, info.contentEnd);
                     MediaItem item = findCurrentMediaItem(info);
                     if (item == null || item.getPath() != info.target) {
                         info.indexHint = findIndexOfTarget(info);

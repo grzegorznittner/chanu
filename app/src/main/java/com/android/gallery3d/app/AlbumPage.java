@@ -30,8 +30,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.chanapps.four.gallery3d.R;
-import com.chanapps.four.service.ThreadImageDownloadService;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.MediaDetails;
@@ -58,34 +56,31 @@ import com.android.gallery3d.ui.SlotView;
 import com.android.gallery3d.ui.StaticBackground;
 import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.GalleryUtils;
+import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.service.ThreadImageDownloadService;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class AlbumPage extends ActivityState implements GalleryActionBar.ClusterRunner,
         SelectionManager.SelectionListener, MediaSet.SyncListener {
-    @SuppressWarnings("unused")
-    private static final String TAG = "AlbumPage";
-
     public static final String KEY_MEDIA_PATH = "media-path";
     public static final String KEY_SET_CENTER = "set-center";
     public static final String KEY_AUTO_SELECT_ALL = "auto-select-all";
     public static final String KEY_SHOW_CLUSTER_MENU = "cluster-menu";
-
+    @SuppressWarnings("unused")
+    private static final String TAG = "AlbumPage";
     private static final int REQUEST_SLIDESHOW = 1;
     private static final int REQUEST_PHOTO = 2;
     private static final int REQUEST_DO_ANIMATION = 3;
 
     private static final float USER_DISTANCE_METER = 0.3f;
-
+    protected SelectionManager mSelectionManager;
     private boolean mIsActive = false;
     private StaticBackground mStaticBackground;
     private AlbumView mAlbumView;
     private Path mMediaSetPath;
-
     private AlbumDataAdapter mAlbumDataAdapter;
-
-    protected SelectionManager mSelectionManager;
     private GridDrawer mGridDrawer;
     private HighlightDrawer mHighlightDrawer;
 
@@ -107,7 +102,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
     private Future<Integer> mSyncTask = null;
 
     private GLView mRootPane = new GLView() {
-        private float mMatrix[] = new float[16];
+        private float[] mMatrix = new float[16];
 
         @Override
         protected void onLayout(
@@ -178,7 +173,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
                 onGetContent(item);
             } else {
                 boolean playVideo =
-                    (item.getSupportedOperations() & MediaItem.SUPPORT_PLAY) != 0;
+                        (item.getSupportedOperations() & MediaItem.SUPPORT_PLAY) != 0;
                 if (playVideo) {
                     // Play the video.
                     PhotoPage.playVideo((Activity) mActivity, item.getPlayUri(), item.getPath(), item.getMimeType());
@@ -289,6 +284,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
                 PositionRepository.getInstance(mActivity);
         mAlbumView.startTransition(new PositionProvider() {
             private Position mTempPosition = new Position();
+
             public Position getPosition(long identity, Position target) {
                 Position p = repository.get(identity);
                 if (p != null) return p;
@@ -308,6 +304,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
         final Random random = new Random();
         mAlbumView.startTransition(new PositionProvider() {
             private Position mTempPosition = new Position();
+
             public Position getPosition(long identity, Position target) {
                 Position p = repository.get(identity);
                 if (p != null) return p;
@@ -364,7 +361,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
         if (mAlbumDataAdapter != null) {
             mAlbumDataAdapter.setLoadingListener(null);
         }
-        
+
         GalleryUtils.removeActivity(mActivity);
     }
 
@@ -452,14 +449,14 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
         actionBar.setDisplayHomeAsUpEnabled(true);
         Activity activity = (Activity) mActivity;
         Log.w(TAG, "Action bar for activity " + mActivity.getClass().getCanonicalName() + " is " + actionBar
-        		+ " and it's title is '" + actionBar.getTitle() + "'");
+                + " and it's title is '" + actionBar.getTitle() + "'");
         MenuInflater inflater = activity.getMenuInflater();
 
         if (mGetContent) {
         } else {
             inflater.inflate(R.menu.album, menu);
             //if (actionBar != null && actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
-           // 	actionBar.setTitle(mMediaSet.getName());
+            // 	actionBar.setTitle(mMediaSet.getName());
             //}
             if (mMediaSet instanceof MtpDevice) {
                 menu.findItem(R.id.action_slideshow).setVisible(false);
@@ -473,9 +470,9 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             //if (groupBy != null) {
             //    groupBy.setVisible(mShowClusterMenu);
             //}
-            
+
             //if (actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
-	        //    actionBar.setTitle(mMediaSet.getName());
+            //    actionBar.setTitle(mMediaSet.getName());
             //}
         }
         actionBar.setSubtitle(null);
@@ -503,14 +500,14 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             }
             return true;
         } else if (item.getItemId() == R.id.action_download) {
-        	ArrayList<Path> ids = mSelectionManager.getSelected(true);
-        	ThreadImageDownloadService.startDownloadViaGalleryView(mActivity.getAndroidContext(), mMediaSetPath, ids);
+            ArrayList<Path> ids = mSelectionManager.getSelected(true);
+            ThreadImageDownloadService.startDownloadViaGalleryView(mActivity.getAndroidContext(), mMediaSetPath, ids);
             Toast.makeText(mActivity.getAndroidContext(),
                     R.string.download_all_images_notice,
                     Toast.LENGTH_SHORT)
                     .show();
             return true;
-        } else { 
+        } else {
             return false;
         }
     }
@@ -574,17 +571,17 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
         Handler handler = mActivity.getHandler();
         if (handler != null)
             handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!mIsActive) return;
-                mediaSet.notifyContentChanged(); // force reload to handle spinner
+                @Override
+                public void run() {
+                    if (!mIsActive) return;
+                    mediaSet.notifyContentChanged(); // force reload to handle spinner
 
-                if (resultCode == MediaSet.SYNC_RESULT_ERROR) {
-                    Toast.makeText((Context) mActivity, R.string.sync_album_error,
-                            Toast.LENGTH_LONG).show();
+                    if (resultCode == MediaSet.SYNC_RESULT_ERROR) {
+                        Toast.makeText((Context) mActivity, R.string.sync_album_error,
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
-            }
-        });
+            });
     }
 
     private class MyLoadingListener implements LoadingListener {
@@ -600,7 +597,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
                 if (mSyncTask == null) {
                     mSyncTask = mMediaSet.requestSync(AlbumPage.this);
                 }
-                if (mSyncTask.isDone()){
+                if (mSyncTask.isDone()) {
                     Toast.makeText((Context) mActivity,
                             R.string.empty_album, Toast.LENGTH_LONG).show();
                     mActivity.getStateManager().finishState(AlbumPage.this);
@@ -614,6 +611,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
 
     private class MyDetailsSource implements DetailsHelper.DetailsSource {
         private int mIndex;
+
         public int size() {
             return mAlbumDataAdapter.size();
         }

@@ -1,7 +1,5 @@
 package com.chanapps.four.data;
 
-import java.util.*;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -14,14 +12,21 @@ import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
 public class ChanBoard {
 
-	public static final String TAG = ChanBoard.class.getSimpleName();
-    private static final boolean DEBUG = false;
-
-    private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
-    private static final int NUM_RELATED_BOARDS = 3;
-
+    public static final String TAG = ChanBoard.class.getSimpleName();
     public static final String BOARD_CODE = "boardCode";
     public static final String ALL_BOARDS_BOARD_CODE = BoardType.ALL_BOARDS.boardCode();
     public static final String POPULAR_BOARD_CODE = BoardType.POPULAR.boardCode();
@@ -35,59 +40,63 @@ public class ChanBoard {
     public static final String META_OTHER_BOARD_CODE = BoardType.OTHER.boardCode();
     public static final String META_ADULT_BOARD_CODE = BoardType.ADULT.boardCode();
     public static final String META_MISC_BOARD_CODE = BoardType.MISC.boardCode();
-
-    public static final String[] VIRTUAL_BOARDS = { ALL_BOARDS_BOARD_CODE, POPULAR_BOARD_CODE, LATEST_BOARD_CODE,
+    public static final String[] VIRTUAL_BOARDS = {ALL_BOARDS_BOARD_CODE, POPULAR_BOARD_CODE, LATEST_BOARD_CODE,
             LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE, FAVORITES_BOARD_CODE,
             META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
             META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
-            META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
-    public static final String[] META_BOARDS = { ALL_BOARDS_BOARD_CODE,
+            META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE};
+    public static final String[] META_BOARDS = {ALL_BOARDS_BOARD_CODE,
             META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
             META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
-            META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
-    public static final String[] POPULAR_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE };
-    public static final String[] TOP_BOARDS = { ALL_BOARDS_BOARD_CODE, FAVORITES_BOARD_CODE, WATCHLIST_BOARD_CODE };
-
-    private static final Set<String> removedBoards = new HashSet<String>();
-    private static final String[] REMOVED_BOARDS = { "q" };
-    static {
-        removedBoards.clear();
-        for (String boardCode : REMOVED_BOARDS)
-            removedBoards.add(boardCode);
-    }
-    public static boolean isRemoved(String boardCode) {
-        return removedBoards.contains(boardCode);
-    }
-
+            META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE};
+    public static final String[] POPULAR_BOARDS = {POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE};
+    public static final String[] TOP_BOARDS = {ALL_BOARDS_BOARD_CODE, FAVORITES_BOARD_CODE, WATCHLIST_BOARD_CODE};
     public static final String DEFAULT_BOARD_CODE = "a";
     public static final String PAGE = "pageNo";
     public static final String BOARD_CATALOG = "boardCatalog";
-
-    public String board;
-    public String name;
-    public String link;
-    public int iconId;
-    public int no;
-	public BoardType boardType;
-    public boolean workSafe;
-    public boolean classic;
-    public boolean textOnly;
-	public ChanPost stickyPosts[] = new ChanPost[0];
-	public ChanThread threads[] = new ChanThread[0];
-	public ChanThread loadedThreads[] = new ChanThread[0];
-	public int newThreads = 0;
-	public int updatedThreads = 0;
-    public long lastFetched;
-    public long lastSwapped;
-    public boolean defData = false;
-
+    static public final Map<String, Integer> spoilerImageCount = new HashMap<String, Integer>();
+    static public final Random spoilerGenerator = new Random();
+    protected static final int STUB_IMAGE_ID = R.drawable.stub_image;
+    protected static final long SWAP_DELAY_MS = 300000L;
+    private static final boolean DEBUG = false;
+    private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
+    private static final int NUM_RELATED_BOARDS = 3;
+    private static final Set<String> removedBoards = new HashSet<String>();
+    private static final String[] REMOVED_BOARDS = {"q"};
+    private static final String[] fastBoards = {"a", "b", "v", "vr"};
+    private static final Set<String> fastBoardSet = new HashSet<String>(Arrays.asList(fastBoards));
+    protected static Map<String, int[]> boardDrawables = new HashMap<String, int[]>();
     private static List<ChanBoard> boards = new ArrayList<ChanBoard>();
     private static List<ChanBoard> safeBoards = new ArrayList<ChanBoard>();
     private static Map<BoardType, List<ChanBoard>> boardsByType = new HashMap<BoardType, List<ChanBoard>>();
     private static Map<String, ChanBoard> boardByCode = new HashMap<String, ChanBoard>();
     private static Map<String, List<ChanBoard>> relatedBoards = new HashMap<String, List<ChanBoard>>();
+    static private Set<String> spoilerBoardCodes = new HashSet<String>();
 
-    protected static Map<String, int[]> boardDrawables = new HashMap<String, int[]>();
+    static {
+        removedBoards.clear();
+        for (String boardCode : REMOVED_BOARDS)
+            removedBoards.add(boardCode);
+    }
+
+    protected final int MAX_THREADS_BEFORE_SWAP = 20;
+    public String board;
+    public String name;
+    public String link;
+    public int iconId;
+    public int no;
+    public BoardType boardType;
+    public boolean workSafe;
+    public boolean classic;
+    public boolean textOnly;
+    public ChanPost[] stickyPosts = new ChanPost[0];
+    public ChanThread[] threads = new ChanThread[0];
+    public ChanThread[] loadedThreads = new ChanThread[0];
+    public int newThreads = 0;
+    public int updatedThreads = 0;
+    public long lastFetched;
+    public long lastSwapped;
+    public boolean defData = false;
 
     public ChanBoard() {
         // public default constructor for Jackson
@@ -104,6 +113,10 @@ public class ChanBoard {
         this.textOnly = textOnly;
     }
 
+    public static boolean isRemoved(String boardCode) {
+        return removedBoards.contains(boardCode);
+    }
+
     public static boolean boardNeedsRefresh(Context context, String boardCode, boolean forceRefresh) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         if (board == null || board.defData)
@@ -114,27 +127,13 @@ public class ChanBoard {
             return true;
         else if (!board.isCurrent())
             return true;
-        else if (forceRefresh)
-            return true;
-        else
-            return false;
-    }
-
-    public ChanBoard copy() {
-        ChanBoard copy = new ChanBoard(this.boardType, this.name, this.link, this.iconId,
-                this.workSafe, this.classic, this.textOnly);
-        return copy;
-    }
-
-    public String toString() {
-        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length
-                + ", threads: " + threads.length + ", newThreads: " + loadedThreads.length;
+        else return forceRefresh;
     }
 
     public static List<ChanBoard> getBoards(Context context) {
         initBoards(context);
-		return new ArrayList<ChanBoard>(boards);
-	}
+        return new ArrayList<ChanBoard>(boards);
+    }
 
     public static List<ChanBoard> getBoardsRespectingNSFW(Context context) {
         initBoards(context);
@@ -180,13 +179,13 @@ public class ChanBoard {
         //else if (BoardType.ALL_BOARDS == boardType && !showNSFW)
         //    return new ArrayList<ChanBoard>(safeBoards);
         //else
-            return new ArrayList<ChanBoard>(boardsByType.get(boardType));
-	}
+        return new ArrayList<ChanBoard>(boardsByType.get(boardType));
+    }
 
-	public static ChanBoard getBoardByCode(Context context, String boardCode) {
+    public static ChanBoard getBoardByCode(Context context, String boardCode) {
         initBoards(context);
         return boardByCode.get(boardCode);
-	}
+    }
 
     public static boolean isWorksafe(Context context, String boardCode) {
         initBoards(context);
@@ -211,9 +210,9 @@ public class ChanBoard {
         for (String[] boardCodesForType : boardCodesByType) {
             BoardType boardType = BoardType.valueOf(boardCodesForType[0]);
             List<ChanBoard> boardsForType = new ArrayList<ChanBoard>();
-            for (int i = 1; i < boardCodesForType.length; i+=2) {
+            for (int i = 1; i < boardCodesForType.length; i += 2) {
                 String boardCode = boardCodesForType[i];
-                String boardName = boardCodesForType[i+1];
+                String boardName = boardCodesForType[i + 1];
                 boolean workSafe = !(boardType == BoardType.ADULT || boardType == BoardType.MISC);
                 int iconId = getImageResourceId(boardCode, 0, 0);
                 ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false);
@@ -227,7 +226,8 @@ public class ChanBoard {
                 }
             }
             boardsByType.put(boardType, boardsForType);
-            if (DEBUG) Log.i(TAG, "Put boardsByType(" + boardType.boardCode() + ") as " + Arrays.toString(boardsForType.toArray()));
+            if (DEBUG)
+                Log.i(TAG, "Put boardsByType(" + boardType.boardCode() + ") as " + Arrays.toString(boardsForType.toArray()));
         }
 
 
@@ -235,18 +235,15 @@ public class ChanBoard {
         //Soft all boards
         Collections.sort(boards, new Comparator<ChanBoard>() {
             @Override
-            public int compare(ChanBoard lhs, ChanBoard rhs)
-            {
+            public int compare(ChanBoard lhs, ChanBoard rhs) {
                 return comparator.compare(lhs.link, rhs.link);
             }
         });
 
         //Sort safe board
-        Collections.sort(safeBoards, new Comparator<ChanBoard>()
-        {
+        Collections.sort(safeBoards, new Comparator<ChanBoard>() {
             @Override
-            public int compare(ChanBoard lhs, ChanBoard rhs)
-            {
+            public int compare(ChanBoard lhs, ChanBoard rhs) {
                 return comparator.compare(lhs.link, rhs.link);
             }
         });
@@ -288,10 +285,8 @@ public class ChanBoard {
     }
 
     public static int getRandomImageResourceId(String boardCode, long postNo) {
-        return ChanBoard.getImageResourceId(boardCode, postNo, (int)(postNo % NUM_DEFAULT_IMAGES_PER_BOARD));
+        return ChanBoard.getImageResourceId(boardCode, postNo, (int) (postNo % NUM_DEFAULT_IMAGES_PER_BOARD));
     }
-
-    protected static final int STUB_IMAGE_ID = R.drawable.stub_image;
 
     public static int getImageResourceId(String boardCode, long postNo, int index) { // allows special-casing first (usually sticky) and multiple
         int imageId = imagelessStickyDrawableId(boardCode, postNo);
@@ -305,24 +300,15 @@ public class ChanBoard {
         return imageIds[0];
     }
 
-    public String getDescription(Context context) {
-        return getDescription(context, link);
-    }
-
     public static String getDescription(Context context, String boardCode) {
         String stringName = "board_desc_" + boardCode;
         try {
             int id = context.getResources().getIdentifier(stringName, "string", context.getPackageName());
             return context.getString(id);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Couldn't find board description for boardCode=" + boardCode);
             return "";
         }
-    }
-
-    public String getName(Context context) {
-        return getName(context, link);
     }
 
     public static String getName(Context context, String boardCode) {
@@ -330,13 +316,11 @@ public class ChanBoard {
         try {
             int id = context.getResources().getIdentifier(stringName, "string", context.getPackageName());
             return context.getString(id);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Couldn't find board description for boardCode=" + boardCode);
             return "";
         }
     }
-
 
     public static void preloadUncachedBoards(Context context) {
         List<ChanBoard> boards = ChanBoard.getBoards(context);
@@ -349,11 +333,10 @@ public class ChanBoard {
         }
     }
 
-    static private Set<String> spoilerBoardCodes = new HashSet<String>();
     static public boolean hasSpoiler(String boardCode) {
         if (spoilerBoardCodes.isEmpty()) {
             synchronized (spoilerBoardCodes) {
-                String[] spoilers = { "a", "m", "u", "v", "vg", "r9k", "co", "jp", "lit", "mlp", "tg", "tv", "vp" };
+                String[] spoilers = {"a", "m", "u", "v", "vg", "r9k", "co", "jp", "lit", "mlp", "tg", "tv", "vp"};
                 for (int i = 0; i < spoilers.length; i++)
                     spoilerBoardCodes.add(spoilers[i]);
             }
@@ -362,46 +345,28 @@ public class ChanBoard {
     }
 
     static public boolean hasName(String boardCode) {
-        if (boardCode.equals("b") || boardCode.equals("soc") || boardCode.equals("q"))
-            return false;
-        else
-            return true;
+        return !boardCode.equals("b") && !boardCode.equals("soc") && !boardCode.equals("q");
     }
 
     static public boolean hasSubject(String boardCode) {
-        if (boardCode.equals("b") || boardCode.equals("soc"))
-            return false;
-        else
-            return true;
+        return !boardCode.equals("b") && !boardCode.equals("soc");
     }
 
     static public boolean requiresThreadSubject(String boardCode) {
-        if (boardCode.equals("q"))
-            return true;
-        else
-            return false;
-    }
-
-    static public boolean requiresThreadImage(String boardCode) {
-        if (boardCode.equals("q"))
-            return false;
-        else
-            return true;
-    }
-
-    static public boolean allowsBump(String boardCode) {
-        if (boardCode.equals("q"))
-            return false;
-        else
-            return true;
+        return boardCode.equals("q");
     }
 
     /*
     /i - lots of stuff
     */
 
-    static public final Map<String, Integer> spoilerImageCount = new HashMap<String, Integer>();
-    static public final Random spoilerGenerator = new Random();
+    static public boolean requiresThreadImage(String boardCode) {
+        return !boardCode.equals("q");
+    }
+
+    static public boolean allowsBump(String boardCode) {
+        return !boardCode.equals("q");
+    }
 
     static public String spoilerThumbnailUrl(Context context, String boardCode) {
         if (spoilerImageCount.isEmpty()) {
@@ -415,18 +380,129 @@ public class ChanBoard {
             int spoilerImageNum = spoilerGenerator.nextInt(spoilerImages) + 1;
             return String.format(
                     URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_SPOILER_NUMBERED_IMAGE_URL_FORMAT), boardCode, spoilerImageNum);
-        }
-        else {
+        } else {
             return String.format(
                     URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_SPOILER_IMAGE_URL_FORMAT), boardCode);
         }
     }
 
     static public boolean isAsciiOnlyBoard(String boardCode) {
-        if (boardCode.equals("q") || boardCode.equals("r9k") || boardCode.equals("news"))
-            return true;
-        else
+        return boardCode.equals("q") || boardCode.equals("r9k") || boardCode.equals("news");
+    }
+
+    public static boolean isVirtualBoard(String boardCode) {
+        for (String virtualBoardCode : VIRTUAL_BOARDS)
+            if (virtualBoardCode.equals(boardCode))
+                return true;
+        return false;
+    }
+
+    public static boolean isTopBoard(String boardCode) {
+        for (String code : TOP_BOARDS)
+            if (code.equals(boardCode))
+                return true;
+        return false;
+    }
+
+    public static boolean isMetaBoard(String boardCode) {
+        for (String metaBoardCode : META_BOARDS)
+            if (metaBoardCode.equals(boardCode))
+                return true;
+        return false;
+    }
+
+    public static boolean isPopularBoard(String boardCode) {
+        for (String popularBoardCode : POPULAR_BOARDS)
+            if (popularBoardCode.equals(boardCode))
+                return true;
+        return false;
+    }
+
+    public static String getBestWidgetImageUrl(Context context, ChanPost thread, String backupBoardCode, int i) {
+        return (thread != null && thread.tim > 0)
+                ? thread.thumbnailUrl(context)
+                : ChanBoard.getIndexedImageDrawableUrl(
+                thread != null ? thread.board : backupBoardCode,
+                i);
+    }
+
+    public static boolean boardHasData(Context context, String boardCode) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        boolean hasData = board != null && board.hasData();
+        if (DEBUG)
+            Log.i(TAG, "boardHasData() /" + boardCode + "/ hasData=" + hasData + " board=" + board);
+        return hasData;
+    }
+
+    public static boolean isFavoriteBoard(final Context context, final String boardCode) {
+        ChanBoard favorites = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        if (favorites == null || !favorites.hasData())
             return false;
+        for (ChanThread thread : favorites.threads) {
+            if (boardCode.equals(thread.board))
+                return true;
+        }
+        return false;
+    }
+
+    public static String boardUrl(Context context, String boardCode) {
+        if (boardCode == null || boardCode.isEmpty() || isVirtualBoard(boardCode))
+            return URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_FRONTPAGE_URL);
+        else
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_BOARD_URL_FORMAT), boardCode);
+    }
+
+    public static ChanThread makeFavoritesThread(Context context, String boardCode) {
+        ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
+        ChanThread thread = new ChanThread();
+        thread.board = boardCode;
+        thread.no = 0;
+        thread.sub = getName(context, boardCode);
+        thread.com = getDescription(context, boardCode);
+        return thread;
+    }
+
+    public static boolean hasFavorites(Context context) {
+        return boardHasData(context, ChanBoard.FAVORITES_BOARD_CODE);
+    }
+
+    public static boolean hasWatchlist(Context context) {
+        return boardHasData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    }
+
+    public static String defaultBoardCode(final Context context) {
+        //if (hasWatchlist(context))
+        //    return ChanBoard.WATCHLIST_BOARD_CODE;
+        //else
+        if (hasFavorites(context))
+            return ChanBoard.FAVORITES_BOARD_CODE;
+        else
+            return ChanBoard.ALL_BOARDS_BOARD_CODE;
+    }
+
+    public static boolean isPersistentBoard(final String boardCode) {
+        if (WATCHLIST_BOARD_CODE.equals(boardCode))
+            return true;
+        else return FAVORITES_BOARD_CODE.equals(boardCode);
+    }
+
+    public ChanBoard copy() {
+        ChanBoard copy = new ChanBoard(this.boardType, this.name, this.link, this.iconId,
+                this.workSafe, this.classic, this.textOnly);
+        return copy;
+    }
+
+    public String toString() {
+        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length
+                + ", threads: " + threads.length + ", newThreads: " + loadedThreads.length;
+    }
+
+    public String getDescription(Context context) {
+        return getDescription(context, link);
+    }
+
+    public String getName(Context context) {
+        return getName(context, link);
     }
 
     public Object[] makeRow(Context context) { // for board selector
@@ -455,49 +531,36 @@ public class ChanBoard {
     }
 
     public void updateCountersAfterLoad(Context context) {
-    	if (loadedThreads.length == 0) {
-    		return;
-    	}
-    	Map<Long, ChanPost> currentThreads = new HashMap<Long, ChanPost>();
-    	for (ChanPost thread : threads) {
-    		currentThreads.put(thread.no, thread);
-    	}
-    	this.newThreads = 0;
-    	this.updatedThreads = 0;
+        if (loadedThreads.length == 0) {
+            return;
+        }
+        Map<Long, ChanPost> currentThreads = new HashMap<Long, ChanPost>();
+        for (ChanPost thread : threads) {
+            currentThreads.put(thread.no, thread);
+        }
+        this.newThreads = 0;
+        this.updatedThreads = 0;
         ChanThread firstNewThread = null;
-    	for (ChanThread newThread : loadedThreads) {
-    		if (currentThreads.containsKey(newThread.no)) {
-    			ChanPost currentPost = currentThreads.get(newThread.no);
-    			if (currentPost.replies != newThread.replies) {
-    				updatedThreads++;
-    			}
-    		} else {
+        for (ChanThread newThread : loadedThreads) {
+            if (currentThreads.containsKey(newThread.no)) {
+                ChanPost currentPost = currentThreads.get(newThread.no);
+                if (currentPost.replies != newThread.replies) {
+                    updatedThreads++;
+                }
+            } else {
                 if (firstNewThread == null)
                     firstNewThread = newThread;
-    			newThreads++;
-    		}
-    	}
+                newThreads++;
+            }
+        }
         //if (newThreads > 0 && isFavoriteBoard(context, link))
         //    NotificationComponent.notifyNewThreads(context, link, newThreads, firstNewThread);
-        if (DEBUG) Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
+        if (DEBUG)
+            Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
     }
 
     public boolean isVirtualBoard() {
         return isVirtualBoard(link);
-    }
-
-    public static boolean isVirtualBoard(String boardCode) {
-        for (String virtualBoardCode : VIRTUAL_BOARDS)
-            if (virtualBoardCode.equals(boardCode))
-                return true;
-        return false;
-    }
-
-    public static boolean isTopBoard(String boardCode) {
-        for (String code : TOP_BOARDS)
-            if (code.equals(boardCode))
-                return true;
-        return false;
     }
 
     public boolean isTopBoard() {
@@ -508,42 +571,16 @@ public class ChanBoard {
         return isMetaBoard(link);
     }
 
-    public static boolean isMetaBoard(String boardCode) {
-        for (String metaBoardCode : META_BOARDS)
-            if (metaBoardCode.equals(boardCode))
-                return true;
-        return false;
-    }
-
     public boolean isPopularBoard() {
         return isPopularBoard(link);
     }
 
-    public static boolean isPopularBoard(String boardCode) {
-        for (String popularBoardCode : POPULAR_BOARDS)
-            if (popularBoardCode.equals(boardCode))
-                return true;
-        return false;
-    }
-
-    private static final String[] fastBoards = { "a", "b", "v", "vr" };
-    private static final Set<String> fastBoardSet = new HashSet<String>(Arrays.asList(fastBoards));
-
     public boolean isFastBoard() {
         if (link == null)
             return false;
-        if (fastBoardSet.contains(link))
-            return true;
-        return false;
+        return fastBoardSet.contains(link);
     }
 
-    public static String getBestWidgetImageUrl(Context context, ChanPost thread, String backupBoardCode, int i) {
-        return (thread != null && thread.tim > 0)
-                ? thread.thumbnailUrl(context)
-                : ChanBoard.getIndexedImageDrawableUrl(
-                thread != null ? thread.board : backupBoardCode,
-                i);
-    }
     /*
     public List<ChanBoard> relatedBoards(Context context) {
         return relatedBoards(context, 0);
@@ -555,7 +592,8 @@ public class ChanBoard {
             return new ArrayList<ChanBoard>();
 
         List<ChanBoard> boards = relatedBoards.get(link);
-        if (DEBUG) Log.i(TAG, "Found " + (boards == null ? 0 : boards.size()) + " related boards for /" + link + "/");
+        if (DEBUG)
+            Log.i(TAG, "Found " + (boards == null ? 0 : boards.size()) + " related boards for /" + link + "/");
         if (boards == null)
             return new ArrayList<ChanBoard>();
 
@@ -571,7 +609,7 @@ public class ChanBoard {
         if (threadNo <= 0)
             Collections.shuffle(filteredBoards);
         else
-            Collections.rotate(filteredBoards, (int)threadNo); // preserve order
+            Collections.rotate(filteredBoards, (int) threadNo); // preserve order
         List<ChanBoard> boardList = new ArrayList<ChanBoard>(NUM_RELATED_BOARDS);
         int j = 0;
         for (ChanBoard relatedBoard : filteredBoards) {
@@ -583,13 +621,6 @@ public class ChanBoard {
             }
         }
         return boardList;
-    }
-
-    public static boolean boardHasData(Context context, String boardCode) {
-        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        boolean hasData = board != null && board.hasData();
-        if (DEBUG) Log.i(TAG, "boardHasData() /" + boardCode + "/ hasData=" + hasData + " board=" + board);
-        return hasData;
     }
 
     public boolean hasData() {
@@ -607,12 +638,8 @@ public class ChanBoard {
             return true;
         if (updatedThreads > 0)
             return true;
-        if (loadedThreads != null && loadedThreads.length > 0)
-            return true;
-        return false;
+        return loadedThreads != null && loadedThreads.length > 0;
     }
-
-    protected final int MAX_THREADS_BEFORE_SWAP = 20;
 
     public boolean shouldSwapThreads() {
         if (loadedThreads == null || loadedThreads.length == 0)
@@ -623,9 +650,7 @@ public class ChanBoard {
             return true;
         if (threads.length > MAX_THREADS_BEFORE_SWAP)
             return true;
-        if (!isSwapCurrent())
-            return true;
-        return false;
+        return !isSwapCurrent();
     }
 
     private boolean isSwapCurrent() {
@@ -633,11 +658,9 @@ public class ChanBoard {
         boolean swapCurrent;
         if (lastSwapped <= 0)
             swapCurrent = false;
-        else if (diff > SWAP_DELAY_MS)
-            swapCurrent = false;
-        else
-            swapCurrent = true;
-        if (DEBUG) Log.i(TAG, "isSwapCurrent /" + link + "/ lastSwapped=" + lastSwapped + " diff=" + diff + " return=" + swapCurrent);
+        else swapCurrent = diff <= SWAP_DELAY_MS;
+        if (DEBUG)
+            Log.i(TAG, "isSwapCurrent /" + link + "/ lastSwapped=" + lastSwapped + " diff=" + diff + " return=" + swapCurrent);
         return swapCurrent;
     }
 
@@ -653,24 +676,6 @@ public class ChanBoard {
                 lastSwapped = (new Date()).getTime();
             }
         }
-    }
-
-    public static boolean isFavoriteBoard(final Context context, final String boardCode) {
-        ChanBoard favorites = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
-        if (favorites == null || !favorites.hasData())
-            return false;
-        for (ChanThread thread : favorites.threads) {
-            if (boardCode.equals(thread.board))
-                return true;
-        }
-        return false;
-    }
-
-    public static String boardUrl(Context context, String boardCode) {
-        if (boardCode == null || boardCode.isEmpty() || isVirtualBoard(boardCode))
-            return URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_FRONTPAGE_URL);
-        else
-            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_WEB_BOARD_URL_FORMAT), boardCode);
     }
 
     public int getThreadIndex(String boardCode, long threadNo) {
@@ -703,10 +708,7 @@ public class ChanBoard {
         boolean current;
         if (lastFetched <= 0)
             current = false;
-        else if (interval > params.refreshDelay)
-            current = false;
-        else
-            current = true;
+        else current = interval <= params.refreshDelay;
         if (DEBUG) Log.i(TAG, "isCurrent() /" + link + "/"
                 + " lastFetched=" + lastFetched
                 + " interval=" + interval
@@ -716,59 +718,18 @@ public class ChanBoard {
         return current;
     }
 
-    protected static final long SWAP_DELAY_MS = 300000L;
-
     public String refreshMessage() {
         StringBuffer msg = new StringBuffer();
         if (newThreads > 0) {
             msg.append("" + newThreads + " new thread");
             if (newThreads > 1) // + updatedThreads > 1) {
                 msg.append("s");
-        }
-        else if (updatedThreads > 0) {
+        } else if (updatedThreads > 0) {
             msg.append("" + updatedThreads + " updated thread");
             if (updatedThreads > 1) // + updatedThreads > 1) {
                 msg.append("s");
         }
         return msg.toString();
-    }
-
-    public static ChanThread makeFavoritesThread(Context context, String boardCode) {
-        ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
-        ChanThread thread = new ChanThread();
-        thread.board = boardCode;
-        thread.no = 0;
-        thread.sub = getName(context, boardCode);
-        thread.com = getDescription(context, boardCode);
-        return thread;
-    }
-
-
-    public static boolean hasFavorites(Context context) {
-        return boardHasData(context, ChanBoard.FAVORITES_BOARD_CODE);
-    }
-
-    public static boolean hasWatchlist(Context context) {
-        return boardHasData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-    }
-
-    public static String defaultBoardCode(final Context context) {
-        //if (hasWatchlist(context))
-        //    return ChanBoard.WATCHLIST_BOARD_CODE;
-        //else
-        if (hasFavorites(context))
-            return ChanBoard.FAVORITES_BOARD_CODE;
-        else
-            return ChanBoard.ALL_BOARDS_BOARD_CODE;
-    }
-
-    public static boolean isPersistentBoard(final String boardCode) {
-        if (WATCHLIST_BOARD_CODE.equals(boardCode))
-            return true;
-        else if (FAVORITES_BOARD_CODE.equals(boardCode))
-            return true;
-        else
-            return false;
     }
 
 }

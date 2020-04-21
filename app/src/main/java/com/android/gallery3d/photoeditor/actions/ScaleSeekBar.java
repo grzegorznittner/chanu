@@ -25,14 +25,6 @@ import android.widget.SeekBar;
  */
 class ScaleSeekBar extends AbstractSeekBar {
 
-    /**
-     * Listens to scale changes.
-     */
-    public interface OnScaleChangeListener {
-
-        void onProgressChanged(float progress, boolean fromUser);
-    }
-
     public ScaleSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -59,5 +51,13 @@ class ScaleSeekBar extends AbstractSeekBar {
 
     public void setProgress(float progress) {
         setProgress((int) (progress * getMax()));
+    }
+
+    /**
+     * Listens to scale changes.
+     */
+    public interface OnScaleChangeListener {
+
+        void onProgressChanged(float progress, boolean fromUser);
     }
 }

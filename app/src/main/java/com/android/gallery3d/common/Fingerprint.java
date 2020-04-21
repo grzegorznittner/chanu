@@ -73,10 +73,11 @@ public class Fingerprint {
 
     /**
      * Creates a Fingerprint based on the contents of a file.
-     *
+     * <p>
      * Note that this will close() stream after calculating the digest.
+     *
      * @param byteCount length of original data will be stored at byteCount[0] as a side product
-     *        of the fingerprint calculation
+     *                  of the fingerprint calculation
      */
     public static Fingerprint fromInputStream(InputStream stream, long[] byteCount)
             throws IOException {
@@ -112,7 +113,7 @@ public class Fingerprint {
         byte[] bytes = new byte[FINGERPRINT_BYTE_LENGTH];
         int byteIdx = 0;
         for (int idx = STREAM_ID_CS_PREFIX.length(); idx < STREAM_ID_CS_01_LENGTH;
-                idx += 2) {
+             idx += 2) {
             int value = (toDigit(streamId, idx) << 4) | toDigit(streamId, idx + 1);
             bytes[byteIdx++] = (byte) (value & 0xff);
         }
@@ -134,9 +135,25 @@ public class Fingerprint {
         return null;
     }
 
+    private static int toDigit(String streamId, int index) {
+        int digit = Character.digit(streamId.charAt(index), 16);
+        if (digit < 0) {
+            throw new IllegalArgumentException("illegal hex digit in " + streamId);
+        }
+        return digit;
+    }
+
+    private static void appendHexFingerprint(StringBuilder sb, byte[] bytes) {
+        for (int idx = 0; idx < FINGERPRINT_BYTE_LENGTH; idx++) {
+            int value = bytes[idx];
+            sb.append(Integer.toHexString((value >> 4) & 0x0f));
+            sb.append(Integer.toHexString(value & 0x0f));
+        }
+    }
+
     /**
      * Encodes a 128-bit fingerprint as a string stream id.
-     *
+     * <p>
      * Stream id string is limited to 40 characters, which could be digits, lower case ASCII and
      * underscores.
      */
@@ -158,6 +175,8 @@ public class Fingerprint {
         return Arrays.equals(mMd5Digest, other.mMd5Digest);
     }
 
+    // Utility methods.
+
     public boolean equals(byte[] md5Digest) {
         return Arrays.equals(mMd5Digest, md5Digest);
     }
@@ -165,23 +184,5 @@ public class Fingerprint {
     @Override
     public int hashCode() {
         return Arrays.hashCode(mMd5Digest);
-    }
-
-    // Utility methods.
-
-    private static int toDigit(String streamId, int index) {
-        int digit = Character.digit(streamId.charAt(index), 16);
-        if (digit < 0) {
-            throw new IllegalArgumentException("illegal hex digit in " + streamId);
-        }
-        return digit;
-    }
-
-    private static void appendHexFingerprint(StringBuilder sb, byte[] bytes) {
-        for (int idx = 0; idx < FINGERPRINT_BYTE_LENGTH; idx++) {
-            int value = bytes[idx];
-            sb.append(Integer.toHexString((value >> 4) & 0x0f));
-            sb.append(Integer.toHexString(value& 0x0f));
-        }
     }
 }

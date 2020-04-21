@@ -16,14 +16,14 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.app.GalleryApp;
-
 import android.hardware.usb.UsbDevice;
 import android.mtp.MtpConstants;
 import android.mtp.MtpObjectInfo;
 import android.mtp.MtpStorageInfo;
 import android.net.Uri;
 import android.util.Log;
+
+import com.android.gallery3d.app.GalleryApp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class MtpDevice extends MediaSet {
     private List<MtpObjectInfo> mJpegChildren;
 
     public MtpDevice(Path path, GalleryApp application, int deviceId,
-            String name, MtpContext mtpContext) {
+                     String name, MtpContext mtpContext) {
         super(path, nextVersionNumber());
         mApplication = application;
         mDeviceId = deviceId;
@@ -51,21 +51,27 @@ public class MtpDevice extends MediaSet {
         mMtpContext = mtpContext;
         mName = name;
         mNotifier = new ChangeNotifier(this, Uri.parse("mtp://"), application);
-        mItemPath = Path.fromString("/mtp/item/" + String.valueOf(deviceId));
+        mItemPath = Path.fromString("/mtp/item/" + deviceId);
         mJpegChildren = new ArrayList<MtpObjectInfo>();
     }
 
     public MtpDevice(Path path, GalleryApp application, int deviceId,
-            MtpContext mtpContext) {
+                     MtpContext mtpContext) {
         this(path, application, deviceId,
                 MtpDeviceSet.getDeviceName(mtpContext, deviceId), mtpContext);
+    }
+
+    public static MtpObjectInfo getObjectInfo(MtpContext mtpContext, int deviceId,
+                                              int objectId) {
+        String deviceName = UsbDevice.getDeviceName(deviceId);
+        return mtpContext.getMtpClient().getObjectInfo(deviceName, objectId);
     }
 
     private List<MtpObjectInfo> loadItems() {
         ArrayList<MtpObjectInfo> result = new ArrayList<MtpObjectInfo>();
 
         List<MtpStorageInfo> storageList = mMtpContext.getMtpClient()
-                 .getStorageList(mDeviceName);
+                .getStorageList(mDeviceName);
         if (storageList == null) return result;
 
         for (MtpStorageInfo info : storageList) {
@@ -76,7 +82,7 @@ public class MtpDevice extends MediaSet {
     }
 
     private void collectJpegChildren(int storageId, int objectId,
-            ArrayList<MtpObjectInfo> result) {
+                                     ArrayList<MtpObjectInfo> result) {
         ArrayList<MtpObjectInfo> dirChildren = new ArrayList<MtpObjectInfo>();
 
         queryChildren(storageId, objectId, result, dirChildren);
@@ -88,7 +94,7 @@ public class MtpDevice extends MediaSet {
     }
 
     private void queryChildren(int storageId, int objectId,
-            ArrayList<MtpObjectInfo> jpeg, ArrayList<MtpObjectInfo> dir) {
+                               ArrayList<MtpObjectInfo> jpeg, ArrayList<MtpObjectInfo> dir) {
         List<MtpObjectInfo> children = mMtpContext.getMtpClient().getObjectList(
                 mDeviceName, storageId, objectId);
         if (children == null) return;
@@ -108,12 +114,6 @@ public class MtpDevice extends MediaSet {
                             + ", format = " + format);
             }
         }
-    }
-
-    public static MtpObjectInfo getObjectInfo(MtpContext mtpContext, int deviceId,
-            int objectId) {
-        String deviceName = UsbDevice.getDeviceName(deviceId);
-        return mtpContext.getMtpClient().getObjectInfo(deviceName, objectId);
     }
 
     @Override

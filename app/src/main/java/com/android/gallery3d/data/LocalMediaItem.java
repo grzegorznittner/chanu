@@ -16,9 +16,9 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.database.Cursor;
+
+import com.android.gallery3d.util.GalleryUtils;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -86,7 +86,7 @@ public abstract class LocalMediaItem extends MediaItem {
         details.addDetail(MediaDetails.INDEX_DATETIME, formater.format(new Date(dateTakenInMs)));
 
         if (GalleryUtils.isValidLocation(latitude, longitude)) {
-            details.addDetail(MediaDetails.INDEX_LOCATION, new double[] {latitude, longitude});
+            details.addDetail(MediaDetails.INDEX_LOCATION, new double[]{latitude, longitude});
         }
         if (fileSize > 0) details.addDetail(MediaDetails.INDEX_SIZE, fileSize);
         return details;

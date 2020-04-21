@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
@@ -18,12 +19,12 @@ import com.chanapps.four.data.ChanFileStorage;
 import java.io.IOException;
 
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 12/14/12
-* Time: 12:44 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 12/14/12
+ * Time: 12:44 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public class WatchlistCleanDialogFragment extends DialogFragment {
 
     public static final String TAG = WatchlistCleanDialogFragment.class.getSimpleName();
@@ -38,8 +39,8 @@ public class WatchlistCleanDialogFragment extends DialogFragment {
         //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.WATCHLIST_DELETE);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
-        TextView title = (TextView)layout.findViewById(R.id.title);
-        TextView message = (TextView)layout.findViewById(R.id.message);
+        TextView title = layout.findViewById(R.id.title);
+        TextView message = layout.findViewById(R.id.message);
         title.setText(R.string.board_watch);
         message.setText(R.string.dialog_clean_watchlist);
         setStyle(STYLE_NO_TITLE, 0);
@@ -56,8 +57,7 @@ public class WatchlistCleanDialogFragment extends DialogFragment {
                                     BoardActivity.refreshWatchlist(context);
                                     //Toast.makeText(getActivity().getApplicationContext(),
                                     //        R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT).show();
-                                }
-                                catch (IOException e) {
+                                } catch (IOException e) {
                                     Log.e(TAG, "Couldn't clear watchlist", e);
                                     Toast.makeText(getActivity().getApplicationContext(),
                                             R.string.thread_watchlist_not_cleared, Toast.LENGTH_SHORT).show();

@@ -33,33 +33,43 @@ package com.chanapps.four.multipartmime;
 
 /**
  * Provides setters and getters for the basic Part properties.
- * 
+ *
  * @author Michael Becke
  */
 public abstract class PartBase extends Part {
 
-    /** Default charset of string parameters*/
+    /**
+     * Default charset of string parameters
+     */
     public static final String ASCII_CHARSET = "US-ASCII";
     public static final String UTF8_CHARSET = "UTF-8";
     public static final String DEFAULT_CHARSET = UTF8_CHARSET;
-    /** Name of the file part. */
+    /**
+     * Name of the file part.
+     */
     private String name;
-        
-    /** Content type of the file part. */
+
+    /**
+     * Content type of the file part.
+     */
     private String contentType;
 
-    /** Content encoding of the file part. */
+    /**
+     * Content encoding of the file part.
+     */
     private String charSet;
-    
-    /** The transfer encoding. */
+
+    /**
+     * The transfer encoding.
+     */
     private String transferEncoding;
 
     /**
      * Constructor.
-     * 
-     * @param name The name of the part
-     * @param contentType The content type, or <code>null</code>
-     * @param charSet The character encoding, or <code>null</code> 
+     *
+     * @param name             The name of the part
+     * @param contentType      The content type, or <code>null</code>
+     * @param charSet          The character encoding, or <code>null</code>
      * @param transferEncoding The transfer encoding, or <code>null</code>
      */
     public PartBase(String name, String contentType, String charSet, String transferEncoding) {
@@ -75,63 +85,18 @@ public abstract class PartBase extends Part {
 
     /**
      * Returns the name.
+     *
      * @return The name.
      * @see Part#getName()
      */
     @Override
-    public String getName() { 
-        return this.name; 
-    }
-
-    /**
-     * Returns the content type of this part.
-     * @return String The name.
-     */
-    @Override
-    public String getContentType() {
-        return this.contentType;
-    }
-
-    /**
-     * Return the character encoding of this part.
-     * @return String The name.
-     */
-    @Override
-    public String getCharSet() {
-        return this.charSet;
-    }
-
-    /**
-     * Returns the transfer encoding of this part.
-     * @return String The name.
-     */
-    @Override
-    public String getTransferEncoding() {
-        return transferEncoding;
-    }
-
-    /**
-     * Sets the character encoding.
-     * 
-     * @param charSet the character encoding, or <code>null</code> to exclude the character 
-     * encoding header
-     */
-    public void setCharSet(String charSet) {
-        this.charSet = charSet;
-    }
-
-    /**
-     * Sets the content type.
-     * 
-     * @param contentType the content type, or <code>null</code> to exclude the content type header
-     */
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public String getName() {
+        return this.name;
     }
 
     /**
      * Sets the part name.
-     * 
+     *
      * @param name
      */
     public void setName(String name) {
@@ -142,10 +107,59 @@ public abstract class PartBase extends Part {
     }
 
     /**
+     * Returns the content type of this part.
+     *
+     * @return String The name.
+     */
+    @Override
+    public String getContentType() {
+        return this.contentType;
+    }
+
+    /**
+     * Sets the content type.
+     *
+     * @param contentType the content type, or <code>null</code> to exclude the content type header
+     */
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    /**
+     * Return the character encoding of this part.
+     *
+     * @return String The name.
+     */
+    @Override
+    public String getCharSet() {
+        return this.charSet;
+    }
+
+    /**
+     * Sets the character encoding.
+     *
+     * @param charSet the character encoding, or <code>null</code> to exclude the character
+     *                encoding header
+     */
+    public void setCharSet(String charSet) {
+        this.charSet = charSet;
+    }
+
+    /**
+     * Returns the transfer encoding of this part.
+     *
+     * @return String The name.
+     */
+    @Override
+    public String getTransferEncoding() {
+        return transferEncoding;
+    }
+
+    /**
      * Sets the transfer encoding.
-     * 
-     * @param transferEncoding the transfer encoding, or <code>null</code> to exclude the 
-     * transfer encoding header
+     *
+     * @param transferEncoding the transfer encoding, or <code>null</code> to exclude the
+     *                         transfer encoding header
      */
     public void setTransferEncoding(String transferEncoding) {
         this.transferEncoding = transferEncoding;

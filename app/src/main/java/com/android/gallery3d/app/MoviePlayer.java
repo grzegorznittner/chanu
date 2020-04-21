@@ -16,11 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.common.BlobCache;
-import com.android.gallery3d.util.CacheManager;
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -39,6 +34,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.VideoView;
+
+import com.android.gallery3d.common.BlobCache;
+import com.android.gallery3d.util.CacheManager;
+import com.android.gallery3d.util.GalleryUtils;
+import com.chanapps.four.gallery3d.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -62,8 +62,6 @@ public class MoviePlayer implements
     // If we resume the acitivty with in RESUMEABLE_TIMEOUT, we will keep playing.
     // Otherwise, we pause the player.
     private static final long RESUMEABLE_TIMEOUT = 3 * 60 * 1000; // 3 mins
-
-    private Context mContext;
     private final VideoView mVideoView;
     private final Bookmarker mBookmarker;
     private final Uri mUri;
@@ -71,17 +69,6 @@ public class MoviePlayer implements
     private final AudioBecomingNoisyReceiver mAudioBecomingNoisyReceiver;
     private final ActionBar mActionBar;
     private final ControllerOverlay mController;
-
-    private long mResumeableTime = Long.MAX_VALUE;
-    private int mVideoPosition = 0;
-    private boolean mHasPaused = false;
-
-    // If the time bar is being dragged.
-    private boolean mDragging;
-
-    // If the time bar is visible.
-    private boolean mShowing;
-
     private final Runnable mPlayingChecker = new Runnable() {
         @Override
         public void run() {
@@ -92,7 +79,14 @@ public class MoviePlayer implements
             }
         }
     };
-
+    private Context mContext;
+    private long mResumeableTime = Long.MAX_VALUE;
+    private int mVideoPosition = 0;
+    private boolean mHasPaused = false;
+    // If the time bar is being dragged.
+    private boolean mDragging;
+    // If the time bar is visible.
+    private boolean mShowing;
     private final Runnable mProgressChecker = new Runnable() {
         @Override
         public void run() {
@@ -102,15 +96,15 @@ public class MoviePlayer implements
     };
 
     public MoviePlayer(View rootView, final MovieActivity movieActivity, Uri videoUri,
-            Bundle savedInstance, boolean canReplay) {
+                       Bundle savedInstance, boolean canReplay) {
         mContext = movieActivity.getApplicationContext();
-        mVideoView = (VideoView) rootView.findViewById(R.id.surface_view);
+        mVideoView = rootView.findViewById(R.id.surface_view);
         mBookmarker = new Bookmarker(movieActivity);
         mActionBar = movieActivity.getActionBar();
         mUri = videoUri;
 
         mController = new MovieControllerOverlay(mContext);
-        ((ViewGroup)rootView).addView(mController.getView());
+        ((ViewGroup) rootView).addView(mController.getView());
         mController.setListener(this);
         mController.setCanReplay(canReplay);
 
@@ -129,12 +123,12 @@ public class MoviePlayer implements
         // the media control at this point.
         mVideoView.setOnSystemUiVisibilityChangeListener(
                 new View.OnSystemUiVisibilityChangeListener() {
-            public void onSystemUiVisibilityChange(int visibility) {
-                if ((visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) {
-                    mController.show();
-                }
-            }
-        });
+                    public void onSystemUiVisibilityChange(int visibility) {
+                        if ((visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) {
+                            mController.show();
+                        }
+                    }
+                });
 
         mAudioBecomingNoisyReceiver = new AudioBecomingNoisyReceiver();
         mAudioBecomingNoisyReceiver.register();
@@ -183,19 +177,19 @@ public class MoviePlayer implements
         });
         builder.setPositiveButton(
                 R.string.resume_playing_resume, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mVideoView.seekTo(bookmark);
-                startVideo();
-            }
-        });
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mVideoView.seekTo(bookmark);
+                        startVideo();
+                    }
+                });
         builder.setNegativeButton(
                 R.string.resume_playing_restart, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startVideo();
-            }
-        });
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startVideo();
+                    }
+                });
         builder.show();
     }
 
@@ -348,7 +342,7 @@ public class MoviePlayer implements
         public void onReceive(Context context, Intent intent) {
             if (mVideoView.isPlaying()) {
                 mVideoView.pause();
-          }
+            }
         }
     }
 }
@@ -400,7 +394,7 @@ class Bookmarker {
             DataInputStream dis = new DataInputStream(
                     new ByteArrayInputStream(data));
 
-            String uriString = dis.readUTF(dis);
+            String uriString = DataInputStream.readUTF(dis);
             int bookmark = dis.readInt();
             int duration = dis.readInt();
 
