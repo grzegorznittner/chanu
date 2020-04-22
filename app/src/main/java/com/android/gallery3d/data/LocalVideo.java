@@ -148,6 +148,8 @@ public class LocalVideo extends LocalMediaItem {
 
     @Override
     public Uri getPlayUri() {
+        //if there are problems consider adding
+        //  FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", new File(filePath));
         return Uri.fromFile(new File(filePath));
     }
 

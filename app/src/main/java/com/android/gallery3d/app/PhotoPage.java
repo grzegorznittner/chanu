@@ -839,45 +839,6 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
     }
 
     private void setImageShareIntent() {
-        //File localImage = new File(URI.create(filePath));
-        //if (localImage == null || !localImage.exists() || !localImage.canRead() || localImage.length() <= 0) {
-        //    Log.e(TAG, "updateSharedIntent no image file found for path=" + filePath);
-        //    return;
-        //}
-
-        // set share text
-        //if (DEBUG) Log.i(TAG, "updateSharedIntent() found postNo=" + firstPost + " for threadNo=" + threadNo);
-        //String linkUrl = (firstPost > 0 && firstPost != threadNo)
-        //        ? ChanPost.postUrl(boardCode, threadNo, firstPost)
-        //       : ChanThread.threadUrl(boardCode, threadNo);
-        //String text = selectText(postPos);
-        //String extraText = linkUrl + (text.isEmpty() ? "" : "\n\n" + text);
-
-        // create intent
-        //if (paths.size() == 0) {
-        //intent = new Intent(Intent.ACTION_SEND);
-        //    intent.putExtra(Intent.EXTRA_TEXT, extraText);
-        //    intent.setType("text/html");
-        //intent.putExtra(Intent.EXTRA_TEXT, linkUrl);
-        //intent.setType("text/plain");
-        //setShareIntent(mShareActionProvider, intent);
-        /*
-        } else {
-            ArrayList<Uri> uris = new ArrayList<Uri>();
-            ArrayList<String> missingPaths = new ArrayList<String>();
-            for (String path : paths) {
-                if (checkedImageUris.containsKey(path)) {
-                    Uri uri = checkedImageUris.get(path);
-                    uris.add(uri);
-                    if (DEBUG) Log.i(TAG, "Added uri=" + uri);
-                } else {
-                    uris.add(Uri.fromFile(new File(path)));
-                    missingPaths.add(path);
-                }
-            }
-            */
-        //intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        //Uri uri = Uri.fromFile(localImage);
         if (mCurrentPhoto == null) {
             if (DEBUG) Log.i(TAG, "updateSharedIntent no current photo, exiting");
             return;

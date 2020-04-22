@@ -24,6 +24,7 @@ import com.android.gallery3d.data.Path;
 
 import java.util.Comparator;
 
+//todo check if we really need this stuff too
 public class MediaSetUtils {
     public static final Comparator<MediaSet> NAME_COMPARATOR = new NameComparator();
 

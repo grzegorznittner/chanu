@@ -137,7 +137,7 @@ public class NotificationComponent {
         Intent intent = BoardActivity.createIntent(context, ChanBoard.defaultBoardCode(context), "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification notification = new NotificationCompat.Builder(context,"notif").setSmallIcon(R.drawable.app_icon_notification).setContentTitle(context.getString(R.string.pref_clear_cache_notification_title)).setContentText(contentText).setContentIntent(pendingIntent).build();
+        Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.app_icon_notification).setContentTitle(context.getString(R.string.pref_clear_cache_notification_title)).setContentText(contentText).setContentIntent(pendingIntent).build();
         return notification;
     }
 
@@ -150,7 +150,7 @@ public class NotificationComponent {
         String text = titleText + " " + threadText;
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context,"notif").setContentTitle(context.getString(R.string.app_name)).setContentText(text).setSmallIcon(R.drawable.app_icon_notification);
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context).setContentTitle(context.getString(R.string.app_name)).setContentText(text).setSmallIcon(R.drawable.app_icon_notification);
 
         notificationManager.notify(notificationId, notifBuilder.build());
     }
@@ -259,7 +259,7 @@ public class NotificationComponent {
         String downloadText = downloadedImages + "/" + totalNumImages;
         String text = titleText + " " + threadText + " " + downloadText;
 
-        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context,"notif").setContentTitle(context.getString(R.string.app_name)).setContentText(text).setProgress(totalNumImages, downloadedImages, false).setSmallIcon(R.drawable.app_icon_notification);
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context).setContentTitle(context.getString(R.string.app_name)).setContentText(text).setProgress(totalNumImages, downloadedImages, false).setSmallIcon(R.drawable.app_icon_notification);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, CancelDownloadActivity.createIntent(context, notificationId, board, threadNo), Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
         notifBuilder.setContentIntent(pendingIntent);

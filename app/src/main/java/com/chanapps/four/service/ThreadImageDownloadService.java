@@ -345,37 +345,6 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         }
     }
 
-    /*
-	private void downloadImagesFromCache(String board) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
-		File boardCacheFolder = ChanFileStorage.getBoardCacheDirectory(getBaseContext(), board);
-		if (fileNames == null || fileNames.length == 0) {
-			// store all images from cache into gallery
-			fileNames = boardCacheFolder.list();
-		}
-		lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getBaseContext(), notificationId, board, threadNo,
-                fileNames.length, 0, lastUpdateTime);
-		int index = 0;
-		for (String fileName : fileNames) {
-			if (fileName.endsWith(".gif") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")) {
-				File imageFile = new File(boardCacheFolder, fileName);
-				if (imageFile.exists() && downloadImageTargetType == DownloadImageTargetType.TO_GALLERY) {
-					storeImageInGallery(imageFile, fileName);
-					if (DEBUG) Log.w(TAG, "Image " + imageFile.getAbsolutePath() + " copied to gallery.");
-				} else {
-					if (DEBUG) Log.w(TAG, "Image " + imageFile.getAbsolutePath() + " will not be copied to gallery. It doesn't exist!");
-				}
-			} else {
-				if (DEBUG) Log.w(TAG, "Image " + board + "/" + fileName + " will not be copied to gallery. It doesn't have image extension!");
-			}
-			if (checkIfStopped(notificationId)) {
-				return;
-			}
-			lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo,
-                    fileNames.length, ++index, lastUpdateTime);
-		}
-	}
-    */
-
     private int downloadImage(ChanPost post) throws IOException, InterruptedException {
         long startTime = Calendar.getInstance().getTimeInMillis();
 
@@ -422,40 +391,6 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         targetFolder = galleryFolder.getAbsolutePath();
     }
 
-    /*
-	private void storeImageInGallery(File imageFile, String galleryImageName) throws IOException {
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-			File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
-					CHANU_FOLDER + targetFolder);
-			if (!galleryFolder.exists() || !galleryFolder.isDirectory()) {
-				galleryFolder.mkdirs();
-			}
-			File galleryFile = new File(galleryFolder, galleryImageName);
-			if (imageFile.length() == galleryFile.length() && imageFile.lastModified() < galleryFile.lastModified()) {
-				return;
-			}
-			in = new FileInputStream(imageFile);
-			out = new FileOutputStream(galleryFile);
-			IOUtils.copy(in, out);
-			IOUtils.closeQuietly(out);
-			
-			//addImageToGallery(galleryFile);
-		} finally {
-			IOUtils.closeQuietly(in);
-			IOUtils.closeQuietly(out);
-		}
-	}
-    */
-
-    private void addImageToGallery(File image) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri contentUri = Uri.fromFile(image);
-        if (DEBUG) Log.i(TAG, "Adding to gallery: " + contentUri);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
-    }
 
     @Override
     public ChanActivityId getChanActivityId() {

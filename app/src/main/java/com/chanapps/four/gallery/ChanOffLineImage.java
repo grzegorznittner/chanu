@@ -130,6 +130,8 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 
     @Override
     public Uri getPlayUri() {
+        //if there are problems consider adding
+        //  FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", imageFile);
         return Uri.fromFile(imageFile);
     }
 

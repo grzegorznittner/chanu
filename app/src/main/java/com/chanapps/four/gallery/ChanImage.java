@@ -16,6 +16,8 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import androidx.core.content.FileProvider;
+
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaDetails;
@@ -307,6 +309,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         if (isVideo()) {
             return Uri.parse(url);
         } else if (localFile.exists() && isAnimatedGif()) {
+            //if there are problems consider adding
+            //  FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", new File(localFile));
             return Uri.fromFile(localFile);
         } else {
             return null;
@@ -317,7 +321,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     public Uri getContentUri() {
         File localFile = new File(localImagePath);
         if (localFile.exists()) {
-            return Uri.fromFile(localFile);
+            return FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", localFile);
         } else {
             return null;
         }
