@@ -31,7 +31,7 @@ public abstract class IconDrawer extends SelectionDrawer {
     private final NinePatchTexture mFramePressed;
     private final NinePatchTexture mFrameSelected;
     private final NinePatchTexture mDarkStrip;
-    private final NinePatchTexture mPanoramaBorder;
+//    private final NinePatchTexture mPanoramaBorder;
     private final Texture mVideoOverlay;
     private final Texture mVideoPlayIcon;
     private final int mIconSize;
@@ -43,7 +43,7 @@ public abstract class IconDrawer extends SelectionDrawer {
         mMtpIcon = new ResourceTexture(context, R.drawable.frame_overlay_gallery_ptp);
         mVideoOverlay = new ResourceTexture(context, R.drawable.ic_video_thumb);
         mVideoPlayIcon = new ResourceTexture(context, R.drawable.ic_gallery_play);
-        mPanoramaBorder = new NinePatchTexture(context, R.drawable.ic_pan_thumb);
+//        mPanoramaBorder = new NinePatchTexture(context, R.drawable.ic_pan_thumb);
         mFramePressed = new NinePatchTexture(context, R.drawable.grid_pressed);
         mFrameSelected = new NinePatchTexture(context, R.drawable.grid_selected);
         mDarkStrip = new NinePatchTexture(context, R.drawable.dark_strip);
@@ -105,9 +105,11 @@ public abstract class IconDrawer extends SelectionDrawer {
         if (mediaType == MediaObject.MEDIA_TYPE_VIDEO) {
             drawVideoOverlay(canvas, x, y, width, height);
         }
-        if (isPanorama) {
-            drawPanoramaBorder(canvas, x, y, width, height);
-        }
+        //panorma border makes the app crash while opening gallery in some cases, is just a
+        // decoration, I don't know how to fix this so i'll just disable it
+//        if (isPanorama) {
+//            drawPanoramaBorder(canvas, x, y, width, height);
+//        }
     }
 
     protected void drawVideoOverlay(GLCanvas canvas, int x, int y,
@@ -123,16 +125,16 @@ public abstract class IconDrawer extends SelectionDrawer {
         mVideoPlayIcon.draw(canvas, -side / 2, -side / 2, side, side);
     }
 
-    protected void drawPanoramaBorder(GLCanvas canvas, int x, int y,
-                                      int width, int height) {
-        float scale = (float) width / mPanoramaBorder.getWidth();
-        int w = Math.round(scale * mPanoramaBorder.getWidth());
-        int h = Math.round(scale * mPanoramaBorder.getHeight());
-        // draw at the top
-        mPanoramaBorder.draw(canvas, x, y, w, h);
-        // draw at the bottom
-        mPanoramaBorder.draw(canvas, x, y + width - h, w, h);
-    }
+//    protected void drawPanoramaBorder(GLCanvas canvas, int x, int y,
+//                                      int width, int height) {
+//        float scale = (float) width / mPanoramaBorder.getWidth();
+//        int w = Math.round(scale * mPanoramaBorder.getWidth());
+//        int h = Math.round(scale * mPanoramaBorder.getHeight());
+//        // draw at the top
+//        mPanoramaBorder.draw(canvas, x, y, w, h);
+//        // draw at the bottom
+//        mPanoramaBorder.draw(canvas, x, y + width - h, w, h);
+//    }
 
     protected void drawLabelBackground(GLCanvas canvas, int width, int height,
                                        int drawLabelBackground) {

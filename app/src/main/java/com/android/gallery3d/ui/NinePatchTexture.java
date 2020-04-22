@@ -167,7 +167,7 @@ class NinePatchInstance {
     private static final String TAG = "NinePatchInstance";
 
     // We need 16 vertices for a normal nine-patch image (the 4x4 vertices)
-    private static final int VERTEX_BUFFER_SIZE = 16 * 2;
+    private static final int VERTEX_BUFFER_SIZE = 16 * 4;
 
     // We need 22 indices for a normal nine-patch image, plus 2 for each
     // transparent region. Current there are at most 1 transparent region.
@@ -292,8 +292,7 @@ class NinePatchInstance {
         return ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
     }
 
-    private void prepareVertexData(float[] x, float[] y, float[] u, float[] v,
-                                   int nx, int ny, int[] color) {
+    private void prepareVertexData(float[] x, float[] y, float[] u, float[] v, int nx, int ny, int[] color) {
         /*
          * Given a 3x3 nine-patch image, the vertex order is defined as the
          * following graph:
