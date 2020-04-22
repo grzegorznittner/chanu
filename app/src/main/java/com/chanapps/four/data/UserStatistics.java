@@ -47,34 +47,7 @@ public class UserStatistics {
      * board code -> number of visits (including threads and image view)
      */
     public Map<String, ChanBoardStat> boardStats = new HashMap<String, ChanBoardStat>();
-	/*
-	public static ChanFeature[] BOARDSELECTOR_FEATURES = new ChanFeature[]{
-		ChanFeature.BOARDSELECTOR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.ALL_CACHED_IMAGES };
-	public static ChanFeature[] POPULAR_FEATURES = new ChanFeature[]{
-            ChanFeature.POPULAR_DESC
-            ,ChanFeature.MANUAL_REFRESH
-    };
-	public static ChanFeature[] WATCHLIST_FEATURES = new ChanFeature[]{
-            ChanFeature.WATCHLIST_DESC
-            , ChanFeature.WATCHLIST_CLEAN, ChanFeature.WATCHLIST_DELETE
-    };
-	public static ChanFeature[] BOARD_FEATURES = new ChanFeature[]{
-            ChanFeature.BOARD_DESC
-            //, ChanFeature.BOARD_SELECT,
-            //ChanFeature.SEARCH_BOARD, ChanFeature.BOARD_LIST_VIEW, ChanFeature.ADD_THREAD, ChanFeature.BOARD_RULES,
-            //ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
-            //ChanFeature.SETTINGS_4CHAN_PASS
-    };
-    public static ChanFeature[] THREAD_FEATURES = new ChanFeature[]{
-            ChanFeature.THREAD_DESC
-            //ChanFeature.SEARCH_THREAD
-            //, ChanFeature.POST, ChanFeature.GALLERY_VIEW, ChanFeature.PLAY_THREAD,
-            //ChanFeature.WATCH_THREAD, ChanFeature.PRELOAD_ALL_IMAGES, ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY,
-            //ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
-            //ChanFeature.SETTINGS_4CHAN_PASS
-    };
-	public static ChanFeature[] GALLERY_FEATURES = new ChanFeature[]{};
-    */
+
     /**
      * thread num -> number of visits (including image view)
      * @deprecated boardThreadStats should be used now

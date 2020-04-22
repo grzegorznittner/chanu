@@ -15,6 +15,9 @@ android {
         versionName "2.0.28"
         multiDexEnabled true
         archivesBaseName = "$applicationId-$versionName"
+
+        //used to get build date info
+        buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
     }
 
     lintOptions {

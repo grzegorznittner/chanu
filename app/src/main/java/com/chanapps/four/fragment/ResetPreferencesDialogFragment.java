@@ -56,7 +56,7 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
                 // do this jazz to save widget conf even on clear because you can't programmatically remove widgets
                 Set<String> savedWidgetConf = WidgetProviderUtils.getActiveWidgetPref(context);
 
-                PreferenceManager.getDefaultSharedPreferences(context).edit().clear().putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf).commit();
+                PreferenceManager.getDefaultSharedPreferences(context).edit().clear().putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf).apply();
 
                 UserStatistics stats = NetworkProfileManager.instance().getUserStatistics();
                 if (stats != null) stats.reset();

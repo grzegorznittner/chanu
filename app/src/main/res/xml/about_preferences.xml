@@ -10,14 +10,6 @@
             android:title=""
             chanapps:icon="@drawable/app_icon_with_text" />
 
-    <!--
-    <Preference
-            android:key="pref_about_title"
-            android:title="@string/pref_about_title"
-            android:summary="@string/pref_about_title_sum"
-            />
-    -->
-
 
     <PreferenceCategory
             android:key="pref_about_application_category"
@@ -29,30 +21,8 @@
                 android:summary="@string/pref_about_application_version_sum"
                 android:title="@string/pref_about_application_version" />
 
-        <Preference
-                android:key="pref_about_application_rate"
-                android:summary="@string/pref_about_application_rate_sum"
-                android:title="@string/pref_about_application_rate" />
-
-        <Preference
-                android:key="pref_about_application_gplus"
-                android:summary="@string/pref_about_application_gplus_sum"
-                android:title="@string/pref_about_application_gplus" />
-
     </PreferenceCategory>
-
-    <PreferenceCategory
-            android:key="pref_about_developer_category"
-            android:persistent="true"
-            android:title="@string/pref_about_developer_category">
-
-        <Preference
-                android:key="pref_about_store_chanapps"
-                android:summary="@string/pref_about_store_chanapps_sum"
-                android:title="@string/pref_about_store_chanapps" />
-
-    </PreferenceCategory>
-
+    
     <PreferenceCategory
             android:key="pref_about_data_category"
             android:persistent="true"
@@ -77,18 +47,6 @@
                 android:key="pref_about_data_color"
                 android:summary="@string/pref_about_data_color_sum"
                 android:title="@string/pref_about_data_color" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-            android:key="pref_about_translations_category"
-            android:persistent="true"
-            android:title="@string/pref_about_translations_category">
-
-        <Preference
-                android:key="pref_about_translations_de"
-                android:summary="@string/pref_about_translations_de_sum"
-                android:title="@string/pref_about_translations_de" />
 
     </PreferenceCategory>
 
