@@ -70,7 +70,7 @@ public class ManageCacheDrawer extends IconDrawer {
 
         drawMediaTypeOverlay(canvas, mediaType, isPanorama, x, y, width, height);
         drawLabelBackground(canvas, width, height, labelBackgroundHeight);
-        drawIcon(canvas, width, height, dataSourceType);
+//        drawIcon(canvas, width, height, dataSourceType);
         drawCachingPin(canvas, path, dataSourceType, isCaching, wantCache, width, height);
 
         if (mSelectionManager.isPressedPath(path)) {

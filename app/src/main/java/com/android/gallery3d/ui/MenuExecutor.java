@@ -119,7 +119,7 @@ public class MenuExecutor {
         boolean supportCache = (supported & MediaObject.SUPPORT_CACHE) != 0;
         boolean supportEdit = (supported & MediaObject.SUPPORT_EDIT) != 0;
         boolean supportInfo = (supported & MediaObject.SUPPORT_INFO) != 0;
-        boolean supportImport = (supported & MediaObject.SUPPORT_IMPORT) != 0;
+//        boolean supportImport = (supported & MediaObject.SUPPORT_IMPORT) != 0;
 
         setMenuItemVisibility(menu, R.id.action_download, true);
         setMenuItemVisibility(menu, R.id.action_delete, supportDelete);
@@ -131,7 +131,7 @@ public class MenuExecutor {
         setMenuItemVisibility(menu, R.id.action_show_on_map, supportShowOnMap);
         setMenuItemVisibility(menu, R.id.action_edit, supportEdit);
         setMenuItemVisibility(menu, R.id.action_details, supportInfo);
-        setMenuItemVisibility(menu, R.id.action_import, supportImport);
+//        setMenuItemVisibility(menu, R.id.action_import, supportImport);
     }
 
     public static String getMimeType(int type) {
@@ -217,8 +217,8 @@ public class MenuExecutor {
             title = R.string.show_on_map;
         } else if (action == R.id.action_edit) {
             title = R.string.edit;
-        } else if (action == R.id.action_import) {
-            title = R.string.Import;
+//        } else if (action == R.id.action_import) {
+//            title = R.string.Import;
         } else {
             return false;
         }
@@ -263,9 +263,9 @@ public class MenuExecutor {
             if (GalleryUtils.isValidLocation(latlng[0], latlng[1])) {
                 GalleryUtils.showOnMap((Context) mActivity, latlng[0], latlng[1]);
             }
-        } else if (cmd == R.id.action_import) {
-            MediaObject obj = manager.getMediaObject(path);
-            result = obj.Import();
+//        } else if (cmd == R.id.action_import) {
+//            MediaObject obj = manager.getMediaObject(path);
+//            result = obj.Import();
         } else if (cmd == R.id.action_edit) {
             Activity activity = (Activity) mActivity;
             MediaItem item = (MediaItem) manager.getMediaObject(path);

@@ -37,6 +37,7 @@ public class StartupActivity extends Activity {
     }
 
     private boolean needStartApp() {
+        //todo getRunningTasks is deprecated, ew may need a fix here
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final List<RunningTaskInfo> tasksInfo = am.getRunningTasks(1024);
 

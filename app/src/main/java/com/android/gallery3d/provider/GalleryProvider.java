@@ -34,7 +34,7 @@ import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.DownloadCache;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaObject;
-import com.android.gallery3d.data.MtpImage;
+//import com.android.gallery3d.data.MtpImage;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.picasasource.PicasaSource;
 import com.android.gallery3d.util.GalleryUtils;
@@ -115,8 +115,8 @@ public class GalleryProvider extends ContentProvider {
             }
             if (PicasaSource.isPicasaImage(object)) {
                 return queryPicasaItem(object, projection, selection, selectionArgs, sortOrder);
-            } else if (object instanceof MtpImage) {
-                return queryMtpItem((MtpImage) object, projection, selection, selectionArgs, sortOrder);
+//            } else if (object instanceof MtpImage) {
+//                return queryMtpItem((MtpImage) object, projection, selection, selectionArgs, sortOrder);
             } else {
                 return null;
             }
@@ -125,26 +125,26 @@ public class GalleryProvider extends ContentProvider {
         }
     }
 
-    private Cursor queryMtpItem(MtpImage image, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Object[] columnValues = new Object[projection.length];
-        for (int i = 0, n = projection.length; i < n; ++i) {
-            String column = projection[i];
-            if (ImageColumns.DISPLAY_NAME.equals(column)) {
-                columnValues[i] = image.getName();
-            } else if (ImageColumns.SIZE.equals(column)) {
-                columnValues[i] = image.getSize();
-            } else if (ImageColumns.MIME_TYPE.equals(column)) {
-                columnValues[i] = image.getMimeType();
-            } else if (ImageColumns.DATE_TAKEN.equals(column)) {
-                columnValues[i] = image.getDateInMs();
-            } else {
-                Log.w(TAG, "unsupported column: " + column);
-            }
-        }
-        MatrixCursor cursor = new MatrixCursor(projection);
-        cursor.addRow(columnValues);
-        return cursor;
-    }
+//    private Cursor queryMtpItem(MtpImage image, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+//        Object[] columnValues = new Object[projection.length];
+//        for (int i = 0, n = projection.length; i < n; ++i) {
+//            String column = projection[i];
+//            if (ImageColumns.DISPLAY_NAME.equals(column)) {
+//                columnValues[i] = image.getName();
+//            } else if (ImageColumns.SIZE.equals(column)) {
+//                columnValues[i] = image.getSize();
+//            } else if (ImageColumns.MIME_TYPE.equals(column)) {
+//                columnValues[i] = image.getMimeType();
+//            } else if (ImageColumns.DATE_TAKEN.equals(column)) {
+//                columnValues[i] = image.getDateInMs();
+//            } else {
+//                Log.w(TAG, "unsupported column: " + column);
+//            }
+//        }
+//        MatrixCursor cursor = new MatrixCursor(projection);
+//        cursor.addRow(columnValues);
+//        return cursor;
+//    }
 
     private Cursor queryPicasaItem(MediaObject image, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         if (projection == null) projection = SUPPORTED_PICASA_COLUMNS;
@@ -192,8 +192,8 @@ public class GalleryProvider extends ContentProvider {
             }
             if (PicasaSource.isPicasaImage(object)) {
                 return PicasaSource.openFile(getContext(), object, mode);
-            } else if (object instanceof MtpImage) {
-                return openPipeHelper(uri, null, null, null, new MtpPipeDataWriter((MtpImage) object));
+//            } else if (object instanceof MtpImage) {
+//                return openPipeHelper(uri, null, null, null, new MtpPipeDataWriter((MtpImage) object));
             } else {
                 throw new FileNotFoundException("unspported type: " + object);
             }
@@ -207,24 +207,4 @@ public class GalleryProvider extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    private final class MtpPipeDataWriter implements PipeDataWriter<Object> {
-        private final MtpImage mImage;
-
-        private MtpPipeDataWriter(MtpImage image) {
-            mImage = image;
-        }
-
-        @Override
-        public void writeDataToPipe(ParcelFileDescriptor output, Uri uri, String mimeType, Bundle opts, Object args) {
-            OutputStream os = null;
-            try {
-                os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
-                os.write(mImage.getImageData());
-            } catch (IOException e) {
-                Log.w(TAG, "fail to download: " + uri, e);
-            } finally {
-                Utils.closeSilently(os);
-            }
-        }
-    }
 }

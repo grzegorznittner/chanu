@@ -36,7 +36,7 @@ import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
-import com.android.gallery3d.data.MtpDevice;
+//import com.android.gallery3d.data.MtpDevice;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.ActionModeHandler;
 import com.android.gallery3d.ui.ActionModeHandler.ActionModeListener;
@@ -435,11 +435,11 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             //if (actionBar != null && actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
             // 	actionBar.setTitle(mMediaSet.getName());
             //}
-            if (mMediaSet instanceof MtpDevice) {
-                menu.findItem(R.id.action_slideshow).setVisible(false);
-            } else {
+//            if (mMediaSet instanceof MtpDevice) {
+//                menu.findItem(R.id.action_slideshow).setVisible(false);
+//            } else {
                 menu.findItem(R.id.action_slideshow).setVisible(true);
-            }
+//            }
 
             //MenuItem groupBy = menu.findItem(R.id.action_group_by);
             //FilterUtils.setupMenuItems(actionBar, mMediaSetPath, true);

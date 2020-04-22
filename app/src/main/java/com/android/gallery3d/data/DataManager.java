@@ -85,7 +85,7 @@ public class DataManager {
         // the order matters, the UriSource must come last
         addSource(new LocalSource(mApplication));
         addSource(new PicasaSource(mApplication));
-        addSource(new MtpSource(mApplication));
+//        addSource(new MtpSource(mApplication));
         addSource(new ComboSource(mApplication));
         addSource(new ClusterSource(mApplication));
         addSource(new FilterSource(mApplication));

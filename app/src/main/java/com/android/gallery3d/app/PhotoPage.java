@@ -45,7 +45,7 @@ import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
-import com.android.gallery3d.data.MtpDevice;
+//import com.android.gallery3d.data.MtpDevice;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.picasasource.PicasaSource;
 import com.android.gallery3d.ui.DetailsHelper;
@@ -54,7 +54,7 @@ import com.android.gallery3d.ui.DetailsHelper.DetailsSource;
 import com.android.gallery3d.ui.FilmStripView;
 import com.android.gallery3d.ui.GLCanvas;
 import com.android.gallery3d.ui.GLView;
-import com.android.gallery3d.ui.ImportCompleteListener;
+//import com.android.gallery3d.ui.ImportCompleteListener;
 import com.android.gallery3d.ui.MenuExecutor;
 import com.android.gallery3d.ui.PhotoView;
 import com.android.gallery3d.ui.PositionRepository;
@@ -395,7 +395,7 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
     private void updateSlideshowMenu() {
         if (mMenu == null) return;
         MenuItem item = mMenu.findItem(R.id.action_slideshow);
-        if (item != null) item.setVisible(mMediaSet != null && !(mMediaSet instanceof MtpDevice));
+        if (item != null) item.setVisible(mMediaSet != null );
     }
 
     /*
@@ -573,11 +573,11 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
             mSelectionManager.toggle(path);
             mMenuExecutor.onMenuClicked(item, null);
             return true;
-        } else if (action == R.id.action_import) {
-            mSelectionManager.deSelectAll();
-            mSelectionManager.toggle(path);
-            mMenuExecutor.onMenuClicked(item, new ImportCompleteListener(mActivity));
-            return true;
+//        } else if (action == R.id.action_import) {
+//            mSelectionManager.deSelectAll();
+//            mSelectionManager.toggle(path);
+//            mMenuExecutor.onMenuClicked(item, new ImportCompleteListener(mActivity));
+//            return true;
         } else if (action == R.id.image_search_menu) {
             imageSearch(URLFormatComponent.getUrl(mActivity.getAndroidContext(), URLFormatComponent.TINEYE_IMAGE_SEARCH_URL_FORMAT));
             return true;

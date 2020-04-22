@@ -102,9 +102,9 @@ public class ActionModeHandler implements ActionMode.Callback {
             }
         }
         ProgressListener listener = null;
-        if (item.getItemId() == R.id.action_import) {
-            listener = new ImportCompleteListener(mActivity);
-        }
+//        if (item.getItemId() == R.id.action_import) {
+//            listener = new ImportCompleteListener(mActivity);
+//        }
         result = mMenuExecutor.onMenuClicked(item, listener);
         if (item.getItemId() == R.id.action_select_all) {
             updateSupportedOperation();
