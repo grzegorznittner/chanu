@@ -44,3 +44,5 @@ google-services.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+app/release/*

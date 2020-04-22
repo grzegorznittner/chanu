@@ -11,8 +11,8 @@ android {
         targetSdkVersion 25
         //before setting sdk 26+ we have to fix notification too
 
-        versionCode 98
-        versionName "2.0.28"
+        versionCode 99
+        versionName "2.0.29"
         multiDexEnabled true
         archivesBaseName = "$applicationId-$versionName"+"-"+getDate()
 
