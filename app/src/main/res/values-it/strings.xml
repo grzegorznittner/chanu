@@ -495,9 +495,9 @@ o è illegale visualizzare il contenuto limitato nella tua giurisdizione.
     <string name="pref_view_options_summ">Cambia aspetto</string>
     <string name="pref_advanced_category_summ">Modifica i settaggi</string>
     <string name="sort_order_menu">Tipo di ordine</string>
-    <string name="sort_order_bump_order">Salta ordine</string>
-    <string name="sort_order_reply_count">Conteggio risposte</string>
-    <string name="sort_order_image_count">Conto dell\'Immagine</string>
+    <string name="sort_order_bump_order">Risposta piu\' recente</string>
+    <string name="sort_order_reply_count">Con piu\' risposte</string>
+    <string name="sort_order_image_count">Con piu\' Immagini</string>
     <string name="sort_order_creation_date">Data di creazione</string>
     <string name="font_size_menu">Dimensione del Font</string>
     <string name="font_size_tiny">Minuscolo</string>

@@ -767,7 +767,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void initGridViewOptions() {
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) setSmallGridEnabled(false);
         else if (ChanBoard.isVirtualBoard(boardCode)) setSmallGridEnabled(true);
-        else setSmallGridEnabled(getBoolPref(SettingsActivity.PREF_USE_CATALOG));
+        else setSmallGridEnabled(getBoolPref(SettingsActivity.PREF_USE_CATALOG,true));
 
         if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode) || ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
             setAbbrevBoardsEnabled(getBoolPref(SettingsActivity.PREF_USE_ABBREV_BOARDS));
@@ -802,12 +802,16 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(preference, false);
     }
 
+    protected boolean getBoolPref(String preference, Boolean defaultValue) {
+        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(preference, defaultValue);
+    }
+
     protected void initBoardSortTypeOptions() {
         boardSortType = BoardSortType.loadFromPrefs(this);
     }
 
     protected void setUseCatalogPref(boolean useCatalog) {
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(SettingsActivity.PREF_USE_CATALOG, useCatalog).commit();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(SettingsActivity.PREF_USE_CATALOG, useCatalog).apply();
     }
 
     protected void setBoardCodeToDefault() {
