@@ -373,20 +373,6 @@
                 <category android:name="android.intent.category.SELECTED_ALTERNATIVE" />
             </intent-filter>
         </activity>
-        <activity
-                android:name="com.android.gallery3d.photoeditor.PhotoEditor"
-                android:configChanges="keyboardHidden|orientation|screenSize"
-                android:exported="false"
-                android:hardwareAccelerated="true"
-                android:label="@string/photoeditor_name"
-                android:launchMode="standard"
-                android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
-            <intent-filter>
-                <action android:name="android.intent.action.EDIT" />
-                <data android:mimeType="image/*" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 
         <uses-library
                 android:name="com.google.android.media.effects"
