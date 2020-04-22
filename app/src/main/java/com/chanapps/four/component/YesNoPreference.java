@@ -93,8 +93,7 @@ public class YesNoPreference extends DialogPreference {
 
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        setValue(restorePersistedValue ? getPersistedBoolean(mWasPositiveResult) :
-                (Boolean) defaultValue);
+        setValue(restorePersistedValue ? getPersistedBoolean(mWasPositiveResult) : (Boolean) defaultValue);
     }
 
     @Override
@@ -133,16 +132,15 @@ public class YesNoPreference extends DialogPreference {
     }
 
     private static class SavedState extends BaseSavedState {
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
-                    public SavedState createFromParcel(Parcel in) {
-                        return new SavedState(in);
-                    }
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
 
-                    public SavedState[] newArray(int size) {
-                        return new SavedState[size];
-                    }
-                };
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         boolean wasPositiveResult;
 
         public SavedState(Parcel source) {

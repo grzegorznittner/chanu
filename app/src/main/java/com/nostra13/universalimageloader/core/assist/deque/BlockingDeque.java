@@ -289,8 +289,7 @@ public interface BlockingDeque<E> extends BlockingQueue<E>, Deque<E> {
      * @throws IllegalArgumentException if some property of the specified
      *                                  element prevents it from being added to this deque
      */
-    boolean offerFirst(E e, long timeout, TimeUnit unit)
-            throws InterruptedException;
+    boolean offerFirst(E e, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Inserts the specified element at the end of this deque,
@@ -311,8 +310,7 @@ public interface BlockingDeque<E> extends BlockingQueue<E>, Deque<E> {
      * @throws IllegalArgumentException if some property of the specified
      *                                  element prevents it from being added to this deque
      */
-    boolean offerLast(E e, long timeout, TimeUnit unit)
-            throws InterruptedException;
+    boolean offerLast(E e, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Retrieves and removes the first element of this deque, waiting
@@ -345,8 +343,7 @@ public interface BlockingDeque<E> extends BlockingQueue<E>, Deque<E> {
      * waiting time elapses before an element is available
      * @throws InterruptedException if interrupted while waiting
      */
-    E pollFirst(long timeout, TimeUnit unit)
-            throws InterruptedException;
+    E pollFirst(long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Retrieves and removes the last element of this deque, waiting
@@ -361,8 +358,7 @@ public interface BlockingDeque<E> extends BlockingQueue<E>, Deque<E> {
      * waiting time elapses before an element is available
      * @throws InterruptedException if interrupted while waiting
      */
-    E pollLast(long timeout, TimeUnit unit)
-            throws InterruptedException;
+    E pollLast(long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Removes the first occurrence of the specified element from this deque.
@@ -474,8 +470,7 @@ public interface BlockingDeque<E> extends BlockingQueue<E>, Deque<E> {
      * @throws IllegalArgumentException if some property of the specified
      *                                  element prevents it from being added to this deque
      */
-    boolean offer(E e, long timeout, TimeUnit unit)
-            throws InterruptedException;
+    boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Retrieves and removes the head of the queue represented by this deque
@@ -525,8 +520,7 @@ public interface BlockingDeque<E> extends BlockingQueue<E>, Deque<E> {
      * specified waiting time elapses before an element is available
      * @throws InterruptedException if interrupted while waiting
      */
-    E poll(long timeout, TimeUnit unit)
-            throws InterruptedException;
+    E poll(long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Retrieves, but does not remove, the head of the queue represented by

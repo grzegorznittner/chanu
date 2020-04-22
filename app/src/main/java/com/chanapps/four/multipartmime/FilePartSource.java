@@ -85,8 +85,7 @@ public class FilePartSource implements PartSource {
      * @throws FileNotFoundException if the file does not exist or
      *                               cannot be read
      */
-    public FilePartSource(String fileName, File file)
-            throws FileNotFoundException {
+    public FilePartSource(String fileName, File file) throws FileNotFoundException {
         this(file);
         if (fileName != null) {
             this.fileName = fileName;

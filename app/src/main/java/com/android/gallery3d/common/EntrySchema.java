@@ -36,8 +36,7 @@ public final class EntrySchema {
     public static final int TYPE_BLOB = 7;
     @SuppressWarnings("unused")
     private static final String TAG = "EntrySchema";
-    private static final String[] SQLITE_TYPES = {
-            "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "REAL", "REAL", "NONE"};
+    private static final String[] SQLITE_TYPES = {"TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "REAL", "REAL", "NONE"};
 
     private static final String FULL_TEXT_INDEX_SUFFIX = "_fulltext";
 
@@ -106,9 +105,7 @@ public final class EntrySchema {
                 Field field = column.field;
                 switch (column.type) {
                     case TYPE_STRING:
-                        field.set(object, cursor.isNull(columnIndex)
-                                ? null
-                                : cursor.getString(columnIndex));
+                        field.set(object, cursor.isNull(columnIndex) ? null : cursor.getString(columnIndex));
                         break;
                     case TYPE_BOOLEAN:
                         field.setBoolean(object, cursor.getShort(columnIndex) == 1);
@@ -129,9 +126,7 @@ public final class EntrySchema {
                         field.setDouble(object, cursor.getDouble(columnIndex));
                         break;
                     case TYPE_BLOB:
-                        field.set(object, cursor.isNull(columnIndex)
-                                ? null
-                                : cursor.getBlob(columnIndex));
+                        field.set(object, cursor.isNull(columnIndex) ? null : cursor.getBlob(columnIndex));
                         break;
                 }
             }
@@ -141,8 +136,7 @@ public final class EntrySchema {
         }
     }
 
-    private void setIfNotNull(Field field, Object object, Object value)
-            throws IllegalAccessException {
+    private void setIfNotNull(Field field, Object object, Object value) throws IllegalAccessException {
         if (value != null) field.set(object, value);
     }
 
@@ -233,8 +227,7 @@ public final class EntrySchema {
                 String columnName = column.name;
                 Field field = column.field;
                 Object value = field.get(entry);
-                sb.append(" ").append(columnName).append("=")
-                        .append((value == null) ? "null" : value.toString());
+                sb.append(" ").append(columnName).append("=").append((value == null) ? "null" : value.toString());
             }
             return sb.toString();
         } catch (IllegalAccessException e) {
@@ -250,8 +243,7 @@ public final class EntrySchema {
                 ColumnInfo column = getColumn(columnName);
                 Field field = column.field;
                 Object value = field.get(entry);
-                sb.append(" ").append(columnName).append("=")
-                        .append((value == null) ? "null" : value.toString());
+                sb.append(" ").append(columnName).append("=").append((value == null) ? "null" : value.toString());
             }
             return sb.toString();
         } catch (IllegalAccessException e) {
@@ -264,8 +256,7 @@ public final class EntrySchema {
     }
 
     public boolean queryWithId(SQLiteDatabase db, long id, Entry entry) {
-        Cursor cursor = db.query(mTableName, mProjection, "_id=?",
-                new String[]{Long.toString(id)}, null, null, null);
+        Cursor cursor = db.query(mTableName, mProjection, "_id=?", new String[]{Long.toString(id)}, null, null, null);
         boolean success = false;
         if (cursor.moveToFirst()) {
             cursorToObject(cursor, entry);
@@ -486,14 +477,12 @@ public final class EntrySchema {
             } else if (fieldType == byte[].class) {
                 type = TYPE_BLOB;
             } else {
-                throw new IllegalArgumentException(
-                        "Unsupported field type for column: " + fieldType.getName());
+                throw new IllegalArgumentException("Unsupported field type for column: " + fieldType.getName());
             }
 
             // Add the column to the array.
             int index = columns.size();
-            columns.add(new ColumnInfo(info.value(), type, info.indexed(),
-                    info.fullText(), info.defaultValue(), field, index));
+            columns.add(new ColumnInfo(info.value(), type, info.indexed(), info.fullText(), info.defaultValue(), field, index));
         }
     }
 
@@ -508,8 +497,7 @@ public final class EntrySchema {
         public final Field field;
         public final int projectionIndex;
 
-        public ColumnInfo(String name, int type, boolean indexed,
-                          boolean fullText, String defaultValue, Field field, int projectionIndex) {
+        public ColumnInfo(String name, int type, boolean indexed, boolean fullText, String defaultValue, Field field, int projectionIndex) {
             this.name = name.toLowerCase();
             this.type = type;
             this.indexed = indexed;

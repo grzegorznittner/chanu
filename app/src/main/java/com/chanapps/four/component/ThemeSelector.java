@@ -39,21 +39,16 @@ public class ThemeSelector {
     //protected SensorManager sensorManager;
     //protected Sensor lightSensor;
     //protected float lux = 100; // default to room lighting
-    protected SharedPreferences.OnSharedPreferenceChangeListener themeChangeListener
-            = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    protected SharedPreferences.OnSharedPreferenceChangeListener themeChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (!SettingsActivity.PREF_THEME.equals(key))
-                return;
-            themeType = sharedPreferences.getString(SettingsActivity.PREF_THEME,
-                    context.getString(R.string.pref_theme_default_value));
+            if (!SettingsActivity.PREF_THEME.equals(key)) return;
+            themeType = sharedPreferences.getString(SettingsActivity.PREF_THEME, context.getString(R.string.pref_theme_default_value));
             int newThemeId = calcThemeId();
-            if (themeId == newThemeId)
-                return;
+            if (themeId == newThemeId) return;
             updateTheme(newThemeId);
-            if (DEBUG) Log.i(TAG, "themeChangeListener set to "
-                    + (themeId == DARK_THEME ? "dark" : "light")
-                    + " theme");
+            if (DEBUG)
+                Log.i(TAG, "themeChangeListener set to " + (themeId == DARK_THEME ? "dark" : "light") + " theme");
         }
     };
 
@@ -89,12 +84,10 @@ public class ThemeSelector {
         this.context = context;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        themeType = prefs.getString(SettingsActivity.PREF_THEME,
-                context.getString(R.string.pref_theme_default_value));
+        themeType = prefs.getString(SettingsActivity.PREF_THEME, context.getString(R.string.pref_theme_default_value));
         themeId = calcThemeId();
-        if (DEBUG) Log.i(TAG, "ThemeSelector() set to "
-                + (themeId == DARK_THEME ? "dark" : "light")
-                + " theme");
+        if (DEBUG)
+            Log.i(TAG, "ThemeSelector() set to " + (themeId == DARK_THEME ? "dark" : "light") + " theme");
         prefs.registerOnSharedPreferenceChangeListener(themeChangeListener);
 
         //sensorManager = (SensorManager)context.getSystemService(Service.SENSOR_SERVICE);
@@ -104,14 +97,12 @@ public class ThemeSelector {
     }
 
     public static ThemeSelector instance(Context context) {
-        if (themeSelector == null)
-            themeSelector = new ThemeSelector(context);
+        if (themeSelector == null) themeSelector = new ThemeSelector(context);
         return themeSelector;
     }
 
     protected void updateTheme(int newTheme) {
-        if (themeId == newTheme)
-            return;
+        if (themeId == newTheme) return;
         themeId = newTheme;
         Intent intent = new Intent(ACTION_THEME_CHANGED);
         intent.putExtra(EXTRA_THEME_ID, themeId);
@@ -120,14 +111,12 @@ public class ThemeSelector {
 
     protected int calcThemeId() {
         int id;
-        if (context.getString(R.string.pref_theme_light_value).equals(themeType))
-            id = LIGHT_THEME;
+        if (context.getString(R.string.pref_theme_light_value).equals(themeType)) id = LIGHT_THEME;
         else if (context.getString(R.string.pref_theme_dark_value).equals(themeType))
             id = DARK_THEME;
             //else if (context.getString(R.string.pref_theme_auto_value).equals(themeType))
             //    id = ambientLuxTheme(); // should be fixed to check sensor lux levels
-        else
-            id = DEFAULT_THEME;
+        else id = DEFAULT_THEME;
         if (DEBUG) Log.i(TAG, "calcThemeId('" + themeType + "') = " + id);
         return id;
     }
@@ -176,26 +165,19 @@ public class ThemeSelector {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (activity == null
-                    || intent == null
-                    || intent.getAction() == null
-                    || !intent.getAction().equals(ThemeSelector.ACTION_THEME_CHANGED)
-                    || !intent.hasExtra(ThemeSelector.EXTRA_THEME_ID))
+            if (activity == null || intent == null || intent.getAction() == null || !intent.getAction().equals(ThemeSelector.ACTION_THEME_CHANGED) || !intent.hasExtra(ThemeSelector.EXTRA_THEME_ID))
                 return;
             int newThemeId = intent.getIntExtra(ThemeSelector.EXTRA_THEME_ID, ThemeSelector.DEFAULT_THEME);
-            if (activity.getThemeId() != newThemeId)
-                activity.recreate();
+            if (activity.getThemeId() != newThemeId) activity.recreate();
         }
 
         public void register() {
             IntentFilter intentFilter = new IntentFilter(ThemeSelector.ACTION_THEME_CHANGED);
-            LocalBroadcastManager.getInstance(activity.getApplicationContext())
-                    .registerReceiver(this, intentFilter);
+            LocalBroadcastManager.getInstance(activity.getApplicationContext()).registerReceiver(this, intentFilter);
         }
 
         public void unregister() {
-            LocalBroadcastManager.getInstance(activity.getApplicationContext())
-                    .unregisterReceiver(this);
+            LocalBroadcastManager.getInstance(activity.getApplicationContext()).unregisterReceiver(this);
         }
     }
 

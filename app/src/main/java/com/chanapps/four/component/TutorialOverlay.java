@@ -29,14 +29,13 @@ public class TutorialOverlay {
     protected Page page;
     protected View layout;
     protected ViewGroup tutorialOverlay;
+
     public TutorialOverlay(View layout, Page page) {
         this.layout = layout;
         this.page = page;
-        if (layout == null)
-            return;
+        if (layout == null) return;
         tutorialOverlay = layout.findViewById(R.id.tutorial_overlay);
-        if (tutorialOverlay == null)
-            return;
+        if (tutorialOverlay == null) return;
         if (!TEST_MODE && !displayNextTipForPage(page)) {
             tutorialOverlay.setVisibility(View.GONE);
             return;
@@ -75,16 +74,13 @@ public class TutorialOverlay {
     protected void setSubjectTypeface() {
         subjectTypeface = Typeface.createFromAsset(layout.getResources().getAssets(), SUBJECT_FONT);
         TextView subject = tutorialOverlay.findViewById(R.id.tutorial_overlay_subject);
-        if (subject != null && subjectTypeface != null)
-            subject.setTypeface(subjectTypeface);
+        if (subject != null && subjectTypeface != null) subject.setTypeface(subjectTypeface);
     }
 
     protected void addButtonHandlers() {
-        if (tutorialOverlay == null)
-            return;
+        if (tutorialOverlay == null) return;
         View tutorialOverlayDismiss = tutorialOverlay.findViewById(R.id.tutorial_overlay_dismiss);
-        if (tutorialOverlayDismiss == null)
-            return;
+        if (tutorialOverlayDismiss == null) return;
         tutorialOverlayDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

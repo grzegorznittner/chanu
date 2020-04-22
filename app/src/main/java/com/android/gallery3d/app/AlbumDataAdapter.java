@@ -94,21 +94,18 @@ public class AlbumDataAdapter implements AlbumView.Model {
     public void resume() {
         mSource.addContentListener(mSourceListener);
         mReloadTask = new ReloadTask();
-        if (mReloadTask != null)
-            mReloadTask.start();
+        if (mReloadTask != null) mReloadTask.start();
     }
 
     public void pause() {
-        if (mReloadTask != null)
-            mReloadTask.terminate();
+        if (mReloadTask != null) mReloadTask.terminate();
         mReloadTask = null;
         mSource.removeContentListener(mSourceListener);
     }
 
     public MediaItem get(int index) {
         if (!isActive(index)) {
-            throw new IllegalArgumentException(String.format(
-                    "%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
+            throw new IllegalArgumentException(String.format("%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
         }
         return mData[index % mData.length];
     }
@@ -165,8 +162,7 @@ public class AlbumDataAdapter implements AlbumView.Model {
     public void setActiveWindow(int start, int end) {
         if (start == mActiveStart && end == mActiveEnd) return;
 
-        Utils.assertTrue(start <= end
-                && end - start <= mData.length && end <= mSize);
+        Utils.assertTrue(start <= end && end - start <= mData.length && end <= mSize);
 
         int length = mData.length;
         mActiveStart = start;
@@ -175,11 +171,9 @@ public class AlbumDataAdapter implements AlbumView.Model {
         // If no data is visible, keep the cache content
         if (start == end) return;
 
-        int contentStart = Utils.clamp((start + end) / 2 - length / 2,
-                0, Math.max(0, mSize - length));
+        int contentStart = Utils.clamp((start + end) / 2 - length / 2, 0, Math.max(0, mSize - length));
         int contentEnd = Math.min(contentStart + length, mSize);
-        if (mContentStart > start || mContentEnd < end
-                || Math.abs(contentStart - mContentStart) > MIN_LOAD_COUNT) {
+        if (mContentStart > start || mContentEnd < end || Math.abs(contentStart - mContentStart) > MIN_LOAD_COUNT) {
             setContentWindow(contentStart, contentEnd);
         }
     }
@@ -194,8 +188,7 @@ public class AlbumDataAdapter implements AlbumView.Model {
 
     private <T> T executeAndWait(Callable<T> callable) {
         FutureTask<T> task = new FutureTask<T>(callable);
-        mMainHandler.sendMessage(
-                mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
+        mMainHandler.sendMessage(mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
         try {
             return task.get();
         } catch (InterruptedException e) {

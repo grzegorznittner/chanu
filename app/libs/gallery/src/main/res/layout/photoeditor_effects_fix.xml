@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,84 +13,108 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/EffectsContainer">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/EffectsContainer">
 
-    <com.android.gallery3d.photoeditor.actions.CropAction style="@style/Effect"
-        android:tag="@string/crop_tooltip">
+    <com.android.gallery3d.photoeditor.actions.CropAction
+            style="@style/Effect"
+            android:tag="@string/crop_tooltip">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_crop"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_crop" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/crop"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/crop" />
     </com.android.gallery3d.photoeditor.actions.CropAction>
-    <com.android.gallery3d.photoeditor.actions.RedEyeAction style="@style/Effect"
-        android:tag="@string/redeye_tooltip">
+
+    <com.android.gallery3d.photoeditor.actions.RedEyeAction
+            style="@style/Effect"
+            android:tag="@string/redeye_tooltip">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_redeye"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_redeye" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/redeye"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/redeye" />
     </com.android.gallery3d.photoeditor.actions.RedEyeAction>
+
     <com.android.gallery3d.photoeditor.actions.FaceliftAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_facelift"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_facelift" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/facelift"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/facelift" />
     </com.android.gallery3d.photoeditor.actions.FaceliftAction>
-    <com.android.gallery3d.photoeditor.actions.StraightenAction style="@style/Effect"
-        android:tag="@string/straighten_tooltip">
+
+    <com.android.gallery3d.photoeditor.actions.StraightenAction
+            style="@style/Effect"
+            android:tag="@string/straighten_tooltip">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_straighten"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_straighten" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/straighten"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/straighten" />
     </com.android.gallery3d.photoeditor.actions.StraightenAction>
-    <com.android.gallery3d.photoeditor.actions.RotateAction style="@style/Effect"
-        android:tag="@string/rotate_tooltip">
+
+    <com.android.gallery3d.photoeditor.actions.RotateAction
+            style="@style/Effect"
+            android:tag="@string/rotate_tooltip">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_rotate"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_rotate" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/rotate"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/rotate" />
     </com.android.gallery3d.photoeditor.actions.RotateAction>
-    <com.android.gallery3d.photoeditor.actions.FlipAction style="@style/Effect"
-        android:tag="@string/flip_tooltip">
+
+    <com.android.gallery3d.photoeditor.actions.FlipAction
+            style="@style/Effect"
+            android:tag="@string/flip_tooltip">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_flip"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_flip" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/flip"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/flip" />
     </com.android.gallery3d.photoeditor.actions.FlipAction>
+
     <com.android.gallery3d.photoeditor.actions.SharpenAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_sharpen"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_sharpen" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/sharpen"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/sharpen" />
     </com.android.gallery3d.photoeditor.actions.SharpenAction>
 
 </LinearLayout>

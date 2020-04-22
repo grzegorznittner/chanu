@@ -58,8 +58,7 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
         } else {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 deprecatedSetBackgroundDrawable(null);
-            else
-                setBackground(null);
+            else setBackground(null);
         }
     }
 

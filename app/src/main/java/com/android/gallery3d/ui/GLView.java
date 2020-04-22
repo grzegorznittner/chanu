@@ -159,8 +159,7 @@ public class GLView {
     private void removeOneComponent(GLView component) {
         if (mMotionTarget == component) {
             long now = SystemClock.uptimeMillis();
-            MotionEvent cancelEvent = MotionEvent.obtain(
-                    now, now, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+            MotionEvent cancelEvent = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0, 0, 0);
             dispatchTouchEvent(cancelEvent);
             cancelEvent.recycle();
         }
@@ -216,8 +215,7 @@ public class GLView {
     }
 
     protected void renderChild(GLCanvas canvas, GLView component) {
-        if (component.getVisibility() != GLView.VISIBLE
-                && component.mAnimation == null) return;
+        if (component.getVisibility() != GLView.VISIBLE && component.mAnimation == null) return;
 
         int xoffset = component.mBounds.left - mScrollX;
         int yoffset = component.mBounds.top - mScrollY;
@@ -243,8 +241,7 @@ public class GLView {
         return false;
     }
 
-    protected boolean dispatchTouchEvent(MotionEvent event,
-                                         int x, int y, GLView component, boolean checkBounds) {
+    protected boolean dispatchTouchEvent(MotionEvent event, int x, int y, GLView component, boolean checkBounds) {
         Rect rect = component.mBounds;
         int left = rect.left;
         int top = rect.top;
@@ -271,8 +268,7 @@ public class GLView {
                 mMotionTarget = null;
             } else {
                 dispatchTouchEvent(event, x, y, mMotionTarget, false);
-                if (action == MotionEvent.ACTION_CANCEL
-                        || action == MotionEvent.ACTION_UP) {
+                if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
                     mMotionTarget = null;
                 }
                 return true;
@@ -316,15 +312,13 @@ public class GLView {
     }
 
     private boolean setBounds(int left, int top, int right, int bottom) {
-        boolean sizeChanged = (right - left) != (mBounds.right - mBounds.left)
-                || (bottom - top) != (mBounds.bottom - mBounds.top);
+        boolean sizeChanged = (right - left) != (mBounds.right - mBounds.left) || (bottom - top) != (mBounds.bottom - mBounds.top);
         mBounds.set(left, top, right, bottom);
         return sizeChanged;
     }
 
     public void measure(int widthSpec, int heightSpec) {
-        if (widthSpec == mLastWidthSpec && heightSpec == mLastHeightSpec
-                && (mViewFlags & FLAG_LAYOUT_REQUESTED) == 0) {
+        if (widthSpec == mLastWidthSpec && heightSpec == mLastHeightSpec && (mViewFlags & FLAG_LAYOUT_REQUESTED) == 0) {
             return;
         }
 
@@ -334,8 +328,7 @@ public class GLView {
         mViewFlags &= ~FLAG_SET_MEASURED_SIZE;
         onMeasure(widthSpec, heightSpec);
         if ((mViewFlags & FLAG_SET_MEASURED_SIZE) == 0) {
-            throw new IllegalStateException(getClass().getName()
-                    + " should call setMeasuredSize() in onMeasure()");
+            throw new IllegalStateException(getClass().getName() + " should call setMeasuredSize() in onMeasure()");
         }
     }
 
@@ -356,8 +349,7 @@ public class GLView {
         return mMeasuredHeight;
     }
 
-    protected void onLayout(
-            boolean changeSize, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changeSize, int left, int top, int right, int bottom) {
     }
 
     /**
@@ -374,8 +366,7 @@ public class GLView {
             yoffset += bounds.top;
             view = view.mParent;
         }
-        out.set(xoffset, yoffset, xoffset + descendant.getWidth(),
-                yoffset + descendant.getHeight());
+        out.set(xoffset, yoffset, xoffset + descendant.getWidth(), yoffset + descendant.getHeight());
         return true;
     }
 

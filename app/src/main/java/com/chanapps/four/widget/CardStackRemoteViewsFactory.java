@@ -35,9 +35,7 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
     private Runnable urlDownloadCallback = new Runnable() {
         @Override
         public void run() {
-            AppWidgetManager
-                    .getInstance(context)
-                    .notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.widget_board_coverflow_container);
+            AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.widget_board_coverflow_container);
         }
     };
 
@@ -80,13 +78,11 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
         ChanPost thread = i >= 0 && i < threads.size() ? threads.get(i) : null;
         if (thread != null) {
             if (DEBUG)
-                Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + i
-                        + " set thread no=" + thread.no);
+                Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + i + " set thread no=" + thread.no);
             setThreadView(views, thread, i);
         } else {
             if (DEBUG)
-                Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + i
-                        + " no thread found at position");
+                Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + i + " no thread found at position");
         }
         return views;
     }
@@ -146,8 +142,7 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
 
     private void setCountryFlag(RemoteViews views, ChanPost thread) {
         String url = thread.countryFlagUrl(context);
-        if (url == null)
-            return;
+        if (url == null) return;
         boolean isCached = WidgetProviderUtils.safeSetRemoteViewThumbnail(context, widgetConf, views, R.id.widget_coverflowcard_flag, url, -1);
         if (!isCached) {
             WidgetProviderUtils.asyncDownloadAndCacheUrl(context, url, urlDownloadCallback);

@@ -43,9 +43,8 @@ public class PopularCursorLoader extends BoardCursorLoader {
 
     protected void loadBoard(MatrixCursor matrixCursor, String boardCode) {
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardCode);
-        if (DEBUG) Log.i(TAG,
-                "board threadcount=" + (board.threads != null ? board.threads.length : 0)
-                        + "board loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0));
+        if (DEBUG)
+            Log.i(TAG, "board threadcount=" + (board.threads != null ? board.threads.length : 0) + "board loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0));
 
         if (board == null || board.threads == null || board.threads.length == 0 || board.defData)
             return;
@@ -54,10 +53,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
         int i = 0;
         for (ChanThread thread : board.threads) {
             if (DEBUG) Log.i(TAG, "Loading thread:" + thread.no);
-            if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, thread.trip)
-                    || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, thread.name)
-                    || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, thread.email)
-                    || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, thread.id)) {
+            if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, thread.trip) || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, thread.name) || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, thread.email) || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, thread.id)) {
                 if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                 continue;
             }
@@ -76,8 +72,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
             return ChanThread.THREAD_FLAG_LATEST_POST;
         else if (ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode))
             return ChanThread.THREAD_FLAG_RECENT_IMAGE;
-        else
-            return 0;
+        else return 0;
     }
 
     protected void addRecommendedBoardLink(MatrixCursor matrixCursor) {

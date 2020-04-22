@@ -34,8 +34,7 @@ public class DialogPicker extends PickerActivity {
         Bundle data = extras == null ? new Bundle() : new Bundle(extras);
 
         data.putBoolean(Gallery.KEY_GET_CONTENT, true);
-        data.putString(AlbumSetPage.KEY_MEDIA_PATH,
-                getDataManager().getTopSetPath(typeBits));
+        data.putString(AlbumSetPage.KEY_MEDIA_PATH, getDataManager().getTopSetPath(typeBits));
         getStateManager().startState(AlbumSetPage.class, data);
     }
 }

@@ -64,10 +64,8 @@ public class UriImage extends MediaItem {
 
     private String getMimeType(Uri uri) {
         if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
-            String extension =
-                    MimeTypeMap.getFileExtensionFromUrl(uri.toString());
-            String type = MimeTypeMap.getSingleton()
-                    .getMimeTypeFromExtension(extension);
+            String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+            String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
             if (type != null) return type;
         }
         return mApplication.getContentResolver().getType(uri);
@@ -99,12 +97,9 @@ public class UriImage extends MediaItem {
 
     private int openOrDownloadInner(JobContext jc) {
         String scheme = mUri.getScheme();
-        if (ContentResolver.SCHEME_CONTENT.equals(scheme)
-                || ContentResolver.SCHEME_ANDROID_RESOURCE.equals(scheme)
-                || ContentResolver.SCHEME_FILE.equals(scheme)) {
+        if (ContentResolver.SCHEME_CONTENT.equals(scheme) || ContentResolver.SCHEME_ANDROID_RESOURCE.equals(scheme) || ContentResolver.SCHEME_FILE.equals(scheme)) {
             try {
-                mFileDescriptor = mApplication.getContentResolver()
-                        .openFileDescriptor(mUri, "r");
+                mFileDescriptor = mApplication.getContentResolver().openFileDescriptor(mUri, "r");
                 if (jc.isCancelled()) return STATE_INIT;
                 return STATE_DOWNLOADED;
             } catch (FileNotFoundException e) {
@@ -120,8 +115,7 @@ public class UriImage extends MediaItem {
                     Log.w(TAG, "download failed " + url);
                     return STATE_ERROR;
                 }
-                mFileDescriptor = ParcelFileDescriptor.open(
-                        mCacheEntry.cacheFile, ParcelFileDescriptor.MODE_READ_ONLY);
+                mFileDescriptor = ParcelFileDescriptor.open(mCacheEntry.cacheFile, ParcelFileDescriptor.MODE_READ_ONLY);
                 return STATE_DOWNLOADED;
             } catch (Throwable t) {
                 Log.w(TAG, "download error", t);
@@ -236,8 +230,7 @@ public class UriImage extends MediaItem {
     private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
         public BitmapRegionDecoder run(JobContext jc) {
             if (!prepareInputFile(jc)) return null;
-            BitmapRegionDecoder decoder = DecodeUtils.requestCreateBitmapRegionDecoder(
-                    jc, mFileDescriptor.getFileDescriptor(), false);
+            BitmapRegionDecoder decoder = DecodeUtils.requestCreateBitmapRegionDecoder(jc, mFileDescriptor.getFileDescriptor(), false);
             mWidth = decoder.getWidth();
             mHeight = decoder.getHeight();
             return decoder;
@@ -256,18 +249,15 @@ public class UriImage extends MediaItem {
             int targetSize = LocalImage.getTargetSize(mType);
             Options options = new Options();
             options.inPreferredConfig = Config.ARGB_8888;
-            Bitmap bitmap = DecodeUtils.requestDecode(jc,
-                    mFileDescriptor.getFileDescriptor(), options, targetSize);
+            Bitmap bitmap = DecodeUtils.requestDecode(jc, mFileDescriptor.getFileDescriptor(), options, targetSize);
             if (jc.isCancelled() || bitmap == null) {
                 return null;
             }
 
             if (mType == MediaItem.TYPE_MICROTHUMBNAIL) {
-                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap,
-                        targetSize, true);
+                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap, targetSize, true);
             } else {
-                bitmap = BitmapUtils.resizeDownBySideLength(bitmap,
-                        targetSize, true);
+                bitmap = BitmapUtils.resizeDownBySideLength(bitmap, targetSize, true);
             }
 
             return bitmap;

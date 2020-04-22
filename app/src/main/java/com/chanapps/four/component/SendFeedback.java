@@ -20,8 +20,7 @@ public class SendFeedback {
         Uri uri = Uri.fromParts("mailto", email, null);
         Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
         intent.putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.app_name));
-        activity.startActivity(
-                Intent.createChooser(intent, activity.getString(R.string.pref_about_send_email)));
+        activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.pref_about_send_email)));
         return true;
     }
 }

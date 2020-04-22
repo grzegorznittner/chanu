@@ -83,8 +83,7 @@ public class ChanActivityId implements Serializable {
         this.postNo = postNo;
     }
 
-    public ChanActivityId(LastActivity activity, String boardCode, long threadNo, long postNo,
-                          GalleryViewActivity.ViewType viewType) {
+    public ChanActivityId(LastActivity activity, String boardCode, long threadNo, long postNo, GalleryViewActivity.ViewType viewType) {
         this.activity = activity;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
@@ -122,8 +121,7 @@ public class ChanActivityId implements Serializable {
             return null;
         } finally {
             try {
-                if (ois != null)
-                    ois.close();
+                if (ois != null) ois.close();
             } catch (IOException e) {
                 if (DEBUG) Log.e(TAG, "deserialize() close io exception " + s);
             }
@@ -160,20 +158,13 @@ public class ChanActivityId implements Serializable {
     @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-        if (activity != null)
-            buffer.append(activity);
-        else
-            buffer.append("Service for ");
-        if (boardCode != null)
-            buffer.append("/").append(boardCode);
-        if (threadNo != 0)
-            buffer.append("/").append(threadNo);
-        if (postNo != 0)
-            buffer.append("#").append(postNo);
-        if (viewType != null)
-            buffer.append(" viewType=" + viewType);
-        if (text != null && !text.isEmpty())
-            buffer.append(" text=" + text);
+        if (activity != null) buffer.append(activity);
+        else buffer.append("Service for ");
+        if (boardCode != null) buffer.append("/").append(boardCode);
+        if (threadNo != 0) buffer.append("/").append(threadNo);
+        if (postNo != 0) buffer.append("#").append(postNo);
+        if (viewType != null) buffer.append(" viewType=" + viewType);
+        if (text != null && !text.isEmpty()) buffer.append(" text=" + text);
         return buffer.toString();
     }
 
@@ -184,33 +175,14 @@ public class ChanActivityId implements Serializable {
             case SETTINGS_ACTIVITY:
                 return SettingsActivity.createIntent(context);
             case GALLERY_ACTIVITY:
-                return GalleryViewActivity.createIntent(
-                        context,
-                        boardCode,
-                        threadNo,
-                        postNo,
-                        viewType);
+                return GalleryViewActivity.createIntent(context, boardCode, threadNo, postNo, viewType);
             case POST_REPLY_ACTIVITY:
-                return PostReplyActivity.createIntent(
-                        context,
-                        boardCode,
-                        threadNo,
-                        postNo,
-                        text,
-                        text);
+                return PostReplyActivity.createIntent(context, boardCode, threadNo, postNo, text, text);
             case THREAD_ACTIVITY:
-                return ThreadActivity.createIntent(
-                        context,
-                        boardCode,
-                        threadNo,
-                        postNo,
-                        text);
+                return ThreadActivity.createIntent(context, boardCode, threadNo, postNo, text);
             case BOARD_ACTIVITY:
             default:
-                return BoardActivity.createIntent(
-                        context,
-                        boardCode,
-                        text);
+                return BoardActivity.createIntent(context, boardCode, text);
         }
     }
 
@@ -229,8 +201,7 @@ public class ChanActivityId implements Serializable {
             return null;
         } finally {
             try {
-                if (oos != null)
-                    oos.close();
+                if (oos != null) oos.close();
             } catch (IOException e) {
                 if (DEBUG) Log.e(TAG, "serialize() close io exception " + this);
             }

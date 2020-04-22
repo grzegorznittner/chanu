@@ -53,32 +53,25 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
         title.setText(R.string.board_watch);
         message.setText(R.string.dialog_delete_watchlist_thread);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setPositiveButton(R.string.dialog_remove,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                try {
-                                    Context context = getActivity().getApplicationContext();
-                                    ChanFileStorage.deleteWatchedThread(context, thread);
-                                    BoardActivity.refreshWatchlist(context);
-                                } catch (IOException e) {
-                                    Log.e(TAG, "Exception deleting watchlist thread=" + thread, e);
-                                    Toast.makeText(getActivity().getApplicationContext(),
-                                            R.string.thread_watchlist_not_deleted_thread, Toast.LENGTH_SHORT).show();
-                                }
-                                dismiss();
-                            }
-                        })
-                .setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dismiss();
-                            }
-                        })
-                .create();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setPositiveButton(R.string.dialog_remove, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    Context context = getActivity().getApplicationContext();
+                    ChanFileStorage.deleteWatchedThread(context, thread);
+                    BoardActivity.refreshWatchlist(context);
+                } catch (IOException e) {
+                    Log.e(TAG, "Exception deleting watchlist thread=" + thread, e);
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.thread_watchlist_not_deleted_thread, Toast.LENGTH_SHORT).show();
+                }
+                dismiss();
+            }
+        }).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dismiss();
+            }
+        }).create();
     }
 
 }

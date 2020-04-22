@@ -40,8 +40,7 @@ public class NinePatchTexture extends ResourceTexture {
     @SuppressWarnings("unused")
     private static final String TAG = "NinePatchTexture";
     private NinePatchChunk mChunk;
-    private MyCacheMap<Long, NinePatchInstance> mInstanceCache =
-            new MyCacheMap<Long, NinePatchInstance>();
+    private MyCacheMap<Long, NinePatchInstance> mInstanceCache = new MyCacheMap<Long, NinePatchInstance>();
 
     public NinePatchTexture(Context context, int resId) {
         super(context, resId);
@@ -53,14 +52,11 @@ public class NinePatchTexture extends ResourceTexture {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeResource(
-                mContext.getResources(), mResId, options);
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), mResId, options);
         mBitmap = bitmap;
         setSize(bitmap.getWidth(), bitmap.getHeight());
         byte[] chunkData = bitmap.getNinePatchChunk();
-        mChunk = chunkData == null
-                ? null
-                : NinePatchChunk.deserialize(bitmap.getNinePatchChunk());
+        mChunk = chunkData == null ? null : NinePatchChunk.deserialize(bitmap.getNinePatchChunk());
         if (mChunk == null) {
             Log.e(TAG, "Invalid nine-patch image: " + mResId);
             throw new RuntimeException("invalid nine-patch image: " + mResId);
@@ -77,8 +73,7 @@ public class NinePatchTexture extends ResourceTexture {
         } else {
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             options.inJustDecodeBounds = true;
-            BitmapFactory.decodeResource(
-                    mContext.getResources(), mResId, options);
+            BitmapFactory.decodeResource(mContext.getResources(), mResId, options);
             setSize(options.outWidth, options.outHeight);
         }
         return options;
@@ -239,8 +234,7 @@ class NinePatchInstance {
      *               drawing plan
      * @return the number of these dividers.
      */
-    private static int stretch(
-            float[] x, float[] u, int[] div, int source, int target) {
+    private static int stretch(float[] x, float[] u, int[] div, int source, int target) {
         int textureSize = Utils.nextPowerOf2(source);
         float textureBound = (float) source / textureSize;
 
@@ -379,19 +373,13 @@ class NinePatchInstance {
         gl.glGenBuffers(3, mBufferNames, 0);
 
         gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, mBufferNames[0]);
-        gl.glBufferData(GL11.GL_ARRAY_BUFFER,
-                mXyBuffer.capacity() * (Float.SIZE / Byte.SIZE),
-                mXyBuffer, GL11.GL_STATIC_DRAW);
+        gl.glBufferData(GL11.GL_ARRAY_BUFFER, mXyBuffer.capacity() * (Float.SIZE / Byte.SIZE), mXyBuffer, GL11.GL_STATIC_DRAW);
 
         gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, mBufferNames[1]);
-        gl.glBufferData(GL11.GL_ARRAY_BUFFER,
-                mUvBuffer.capacity() * (Float.SIZE / Byte.SIZE),
-                mUvBuffer, GL11.GL_STATIC_DRAW);
+        gl.glBufferData(GL11.GL_ARRAY_BUFFER, mUvBuffer.capacity() * (Float.SIZE / Byte.SIZE), mUvBuffer, GL11.GL_STATIC_DRAW);
 
         gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mBufferNames[2]);
-        gl.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER,
-                mIndexBuffer.capacity(),
-                mIndexBuffer, GL11.GL_STATIC_DRAW);
+        gl.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer.capacity(), mIndexBuffer, GL11.GL_STATIC_DRAW);
 
         // These buffers are never used again.
         mXyBuffer = null;
@@ -403,8 +391,7 @@ class NinePatchInstance {
         if (mBufferNames == null) {
             prepareBuffers(canvas);
         }
-        canvas.drawMesh(tex, x, y, mBufferNames[0], mBufferNames[1],
-                mBufferNames[2], mIdxCount);
+        canvas.drawMesh(tex, x, y, mBufferNames[0], mBufferNames[1], mBufferNames[2], mIdxCount);
     }
 
     public void recycle(GLCanvas canvas) {

@@ -253,15 +253,13 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
         switch (failure) {
             case DEAD_THREAD:
                 if (DEBUG) Log.i(TAG, "refreshig after dead thread");
-                if (activity instanceof ThreadActivity)
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                            ((ThreadActivity) activity)
-                                    .refreshFragment(data.boardCode, data.threadNo, null);
-                        }
-                    });
+                if (activity instanceof ThreadActivity) handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                        ((ThreadActivity) activity).refreshFragment(data.boardCode, data.threadNo, null);
+                    }
+                });
                 break;
             case THREAD_UNMODIFIED:
                 if (DEBUG) Log.i(TAG, "stopping after unmodified thread");
@@ -305,8 +303,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
     }
 
     protected void startProgress(Handler handler) {
-        if (handler == null)
-            return;
+        if (handler == null) return;
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -316,8 +313,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
     }
 
     protected void postStopMessage(Handler handler, final String string) {
-        if (handler == null)
-            return;
+        if (handler == null) return;
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -330,8 +326,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
     }
 
     protected void postStopMessage(Handler handler, final int stringId) {
-        if (handler == null)
-            return;
+        if (handler == null) return;
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -344,8 +339,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
     }
 
     protected void postStopMessageWithRefresh(Handler handler, final int stringId) {
-        if (handler == null)
-            return;
+        if (handler == null) return;
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -358,13 +352,9 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
     }
 
     protected void makeHealthStatusToast(Context context, Health health) {
-        Handler handler = NetworkProfileManager.instance().getActivity() != null
-                ? NetworkProfileManager.instance().getActivity().getChanHandler()
-                : null;
+        Handler handler = NetworkProfileManager.instance().getActivity() != null ? NetworkProfileManager.instance().getActivity().getChanHandler() : null;
         if (handler != null)
-            postStopMessage(handler,
-                    String.format(context.getString(R.string.mobile_profile_health_status),
-                            health.toString().toLowerCase().replaceAll("_", " ")));
+            postStopMessage(handler, String.format(context.getString(R.string.mobile_profile_health_status), health.toString().toLowerCase().replaceAll("_", " ")));
     }
 
 }

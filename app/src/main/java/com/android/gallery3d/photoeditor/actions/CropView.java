@@ -48,6 +48,7 @@ class CropView extends FullscreenToolView {
     private float lastY;
     private int movingEdges;
     private OnCropChangeListener listener;
+
     public CropView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -91,8 +92,7 @@ class CropView extends FullscreenToolView {
     private RectF getCropBoundsDisplayed() {
         float width = displayBounds.width();
         float height = displayBounds.height();
-        RectF cropped = new RectF(cropBounds.left * width, cropBounds.top * height,
-                cropBounds.right * width, cropBounds.bottom * height);
+        RectF cropped = new RectF(cropBounds.left * width, cropBounds.top * height, cropBounds.right * width, cropBounds.bottom * height);
         cropped.offset(displayBounds.left, displayBounds.top);
         return cropped;
     }
@@ -130,10 +130,8 @@ class CropView extends FullscreenToolView {
         RectF cropped = getCropBoundsDisplayed();
         if (movingEdges == MOVE_BLOCK) {
             // Move the whole cropped bounds within the photo display bounds.
-            deltaX = (deltaX > 0) ? Math.min(displayBounds.right - cropped.right, deltaX)
-                    : Math.max(displayBounds.left - cropped.left, deltaX);
-            deltaY = (deltaY > 0) ? Math.min(displayBounds.bottom - cropped.bottom, deltaY)
-                    : Math.max(displayBounds.top - cropped.top, deltaY);
+            deltaX = (deltaX > 0) ? Math.min(displayBounds.right - cropped.right, deltaX) : Math.max(displayBounds.left - cropped.left, deltaX);
+            deltaY = (deltaY > 0) ? Math.min(displayBounds.bottom - cropped.bottom, deltaY) : Math.max(displayBounds.top - cropped.top, deltaY);
             cropped.offset(deltaX, deltaY);
         } else {
             // Adjust cropped bound dimensions within the photo display bounds.

@@ -96,8 +96,7 @@ public class TimeBar extends View {
         playedBar.set(progressBar);
 
         if (totalTime > 0) {
-            playedBar.right =
-                    playedBar.left + (int) ((progressBar.width() * (long) currentTime) / totalTime);
+            playedBar.right = playedBar.left + (int) ((progressBar.width() * (long) currentTime) / totalTime);
         } else {
             playedBar.right = progressBar.left;
         }
@@ -152,8 +151,7 @@ public class TimeBar extends View {
     private boolean inScrubber(float x, float y) {
         int scrubberRight = scrubberLeft + scrubber.getWidth();
         int scrubberBottom = scrubberTop + scrubber.getHeight();
-        return scrubberLeft - scrubberPadding < x && x < scrubberRight + scrubberPadding
-                && scrubberTop - scrubberPadding < y && y < scrubberBottom + scrubberPadding;
+        return scrubberLeft - scrubberPadding < x && x < scrubberRight + scrubberPadding && scrubberTop - scrubberPadding < y && y < scrubberBottom + scrubberPadding;
     }
 
     private void clampScrubber() {
@@ -164,8 +162,7 @@ public class TimeBar extends View {
     }
 
     private int getScrubberTime() {
-        return (int) ((long) (scrubberLeft + scrubber.getWidth() / 2 - progressBar.left)
-                * totalTime / progressBar.width());
+        return (int) ((long) (scrubberLeft + scrubber.getWidth() / 2 - progressBar.left) * totalTime / progressBar.width());
     }
 
     @Override
@@ -181,9 +178,7 @@ public class TimeBar extends View {
             }
             int progressY = (h + scrubberPadding) / 2;
             scrubberTop = progressY - scrubber.getHeight() / 2 + 1;
-            progressBar.set(
-                    getPaddingLeft() + margin, progressY,
-                    w - getPaddingRight() - margin, progressY + 4);
+            progressBar.set(getPaddingLeft() + margin, progressY, w - getPaddingRight() - margin, progressY + 4);
         }
         update();
     }
@@ -201,16 +196,8 @@ public class TimeBar extends View {
             canvas.drawBitmap(scrubber, scrubberLeft, scrubberTop, null);
         }
         if (showTimes) {
-            canvas.drawText(
-                    stringForTime(currentTime),
-                    timeBounds.width() / 2 + getPaddingLeft(),
-                    timeBounds.height() + vPaddingInPx / 2 + scrubberPadding + 1,
-                    timeTextPaint);
-            canvas.drawText(
-                    stringForTime(totalTime),
-                    getWidth() - getPaddingRight() - timeBounds.width() / 2,
-                    timeBounds.height() + vPaddingInPx / 2 + scrubberPadding + 1,
-                    timeTextPaint);
+            canvas.drawText(stringForTime(currentTime), timeBounds.width() / 2 + getPaddingLeft(), timeBounds.height() + vPaddingInPx / 2 + scrubberPadding + 1, timeTextPaint);
+            canvas.drawText(stringForTime(totalTime), getWidth() - getPaddingRight() - timeBounds.width() / 2, timeBounds.height() + vPaddingInPx / 2 + scrubberPadding + 1, timeTextPaint);
         }
     }
 

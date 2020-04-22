@@ -21,11 +21,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-abstract public class
-AbstractBoardSpinnerActivity
-        extends FragmentActivity
-        implements ChanIdentifiedActivity,
-        ThemeSelector.ThemeActivity {
+abstract public class AbstractBoardSpinnerActivity extends FragmentActivity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
     protected static final boolean DEBUG = false;
     protected static final boolean DEVELOPER_MODE = false;
@@ -76,15 +72,13 @@ AbstractBoardSpinnerActivity
                     //.detectDiskReads()
                     //.detectDiskWrites()
                     //.detectNetwork()   // or .detectAll() for all detectable problems
-                    .detectAll()
-                    .penaltyLog()
+                    .detectAll().penaltyLog()
                     //.penaltyDeath()
                     .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     //.detectLeakedSqlLiteObjects()
                     //.detectLeakedClosableObjects()
-                    .detectAll()
-                    .penaltyLog()
+                    .detectAll().penaltyLog()
                     //.penaltyDeath()
                     .build());
             if (DEBUG) Log.i(TAG, "onCreate developer mode enabled");
@@ -134,8 +128,7 @@ AbstractBoardSpinnerActivity
     protected void setAdapters() {
         if (DEBUG) Log.i(TAG, "setSpinnerAdapter() begin this=" + this);
         initSpinnerArray();
-        mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
-                android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
+        mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //mIgnoreMode = true;
         //selectActionBarNavigationItem();
@@ -179,8 +172,7 @@ AbstractBoardSpinnerActivity
 
     protected void checkNSFW() {
         boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
-        if (newShowNSFW != mShowNSFW)
-            mShowNSFW = newShowNSFW;
+        if (newShowNSFW != mShowNSFW) mShowNSFW = newShowNSFW;
         setAdapters();
         /*
         if (newShowNSFW != mShowNSFW) {
@@ -237,20 +229,15 @@ AbstractBoardSpinnerActivity
     protected boolean handleSelectItem(String boardAsMenu) {
         boardAsMenu = boardAsMenu.trim();
         if (DEBUG) Log.i(TAG, "handleSelectItem boardAsMenu=" + boardAsMenu);
-        if (isSelfDrawerMenu(boardAsMenu))
-            return false;
-        if (matchForMenu(boardAsMenu))
-            return true;
-        if (matchForBoardType(boardAsMenu))
-            return true;
-        if (matchForThread(boardAsMenu))
-            return true;
+        if (isSelfDrawerMenu(boardAsMenu)) return false;
+        if (matchForMenu(boardAsMenu)) return true;
+        if (matchForBoardType(boardAsMenu)) return true;
+        if (matchForThread(boardAsMenu)) return true;
         return matchForBoard(boardAsMenu);
     }
 
     protected boolean matchForMenu(String boardAsMenu) {
-        if (getString(R.string.board_select).equals(boardAsMenu))
-            return false;
+        if (getString(R.string.board_select).equals(boardAsMenu)) return false;
         if (getString(R.string.send_feedback_menu).equals(boardAsMenu))
             return SendFeedback.email(this);
         if (getString(R.string.settings_menu).equals(boardAsMenu))
@@ -262,8 +249,7 @@ AbstractBoardSpinnerActivity
 
     protected boolean matchForBoardType(String boardAsMenu) {
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
-        if (boardType == null)
-            return false;
+        if (boardType == null) return false;
         String boardTypeCode = boardType.boardCode();
         if (boardTypeCode.equals(boardCode)) {
             if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
@@ -358,8 +344,7 @@ AbstractBoardSpinnerActivity
         if (!isTaskRoot()) {
             final Intent intent = getIntent();
             final String intentAction = intent.getAction();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) &&
-                    intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
                 finish();
             }
         }

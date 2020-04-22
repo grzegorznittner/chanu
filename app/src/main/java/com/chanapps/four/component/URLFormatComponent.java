@@ -55,25 +55,15 @@ public class URLFormatComponent {
     public static final String MARKET_APP_URL = "market://details?id=com.chanapps.four.activity";
     public static final String MARKET_CORP_URL = "market://search?q=pub:Chanapps Software";
 
-    private static final String[] FORCE_HTTPS_URLS = {
-            CHAN_AUTH_URL,
-            CHAN_POST_URL_FORMAT,
-            CHAN_POST_URL_DELETE_FORMAT,
-            GOOGLE_CHANU_RECAPTCHA_URL,
-            GOOGLE_RECAPTCHA_API_URL_FORMAT
-    };
+    private static final String[] FORCE_HTTPS_URLS = {CHAN_AUTH_URL, CHAN_POST_URL_FORMAT, CHAN_POST_URL_DELETE_FORMAT, GOOGLE_CHANU_RECAPTCHA_URL, GOOGLE_RECAPTCHA_API_URL_FORMAT};
     private static final Set<String> forceHttpsUrls = new HashSet<String>(FORCE_HTTPS_URLS.length);
 
     public static String getUrl(Context context, String url) {
-        if (url.startsWith("market://"))
-            return url;
-        boolean useHttps = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(SettingsActivity.PREF_USE_HTTPS, true);
+        if (url.startsWith("market://")) return url;
+        boolean useHttps = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_USE_HTTPS, true);
         if (forceHttpsUrls.isEmpty() && FORCE_HTTPS_URLS.length > 0)
             forceHttpsUrls.addAll(Arrays.asList(FORCE_HTTPS_URLS));
-        if (forceHttpsUrls.contains(url))
-            useHttps = true;
+        if (forceHttpsUrls.contains(url)) useHttps = true;
         String protocol = useHttps ? "https:" : "http:";
         return protocol + url;
     }

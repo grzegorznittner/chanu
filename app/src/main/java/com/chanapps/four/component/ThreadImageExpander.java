@@ -108,8 +108,7 @@ public class ThreadImageExpander {
         }
     };
 
-    public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor, boolean withProgress, int stub,
-                               View.OnClickListener expandedImageListener, boolean showContextMenu) {
+    public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor, boolean withProgress, int stub, View.OnClickListener expandedImageListener, boolean showContextMenu) {
         this.viewHolder = viewHolder;
         this.withProgress = withProgress;
         this.stub = stub;
@@ -254,8 +253,7 @@ public class ThreadImageExpander {
             viewHolder.list_item_image_header.setVisibility(View.GONE);
 
         WebView v = viewHolder.list_item_image_expanded_webview;
-        if (v == null)
-            return;
+        if (v == null) return;
         //v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
         v.setVisibility(View.INVISIBLE);
         //v.setWebViewClient(webViewClient);
@@ -264,9 +262,8 @@ public class ThreadImageExpander {
         int scale = calcScale(width, height);
         v.setInitialScale(scale);
         displayClickEffect();
-        if (DEBUG) Log.i(TAG, "displayWebView() imageSize=" + width + "x" + height
-                + " targetSize=" + targetSize.x + "x" + targetSize.y
-                + " scale=" + scale);
+        if (DEBUG)
+            Log.i(TAG, "displayWebView() imageSize=" + width + "x" + height + " targetSize=" + targetSize.x + "x" + targetSize.y + " scale=" + scale);
 
         if (isVideo) {
             v.loadUrl(thumbUrl);
@@ -322,9 +319,7 @@ public class ThreadImageExpander {
         }
         else
         */
-        if (viewHolder.list_item_image_expanded_webview != null
-                && viewHolder.list_item_image_expanded_webview.getVisibility() != View.GONE
-                && viewHolder.list_item_image_expanded_webview.getHeight() > 0) {
+        if (viewHolder.list_item_image_expanded_webview != null && viewHolder.list_item_image_expanded_webview.getVisibility() != View.GONE && viewHolder.list_item_image_expanded_webview.getHeight() > 0) {
             if (DEBUG) Log.i(TAG, "Image webview already expanded, skipping");
             return false;
         } else {

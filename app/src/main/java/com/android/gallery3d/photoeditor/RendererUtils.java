@@ -29,27 +29,10 @@ import java.nio.FloatBuffer;
  */
 public class RendererUtils {
 
-    private static final float[] TEX_VERTICES = {
-            0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f
-    };
-    private static final float[] POS_VERTICES = {
-            -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f
-    };
-    private static final String VERTEX_SHADER =
-            "attribute vec4 a_position;\n" +
-                    "attribute vec2 a_texcoord;\n" +
-                    "varying vec2 v_texcoord;\n" +
-                    "void main() {\n" +
-                    "  gl_Position = a_position;\n" +
-                    "  v_texcoord = a_texcoord;\n" +
-                    "}\n";
-    private static final String FRAGMENT_SHADER =
-            "precision mediump float;\n" +
-                    "uniform sampler2D tex_sampler;\n" +
-                    "varying vec2 v_texcoord;\n" +
-                    "void main() {\n" +
-                    "  gl_FragColor = texture2D(tex_sampler, v_texcoord);\n" +
-                    "}\n";
+    private static final float[] TEX_VERTICES = {0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+    private static final float[] POS_VERTICES = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+    private static final String VERTEX_SHADER = "attribute vec4 a_position;\n" + "attribute vec2 a_texcoord;\n" + "varying vec2 v_texcoord;\n" + "void main() {\n" + "  gl_Position = a_position;\n" + "  v_texcoord = a_texcoord;\n" + "}\n";
+    private static final String FRAGMENT_SHADER = "precision mediump float;\n" + "uniform sampler2D tex_sampler;\n" + "varying vec2 v_texcoord;\n" + "void main() {\n" + "  gl_FragColor = texture2D(tex_sampler, v_texcoord);\n" + "}\n";
     private static final int FLOAT_SIZE_BYTES = 4;
     private static final float DEGREE_TO_RADIAN = (float) Math.PI / 180.0f;
 
@@ -65,14 +48,10 @@ public class RendererUtils {
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-        GLES20.glTexParameteri(
-                GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(
-                GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(
-                GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(
-                GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
         checkGlError("texImage2D");
 
         return texture;
@@ -84,8 +63,7 @@ public class RendererUtils {
         checkGlError("glGenFramebuffers");
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frame[0]);
         checkGlError("glBindFramebuffer");
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
-                GLES20.GL_TEXTURE_2D, texture, 0);
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, texture, 0);
         checkGlError("glFramebufferTexture2D");
 
         ByteBuffer buffer = ByteBuffer.allocate(width * height * 4);
@@ -108,8 +86,7 @@ public class RendererUtils {
         checkGlError("glDeleteTextures");
     }
 
-    private static float[] getFitVertices(int srcWidth, int srcHeight, int dstWidth,
-                                          int dstHeight) {
+    private static float[] getFitVertices(int srcWidth, int srcHeight, int dstWidth, int dstHeight) {
         float srcAspectRatio = ((float) srcWidth) / srcHeight;
         float dstAspectRatio = ((float) dstWidth) / dstHeight;
         float relativeAspectRatio = dstAspectRatio / srcAspectRatio;
@@ -131,14 +108,11 @@ public class RendererUtils {
         return vertices;
     }
 
-    public static void setRenderToFit(RenderContext context, int srcWidth, int srcHeight,
-                                      int dstWidth, int dstHeight) {
-        context.posVertices = createVerticesBuffer(
-                getFitVertices(srcWidth, srcHeight, dstWidth, dstHeight));
+    public static void setRenderToFit(RenderContext context, int srcWidth, int srcHeight, int dstWidth, int dstHeight) {
+        context.posVertices = createVerticesBuffer(getFitVertices(srcWidth, srcHeight, dstWidth, dstHeight));
     }
 
-    public static void setRenderToRotate(RenderContext context, int srcWidth, int srcHeight,
-                                         int dstWidth, int dstHeight, float degrees) {
+    public static void setRenderToRotate(RenderContext context, int srcWidth, int srcHeight, int dstWidth, int dstHeight, float degrees) {
         float radian = -degrees * DEGREE_TO_RADIAN;
         float cosTheta = (float) Math.cos(radian);
         float sinTheta = (float) Math.sin(radian);
@@ -168,8 +142,7 @@ public class RendererUtils {
         context.posVertices = createVerticesBuffer(vertices);
     }
 
-    public static void setRenderToFlip(RenderContext context, int srcWidth, int srcHeight,
-                                       int dstWidth, int dstHeight, float horizontalDegrees, float verticalDegrees) {
+    public static void setRenderToFlip(RenderContext context, int srcWidth, int srcHeight, int dstWidth, int dstHeight, float horizontalDegrees, float verticalDegrees) {
         // Calculate the base flip coordinates.
         float[] base = getFitVertices(srcWidth, srcHeight, dstWidth, dstHeight);
         int horizontalRounds = (int) horizontalDegrees / 180;
@@ -233,8 +206,7 @@ public class RendererUtils {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
     }
 
-    public static void renderTexture(
-            RenderContext context, int texture, int viewWidth, int viewHeight) {
+    public static void renderTexture(RenderContext context, int texture, int viewWidth, int viewHeight) {
         // Use our shader program
         GLES20.glUseProgram(context.shaderProgram);
         checkGlError("glUseProgram");
@@ -247,11 +219,9 @@ public class RendererUtils {
         GLES20.glDisable(GLES20.GL_BLEND);
 
         // Set the vertex attributes
-        GLES20.glVertexAttribPointer(
-                context.texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, context.texVertices);
+        GLES20.glVertexAttribPointer(context.texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, context.texVertices);
         GLES20.glEnableVertexAttribArray(context.texCoordHandle);
-        GLES20.glVertexAttribPointer(
-                context.posCoordHandle, 2, GLES20.GL_FLOAT, false, 0, context.posVertices);
+        GLES20.glVertexAttribPointer(context.posCoordHandle, 2, GLES20.GL_FLOAT, false, 0, context.posVertices);
         GLES20.glEnableVertexAttribArray(context.posCoordHandle);
         checkGlError("vertex attribute setup");
 
@@ -327,8 +297,7 @@ public class RendererUtils {
             throw new RuntimeException("Number of vertices should be four.");
         }
 
-        FloatBuffer buffer = ByteBuffer.allocateDirect(
-                vertices.length * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        FloatBuffer buffer = ByteBuffer.allocateDirect(vertices.length * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
         buffer.put(vertices).position(0);
         return buffer;
     }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--  Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!--  Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,8 +13,7 @@
      limitations under the License.
  -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="photoeditor_name" msgid="4738587346771969697">"Photo Studio"</string>
     <string name="loading_failure" msgid="5990741970574295950">"फ़ोटो लोड नहीं हो सकता"</string>
     <string name="saving_failure" msgid="8596600582621364077">"फ़ोटो सहेजा नहीं जा सकता"</string>

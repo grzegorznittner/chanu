@@ -195,8 +195,7 @@ public class GifDecoder {
      * @return BufferedBitmap representation of frame, or null if n is invalid.
      */
     public Bitmap getFrame(int n) {
-        if (frameCount <= 0)
-            return null;
+        if (frameCount <= 0) return null;
         n = n % frameCount;
         return frames.elementAt(n).image;
     }
@@ -634,6 +633,7 @@ public class GifDecoder {
     private static class GifFrame {
         public Bitmap image;
         public int delay;
+
         public GifFrame(Bitmap im, int del) {
             image = im;
             delay = del;

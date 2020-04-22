@@ -46,8 +46,7 @@ public class StateManager {
         mContext = context;
     }
 
-    public void startState(Class<? extends ActivityState> klass,
-                           Bundle data) {
+    public void startState(Class<? extends ActivityState> klass, Bundle data) {
         Log.v(TAG, "startState " + klass);
         ActivityState state = null;
         try {
@@ -70,8 +69,7 @@ public class StateManager {
         mLaunchGalleryOnTop = enabled;
     }
 
-    public void startStateForResult(Class<? extends ActivityState> klass,
-                                    int requestCode, Bundle data) {
+    public void startStateForResult(Class<? extends ActivityState> klass, int requestCode, Bundle data) {
         Log.v(TAG, "startStateForResult " + klass + ", " + requestCode);
         ActivityState state = null;
         try {
@@ -138,8 +136,7 @@ public class StateManager {
                     getTopState().onBackPressed();
                 } else if (mLaunchGalleryOnTop) {
                     Activity activity = (Activity) mContext;
-                    Intent intent = new Intent(activity, Gallery.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Intent intent = new Intent(activity, Gallery.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     ((Activity) mContext).startActivity(intent);
                 }
                 return true;
@@ -185,9 +182,7 @@ public class StateManager {
                 Log.d(TAG, "The state is already destroyed");
                 return;
             } else {
-                throw new IllegalArgumentException("The stateview to be finished"
-                        + " is not at the top of the stack: " + state + ", "
-                        + mStack.peek().activityState);
+                throw new IllegalArgumentException("The stateview to be finished" + " is not at the top of the stack: " + state + ", " + mStack.peek().activityState);
             }
         }
 
@@ -218,13 +213,10 @@ public class StateManager {
         }
     }
 
-    void switchState(ActivityState oldState,
-                     Class<? extends ActivityState> klass, Bundle data) {
+    void switchState(ActivityState oldState, Class<? extends ActivityState> klass, Bundle data) {
         Log.v(TAG, "switchState " + oldState + ", " + klass);
         if (oldState != mStack.peek().activityState) {
-            throw new IllegalArgumentException("The stateview to be finished"
-                    + " is not at the top of the stack: " + oldState + ", "
-                    + mStack.peek().activityState);
+            throw new IllegalArgumentException("The stateview to be finished" + " is not at the top of the stack: " + oldState + ", " + mStack.peek().activityState);
         }
         // Remove the top state.
         mStack.pop();
@@ -259,8 +251,7 @@ public class StateManager {
         Parcelable[] list = inState.getParcelableArray(KEY_MAIN);
         for (Parcelable parcelable : list) {
             Bundle bundle = (Bundle) parcelable;
-            Class<? extends ActivityState> klass =
-                    (Class<? extends ActivityState>) bundle.getSerializable(KEY_CLASS);
+            Class<? extends ActivityState> klass = (Class<? extends ActivityState>) bundle.getSerializable(KEY_CLASS);
 
             Bundle data = bundle.getBundle(KEY_DATA);
             Bundle state = bundle.getBundle(KEY_STATE);

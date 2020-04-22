@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,9 +14,7 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true"
-          android:drawable="@drawable/icn_media_pause_pressed_holo_dark" />
-    <item android:state_focused="true"
-          android:drawable="@drawable/icn_media_pause_focused_holo_dark" />
+    <item android:drawable="@drawable/icn_media_pause_pressed_holo_dark" android:state_pressed="true" />
+    <item android:drawable="@drawable/icn_media_pause_focused_holo_dark" android:state_focused="true" />
     <item android:drawable="@drawable/icn_media_pause_normal_holo_dark" />
 </selector>

@@ -39,8 +39,7 @@ import java.util.List;
  * Time: 12:44 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BlocklistViewAllDialogFragment
-        extends DialogFragment {
+public class BlocklistViewAllDialogFragment extends DialogFragment {
 
     public static final String TAG = BlocklistViewAllDialogFragment.class.getSimpleName();
     protected static final int UNDO_HIDE_DELAY_MS = 2500;
@@ -52,8 +51,7 @@ public class BlocklistViewAllDialogFragment
     protected ListView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            if (adapter != null && position >= 0)
-                adapter.showEditTextDialog(position);
+            if (adapter != null && position >= 0) adapter.showEditTextDialog(position);
         }
     };
     protected DialogInterface.OnClickListener onAddListener = new DialogInterface.OnClickListener() {
@@ -72,8 +70,7 @@ public class BlocklistViewAllDialogFragment
     protected View.OnClickListener onCloseButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (onDismissListener != null)
-                onDismissListener.onDismiss(dialog);
+            if (onDismissListener != null) onDismissListener.onDismiss(dialog);
             dismiss();
         }
     };
@@ -109,8 +106,7 @@ public class BlocklistViewAllDialogFragment
     public BlocklistViewAllDialogFragment() {
     }
 
-    public BlocklistViewAllDialogFragment(List<Pair<String, ChanBlocklist.BlockType>> blocks,
-                                          Dialog.OnDismissListener onDismissListener) {
+    public BlocklistViewAllDialogFragment(List<Pair<String, ChanBlocklist.BlockType>> blocks, Dialog.OnDismissListener onDismissListener) {
         super();
         this.blocks = blocks;
         this.onDismissListener = onDismissListener;
@@ -119,8 +115,7 @@ public class BlocklistViewAllDialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
-        if (context == null)
-            return null;
+        if (context == null) return null;
         //boolean useFriendlyIds = PreferenceManager
         //        .getDefaultSharedPreferences(context)
         //        .getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
@@ -146,17 +141,13 @@ public class BlocklistViewAllDialogFragment
         adapter = new EnhancedListAdapter();
         adapter.setItems(blocks);
         listView.setAdapter(adapter);
-        dialog = (new AlertDialog.Builder(getActivity()).setView(layout))
-                .setNegativeButton(R.string.dismiss, onCloseListener)
-                .setPositiveButton(R.string.dialog_add, onAddListener)
-                .create();
+        dialog = (new AlertDialog.Builder(getActivity()).setView(layout)).setNegativeButton(R.string.dismiss, onCloseListener).setPositiveButton(R.string.dialog_add, onAddListener).create();
         dialog.setOnShowListener(onShowListener);
         return dialog;
     }
 
     protected void save() {
-        if (listView != null)
-            listView.discardUndo();
+        if (listView != null) listView.discardUndo();
         ChanBlocklist.save(getActivity(), blocks);
     }
 
@@ -192,11 +183,9 @@ public class BlocklistViewAllDialogFragment
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 ChanBlocklist.BlockType newType = ChanBlocklist.BlockType.values()[position];
                 int pos = listView.getPositionForView(view);
-                if (pos < 0)
-                    return;
+                if (pos < 0) return;
                 Pair<String, ChanBlocklist.BlockType> b = blocks.get(pos);
-                if (b == null)
-                    return;
+                if (b == null) return;
                 Pair<String, ChanBlocklist.BlockType> newBlock = new Pair<String, ChanBlocklist.BlockType>(b.first, newType);
                 blocks.set(pos, newBlock);
                 notifyDataSetChanged();
@@ -301,49 +290,35 @@ public class BlocklistViewAllDialogFragment
         }
 
         public void showEditTextDialog(final int pos) {
-            if (pos < 0)
-                return;
-            if (blocks == null)
-                return;
+            if (pos < 0) return;
+            if (blocks == null) return;
             Pair<String, ChanBlocklist.BlockType> b = blocks.get(pos);
-            if (b == null)
-                return;
+            if (b == null) return;
             View layout = getActivity().getLayoutInflater().inflate(R.layout.blocklist_items_single_dialog_item, null);
             final EditText input = layout.findViewById(R.id.text1);
             input.setText(b.first);
             final Spinner spinner = layout.findViewById(R.id.spinner);
-            ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(
-                    getActivity(),
-                    R.array.block_types,
-                    android.R.layout.simple_spinner_item);
+            ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.block_types, android.R.layout.simple_spinner_item);
             typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(typeAdapter);
             spinner.setSelection(b.second.ordinal());
 
-            Dialog dialog = (new AlertDialog.Builder(getActivity()))
-                    .setTitle(R.string.blocklist_title)
-                    .setView(layout)
-                    .setNeutralButton(R.string.done, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (listView == null)
-                                return;
-                            if (blocks == null)
-                                return;
-                            Pair<String, ChanBlocklist.BlockType> b = blocks.get(pos);
-                            if (b == null)
-                                return;
-                            int sel = spinner.getSelectedItemPosition();
-                            int spinnerPos = sel == AdapterView.INVALID_POSITION ? 0 : sel;
-                            ChanBlocklist.BlockType newType = ChanBlocklist.BlockType.values()[spinnerPos];
-                            Pair<String, ChanBlocklist.BlockType> newBlock =
-                                    new Pair<String, ChanBlocklist.BlockType>(input.getText().toString(), newType);
-                            blocks.set(pos, newBlock);
-                            notifyDataSetChanged();
-                            closeKeyboard();
-                        }
-                    })
-                    .create();
+            Dialog dialog = (new AlertDialog.Builder(getActivity())).setTitle(R.string.blocklist_title).setView(layout).setNeutralButton(R.string.done, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (listView == null) return;
+                    if (blocks == null) return;
+                    Pair<String, ChanBlocklist.BlockType> b = blocks.get(pos);
+                    if (b == null) return;
+                    int sel = spinner.getSelectedItemPosition();
+                    int spinnerPos = sel == AdapterView.INVALID_POSITION ? 0 : sel;
+                    ChanBlocklist.BlockType newType = ChanBlocklist.BlockType.values()[spinnerPos];
+                    Pair<String, ChanBlocklist.BlockType> newBlock = new Pair<String, ChanBlocklist.BlockType>(input.getText().toString(), newType);
+                    blocks.set(pos, newBlock);
+                    notifyDataSetChanged();
+                    closeKeyboard();
+                }
+            }).create();
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             dialog.setOnShowListener(new DialogInterface.OnShowListener() {
                 @Override

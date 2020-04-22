@@ -51,8 +51,7 @@ abstract class UploadedTexture extends BasicTexture {
     static float[] sCropRect = new float[4];
     // To prevent keeping allocation the borders, we store those used borders here.
     // Since the length will be power of two, it won't use too much memory.
-    private static HashMap<BorderKey, Bitmap> sBorderLines =
-            new HashMap<BorderKey, Bitmap>();
+    private static HashMap<BorderKey, Bitmap> sBorderLines = new HashMap<BorderKey, Bitmap>();
     private static BorderKey sBorderKey = new BorderKey();
     private static int sUploadedCount;
     protected Bitmap mBitmap;
@@ -74,17 +73,14 @@ abstract class UploadedTexture extends BasicTexture {
         }
     }
 
-    private static Bitmap getBorderLine(
-            boolean vertical, Config config, int length) {
+    private static Bitmap getBorderLine(boolean vertical, Config config, int length) {
         BorderKey key = sBorderKey;
         key.vertical = vertical;
         key.config = config;
         key.length = length;
         Bitmap bitmap = sBorderLines.get(key);
         if (bitmap == null) {
-            bitmap = vertical
-                    ? Bitmap.createBitmap(1, length, config)
-                    : Bitmap.createBitmap(length, 1, config);
+            bitmap = vertical ? Bitmap.createBitmap(1, length, config) : Bitmap.createBitmap(length, 1, config);
             sBorderLines.put(key.clone(), bitmap);
         }
         return bitmap;
@@ -113,9 +109,7 @@ abstract class UploadedTexture extends BasicTexture {
                 if (mWidth == UNSPECIFIED) {
                     setSize(w, h);
                 } else if (mWidth != w || mHeight != h) {
-                    throw new IllegalStateException(String.format(
-                            "cannot change size: this = %s, orig = %sx%s, new = %sx%s",
-                            toString(), mWidth, mHeight, w, h));
+                    throw new IllegalStateException(String.format("cannot change size: this = %s, orig = %sx%s, new = %sx%s", toString(), mWidth, mHeight, w, h));
                 }
             }
         }
@@ -195,14 +189,12 @@ abstract class UploadedTexture extends BasicTexture {
                 int format = GLUtils.getInternalFormat(bitmap);
                 int type = GLUtils.getType(bitmap);
                 canvas.getGLInstance().glBindTexture(GL11.GL_TEXTURE_2D, mId);
-                GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0, mBorder, mBorder,
-                        bitmap, format, type);
+                GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0, mBorder, mBorder, bitmap, format, type);
                 freeBitmap();
                 mContentValid = true;
             } catch (Error e) {
                 Log.e(TAG, "Error loading bitmap", e);
-                if (mBitmap != null)
-                    freeBitmap();
+                if (mBitmap != null) freeBitmap();
                 mContentValid = false;
             }
         }
@@ -232,16 +224,11 @@ abstract class UploadedTexture extends BasicTexture {
                 // Upload the bitmap to a new texture.
                 gl.glGenTextures(1, sTextureId, 0);
                 gl.glBindTexture(GL11.GL_TEXTURE_2D, sTextureId[0]);
-                gl.glTexParameterfv(GL11.GL_TEXTURE_2D,
-                        GL11Ext.GL_TEXTURE_CROP_RECT_OES, sCropRect, 0);
-                gl.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
-                gl.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
-                gl.glTexParameterf(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-                gl.glTexParameterf(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+                gl.glTexParameterfv(GL11.GL_TEXTURE_2D, GL11Ext.GL_TEXTURE_CROP_RECT_OES, sCropRect, 0);
+                gl.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
+                gl.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
+                gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+                gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 
                 if (bWidth == texWidth && bHeight == texHeight) {
                     GLUtils.texImage2D(GL11.GL_TEXTURE_2D, 0, bitmap, 0);
@@ -249,35 +236,29 @@ abstract class UploadedTexture extends BasicTexture {
                     int format = GLUtils.getInternalFormat(bitmap);
                     int type = GLUtils.getType(bitmap);
                     Config config = bitmap.getConfig();
-                    gl.glTexImage2D(GL11.GL_TEXTURE_2D, 0, format,
-                            texWidth, texHeight, 0, format, type, null);
-                    GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0,
-                            mBorder, mBorder, bitmap, format, type);
+                    gl.glTexImage2D(GL11.GL_TEXTURE_2D, 0, format, texWidth, texHeight, 0, format, type, null);
+                    GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0, mBorder, mBorder, bitmap, format, type);
 
                     if (mBorder > 0) {
                         // Left border
                         Bitmap line = getBorderLine(true, config, texHeight);
-                        GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0,
-                                0, 0, line, format, type);
+                        GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, line, format, type);
 
                         // Top border
                         line = getBorderLine(false, config, texWidth);
-                        GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0,
-                                0, 0, line, format, type);
+                        GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, line, format, type);
                     }
 
                     // Right border
                     if (mBorder + bWidth < texWidth) {
                         Bitmap line = getBorderLine(true, config, texHeight);
-                        GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0,
-                                mBorder + bWidth, 0, line, format, type);
+                        GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0, mBorder + bWidth, 0, line, format, type);
                     }
 
                     // Bottom border
                     if (mBorder + bHeight < texHeight) {
                         Bitmap line = getBorderLine(false, config, texWidth);
-                        GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0,
-                                0, mBorder + bHeight, line, format, type);
+                        GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, mBorder + bHeight, line, format, type);
                     }
                 }
             } catch (Exception e) {
@@ -331,8 +312,7 @@ abstract class UploadedTexture extends BasicTexture {
         public boolean equals(Object object) {
             if (!(object instanceof BorderKey)) return false;
             BorderKey o = (BorderKey) object;
-            return vertical == o.vertical
-                    && config == o.config && length == o.length;
+            return vertical == o.vertical && config == o.config && length == o.length;
         }
 
         @Override

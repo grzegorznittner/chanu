@@ -37,6 +37,7 @@ class ColorSeekBar extends AbstractSeekBar {
 
     private final int[] colors;
     private Bitmap background;
+
     public ColorSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -94,10 +95,8 @@ class ColorSeekBar extends AbstractSeekBar {
         canvas.drawRect(left, 0, right, h, paint);
 
         Drawable d = new BitmapDrawable(getResources(), background);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-            deprecatedSetBackground(d);
-        else
-            setBackground(d);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) deprecatedSetBackground(d);
+        else setBackground(d);
 
     }
 

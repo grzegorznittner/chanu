@@ -38,9 +38,7 @@ public class Icon extends GLView {
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
-        MeasureHelper.getInstance(this)
-                .setPreferredContentSize(mReqWidth, mReqHeight)
-                .measure(widthSpec, heightSpec);
+        MeasureHelper.getInstance(this).setPreferredContentSize(mReqWidth, mReqHeight).measure(widthSpec, heightSpec);
     }
 
     @Override

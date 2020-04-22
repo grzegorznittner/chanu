@@ -59,28 +59,26 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initBoards(getActivity());
-        return createListDialog(R.string.new_thread_menu, R.string.new_thread_menu,
-                R.string.post_reply_share_error,
-                boards, new ListView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String boardLine = boards[position];
-                        String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
-                        if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
-                        Bundle b = new Bundle();
-                        b.putString(ChanBoard.BOARD_CODE, boardCode);
-                        Message msg = Message.obtain(activityHandler, PostReplyShareActivity.PICK_BOARD);
-                        msg.setData(b);
-                        msg.sendToTarget();
-                        dismiss();
-                    }
-                }, new Dialog.OnCancelListener() {
-                    public void onCancel(DialogInterface dialog) {
-                        Message.obtain(activityHandler, PostReplyShareActivity.POST_CANCELLED).sendToTarget();
+        return createListDialog(R.string.new_thread_menu, R.string.new_thread_menu, R.string.post_reply_share_error, boards, new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String boardLine = boards[position];
+                String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
+                if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
+                Bundle b = new Bundle();
+                b.putString(ChanBoard.BOARD_CODE, boardCode);
+                Message msg = Message.obtain(activityHandler, PostReplyShareActivity.PICK_BOARD);
+                msg.setData(b);
+                msg.sendToTarget();
+                dismiss();
+            }
+        }, new Dialog.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                Message.obtain(activityHandler, PostReplyShareActivity.POST_CANCELLED).sendToTarget();
 
-                    }
+            }
 
-                });
+        });
     }
 
 }

@@ -77,8 +77,7 @@ public class GalleryAppImpl extends Application implements GalleryApp {
             if (!cacheDir.isDirectory()) cacheDir.mkdirs();
 
             if (!cacheDir.isDirectory()) {
-                throw new RuntimeException(
-                        "fail to create: " + cacheDir.getAbsolutePath());
+                throw new RuntimeException("fail to create: " + cacheDir.getAbsolutePath());
             }
             mDownloadCache = new DownloadCache(this, cacheDir, DOWNLOAD_CAPACITY);
         }

@@ -42,15 +42,7 @@ public class DownloadEntry extends Entry {
         // Note: THIS IS REQUIRED. We used all the fields here. Otherwise,
         //       ProGuard will remove these UNUSED fields. However, these
         //       fields are needed to generate database.
-        return new StringBuilder()
-                .append("hash_code: ").append(hashCode).append(", ")
-                .append("content_url").append(contentUrl).append(", ")
-                .append("_size").append(contentSize).append(", ")
-                .append("etag").append(eTag).append(", ")
-                .append("last_access").append(lastAccessTime).append(", ")
-                .append("last_updated").append(lastUpdatedTime).append(",")
-                .append("_data").append(path)
-                .toString();
+        return new StringBuilder().append("hash_code: ").append(hashCode).append(", ").append("content_url").append(contentUrl).append(", ").append("_size").append(contentSize).append(", ").append("etag").append(eTag).append(", ").append("last_access").append(lastAccessTime).append(", ").append("last_updated").append(lastUpdatedTime).append(",").append("_data").append(path).toString();
     }
 
     public interface Columns extends Entry.Columns {

@@ -44,24 +44,20 @@ public class SaveCopyTask extends AsyncTask<Bitmap, Void, Uri> {
     private static final int INDEX_DATE_TAKEN = 0;
     private static final int INDEX_LATITUDE = 1;
     private static final int INDEX_LONGITUDE = 2;
-    private static final String[] IMAGE_PROJECTION = new String[]{
-            ImageColumns.DATE_TAKEN,
-            ImageColumns.LATITUDE,
-            ImageColumns.LONGITUDE,
-    };
+    private static final String[] IMAGE_PROJECTION = new String[]{ImageColumns.DATE_TAKEN, ImageColumns.LATITUDE, ImageColumns.LONGITUDE,};
     private final Context context;
     private final Uri sourceUri;
     private final Callback callback;
     private final String albumName;
     private final String saveFileName;
+
     public SaveCopyTask(Context context, Uri sourceUri, Callback callback) {
         this.context = context;
         this.sourceUri = sourceUri;
         this.callback = callback;
 
         albumName = context.getString(R.string.edited_photo_bucket_name);
-        saveFileName = new SimpleDateFormat(TIME_STAMP_NAME).format(
-                new Date(System.currentTimeMillis()));
+        saveFileName = new SimpleDateFormat(TIME_STAMP_NAME).format(new Date(System.currentTimeMillis()));
     }
 
     /**
@@ -82,8 +78,7 @@ public class SaveCopyTask extends AsyncTask<Bitmap, Void, Uri> {
 
     @Override
     protected void onPostExecute(Uri result) {
-        String message = (result == null) ? context.getString(R.string.saving_failure)
-                : context.getString(R.string.photo_saved, albumName);
+        String message = (result == null) ? context.getString(R.string.saving_failure) : context.getString(R.string.photo_saved, albumName);
         Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
@@ -93,8 +88,7 @@ public class SaveCopyTask extends AsyncTask<Bitmap, Void, Uri> {
 
     private File save(Bitmap bitmap) {
         String directory = Environment.getExternalStorageDirectory().toString() + "/" + albumName;
-        return new BitmapUtils(context).saveBitmap(
-                bitmap, directory, saveFileName, Bitmap.CompressFormat.JPEG);
+        return new BitmapUtils(context).saveBitmap(bitmap, directory, saveFileName, Bitmap.CompressFormat.JPEG);
     }
 
     /**

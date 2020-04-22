@@ -38,8 +38,7 @@ public class TagClustering extends Clustering {
 
     @Override
     public void run(MediaSet baseSet) {
-        final TreeMap<String, ArrayList<Path>> map =
-                new TreeMap<String, ArrayList<Path>>();
+        final TreeMap<String, ArrayList<Path>> map = new TreeMap<String, ArrayList<Path>>();
         final ArrayList<Path> untagged = new ArrayList<Path>();
 
         baseSet.enumerateTotalMediaItems(new MediaSet.ItemConsumer() {

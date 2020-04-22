@@ -48,38 +48,27 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
         title.setText(R.string.dialog_reset_preferences);
         message.setText(R.string.dialog_reset_preferences_confirm);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setPositiveButton(R.string.pref_reset_to_defaults,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Context context = getActivity();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setPositiveButton(R.string.pref_reset_to_defaults, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Context context = getActivity();
 
-                                // do this jazz to save widget conf even on clear because you can't programmatically remove widgets
-                                Set<String> savedWidgetConf = WidgetProviderUtils.getActiveWidgetPref(context);
+                // do this jazz to save widget conf even on clear because you can't programmatically remove widgets
+                Set<String> savedWidgetConf = WidgetProviderUtils.getActiveWidgetPref(context);
 
-                                PreferenceManager.getDefaultSharedPreferences(context)
-                                        .edit()
-                                        .clear()
-                                        .putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf)
-                                        .commit();
+                PreferenceManager.getDefaultSharedPreferences(context).edit().clear().putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf).commit();
 
-                                UserStatistics stats = NetworkProfileManager.instance().getUserStatistics();
-                                if (stats != null)
-                                    stats.reset();
-                                fragment.setPreferenceScreen(null);
-                                fragment.initPreferenceScreen();
-                                Toast.makeText(getActivity(), R.string.dialog_reset_preferences, Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                .setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // ignore
-                            }
-                        })
-                .create();
+                UserStatistics stats = NetworkProfileManager.instance().getUserStatistics();
+                if (stats != null) stats.reset();
+                fragment.setPreferenceScreen(null);
+                fragment.initPreferenceScreen();
+                Toast.makeText(getActivity(), R.string.dialog_reset_preferences, Toast.LENGTH_SHORT).show();
+            }
+        }).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // ignore
+            }
+        }).create();
     }
 }

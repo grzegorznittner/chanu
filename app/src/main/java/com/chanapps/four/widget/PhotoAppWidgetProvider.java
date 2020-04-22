@@ -49,8 +49,7 @@ public class PhotoAppWidgetProvider extends AppWidgetProvider {
     }
 
     private static RemoteViews buildStackWidget(Context context, int widgetId, Entry entry) {
-        RemoteViews views = new RemoteViews(
-                context.getPackageName(), R.layout.appwidget_main);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.appwidget_main);
 
         Intent intent = new Intent(context, WidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
@@ -62,16 +61,14 @@ public class PhotoAppWidgetProvider extends AppWidgetProvider {
         views.setEmptyView(R.id.appwidget_stack_view, R.id.appwidget_empty_view);
 
         Intent clickIntent = new Intent(context, WidgetClickHandler.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setPendingIntentTemplate(R.id.appwidget_stack_view, pendingIntent);
 
         return views;
     }
 
     static RemoteViews buildFrameWidget(Context context, int appWidgetId, Entry entry) {
-        RemoteViews views = new RemoteViews(
-                context.getPackageName(), R.layout.photo_frame);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.photo_frame);
         try {
             byte[] data = entry.imageData;
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
@@ -83,10 +80,8 @@ public class PhotoAppWidgetProvider extends AppWidgetProvider {
         if (entry.imageUri != null) {
             try {
                 Uri uri = Uri.parse(entry.imageUri);
-                Intent clickIntent = new Intent(context, WidgetClickHandler.class)
-                        .setData(uri);
-                PendingIntent pendingClickIntent = PendingIntent.getActivity(context, 0,
-                        clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                Intent clickIntent = new Intent(context, WidgetClickHandler.class).setData(uri);
+                PendingIntent pendingClickIntent = PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                 views.setOnClickPendingIntent(R.id.photo, pendingClickIntent);
             } catch (Throwable t) {
                 Log.w(TAG, "cannot load widget uri: " + appWidgetId, t);
@@ -96,8 +91,7 @@ public class PhotoAppWidgetProvider extends AppWidgetProvider {
     }
 
     @Override
-    public void onUpdate(Context context,
-                         AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         WidgetDatabaseHelper helper = new WidgetDatabaseHelper(context);
         try {
             for (int id : appWidgetIds) {

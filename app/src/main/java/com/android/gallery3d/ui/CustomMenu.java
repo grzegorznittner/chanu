@@ -37,6 +37,7 @@ public class CustomMenu implements OnMenuItemClickListener {
     private Context mContext;
     private ArrayList<DropDownMenu> mMenus;
     private OnMenuItemClickListener mListener;
+
     public CustomMenu(Context context) {
         mContext = context;
         mMenus = new ArrayList<DropDownMenu>();
@@ -61,8 +62,7 @@ public class CustomMenu implements OnMenuItemClickListener {
         return item;
     }
 
-    public void setMenuItemAppliedEnabled(int id, boolean applied, boolean enabled,
-                                          boolean updateTitle) {
+    public void setMenuItemAppliedEnabled(int id, boolean applied, boolean enabled, boolean updateTitle) {
         MenuItem item = null;
         for (DropDownMenu menu : mMenus) {
             item = menu.findItem(id);
@@ -96,14 +96,12 @@ public class CustomMenu implements OnMenuItemClickListener {
         private PopupMenu mPopupMenu;
         private Menu mMenu;
 
-        public DropDownMenu(Context context, Button button, int menuId,
-                            OnMenuItemClickListener listener) {
+        public DropDownMenu(Context context, Button button, int menuId, OnMenuItemClickListener listener) {
             mButton = button;
             Drawable d = context.getResources().getDrawable(R.drawable.dropdown_normal_holo_dark);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 deprecatedSetBackground(mButton, d);
-            else
-                mButton.setBackground(d);
+            else mButton.setBackground(d);
             mPopupMenu = new PopupMenu(context, mButton);
             mMenu = mPopupMenu.getMenu();
             mPopupMenu.getMenuInflater().inflate(menuId, mMenu);

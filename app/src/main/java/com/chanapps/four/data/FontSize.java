@@ -10,11 +10,7 @@ import com.chanapps.four.activity.SettingsActivity;
 
 public enum FontSize {
 
-    TINY(R.string.font_size_tiny, R.dimen.FontSizeTiny),
-    SMALL(R.string.font_size_small, R.dimen.FontSizeSmall),
-    MEDIUM(R.string.font_size_medium, R.dimen.FontSizeMedium),
-    LARGE(R.string.font_size_large, R.dimen.FontSizeLarge),
-    HUGE(R.string.font_size_huge, R.dimen.FontSizeHuge);
+    TINY(R.string.font_size_tiny, R.dimen.FontSizeTiny), SMALL(R.string.font_size_small, R.dimen.FontSizeSmall), MEDIUM(R.string.font_size_medium, R.dimen.FontSizeMedium), LARGE(R.string.font_size_large, R.dimen.FontSizeLarge), HUGE(R.string.font_size_huge, R.dimen.FontSizeHuge);
 
     private final int displayStringId;
     private final int dimensionId;
@@ -26,8 +22,7 @@ public enum FontSize {
 
     public static final FontSize valueOfDisplayString(Context context, String displayString) {
         for (FontSize fontSize : FontSize.values())
-            if (context.getString(fontSize.displayStringId).equals(displayString))
-                return fontSize;
+            if (context.getString(fontSize.displayStringId).equals(displayString)) return fontSize;
         return MEDIUM;
     }
 
@@ -42,19 +37,11 @@ public enum FontSize {
     }
 
     public static FontSize loadFromPrefs(Context context) {
-        return FontSize.valueOfDisplayString(context, PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getString(SettingsActivity.PREF_FONT_SIZE,
-                        context.getString(R.string.font_size_medium)));
+        return FontSize.valueOfDisplayString(context, PreferenceManager.getDefaultSharedPreferences(context).getString(SettingsActivity.PREF_FONT_SIZE, context.getString(R.string.font_size_medium)));
     }
 
     public static void saveToPrefs(Context context, FontSize boardSortType) {
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .putString(SettingsActivity.PREF_FONT_SIZE,
-                        context.getString(boardSortType.displayStringId()))
-                .commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(SettingsActivity.PREF_FONT_SIZE, context.getString(boardSortType.displayStringId())).commit();
     }
 
     public int displayStringId() {

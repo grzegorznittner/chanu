@@ -34,8 +34,7 @@ public class ComboAlbumSet extends MediaSet implements ContentListener {
         for (MediaSet set : mSets) {
             set.addContentListener(this);
         }
-        mName = application.getResources().getString(
-                R.string.set_label_all_albums);
+        mName = application.getResources().getString(R.string.set_label_all_albums);
     }
 
     @Override

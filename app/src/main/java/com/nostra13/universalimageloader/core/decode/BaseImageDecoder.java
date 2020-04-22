@@ -167,8 +167,7 @@ public class BaseImageDecoder implements ImageDecoder {
         ImageScaleType scaleType = decodingInfo.getImageScaleType();
         if (scaleType == ImageScaleType.EXACTLY || scaleType == ImageScaleType.EXACTLY_STRETCHED) {
             ImageSize srcSize = new ImageSize(subsampledBitmap.getWidth(), subsampledBitmap.getHeight(), rotation);
-            float scale = ImageSizeUtils.computeImageScale(srcSize, decodingInfo.getTargetSize(), decodingInfo.getViewScaleType(),
-                    scaleType == ImageScaleType.EXACTLY_STRETCHED);
+            float scale = ImageSizeUtils.computeImageScale(srcSize, decodingInfo.getTargetSize(), decodingInfo.getViewScaleType(), scaleType == ImageScaleType.EXACTLY_STRETCHED);
             if (Float.compare(scale, 1f) != 0) {
                 m.setScale(scale, scale);
 

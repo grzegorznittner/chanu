@@ -47,8 +47,7 @@ class NinePatchChunk {
     }
 
     public static NinePatchChunk deserialize(byte[] data) {
-        ByteBuffer byteBuffer =
-                ByteBuffer.wrap(data).order(ByteOrder.nativeOrder());
+        ByteBuffer byteBuffer = ByteBuffer.wrap(data).order(ByteOrder.nativeOrder());
 
         byte wasSerialized = byteBuffer.get();
         if (wasSerialized == 0) return null;

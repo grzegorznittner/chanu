@@ -80,12 +80,10 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         }
         if (isBlocked(cursor)) {
             ViewGroup.LayoutParams params = view.getLayoutParams();
-            if (params != null)
-                params.height = 0;
+            if (params != null) params.height = 0;
             view.setVisibility(View.GONE);
         }
-        if (binder != null)
-            binder.setViewValue(view, cursor, 0);
+        if (binder != null) binder.setViewValue(view, cursor, 0);
     }
 
     protected boolean isHeader(Cursor c) {
@@ -100,8 +98,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
     }
 
     protected boolean isOffWatchlist(Cursor c) {
-        if (!ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
-            return false;
+        if (!ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode)) return false;
         String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));
         final ChanThread thread = ChanFileStorage.loadThreadData(context, board, no);

@@ -88,6 +88,7 @@ public class EnhancedListView extends ListView {
     private int mValidDelayedMsgId;
     private Handler mHideUndoHandler = new HideUndoPopupHandler();
     private Button mUndoButton;
+
     /**
      * {@inheritDoc}
      */
@@ -95,6 +96,7 @@ public class EnhancedListView extends ListView {
         super(context);
         init(context);
     }
+
     /**
      * {@inheritDoc}
      */
@@ -102,6 +104,7 @@ public class EnhancedListView extends ListView {
         super(context, attrs);
         init(context);
     }
+
     /**
      * {@inheritDoc}
      */
@@ -120,8 +123,7 @@ public class EnhancedListView extends ListView {
         mSlop = vc.getScaledTouchSlop();
         mMinFlingVelocity = vc.getScaledMinimumFlingVelocity();
         mMaxFlingVelocity = vc.getScaledMaximumFlingVelocity();
-        mAnimationTime = ctx.getResources().getInteger(
-                android.R.integer.config_shortAnimTime);
+        mAnimationTime = ctx.getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         // Initialize undo popup
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -343,16 +345,12 @@ public class EnhancedListView extends ListView {
             mAnimatedViews.add(view);
         }
 
-        ViewPropertyAnimator.animate(view)
-                .translationX(toRightSide ? mViewWidth : -mViewWidth)
-                .alpha(0)
-                .setDuration(mAnimationTime)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        performDismiss(view, childView, position);
-                    }
-                });
+        ViewPropertyAnimator.animate(view).translationX(toRightSide ? mViewWidth : -mViewWidth).alpha(0).setDuration(mAnimationTime).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                performDismiss(view, childView, position);
+            }
+        });
     }
 
     @Override
@@ -435,9 +433,7 @@ public class EnhancedListView extends ListView {
                 if (Math.abs(deltaX) > mViewWidth / 2 && mSwiping) {
                     dismiss = true;
                     dismissRight = deltaX > 0;
-                } else if (mMinFlingVelocity <= velocityX && velocityX <= mMaxFlingVelocity
-                        && velocityY < velocityX && mSwiping && isSwipeDirectionValid(mVelocityTracker.getXVelocity())
-                        && deltaX >= mViewWidth * 0.2f) {
+                } else if (mMinFlingVelocity <= velocityX && velocityX <= mMaxFlingVelocity && velocityY < velocityX && mSwiping && isSwipeDirectionValid(mVelocityTracker.getXVelocity()) && deltaX >= mViewWidth * 0.2f) {
                     dismiss = true;
                     dismissRight = mVelocityTracker.getXVelocity() > 0;
                 }
@@ -446,11 +442,7 @@ public class EnhancedListView extends ListView {
                     slideOutView(mSwipeDownView, mSwipeDownChild, mDownPosition, dismissRight);
                 } else if (mSwiping) {
                     // Swipe back to regular position
-                    ViewPropertyAnimator.animate(mSwipeDownView)
-                            .translationX(0)
-                            .alpha(1)
-                            .setDuration(mAnimationTime)
-                            .setListener(null);
+                    ViewPropertyAnimator.animate(mSwipeDownView).translationX(0).alpha(1).setDuration(mAnimationTime).setListener(null);
                 }
                 mVelocityTracker = null;
                 mDownX = 0;
@@ -477,9 +469,7 @@ public class EnhancedListView extends ListView {
 
                         // Cancel ListView's touch (un-highlighting the item)
                         MotionEvent cancelEvent = MotionEvent.obtain(ev);
-                        cancelEvent.setAction(MotionEvent.ACTION_CANCEL
-                                | (ev.getActionIndex()
-                                << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+                        cancelEvent.setAction(MotionEvent.ACTION_CANCEL | (ev.getActionIndex() << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
                         super.onTouchEvent(cancelEvent);
                     }
                 } else {
@@ -491,8 +481,7 @@ public class EnhancedListView extends ListView {
 
                 if (mSwiping) {
                     ViewHelper.setTranslationX(mSwipeDownView, deltaX);
-                    ViewHelper.setAlpha(mSwipeDownView, Math.max(0f, Math.min(1f,
-                            1f - 2f * Math.abs(deltaX) / mViewWidth)));
+                    ViewHelper.setAlpha(mSwipeDownView, Math.max(0f, Math.min(1f, 1f - 2f * Math.abs(deltaX) / mViewWidth)));
                     return true;
                 }
                 break;
@@ -553,15 +542,12 @@ public class EnhancedListView extends ListView {
 
                         // Show undo popup
                         mUndoPopup.setWidth((int) Math.min(mScreenDensity * 400, getWidth() * 0.9f));
-                        mUndoPopup.showAtLocation(EnhancedListView.this,
-                                Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM,
-                                0, (int) (mScreenDensity * 15));
+                        mUndoPopup.showAtLocation(EnhancedListView.this, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, (int) (mScreenDensity * 15));
 
                         // Queue the dismiss only if required
                         if (!mTouchBeforeAutoHide) {
                             // Send a delayed message to hide popup
-                            mHideUndoHandler.sendMessageDelayed(mHideUndoHandler.obtainMessage(mValidDelayedMsgId),
-                                    mUndoHideDelay);
+                            mHideUndoHandler.sendMessageDelayed(mHideUndoHandler.obtainMessage(mValidDelayedMsgId), mUndoHideDelay);
                         }
                     }
 

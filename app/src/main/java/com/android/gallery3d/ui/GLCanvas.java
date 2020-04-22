@@ -98,16 +98,13 @@ public interface GLCanvas {
     void fillRect(float x, float y, float width, float height, int color);
 
     // Draws a texture to the specified rectangle.
-    void drawTexture(
-            BasicTexture texture, int x, int y, int width, int height);
+    void drawTexture(BasicTexture texture, int x, int y, int width, int height);
 
-    void drawMesh(BasicTexture tex, int x, int y, int xyBuffer,
-                  int uvBuffer, int indexBuffer, int indexCount);
+    void drawMesh(BasicTexture tex, int x, int y, int xyBuffer, int uvBuffer, int indexBuffer, int indexCount);
 
     // Draws a texture to the specified rectangle. The "alpha" parameter
     // overrides the current drawing alpha value.
-    void drawTexture(BasicTexture texture,
-                     int x, int y, int width, int height, float alpha);
+    void drawTexture(BasicTexture texture, int x, int y, int width, int height, float alpha);
 
     // Draws a the source rectangle part of the texture to the target rectangle.
     void drawTexture(BasicTexture texture, RectF source, RectF target);
@@ -115,11 +112,9 @@ public interface GLCanvas {
     // Draw two textures to the specified rectangle. The actual texture used is
     // from * (1 - ratio) + to * ratio
     // The two textures must have the same size.
-    void drawMixed(BasicTexture from, BasicTexture to,
-                   float ratio, int x, int y, int w, int h);
+    void drawMixed(BasicTexture from, BasicTexture to, float ratio, int x, int y, int w, int h);
 
-    void drawMixed(BasicTexture from, int toColor,
-                   float ratio, int x, int y, int w, int h);
+    void drawMixed(BasicTexture from, int toColor, float ratio, int x, int y, int w, int h);
 
     // Return a texture copied from the specified rectangle.
     BasicTexture copyTexture(int x, int y, int width, int height);

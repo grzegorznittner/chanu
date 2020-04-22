@@ -33,18 +33,15 @@ public class StretchyImageView extends ImageView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         // If there's no drawable we can just use the result from super.
-        if (getDrawable() == null)
-            return;
+        if (getDrawable() == null) return;
 
         final int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
         final int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
 
         int w = getDrawable().getIntrinsicWidth();
         int h = getDrawable().getIntrinsicHeight();
-        if (w <= 0)
-            w = 1;
-        if (h <= 0)
-            h = 1;
+        if (w <= 0) w = 1;
+        if (h <= 0) h = 1;
 
         // Desired aspect ratio of the view's contents (not including padding)
         float desiredAspect = (float) w / (float) h;

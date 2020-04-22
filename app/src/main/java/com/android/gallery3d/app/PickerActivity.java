@@ -28,8 +28,7 @@ import com.android.gallery3d.ui.GLRoot;
 import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.gallery3d.R;
 
-public class PickerActivity extends AbstractGalleryActivity
-        implements OnClickListener {
+public class PickerActivity extends AbstractGalleryActivity implements OnClickListener {
 
     public static final String KEY_ALBUM_PATH = "album-path";
 

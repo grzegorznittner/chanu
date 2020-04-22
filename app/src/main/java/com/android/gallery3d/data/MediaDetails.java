@@ -54,13 +54,11 @@ public class MediaDetails implements Iterable<Entry<Integer, Object>> {
     private TreeMap<Integer, Object> mDetails = new TreeMap<Integer, Object>();
     private HashMap<Integer, Integer> mUnits = new HashMap<Integer, Integer>();
 
-    private static void setExifData(MediaDetails details, ExifInterface exif, String tag,
-                                    int key) {
+    private static void setExifData(MediaDetails details, ExifInterface exif, String tag, int key) {
         String value = exif.getAttribute(tag);
         if (value != null) {
             if (key == MediaDetails.INDEX_FLASH) {
-                MediaDetails.FlashState state = new MediaDetails.FlashState(
-                        Integer.valueOf(value));
+                MediaDetails.FlashState state = new MediaDetails.FlashState(Integer.valueOf(value));
                 details.addDetail(key, state);
             } else {
                 details.addDetail(key, value);
@@ -73,16 +71,13 @@ public class MediaDetails implements Iterable<Entry<Integer, Object>> {
             ExifInterface exif = new ExifInterface(filePath);
             setExifData(details, exif, ExifInterface.TAG_FLASH, MediaDetails.INDEX_FLASH);
             setExifData(details, exif, ExifInterface.TAG_IMAGE_WIDTH, MediaDetails.INDEX_WIDTH);
-            setExifData(details, exif, ExifInterface.TAG_IMAGE_LENGTH,
-                    MediaDetails.INDEX_HEIGHT);
+            setExifData(details, exif, ExifInterface.TAG_IMAGE_LENGTH, MediaDetails.INDEX_HEIGHT);
             setExifData(details, exif, ExifInterface.TAG_MAKE, MediaDetails.INDEX_MAKE);
             setExifData(details, exif, ExifInterface.TAG_MODEL, MediaDetails.INDEX_MODEL);
             setExifData(details, exif, ExifInterface.TAG_APERTURE, MediaDetails.INDEX_APERTURE);
             setExifData(details, exif, ExifInterface.TAG_ISO, MediaDetails.INDEX_ISO);
-            setExifData(details, exif, ExifInterface.TAG_WHITE_BALANCE,
-                    MediaDetails.INDEX_WHITE_BALANCE);
-            setExifData(details, exif, ExifInterface.TAG_EXPOSURE_TIME,
-                    MediaDetails.INDEX_EXPOSURE_TIME);
+            setExifData(details, exif, ExifInterface.TAG_WHITE_BALANCE, MediaDetails.INDEX_WHITE_BALANCE);
+            setExifData(details, exif, ExifInterface.TAG_EXPOSURE_TIME, MediaDetails.INDEX_EXPOSURE_TIME);
 
             double data = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0);
             if (data != 0f) {

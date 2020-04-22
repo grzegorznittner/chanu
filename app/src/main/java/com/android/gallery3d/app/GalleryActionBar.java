@@ -32,18 +32,7 @@ import com.chanapps.four.gallery3d.R;
 
 public class GalleryActionBar implements ActionBar.OnNavigationListener {
     private static final String TAG = "GalleryActionBar";
-    private static final ActionItem[] sClusterItems = new ActionItem[]{
-            new ActionItem(FilterUtils.CLUSTER_BY_ALBUM, true, false, R.string.albums,
-                    R.string.group_by_album),
-            new ActionItem(FilterUtils.CLUSTER_BY_LOCATION, true, false,
-                    R.string.locations, R.string.location, R.string.group_by_location),
-            new ActionItem(FilterUtils.CLUSTER_BY_TIME, true, false, R.string.times,
-                    R.string.time, R.string.group_by_time),
-            new ActionItem(FilterUtils.CLUSTER_BY_FACE, true, false, R.string.people,
-                    R.string.group_by_faces),
-            new ActionItem(FilterUtils.CLUSTER_BY_TAG, true, false, R.string.tags,
-                    R.string.group_by_tags)
-    };
+    private static final ActionItem[] sClusterItems = new ActionItem[]{new ActionItem(FilterUtils.CLUSTER_BY_ALBUM, true, false, R.string.albums, R.string.group_by_album), new ActionItem(FilterUtils.CLUSTER_BY_LOCATION, true, false, R.string.locations, R.string.location, R.string.group_by_location), new ActionItem(FilterUtils.CLUSTER_BY_TIME, true, false, R.string.times, R.string.time, R.string.group_by_time), new ActionItem(FilterUtils.CLUSTER_BY_FACE, true, false, R.string.people, R.string.group_by_faces), new ActionItem(FilterUtils.CLUSTER_BY_TAG, true, false, R.string.tags, R.string.group_by_tags)};
     private ClusterRunner mClusterRunner;
     //private CharSequence[] mTitles;
     //private ArrayList<Integer> mActions;
@@ -53,6 +42,7 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     private ActionBar mActionBar;
     private int mCurrentIndex;
     private ClusterAdapter mAdapter = new ClusterAdapter();
+
     public GalleryActionBar(GalleryActivity activity) {
         mActionBar = ((Activity) activity).getActionBar();
         mContext = activity.getAndroidContext();
@@ -78,8 +68,7 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     public static ShareActionProvider initializeShareActionProvider(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_share);
         ShareActionProvider shareActionProvider = null;
-        if (item != null)
-            shareActionProvider = (ShareActionProvider) item.getActionProvider();
+        if (item != null) shareActionProvider = (ShareActionProvider) item.getActionProvider();
         return shareActionProvider;
     }
 
@@ -183,13 +172,11 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
         public int dialogTitle;
         public int clusterBy;
 
-        public ActionItem(int action, boolean applied, boolean enabled, int title,
-                          int clusterBy) {
+        public ActionItem(int action, boolean applied, boolean enabled, int title, int clusterBy) {
             this(action, applied, enabled, title, title, clusterBy);
         }
 
-        public ActionItem(int action, boolean applied, boolean enabled, int spinnerTitle,
-                          int dialogTitle, int clusterBy) {
+        public ActionItem(int action, boolean applied, boolean enabled, int spinnerTitle, int dialogTitle, int clusterBy) {
             this.action = action;
             this.enabled = enabled;
             this.spinnerTitle = spinnerTitle;
@@ -215,8 +202,7 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
 
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.action_bar_text,
-                        parent, false);
+                convertView = mInflater.inflate(R.layout.action_bar_text, parent, false);
             }
             TextView view = (TextView) convertView;
             view.setText(sClusterItems[position].spinnerTitle);

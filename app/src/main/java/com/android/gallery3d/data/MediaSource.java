@@ -85,6 +85,7 @@ public abstract class MediaSource {
     public static class PathId {
         public Path path;
         public int id;
+
         public PathId(Path path, int id) {
             this.path = path;
             this.id = id;

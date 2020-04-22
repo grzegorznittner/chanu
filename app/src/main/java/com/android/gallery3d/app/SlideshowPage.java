@@ -58,8 +58,7 @@ public class SlideshowPage extends ActivityState {
     private Intent mResultIntent = new Intent();
     private GLView mRootPane = new GLView() {
         @Override
-        protected void onLayout(
-                boolean changed, int left, int top, int right, int bottom) {
+        protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
             mSlideshowView.layout(0, 0, right - left, bottom - top);
         }
 
@@ -136,11 +135,8 @@ public class SlideshowPage extends ActivityState {
 
         mSlideshowView.next(slide.bitmap, slide.item.getRotation());
 
-        setStateResult(Activity.RESULT_OK, mResultIntent
-                .putExtra(KEY_ITEM_PATH, slide.item.getPath().toString())
-                .putExtra(KEY_PHOTO_INDEX, slide.index));
-        mHandler.sendEmptyMessageDelayed(MSG_LOAD_NEXT_BITMAP,
-                SLIDESHOW_DELAY);
+        setStateResult(Activity.RESULT_OK, mResultIntent.putExtra(KEY_ITEM_PATH, slide.item.getPath().toString()).putExtra(KEY_PHOTO_INDEX, slide.index));
+        mHandler.sendEmptyMessageDelayed(MSG_LOAD_NEXT_BITMAP, SLIDESHOW_DELAY);
     }
 
     @Override
@@ -172,23 +168,18 @@ public class SlideshowPage extends ActivityState {
 
         // We only want to show slideshow for images only, not videos.
         String mediaPath = data.getString(KEY_SET_PATH);
-        mediaPath = FilterUtils.newFilterPath(mediaPath,
-                FilterUtils.FILTER_IMAGE_ONLY);
+        mediaPath = FilterUtils.newFilterPath(mediaPath, FilterUtils.FILTER_IMAGE_ONLY);
         MediaSet mediaSet = mActivity.getDataManager().getMediaSet(mediaPath);
 
         if (random) {
             boolean repeat = data.getBoolean(KEY_REPEAT);
-            mModel = new SlideshowDataAdapter(
-                    mActivity, new ShuffleSource(mediaSet, repeat), 0);
-            setStateResult(Activity.RESULT_OK,
-                    mResultIntent.putExtra(KEY_PHOTO_INDEX, 0));
+            mModel = new SlideshowDataAdapter(mActivity, new ShuffleSource(mediaSet, repeat), 0);
+            setStateResult(Activity.RESULT_OK, mResultIntent.putExtra(KEY_PHOTO_INDEX, 0));
         } else {
             int index = data.getInt(KEY_PHOTO_INDEX);
             boolean repeat = data.getBoolean(KEY_REPEAT);
-            mModel = new SlideshowDataAdapter(mActivity,
-                    new SequentialSource(mediaSet, repeat), index);
-            setStateResult(Activity.RESULT_OK,
-                    mResultIntent.putExtra(KEY_PHOTO_INDEX, index));
+            mModel = new SlideshowDataAdapter(mActivity, new SequentialSource(mediaSet, repeat), index);
+            setStateResult(Activity.RESULT_OK, mResultIntent.putExtra(KEY_PHOTO_INDEX, index));
         }
     }
 
@@ -306,9 +297,7 @@ public class SlideshowPage extends ActivityState {
                 dataEnd = index + mData.size();
             }
 
-            return (index < mDataStart || index >= dataEnd)
-                    ? null
-                    : mData.get(index - mDataStart);
+            return (index < mDataStart || index >= dataEnd) ? null : mData.get(index - mDataStart);
         }
 
         public long reload() {

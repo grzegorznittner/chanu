@@ -47,9 +47,11 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
     private long threadNo = 0;
     private long postNo = 0;
     private boolean stopDownload = false;
+
     public ImageDownloadService() {
         super("imagedownload");
     }
+
     protected ImageDownloadService(String name) {
         super(name);
     }
@@ -119,8 +121,8 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 
             long endTime = Calendar.getInstance().getTimeInMillis();
             NetworkProfileManager.instance().finishedImageDownload(this, (int) (endTime - startTime), fileLength);
-            if (DEBUG) Log.i(TAG, "Stored image " + imageUrl + " to file "
-                    + targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
+            if (DEBUG)
+                Log.i(TAG, "Stored image " + imageUrl + " to file " + targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
 
             notifyDownloadFinished(fileLength);
         } catch (Exception e) {

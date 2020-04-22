@@ -41,8 +41,7 @@ import java.io.IOException;
 // LocalImage represents an image in the local storage.
 public class LocalImage extends LocalMediaItem {
     static final Path ITEM_PATH = Path.fromString("/local/image/item");
-    static final String[] PROJECTION = {
-            ImageColumns._ID,           // 0
+    static final String[] PROJECTION = {ImageColumns._ID,           // 0
             ImageColumns.TITLE,         // 1
             ImageColumns.MIME_TYPE,     // 2
             ImageColumns.LATITUDE,      // 3
@@ -116,8 +115,7 @@ public class LocalImage extends LocalMediaItem {
             case TYPE_MICROTHUMBNAIL:
                 return MICROTHUMBNAIL_TARGET_SIZE;
             default:
-                throw new RuntimeException(
-                        "should only request thumb/microthumb from cache");
+                throw new RuntimeException("should only request thumb/microthumb from cache");
         }
     }
 
@@ -159,12 +157,9 @@ public class LocalImage extends LocalMediaItem {
         mimeType = uh.update(mimeType, cursor.getString(INDEX_MIME_TYPE));
         latitude = uh.update(latitude, cursor.getDouble(INDEX_LATITUDE));
         longitude = uh.update(longitude, cursor.getDouble(INDEX_LONGITUDE));
-        dateTakenInMs = uh.update(
-                dateTakenInMs, cursor.getLong(INDEX_DATE_TAKEN));
-        dateAddedInSec = uh.update(
-                dateAddedInSec, cursor.getLong(INDEX_DATE_ADDED));
-        dateModifiedInSec = uh.update(
-                dateModifiedInSec, cursor.getLong(INDEX_DATE_MODIFIED));
+        dateTakenInMs = uh.update(dateTakenInMs, cursor.getLong(INDEX_DATE_TAKEN));
+        dateAddedInSec = uh.update(dateAddedInSec, cursor.getLong(INDEX_DATE_ADDED));
+        dateModifiedInSec = uh.update(dateModifiedInSec, cursor.getLong(INDEX_DATE_MODIFIED));
         filePath = uh.update(filePath, cursor.getString(INDEX_DATA));
         rotation = uh.update(rotation, cursor.getInt(INDEX_ORIENTATION));
         bucketId = uh.update(bucketId, cursor.getInt(INDEX_BUCKET_ID));
@@ -186,8 +181,7 @@ public class LocalImage extends LocalMediaItem {
 
     @Override
     public int getSupportedOperations() {
-        int operation = SUPPORT_DELETE | SUPPORT_SHARE | SUPPORT_CROP
-                | SUPPORT_SETAS | SUPPORT_EDIT | SUPPORT_INFO;
+        int operation = SUPPORT_DELETE | SUPPORT_SHARE | SUPPORT_CROP | SUPPORT_SETAS | SUPPORT_EDIT | SUPPORT_INFO;
         if (BitmapUtils.isSupportedByRegionDecoder(mimeType)) {
             operation |= SUPPORT_FULL_IMAGE;
         }
@@ -206,8 +200,7 @@ public class LocalImage extends LocalMediaItem {
     public void delete() {
         GalleryUtils.assertNotInRenderThread();
         Uri baseUri = Images.Media.EXTERNAL_CONTENT_URI;
-        mApplication.getContentResolver().delete(baseUri, "_id=?",
-                new String[]{String.valueOf(id)});
+        mApplication.getContentResolver().delete(baseUri, "_id=?", new String[]{String.valueOf(id)});
     }
 
     @Override
@@ -221,8 +214,7 @@ public class LocalImage extends LocalMediaItem {
         if (mimeType.equalsIgnoreCase("image/jpeg")) {
             try {
                 ExifInterface exif = new ExifInterface(filePath);
-                exif.setAttribute(ExifInterface.TAG_ORIENTATION,
-                        getExifOrientation(rotation));
+                exif.setAttribute(ExifInterface.TAG_ORIENTATION, getExifOrientation(rotation));
                 exif.saveAttributes();
             } catch (IOException e) {
                 Log.w(TAG, "cannot set exif data: " + filePath);
@@ -234,8 +226,7 @@ public class LocalImage extends LocalMediaItem {
         }
 
         values.put(Images.Media.ORIENTATION, rotation);
-        mApplication.getContentResolver().update(baseUri, values, "_id=?",
-                new String[]{String.valueOf(id)});
+        mApplication.getContentResolver().update(baseUri, values, "_id=?", new String[]{String.valueOf(id)});
     }
 
     @Override
@@ -275,8 +266,7 @@ public class LocalImage extends LocalMediaItem {
     public static class LocalImageRequest extends ImageCacheRequest {
         private String mLocalFilePath;
 
-        LocalImageRequest(GalleryApp application, Path path, int type,
-                          String localFilePath) {
+        LocalImageRequest(GalleryApp application, Path path, int type, String localFilePath) {
             super(application, path, type, getTargetSize(type));
             mLocalFilePath = localFilePath;
         }
@@ -299,18 +289,15 @@ public class LocalImage extends LocalMediaItem {
                     Log.w(TAG, "fail to get exif thumb", t);
                 }
                 if (thumbData != null) {
-                    Bitmap bitmap = DecodeUtils.requestDecodeIfBigEnough(
-                            jc, thumbData, options, getTargetSize(type));
+                    Bitmap bitmap = DecodeUtils.requestDecodeIfBigEnough(jc, thumbData, options, getTargetSize(type));
                     if (bitmap != null) return bitmap;
                 }
             }
-            return DecodeUtils.requestDecode(
-                    jc, mLocalFilePath, options, getTargetSize(type));
+            return DecodeUtils.requestDecode(jc, mLocalFilePath, options, getTargetSize(type));
         }
     }
 
-    public static class LocalLargeImageRequest
-            implements Job<BitmapRegionDecoder> {
+    public static class LocalLargeImageRequest implements Job<BitmapRegionDecoder> {
         String mLocalFilePath;
 
         public LocalLargeImageRequest(String localFilePath) {
@@ -318,8 +305,7 @@ public class LocalImage extends LocalMediaItem {
         }
 
         public BitmapRegionDecoder run(JobContext jc) {
-            return DecodeUtils.requestCreateBitmapRegionDecoder(
-                    jc, mLocalFilePath, false);
+            return DecodeUtils.requestCreateBitmapRegionDecoder(jc, mLocalFilePath, false);
         }
     }
 }

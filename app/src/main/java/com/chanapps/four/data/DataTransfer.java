@@ -18,6 +18,7 @@ public class DataTransfer {
     /** Download rate B/ms, same as kB/s */
     public double dataRate;
     public boolean failed;
+
     public DataTransfer(int duration, int size) {
         time = new Date();
         this.duration = duration;
@@ -25,6 +26,7 @@ public class DataTransfer {
         this.dataRate = size / duration;
         this.failed = false;
     }
+
     public DataTransfer() {
         time = new Date();
         failed = true;

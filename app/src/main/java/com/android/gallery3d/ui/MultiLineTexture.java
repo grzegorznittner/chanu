@@ -34,12 +34,9 @@ class MultiLineTexture extends CanvasTexture {
         mLayout = layout;
     }
 
-    public static MultiLineTexture newInstance(
-            String text, int maxWidth, float textSize, int color,
-            Layout.Alignment alignment) {
+    public static MultiLineTexture newInstance(String text, int maxWidth, float textSize, int color, Layout.Alignment alignment) {
         TextPaint paint = StringTexture.getDefaultPaint(textSize, color);
-        Layout layout = new StaticLayout(text, 0, text.length(), paint,
-                maxWidth, alignment, 1, 0, true, null, 0);
+        Layout layout = new StaticLayout(text, 0, text.length(), paint, maxWidth, alignment, 1, 0, true, null, 0);
 
         return new MultiLineTexture(layout);
     }

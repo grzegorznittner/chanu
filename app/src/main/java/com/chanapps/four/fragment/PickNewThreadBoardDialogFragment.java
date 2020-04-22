@@ -58,22 +58,20 @@ public class PickNewThreadBoardDialogFragment extends ListDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initBoards(getActivity());
-        return createListDialog(R.string.new_thread_menu, R.string.new_thread_menu,
-                R.string.post_reply_new_thread_error,
-                boards, new ListView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String boardLine = boards[position];
-                        String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
-                        if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
-                        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                        dismiss();
-                        PostReplyActivity.startActivity((Activity) activity, boardCode, 0, 0, "", "");
-                    }
-                }, new Dialog.OnCancelListener() {
-                    public void onCancel(DialogInterface dialog) {
-                    }
-                });
+        return createListDialog(R.string.new_thread_menu, R.string.new_thread_menu, R.string.post_reply_new_thread_error, boards, new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String boardLine = boards[position];
+                String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
+                if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                dismiss();
+                PostReplyActivity.startActivity((Activity) activity, boardCode, 0, 0, "", "");
+            }
+        }, new Dialog.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+            }
+        });
     }
 
 }

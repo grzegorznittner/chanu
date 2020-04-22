@@ -32,8 +32,7 @@ abstract class BasicTexture implements Texture {
     protected static final int STATE_ERROR = -1;
     @SuppressWarnings("unused")
     private static final String TAG = "BasicTexture";
-    private static WeakHashMap<BasicTexture, Object> sAllTextures
-            = new WeakHashMap<BasicTexture, Object>();
+    private static WeakHashMap<BasicTexture, Object> sAllTextures = new WeakHashMap<BasicTexture, Object>();
     private static ThreadLocal sInFinalizer = new ThreadLocal();
     protected int mId;
     protected int mState;
@@ -73,9 +72,7 @@ abstract class BasicTexture implements Texture {
     }
 
     protected void setAssociatedCanvas(GLCanvas canvas) {
-        mCanvasRef = canvas == null
-                ? null
-                : new WeakReference<GLCanvas>(canvas);
+        mCanvasRef = canvas == null ? null : new WeakReference<GLCanvas>(canvas);
     }
 
     /**

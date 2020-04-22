@@ -35,8 +35,7 @@ class PositionController {
     private final static int ANIM_KIND_ZOOM = 4;
     private final static int ANIM_KIND_FLING = 5;
     // Animation time in milliseconds. The order must match ANIM_KIND_* above.
-    private final static int[] ANIM_TIME = {
-            0,    // ANIM_KIND_SCROLL
+    private final static int[] ANIM_TIME = {0,    // ANIM_KIND_SCROLL
             50,   // ANIM_KIND_SCALE
             600,  // ANIM_KIND_SNAPBACK
             400,  // ANIM_KIND_SLIDE
@@ -82,8 +81,7 @@ class PositionController {
     private RectF mTempRect = new RectF();
     private float[] mTempPoints = new float[8];
 
-    public PositionController(PhotoView viewer, Context context,
-                              EdgeView edgeView) {
+    public PositionController(PhotoView viewer, Context context, EdgeView edgeView) {
         mViewer = viewer;
         mEdgeView = edgeView;
         mScroller = new FlingScroller();
@@ -141,8 +139,7 @@ class PositionController {
 
         mUseViewSize = false;
 
-        float ratio = Math.min(
-                (float) mImageW / width, (float) mImageH / height);
+        float ratio = Math.min((float) mImageW / width, (float) mImageH / height);
 
         // See the comment above translate() for details.
         mCurrentX = translate(mCurrentX, mImageW, width, ratio);
@@ -207,8 +204,7 @@ class PositionController {
     }
 
     public float getMinimalScale(int w, int h) {
-        return Math.min(SCALE_LIMIT,
-                Math.min((float) mViewW / w, (float) mViewH / h));
+        return Math.min(SCALE_LIMIT, Math.min((float) mViewW / w, (float) mViewH / h));
     }
 
     public void setViewSize(int viewW, int viewH) {
@@ -258,10 +254,8 @@ class PositionController {
 
     public void beginScale(float focusX, float focusY) {
         mInScale = true;
-        mFocusBitmapX = Math.round(mCurrentX +
-                (focusX - mViewW / 2f) / mCurrentScale);
-        mFocusBitmapY = Math.round(mCurrentY +
-                (focusY - mViewH / 2f) / mCurrentScale);
+        mFocusBitmapX = Math.round(mCurrentX + (focusX - mViewW / 2f) / mCurrentScale);
+        mFocusBitmapY = Math.round(mCurrentY + (focusY - mViewH / 2f) / mCurrentScale);
     }
 
     public void scaleBy(float s, float focusX, float focusY) {
@@ -350,14 +344,12 @@ class PositionController {
     // Sliding from left:  mCurrentX = (1/2) * mImageW
     //              right: mCurrentX = (3/2) * mImageW
     public void startSlideInAnimation(int direction) {
-        int fromX = (direction == PhotoView.TRANS_SLIDE_IN_LEFT) ?
-                mImageW / 2 : 3 * mImageW / 2;
+        int fromX = (direction == PhotoView.TRANS_SLIDE_IN_LEFT) ? mImageW / 2 : 3 * mImageW / 2;
         mFromX = Math.round(fromX);
         mFromY = Math.round(mImageH / 2f);
         mCurrentX = mFromX;
         mCurrentY = mFromY;
-        startAnimation(
-                mImageW / 2, mImageH / 2, mCurrentScale, ANIM_KIND_SLIDE);
+        startAnimation(mImageW / 2, mImageH / 2, mCurrentScale, ANIM_KIND_SLIDE);
     }
 
     public void startHorizontalSlide(int distance) {
@@ -365,13 +357,10 @@ class PositionController {
     }
 
     private void scrollBy(float dx, float dy, int type) {
-        startAnimation(getTargetX() + Math.round(dx / mCurrentScale),
-                getTargetY() + Math.round(dy / mCurrentScale),
-                mCurrentScale, type);
+        startAnimation(getTargetX() + Math.round(dx / mCurrentScale), getTargetY() + Math.round(dy / mCurrentScale), mCurrentScale, type);
     }
 
-    public void startScroll(float dx, float dy, boolean hasNext,
-                            boolean hasPrev) {
+    public void startScroll(float dx, float dy, boolean hasNext, boolean hasPrev) {
         int x = getTargetX() + Math.round(dx / mCurrentScale);
         int y = getTargetY() + Math.round(dy / mCurrentScale);
 
@@ -419,16 +408,12 @@ class PositionController {
 
     public boolean fling(float velocityX, float velocityY) {
         // We only want to do fling when the picture is zoomed-in.
-        if (mImageW * mCurrentScale <= mViewW &&
-                mImageH * mCurrentScale <= mViewH) {
+        if (mImageW * mCurrentScale <= mViewW && mImageH * mCurrentScale <= mViewH) {
             return false;
         }
 
         calculateStableBound(mCurrentScale);
-        mScroller.fling(mCurrentX, mCurrentY,
-                Math.round(-velocityX / mCurrentScale),
-                Math.round(-velocityY / mCurrentScale),
-                mBoundLeft, mBoundRight, mBoundTop, mBoundBottom);
+        mScroller.fling(mCurrentX, mCurrentY, Math.round(-velocityX / mCurrentScale), Math.round(-velocityY / mCurrentScale), mBoundLeft, mBoundRight, mBoundTop, mBoundBottom);
         int targetX = mScroller.getFinalX();
         int targetY = mScroller.getFinalY();
         mAnimationDuration = mScroller.getDuration();
@@ -436,10 +421,8 @@ class PositionController {
         return true;
     }
 
-    private void startAnimation(
-            int targetX, int targetY, float scale, int kind) {
-        if (targetX == mCurrentX && targetY == mCurrentY
-                && scale == mCurrentScale) return;
+    private void startAnimation(int targetX, int targetY, float scale, int kind) {
+        if (targetX == mCurrentX && targetY == mCurrentY && scale == mCurrentScale) return;
 
         mFromX = mCurrentX;
         mFromY = mCurrentY;
@@ -640,9 +623,7 @@ class PositionController {
     }
 
     private boolean useCurrentValueAsTarget() {
-        return mAnimationStartTime == NO_ANIMATION ||
-                mAnimationKind == ANIM_KIND_SNAPBACK ||
-                mAnimationKind == ANIM_KIND_FLING;
+        return mAnimationStartTime == NO_ANIMATION || mAnimationKind == ANIM_KIND_SNAPBACK || mAnimationKind == ANIM_KIND_FLING;
     }
 
     private float getTargetScale() {
@@ -672,8 +653,7 @@ class PositionController {
         points[5] = points[7] = mImageH - mCurrentY;
 
         RectF rect = mTempRect;
-        rect.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY,
-                Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        rect.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
 
         float scale = mCurrentScale;
         float offsetX = mViewW / 2;

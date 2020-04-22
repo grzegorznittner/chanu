@@ -141,13 +141,11 @@ public class BlobCache {
     // them can grow to the size specified by maxBytes. The maxEntries parameter
     // specifies the maximum number of entries each region can have. If the
     // "reset" parameter is true, the cache will be cleared before use.
-    public BlobCache(String path, int maxEntries, int maxBytes, boolean reset)
-            throws IOException {
+    public BlobCache(String path, int maxEntries, int maxBytes, boolean reset) throws IOException {
         this(path, maxEntries, maxBytes, reset, 0);
     }
 
-    public BlobCache(String path, int maxEntries, int maxBytes, boolean reset,
-                     int version) throws IOException {
+    public BlobCache(String path, int maxEntries, int maxBytes, boolean reset, int version) throws IOException {
         mIndexFile = new RandomAccessFile(path + ".idx", "rw");
         mDataFile0 = new RandomAccessFile(path + ".0", "rw");
         mDataFile1 = new RandomAccessFile(path + ".1", "rw");
@@ -191,10 +189,7 @@ public class BlobCache {
     }
 
     static int readInt(byte[] buf, int offset) {
-        return (buf[offset] & 0xff)
-                | ((buf[offset + 1] & 0xff) << 8)
-                | ((buf[offset + 2] & 0xff) << 16)
-                | ((buf[offset + 3] & 0xff) << 24);
+        return (buf[offset] & 0xff) | ((buf[offset + 1] & 0xff) << 8) | ((buf[offset + 2] & 0xff) << 16) | ((buf[offset + 3] & 0xff) << 24);
     }
 
     static long readLong(byte[] buf, int offset) {
@@ -290,8 +285,7 @@ public class BlobCache {
                 Log.w(TAG, "invalid active bytes");
                 return false;
             }
-            if (mIndexFile.length() !=
-                    INDEX_HEADER_SIZE + mMaxEntries * 12 * 2) {
+            if (mIndexFile.length() != INDEX_HEADER_SIZE + mMaxEntries * 12 * 2) {
                 Log.w(TAG, "invalid index file length");
                 return false;
             }
@@ -317,8 +311,7 @@ public class BlobCache {
 
             // Map index file to memory
             mIndexChannel = mIndexFile.getChannel();
-            mIndexBuffer = mIndexChannel.map(FileChannel.MapMode.READ_WRITE,
-                    0, mIndexFile.length());
+            mIndexBuffer = mIndexChannel.map(FileChannel.MapMode.READ_WRITE, 0, mIndexFile.length());
             mIndexBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
             setActiveVariables();
@@ -389,8 +382,7 @@ public class BlobCache {
 
     // Sync mIndexHeader to the index file.
     private void updateIndexHeader() {
-        writeInt(mIndexHeader, IH_CHECKSUM,
-                checkSum(mIndexHeader, 0, IH_CHECKSUM));
+        writeInt(mIndexHeader, IH_CHECKSUM, checkSum(mIndexHeader, 0, IH_CHECKSUM));
         mIndexBuffer.position(0);
         mIndexBuffer.put(mIndexHeader);
     }
@@ -412,8 +404,7 @@ public class BlobCache {
             throw new RuntimeException("blob is too large!");
         }
 
-        if (mActiveBytes + BLOB_HEADER_SIZE + data.length > mMaxBytes
-                || mActiveEntries * 2 >= mMaxEntries) {
+        if (mActiveBytes + BLOB_HEADER_SIZE + data.length > mMaxBytes || mActiveEntries * 2 >= mMaxEntries) {
             flipRegion();
         }
 
@@ -431,8 +422,7 @@ public class BlobCache {
     // Appends the data to the active file. It also updates the hash entry.
     // The proper hash entry (suitable for insertion or replacement) must be
     // pointed by mSlotOffset.
-    private void insertInternal(long key, byte[] data, int length)
-            throws IOException {
+    private void insertInternal(long key, byte[] data, int length) throws IOException {
         byte[] header = mBlobHeader;
         int sum = checkSum(data);
         writeLong(header, BH_KEY, key);
@@ -486,8 +476,7 @@ public class BlobCache {
             if (getBlob(mInactiveDataFile, mFileOffset, req)) {
                 // If we don't have enough space to insert this blob into
                 // the active file, just return it.
-                if (mActiveBytes + BLOB_HEADER_SIZE + req.length > mMaxBytes
-                        || mActiveEntries * 2 >= mMaxEntries) {
+                if (mActiveBytes + BLOB_HEADER_SIZE + req.length > mMaxBytes || mActiveEntries * 2 >= mMaxEntries) {
                     return true;
                 }
                 // Otherwise copy it over.
@@ -513,8 +502,7 @@ public class BlobCache {
     // Returns false if the blob is not available (either the index file is
     // not sync with the data file, or one of them is corrupted). The length
     // of the blob is stored in the req.length variable.
-    private boolean getBlob(RandomAccessFile file, int offset,
-                            LookupRequest req) throws IOException {
+    private boolean getBlob(RandomAccessFile file, int offset, LookupRequest req) throws IOException {
         byte[] header = mBlobHeader;
         long oldPosition = file.getFilePointer();
         try {

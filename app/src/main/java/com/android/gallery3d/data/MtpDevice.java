@@ -41,8 +41,7 @@ public class MtpDevice extends MediaSet {
     private final Path mItemPath;
     private List<MtpObjectInfo> mJpegChildren;
 
-    public MtpDevice(Path path, GalleryApp application, int deviceId,
-                     String name, MtpContext mtpContext) {
+    public MtpDevice(Path path, GalleryApp application, int deviceId, String name, MtpContext mtpContext) {
         super(path, nextVersionNumber());
         mApplication = application;
         mDeviceId = deviceId;
@@ -55,14 +54,11 @@ public class MtpDevice extends MediaSet {
         mJpegChildren = new ArrayList<MtpObjectInfo>();
     }
 
-    public MtpDevice(Path path, GalleryApp application, int deviceId,
-                     MtpContext mtpContext) {
-        this(path, application, deviceId,
-                MtpDeviceSet.getDeviceName(mtpContext, deviceId), mtpContext);
+    public MtpDevice(Path path, GalleryApp application, int deviceId, MtpContext mtpContext) {
+        this(path, application, deviceId, MtpDeviceSet.getDeviceName(mtpContext, deviceId), mtpContext);
     }
 
-    public static MtpObjectInfo getObjectInfo(MtpContext mtpContext, int deviceId,
-                                              int objectId) {
+    public static MtpObjectInfo getObjectInfo(MtpContext mtpContext, int deviceId, int objectId) {
         String deviceName = UsbDevice.getDeviceName(deviceId);
         return mtpContext.getMtpClient().getObjectInfo(deviceName, objectId);
     }
@@ -70,8 +66,7 @@ public class MtpDevice extends MediaSet {
     private List<MtpObjectInfo> loadItems() {
         ArrayList<MtpObjectInfo> result = new ArrayList<MtpObjectInfo>();
 
-        List<MtpStorageInfo> storageList = mMtpContext.getMtpClient()
-                .getStorageList(mDeviceName);
+        List<MtpStorageInfo> storageList = mMtpContext.getMtpClient().getStorageList(mDeviceName);
         if (storageList == null) return result;
 
         for (MtpStorageInfo info : storageList) {
@@ -81,8 +76,7 @@ public class MtpDevice extends MediaSet {
         return result;
     }
 
-    private void collectJpegChildren(int storageId, int objectId,
-                                     ArrayList<MtpObjectInfo> result) {
+    private void collectJpegChildren(int storageId, int objectId, ArrayList<MtpObjectInfo> result) {
         ArrayList<MtpObjectInfo> dirChildren = new ArrayList<MtpObjectInfo>();
 
         queryChildren(storageId, objectId, result, dirChildren);
@@ -93,10 +87,8 @@ public class MtpDevice extends MediaSet {
         }
     }
 
-    private void queryChildren(int storageId, int objectId,
-                               ArrayList<MtpObjectInfo> jpeg, ArrayList<MtpObjectInfo> dir) {
-        List<MtpObjectInfo> children = mMtpContext.getMtpClient().getObjectList(
-                mDeviceName, storageId, objectId);
+    private void queryChildren(int storageId, int objectId, ArrayList<MtpObjectInfo> jpeg, ArrayList<MtpObjectInfo> dir) {
+        List<MtpObjectInfo> children = mMtpContext.getMtpClient().getObjectList(mDeviceName, storageId, objectId);
         if (children == null) return;
 
         for (MtpObjectInfo obj : children) {
@@ -110,8 +102,7 @@ public class MtpDevice extends MediaSet {
                     dir.add(obj);
                     break;
                 default:
-                    Log.w(TAG, "other type: name = " + obj.getName()
-                            + ", format = " + format);
+                    Log.w(TAG, "other type: name = " + obj.getName() + ", format = " + format);
             }
         }
     }
@@ -128,8 +119,7 @@ public class MtpDevice extends MediaSet {
             Path childPath = mItemPath.getChild(child.getObjectHandle());
             MtpImage image = (MtpImage) dataManager.peekMediaObject(childPath);
             if (image == null) {
-                image = new MtpImage(
-                        childPath, mApplication, mDeviceId, child, mMtpContext);
+                image = new MtpImage(childPath, mApplication, mDeviceId, child, mMtpContext);
             } else {
                 image.updateContent(child);
             }

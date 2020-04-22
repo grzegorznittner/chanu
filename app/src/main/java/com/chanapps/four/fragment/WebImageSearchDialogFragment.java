@@ -48,34 +48,26 @@ public class WebImageSearchDialogFragment extends DialogFragment {
                 return true;
             }
         });
-        return new AlertDialog.Builder(getActivity())
-                .setView(view)
-                .setPositiveButton(R.string.search_title, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        startWebSearch();
-                    }
-                })
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        WebImageSearchDialogFragment.this.dismiss();
-                    }
-                })
-                .create();
+        return new AlertDialog.Builder(getActivity()).setView(view).setPositiveButton(R.string.search_title, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startWebSearch();
+            }
+        }).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                WebImageSearchDialogFragment.this.dismiss();
+            }
+        }).create();
     }
 
     protected void startWebSearch() {
-        String query = searchTextView != null && searchTextView.getText() != null
-                ? searchTextView.getText().toString()
-                : null;
+        String query = searchTextView != null && searchTextView.getText() != null ? searchTextView.getText().toString() : null;
         if (query != null && !query.isEmpty()) {
-            String url = String.format(
-                    URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_QUERY_IMAGE_URL_FORMAT), query);
+            String url = String.format(URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_QUERY_IMAGE_URL_FORMAT), query);
             ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
         } else {
-            ActivityDispatcher.launchUrlInBrowser(getActivity(),
-                    URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
+            ActivityDispatcher.launchUrlInBrowser(getActivity(), URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
         }
         dismiss();
     }

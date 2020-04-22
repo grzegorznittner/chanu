@@ -32,8 +32,7 @@ public class ClusterAlbumSet extends MediaSet implements ContentListener {
     private ArrayList<ClusterAlbum> mAlbums = new ArrayList<ClusterAlbum>();
     private boolean mFirstReloadDone;
 
-    public ClusterAlbumSet(Path path, GalleryApp application,
-                           MediaSet baseSet, int kind) {
+    public ClusterAlbumSet(Path path, GalleryApp application, MediaSet baseSet, int kind) {
         super(path, INVALID_DATA_VERSION);
         mApplication = application;
         mBaseSet = baseSet;
@@ -110,8 +109,7 @@ public class ClusterAlbumSet extends MediaSet implements ContentListener {
             } else {
                 childPath = mPath.getChild(i);
             }
-            ClusterAlbum album = (ClusterAlbum) dataManager.peekMediaObject(
-                    childPath);
+            ClusterAlbum album = (ClusterAlbum) dataManager.peekMediaObject(childPath);
             if (album == null) {
                 album = new ClusterAlbum(childPath, dataManager, this);
             }

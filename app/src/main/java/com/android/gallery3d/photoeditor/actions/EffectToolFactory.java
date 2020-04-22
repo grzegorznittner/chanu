@@ -30,6 +30,7 @@ public class EffectToolFactory {
 
     private final ViewGroup effectToolPanel;
     private final LayoutInflater inflater;
+
     public EffectToolFactory(ViewGroup effectToolPanel, LayoutInflater inflater) {
         this.effectToolPanel = effectToolPanel;
         this.inflater = inflater;
@@ -67,8 +68,7 @@ public class EffectToolFactory {
     }
 
     public ScaleSeekBar createScalePicker(ScalePickerType type) {
-        ScaleSeekBar scalePicker = (ScaleSeekBar) createPanelTool(
-                R.layout.photoeditor_scale_seekbar);
+        ScaleSeekBar scalePicker = (ScaleSeekBar) createPanelTool(R.layout.photoeditor_scale_seekbar);
         scalePicker.setBackgroundResource(getScalePickerBackground(type));
         return scalePicker;
     }

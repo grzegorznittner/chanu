@@ -37,8 +37,7 @@ public class Photo {
      * Factory method to ensure every Photo instance holds a valid texture.
      */
     public static Photo create(Bitmap bitmap) {
-        return (bitmap != null) ? new Photo(
-                RendererUtils.createTexture(bitmap), bitmap.getWidth(), bitmap.getHeight()) : null;
+        return (bitmap != null) ? new Photo(RendererUtils.createTexture(bitmap), bitmap.getWidth(), bitmap.getHeight()) : null;
     }
 
     public static Photo create(int width, int height) {

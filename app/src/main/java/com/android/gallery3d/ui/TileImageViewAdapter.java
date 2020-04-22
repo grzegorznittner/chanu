@@ -74,8 +74,7 @@ public class TileImageViewAdapter implements TileImageView.Model {
     }
 
     private int calculateLevelCount() {
-        return Math.max(0, Utils.ceilLog2(
-                (float) mImageWidth / mBackupImage.getWidth()));
+        return Math.max(0, Utils.ceilLog2((float) mImageWidth / mBackupImage.getWidth()));
     }
 
     @Override
@@ -113,9 +112,7 @@ public class TileImageViewAdapter implements TileImageView.Model {
 
         Bitmap tile = Bitmap.createBitmap(length, length, Config.ARGB_8888);
         Canvas canvas = new Canvas(tile);
-        canvas.drawBitmap(bitmap,
-                (intersectRect.left - region.left) >> level,
-                (intersectRect.top - region.top) >> level, null);
+        canvas.drawBitmap(bitmap, (intersectRect.left - region.left) >> level, (intersectRect.top - region.top) >> level, null);
         bitmap.recycle();
         return tile;
     }

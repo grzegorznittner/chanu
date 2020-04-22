@@ -50,8 +50,7 @@ public class Fingerprint {
         try {
             DIGESTER = MessageDigest.getInstance(DIGEST_MD5);
             FINGERPRINT_BYTE_LENGTH = DIGESTER.getDigestLength();
-            STREAM_ID_CS_01_LENGTH = STREAM_ID_CS_PREFIX.length()
-                    + (FINGERPRINT_BYTE_LENGTH * 2);
+            STREAM_ID_CS_01_LENGTH = STREAM_ID_CS_PREFIX.length() + (FINGERPRINT_BYTE_LENGTH * 2);
         } catch (NoSuchAlgorithmException e) {
             // can't continue, but really shouldn't happen
             throw new IllegalStateException(e);
@@ -79,8 +78,7 @@ public class Fingerprint {
      * @param byteCount length of original data will be stored at byteCount[0] as a side product
      *                  of the fingerprint calculation
      */
-    public static Fingerprint fromInputStream(InputStream stream, long[] byteCount)
-            throws IOException {
+    public static Fingerprint fromInputStream(InputStream stream, long[] byteCount) throws IOException {
         DigestInputStream in = null;
         long count = 0;
         try {
@@ -103,17 +101,14 @@ public class Fingerprint {
      * Decodes a string stream id to a 128-bit fingerprint.
      */
     public static Fingerprint fromStreamId(String streamId) {
-        if ((streamId == null)
-                || !streamId.startsWith(STREAM_ID_CS_PREFIX)
-                || (streamId.length() != STREAM_ID_CS_01_LENGTH)) {
+        if ((streamId == null) || !streamId.startsWith(STREAM_ID_CS_PREFIX) || (streamId.length() != STREAM_ID_CS_01_LENGTH)) {
             throw new IllegalArgumentException("bad streamId: " + streamId);
         }
 
         // decode the hex bytes of the fingerprint portion
         byte[] bytes = new byte[FINGERPRINT_BYTE_LENGTH];
         int byteIdx = 0;
-        for (int idx = STREAM_ID_CS_PREFIX.length(); idx < STREAM_ID_CS_01_LENGTH;
-             idx += 2) {
+        for (int idx = STREAM_ID_CS_PREFIX.length(); idx < STREAM_ID_CS_01_LENGTH; idx += 2) {
             int value = (toDigit(streamId, idx) << 4) | toDigit(streamId, idx + 1);
             bytes[byteIdx++] = (byte) (value & 0xff);
         }

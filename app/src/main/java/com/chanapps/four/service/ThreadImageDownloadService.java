@@ -33,13 +33,11 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -94,9 +92,11 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     private long[] postNos = {};
     private String[] fileNames = {};
     private long lastUpdateTime = 0;
+
     public ThreadImageDownloadService() {
         super("threadimagesdownload");
     }
+
     protected ThreadImageDownloadService(String name) {
         super(name);
     }
@@ -144,11 +144,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         }
     }
 
-    private static void startDownload(Context context, String board, long threadNo, DownloadImageTargetType downloadImageTargetType,
-                                      long startPostNo, int restartCounter, long[] postNos, String[] fileNames, int notificationId) {
-        if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start")
-                + " all image download service for thread " + board + "/" + threadNo
-                + (startPostNo == 0 ? "" : " from post " + startPostNo) + " " + downloadImageTargetType);
+    private static void startDownload(Context context, String board, long threadNo, DownloadImageTargetType downloadImageTargetType, long startPostNo, int restartCounter, long[] postNos, String[] fileNames, int notificationId) {
+        if (DEBUG)
+            Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") + " all image download service for thread " + board + "/" + threadNo + (startPostNo == 0 ? "" : " from post " + startPostNo) + " " + downloadImageTargetType);
 
         if (notificationId != 0) {
             // notification id provided so task was restarted
@@ -231,14 +229,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         prepareTargetFolder();
         prepareNomedia();
 
-        if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start")
-                + " handling all image download service type=" + downloadImageTargetType
-                + " for nid=(" + notificationId + ") thread=/" + board + "/" + threadNo
-                + ((postNos != null && postNos.length == 0) ? "" : " for posts " + Arrays.toString(postNos))
-                + ((fileNames != null && fileNames.length == 0) ? "" : " for filenames " + Arrays.toString(fileNames))
-                + (startPostNo == 0 ? "" : " from post " + startPostNo)
-                + " destination folder=" + targetFolder
-                + (restartCounter > 0 ? ", restarted " + restartCounter + " time(s)." : ""));
+        if (DEBUG)
+            Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") + " handling all image download service type=" + downloadImageTargetType + " for nid=(" + notificationId + ") thread=/" + board + "/" + threadNo + ((postNos != null && postNos.length == 0) ? "" : " for posts " + Arrays.toString(postNos)) + ((fileNames != null && fileNames.length == 0) ? "" : " for filenames " + Arrays.toString(fileNames)) + (startPostNo == 0 ? "" : " from post " + startPostNo) + " destination folder=" + targetFolder + (restartCounter > 0 ? ", restarted " + restartCounter + " time(s)." : ""));
 
         try {
             downloadImages(thread);
@@ -275,8 +267,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             @Override
             public void run() {
                 Log.i(TAG, "Delayed scheduling image download service");
-                startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo,
-                        restartCounter + (increaseCounter ? 1 : 0), postNos, fileNames, notificationId);
+                startDownload(getBaseContext(), board, threadNo, downloadImageTargetType, startPostNo, restartCounter + (increaseCounter ? 1 : 0), postNos, fileNames, notificationId);
             }
         }, 10000);
     }
@@ -287,8 +278,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             Log.i(TAG, "createNomediaIfConfigured downloadNomedia=" + downloadNomedia + " targetFolder=" + targetFolder);
         File d = new File(targetFolder);
         if (DEBUG) Log.i(TAG, "createNomediaIfConfigured downloadFolder=" + d);
-        if (d == null || !d.exists() || !d.isDirectory())
-            return;
+        if (d == null || !d.exists() || !d.isDirectory()) return;
         File f = new File(d, NOMEDIA_FILENAME);
         try {
             if (downloadNomedia) {
@@ -314,8 +304,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     }
 
     private void downloadImages(ChanThread thread) throws IOException, InterruptedException {
-        if (thread == null)
-            return;
+        if (thread == null) return;
         Set<Long> postNoSet = new HashSet<Long>(postNos.length);
         for (int i = 0; i < postNos.length; i++) {
             if (postNos[i] != 0) {
@@ -323,13 +312,10 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             }
         }
         int totalNumPosts = postNos.length != 0 ? postNoSet.size() : thread.posts.length;
-        int totalNumImages = thread.posts != null && thread.posts.length > 0 && thread.posts[0] != null && thread.posts[0].images > 0
-                ? thread.posts[0].images
-                : totalNumPosts;
+        int totalNumImages = thread.posts != null && thread.posts.length > 0 && thread.posts[0] != null && thread.posts[0].images > 0 ? thread.posts[0].images : totalNumPosts;
         if (DEBUG)
             Log.i(TAG, "downloadImages() numPosts:" + totalNumPosts + " numImages:" + totalNumImages);
-        lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo,
-                totalNumImages, 0, lastUpdateTime);
+        lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo, totalNumImages, 0, lastUpdateTime);
         boolean downloadNomedia = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_DOWNLOAD_NOMEDIA, false);
 
         boolean startPointFound = startPostNo == 0;
@@ -349,8 +335,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
                         storeImageInGallery(imageFile, post.imageName());
 					}
 					*/
-                    lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo,
-                            totalNumImages, index++, lastUpdateTime);
+                    lastUpdateTime = NotificationComponent.notifyDownloadUpdated(getApplicationContext(), notificationId, board, threadNo, totalNumImages, index++, lastUpdateTime);
                 }
                 startPostNo = post.no;  // setting last fetched image no
             }
@@ -416,8 +401,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             long endTime = Calendar.getInstance().getTimeInMillis();
             NetworkProfileManager.instance().finishedImageDownload(this, (int) (endTime - startTime), fileLength);
             if (DEBUG)
-                Log.i(TAG, "Stored image " + post.imageUrl(getApplicationContext()) + " to file "
-                        + targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
+                Log.i(TAG, "Stored image " + post.imageUrl(getApplicationContext()) + " to file " + targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
             return fileLength;
         } catch (Exception e) {
             Log.e(TAG, "Failed to download image: " + post.tim);
@@ -492,8 +476,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 
         private int scansScheduled = 0;
 
-        public MultipleFileMediaScanner(Context context, int notificationId, DownloadImageTargetType downloadImageTargetType, ChanThread thread,
-                                        String board, long threadNo, String[] filenames, String targetFolder) {
+        public MultipleFileMediaScanner(Context context, int notificationId, DownloadImageTargetType downloadImageTargetType, ChanThread thread, String board, long threadNo, String[] filenames, String targetFolder) {
             this.notificationId = notificationId;
             this.context = context;
             this.thread = thread;

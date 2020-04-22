@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,6 +14,7 @@
 -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <style name="EffectIcon">
         <item name="android:layout_width">@dimen/effect_icon_size</item>
         <item name="android:layout_height">@dimen/effect_icon_size</item>
@@ -22,6 +22,7 @@
         <item name="android:scaleType">fitCenter</item>
         <item name="android:background">@null</item>
     </style>
+
     <style name="EffectLabel">
         <item name="android:layout_width">@dimen/effect_label_width</item>
         <item name="android:layout_height">wrap_content</item>
@@ -34,6 +35,7 @@
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowRadius">2.0</item>
     </style>
+
     <style name="Effect">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -42,36 +44,43 @@
         <item name="android:paddingRight">@dimen/effect_padding_horizontal</item>
         <item name="android:orientation">vertical</item>
     </style>
+
     <style name="EffectsContainer">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/effects_container_padding</item>
         <item name="android:orientation">horizontal</item>
     </style>
+
     <style name="EffectsBar">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:orientation">vertical</item>
     </style>
+
     <style name="ActionBarInner">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">?android:attr/actionBarSize</item>
     </style>
+
     <style name="ActionBarOuter">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
     <style name="ActionBarLinearLayout">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">fill_parent</item>
         <item name="android:orientation">horizontal</item>
     </style>
+
     <style name="ActionBarBackLinearLayout" parent="@style/ActionBarLinearLayout">
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
+
     <style name="ActionBarImageView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">fill_parent</item>
@@ -79,6 +88,7 @@
         <item name="android:scaleType">centerInside</item>
         <item name="android:adjustViewBounds">true</item>
     </style>
+
     <style name="ActionBarArrow">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -87,6 +97,7 @@
         <item name="android:layout_marginRight">@dimen/action_bar_arrow_margin_right</item>
         <item name="android:src">?android:attr/homeAsUpIndicator</item>
     </style>
+
     <style name="ActionBarIcon" parent="@style/ActionBarImageView">
         <item name="android:paddingTop">@dimen/action_bar_icon_padding_vertical</item>
         <item name="android:paddingBottom">@dimen/action_bar_icon_padding_vertical</item>
@@ -94,11 +105,13 @@
         <item name="android:paddingRight">@dimen/action_bar_icon_padding_right</item>
         <item name="android:src">@mipmap/ic_launcher_gallery</item>
     </style>
+
     <style name="ActionBarTitle" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">fill_parent</item>
         <item name="android:gravity">center</item>
     </style>
+
     <style name="ImageActionButton" parent="@style/ActionBarImageView">
         <item name="android:paddingTop">@dimen/action_button_padding_vertical</item>
         <item name="android:paddingBottom">@dimen/action_button_padding_vertical</item>
@@ -106,6 +119,7 @@
         <item name="android:paddingRight">@dimen/action_button_padding_horizontal</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
+
     <style name="TextActionButton" parent="android:TextAppearance.Holo.Widget.ActionBar.Menu">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">fill_parent</item>
@@ -114,18 +128,22 @@
         <item name="android:paddingRight">@dimen/action_button_padding_horizontal</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
+
     <style name="EffectsMenuContainer" parent="@style/ActionBarLinearLayout">
         <item name="android:layout_width">@dimen/effects_menu_container_width</item>
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
+
     <style name="EffectsMenuActionButton" parent="@style/ImageActionButton">
         <item name="android:layout_weight">1</item>
         <item name="android:background">@drawable/photoeditor_toggle_button_background</item>
     </style>
+
     <style name="FullscreenToolView">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
     </style>
+
     <style name="SpinnerProgressDialog">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:windowBackground">@android:color/transparent</item>

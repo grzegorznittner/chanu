@@ -35,15 +35,11 @@ public class PasswordInfoDialogFragment extends DialogFragment {
         title.setText(R.string.pref_user_password);
         message.setText(R.string.post_reply_password_info_detail);
         setStyle(STYLE_NO_TITLE, 0);
-        Dialog dialog = (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setNeutralButton(R.string.thread_context_select,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                .create();
+        Dialog dialog = (new AlertDialog.Builder(getActivity())).setView(layout).setNeutralButton(R.string.thread_context_select, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
     }

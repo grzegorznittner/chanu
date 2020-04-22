@@ -60,8 +60,7 @@ public class PassSettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // we're cheating
-                ActivityDispatcher.launchUrlInBrowser(getActivity(),
-                        URLFormatComponent.getUrl(getActivity(), URLFormatComponent.CHAN_PASS_PURCHASE_URL));
+                ActivityDispatcher.launchUrlInBrowser(getActivity(), URLFormatComponent.getUrl(getActivity(), URLFormatComponent.CHAN_PASS_PURCHASE_URL));
                 return true;
             }
         });
@@ -90,13 +89,11 @@ public class PassSettingsFragment extends PreferenceFragment {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.remove(this);
         ft.commit();
-        if (dismissListener != null)
-            dismissListener.onDismiss(null);
+        if (dismissListener != null) dismissListener.onDismiss(null);
     }
 
     public SharedPreferences ensurePrefs() {
-        if (prefs == null)
-            prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return prefs;
     }
 
@@ -116,10 +113,8 @@ public class PassSettingsFragment extends PreferenceFragment {
     }
 
     private void updateAuthorizeVisibility() {
-        if (isPassAvailable())
-            authButton.setEnabled(true);
-        else
-            authButton.setEnabled(false);
+        if (isPassAvailable()) authButton.setEnabled(true);
+        else authButton.setEnabled(false);
     }
 
     private void authorizePass() {

@@ -47,9 +47,7 @@ public class BitmapUtils {
     private static final int DEFAULT_COMPRESS_QUALITY = 90;
     private static final int INDEX_ORIENTATION = 0;
 
-    private static final String[] IMAGE_PROJECTION = new String[]{
-            ImageColumns.ORIENTATION
-    };
+    private static final String[] IMAGE_PROJECTION = new String[]{ImageColumns.ORIENTATION};
 
     private final Context context;
 
@@ -60,8 +58,7 @@ public class BitmapUtils {
     /**
      * Creates a mutable bitmap from subset of source bitmap, transformed by the optional matrix.
      */
-    private static Bitmap createBitmap(
-            Bitmap source, int x, int y, int width, int height, Matrix m) {
+    private static Bitmap createBitmap(Bitmap source, int x, int y, int width, int height, Matrix m) {
         // Re-implement Bitmap createBitmap() to always return a mutable bitmap.
         Canvas canvas = new Canvas();
 
@@ -73,8 +70,7 @@ public class BitmapUtils {
         } else {
             RectF rect = new RectF(0, 0, width, height);
             m.mapRect(rect);
-            bitmap = Bitmap.createBitmap(
-                    Math.round(rect.width()), Math.round(rect.height()), source.getConfig());
+            bitmap = Bitmap.createBitmap(Math.round(rect.width()), Math.round(rect.height()), source.getConfig());
 
             canvas.translate(-rect.left, -rect.top);
             canvas.concat(m);
@@ -153,8 +149,7 @@ public class BitmapUtils {
             // TODO: Take max pixels allowed into account for calculation to avoid possible OOM.
             Rect bounds = getBitmapBounds(uri);
             int sampleSize = Math.max(bounds.width() / width, bounds.height() / height);
-            sampleSize = Math.min(sampleSize,
-                    Math.max(bounds.width() / height, bounds.height() / width));
+            sampleSize = Math.min(sampleSize, Math.max(bounds.width() / height, bounds.height() / width));
 
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = Math.max(sampleSize, 1);
@@ -177,15 +172,12 @@ public class BitmapUtils {
 
         if (bitmap != null) {
             // Scale down the sampled bitmap if it's still larger than the desired dimension.
-            float scale = Math.min((float) width / bitmap.getWidth(),
-                    (float) height / bitmap.getHeight());
-            scale = Math.max(scale, Math.min((float) height / bitmap.getWidth(),
-                    (float) width / bitmap.getHeight()));
+            float scale = Math.min((float) width / bitmap.getWidth(), (float) height / bitmap.getHeight());
+            scale = Math.max(scale, Math.min((float) height / bitmap.getWidth(), (float) width / bitmap.getHeight()));
             if (scale < 1) {
                 Matrix m = new Matrix();
                 m.setScale(scale, scale);
-                Bitmap transformed = createBitmap(
-                        bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m);
+                Bitmap transformed = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m);
                 bitmap.recycle();
                 return transformed;
             }
@@ -205,8 +197,7 @@ public class BitmapUtils {
             if (orientation != 0) {
                 Matrix m = new Matrix();
                 m.setRotate(orientation);
-                Bitmap transformed = createBitmap(
-                        bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m);
+                Bitmap transformed = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m);
                 bitmap.recycle();
                 return transformed;
             }
@@ -218,8 +209,7 @@ public class BitmapUtils {
      * Saves the bitmap by given directory, filename, and format; if the directory is given null,
      * then saves it under the cache directory.
      */
-    public File saveBitmap(
-            Bitmap bitmap, String directory, String filename, CompressFormat format) {
+    public File saveBitmap(Bitmap bitmap, String directory, String filename, CompressFormat format) {
 
         if (directory == null) {
             directory = context.getCacheDir().getAbsolutePath();

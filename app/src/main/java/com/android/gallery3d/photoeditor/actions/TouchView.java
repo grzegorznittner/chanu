@@ -35,8 +35,7 @@ class TouchView extends FullscreenToolView {
         super(context, attrs);
 
         final int swipeThreshold = (int) (500 * getResources().getDisplayMetrics().density);
-        gestureDetector = new GestureDetector(
-                context, new GestureDetector.SimpleOnGestureListener() {
+        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
 
             @Override
             public boolean onDown(MotionEvent e) {
@@ -56,8 +55,7 @@ class TouchView extends FullscreenToolView {
             }
 
             @Override
-            public boolean onFling(
-                    MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
+            public boolean onFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
                 if (swipeListener != null) {
                     float absX = Math.abs(velocityX);
                     float absY = Math.abs(velocityY);

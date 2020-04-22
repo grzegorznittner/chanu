@@ -28,8 +28,7 @@ public class ThreadExifOnClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         ViewParent parent = v.getParent();
-        if (parent == null || !(parent instanceof ViewGroup))
-            return;
+        if (parent == null || !(parent instanceof ViewGroup)) return;
         ViewGroup layout = (ViewGroup) parent;
         TextView listItemText = layout.findViewById(R.id.list_item_exif_text);
         listItemText.setText(Html.fromHtml(exifText));

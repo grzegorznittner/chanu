@@ -31,7 +31,6 @@ public class PosterizeFilter extends Filter {
 
     @Override
     public void process(Photo src, Photo dst) {
-        getEffect(EffectFactory.EFFECT_POSTERIZE).apply(
-                src.texture(), src.width(), src.height(), dst.texture());
+        getEffect(EffectFactory.EFFECT_POSTERIZE).apply(src.texture(), src.width(), src.height(), dst.texture());
     }
 }

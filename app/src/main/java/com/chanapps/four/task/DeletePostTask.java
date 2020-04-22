@@ -48,8 +48,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
     private Context context = null;
     private DeletingPostDialogFragment dialogFragment = null;
 
-    public DeletePostTask(ChanIdentifiedActivity activity,
-                          String boardCode, long threadNo, long[] postNos, String password, boolean imageOnly) {
+    public DeletePostTask(ChanIdentifiedActivity activity, String boardCode, long threadNo, long[] postNos, String password, boolean imageOnly) {
         this.activity = activity;
         this.context = activity.getBaseContext();
         this.boardCode = boardCode;
@@ -78,8 +77,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
             DeletePostResponse deletePostResponse = new DeletePostResponse(context, response);
             deletePostResponse.processResponse();
 
-            if (!postSuccessful(deletePostResponse))
-                return R.string.delete_post_error;
+            if (!postSuccessful(deletePostResponse)) return R.string.delete_post_error;
 
             return updateLastFetched();
         } catch (Exception e) {
@@ -95,11 +93,9 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
         partsList.add(new StringPart("pwd", password, PartBase.ASCII_CHARSET));
         for (long postNo : postNos)
             partsList.add(new StringPart(Long.toString(postNo), "delete", PartBase.ASCII_CHARSET));
-        if (imageOnly)
-            partsList.add(new StringPart("onlyimgdel", "on", PartBase.ASCII_CHARSET));
+        if (imageOnly) partsList.add(new StringPart("onlyimgdel", "on", PartBase.ASCII_CHARSET));
         Part[] parts = partsList.toArray(new Part[partsList.size()]);
-        if (DEBUG)
-            dumpPartsList(partsList);
+        if (DEBUG) dumpPartsList(partsList);
         MultipartEntity entity = new MultipartEntity(parts);
         return entity;
     }
@@ -107,8 +103,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
     protected void dumpPartsList(List<Part> partsList) {
         if (DEBUG) Log.i(TAG, "Dumping mime parts list:");
         for (Part p : partsList) {
-            if (!(p instanceof StringPart))
-                continue;
+            if (!(p instanceof StringPart)) continue;
             StringPart s = (StringPart) p;
             String line = s.getName() + ": " + s.getValue() + ", ";
             if (DEBUG) Log.i(TAG, line);
@@ -123,8 +118,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
             HttpPost request = new HttpPost(url);
             entity.setContentEncoding(PartBase.ASCII_CHARSET);
             request.setEntity(entity);
-            if (DEBUG)
-                dumpRequestContent(request.getEntity().getContent());
+            if (DEBUG) dumpRequestContent(request.getEntity().getContent());
             if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse httpResponse = client.execute(request);
             if (DEBUG)
@@ -157,8 +151,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
         try {
             BufferedReader r = new BufferedReader(new InputStreamReader(is));
             String l;
-            while ((l = r.readLine()) != null)
-                if (DEBUG) Log.i(TAG, l);
+            while ((l = r.readLine()) != null) if (DEBUG) Log.i(TAG, l);
         } catch (IOException e) {
             if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
         }

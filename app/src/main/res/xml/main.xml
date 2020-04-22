@@ -13,8 +13,22 @@
      limitations under the License.
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="mColorPicker"><PreferenceCategory android:title="Color Picker"><Preference android:key="dialog" android:summary="Show a color picker dialog built upon the custom color picker view." android:title="Show Dialog"></Preference>
-<Preference android:summary="Show how the custom color picker can be used in a standard activity." android:title="Show Activity" android:key="activity"></Preference></PreferenceCategory>
-<PreferenceCategory android:title="Source Code"><Preference android:title="Get Source Code" android:summary="http://code.google.com/p/color-picker-view/" android:key="source_code"></Preference>
-</PreferenceCategory>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="mColorPicker">
+    <PreferenceCategory android:title="Color Picker">
+        <Preference
+                android:key="dialog"
+                android:summary="Show a color picker dialog built upon the custom color picker view."
+                android:title="Show Dialog"></Preference>
+        <Preference
+                android:key="activity"
+                android:summary="Show how the custom color picker can be used in a standard activity."
+                android:title="Show Activity"></Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Source Code">
+        <Preference
+                android:key="source_code"
+                android:summary="http://code.google.com/p/color-picker-view/"
+                android:title="Get Source Code"></Preference>
+    </PreferenceCategory>
 </PreferenceScreen>

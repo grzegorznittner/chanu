@@ -48,8 +48,7 @@ class LocationClustering extends Clustering {
         mHandler = new Handler(Looper.getMainLooper());
     }
 
-    private static String generateName(ArrayList<SmallItem> items,
-                                       ReverseGeocoder geocoder) {
+    private static String generateName(ArrayList<SmallItem> items, ReverseGeocoder geocoder) {
         ReverseGeocoder.SetLatLong set = new ReverseGeocoder.SetLatLong();
 
         int n = items.size();
@@ -133,8 +132,7 @@ class LocationClustering extends Clustering {
                     float bestDistance = Float.MAX_VALUE;
                     int bestIndex = 0;
                     for (int j = 0; j < k; j++) {
-                        float distance = (float) GalleryUtils.fastDistanceMeters(
-                                p.latRad, p.lngRad, center[j].latRad, center[j].lngRad);
+                        float distance = (float) GalleryUtils.fastDistanceMeters(p.latRad, p.lngRad, center[j].latRad, center[j].lngRad);
                         // We may have small non-zero distance introduced by
                         // floating point calculation, so zero out small
                         // distances less than 1 meter.
@@ -161,8 +159,7 @@ class LocationClustering extends Clustering {
                     }
                 }
 
-                if (totalDistance == 0 || (Math.abs(lastDistance - totalDistance)
-                        / totalDistance) < STOP_CHANGE_RATIO) {
+                if (totalDistance == 0 || (Math.abs(lastDistance - totalDistance) / totalDistance) < STOP_CHANGE_RATIO) {
                     break;
                 }
                 lastDistance = totalDistance;
@@ -269,8 +266,7 @@ class LocationClustering extends Clustering {
         if (hasUnresolvedAddress) {
             mHandler.post(new Runnable() {
                 public void run() {
-                    Toast.makeText(mContext, R.string.no_connectivity,
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.no_connectivity, Toast.LENGTH_LONG).show();
                 }
             });
         }

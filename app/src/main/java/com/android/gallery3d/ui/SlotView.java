@@ -42,8 +42,7 @@ public class SlotView extends GLView {
     private final ScrollerHelper mScroller;
     private final Paper mPaper = new Paper();
     // Use linked hash map to keep the rendering order
-    private final HashMap<DisplayItem, ItemEntry> mItems =
-            new HashMap<DisplayItem, ItemEntry>();
+    private final HashMap<DisplayItem, ItemEntry> mItems = new HashMap<DisplayItem, ItemEntry>();
     private final Position mTempPosition = new Position();
     private final Layout mLayout = new Layout();
     public LinkedNode.List<ItemEntry> mItemList = LinkedNode.newList();
@@ -59,9 +58,9 @@ public class SlotView extends GLView {
     // whether the down action happened while the view is scrolling.
     private boolean mDownInScrolling;
     private int mOverscrollEffect = OVERSCROLL_3D;
+
     public SlotView(Context context) {
-        mGestureDetector =
-                new GestureDetector(context, new MyGestureListener());
+        mGestureDetector = new GestureDetector(context, new MyGestureListener());
         mScroller = new ScrollerHelper(context);
     }
 
@@ -71,9 +70,7 @@ public class SlotView extends GLView {
             return;
         }
         Rect rect = mLayout.getSlotRect(index);
-        int position = WIDE
-                ? (rect.left + rect.right - getWidth()) / 2
-                : (rect.top + rect.bottom - getHeight()) / 2;
+        int position = WIDE ? (rect.left + rect.right - getWidth()) / 2 : (rect.top + rect.bottom - getHeight()) / 2;
         setScrollPosition(position);
     }
 
@@ -124,8 +121,7 @@ public class SlotView extends GLView {
         // Make sure we are still at a resonable scroll position after the size
         // is changed (like orientation change). We choose to keep the center
         // visible slot still visible. This is arbitrary but reasonable.
-        int visibleIndex =
-                (mLayout.getVisibleStart() + mLayout.getVisibleEnd()) / 2;
+        int visibleIndex = (mLayout.getVisibleStart() + mLayout.getVisibleEnd()) / 2;
         mLayout.setSize(r - l, b - t);
         makeSlotVisible(visibleIndex);
 
@@ -302,8 +298,7 @@ public class SlotView extends GLView {
         mMoreAnimation = more;
     }
 
-    private int renderItem(GLCanvas canvas, ItemEntry entry,
-                           float interpolate, int pass, boolean paperActive) {
+    private int renderItem(GLCanvas canvas, ItemEntry entry, float interpolate, int pass, boolean paperActive) {
         canvas.save(GLCanvas.SAVE_FLAG_ALPHA | GLCanvas.SAVE_FLAG_MATRIX);
         Position position = entry.target;
         if (mPositions != null) {
@@ -311,18 +306,15 @@ public class SlotView extends GLView {
             position.set(entry.target);
             position.x -= mScrollX;
             position.y -= mScrollY;
-            Position source = mPositions
-                    .getPosition(entry.item.getIdentity(), position);
+            Position source = mPositions.getPosition(entry.item.getIdentity(), position);
             source.x += mScrollX;
             source.y += mScrollY;
             position = mTempPosition;
-            Position.interpolate(
-                    source, entry.target, position, interpolate);
+            Position.interpolate(source, entry.target, position, interpolate);
         }
         canvas.multiplyAlpha(position.alpha);
         if (paperActive) {
-            canvas.multiplyMatrix(mPaper.getTransform(
-                    position, entry.base, mScrollX, mScrollY), 0);
+            canvas.multiplyMatrix(mPaper.getTransform(position, entry.base, mScrollX, mScrollY), 0);
         } else {
             canvas.translate(position.x, position.y, position.z);
         }
@@ -528,18 +520,16 @@ public class SlotView extends GLView {
         //
         // The comments inside this method are the description when the major
         // directon is horizontal (X), and the minor directon is vertical (Y).
-        private void initLayoutParameters(
-                int majorLength, int minorLength,  /* The view width and height */
-                int majorUnitSize, int minorUnitSize,  /* The slot width and height */
-                int[] padding) {
+        private void initLayoutParameters(int majorLength, int minorLength,  /* The view width and height */
+                                          int majorUnitSize, int minorUnitSize,  /* The slot width and height */
+                                          int[] padding) {
             int unitCount = (minorLength + mSlotGap) / (minorUnitSize + mSlotGap);
             if (unitCount == 0) unitCount = 1;
             mUnitCount = unitCount;
 
             // We put extra padding above and below the column.
             int availableUnits = Math.min(mUnitCount, mSlotCount);
-            int usedMinorLength = availableUnits * minorUnitSize +
-                    (availableUnits - 1) * mSlotGap;
+            int usedMinorLength = availableUnits * minorUnitSize + (availableUnits - 1) * mSlotGap;
             padding[0] = (minorLength - usedMinorLength) / 2;
 
             // Then calculate how many columns we need for all slots.
@@ -589,15 +579,13 @@ public class SlotView extends GLView {
             if (WIDE) {
                 int startCol = position / (mSlotWidth + mSlotGap);
                 int start = Math.max(0, mUnitCount * startCol);
-                int endCol = (position + mWidth + mSlotWidth + mSlotGap - 1) /
-                        (mSlotWidth + mSlotGap);
+                int endCol = (position + mWidth + mSlotWidth + mSlotGap - 1) / (mSlotWidth + mSlotGap);
                 int end = Math.min(mSlotCount, mUnitCount * endCol);
                 setVisibleRange(start, end);
             } else {
                 int startRow = position / (mSlotHeight + mSlotGap);
                 int start = Math.max(0, mUnitCount * startRow);
-                int endRow = (position + mHeight + mSlotHeight + mSlotGap - 1) /
-                        (mSlotHeight + mSlotGap);
+                int endRow = (position + mHeight + mSlotHeight + mSlotGap - 1) / (mSlotHeight + mSlotGap);
                 int end = Math.min(mSlotCount, mUnitCount * endRow);
                 setVisibleRange(start, end);
             }
@@ -653,9 +641,7 @@ public class SlotView extends GLView {
                 return INDEX_NONE;
             }
 
-            int index = WIDE
-                    ? (columnIdx * mUnitCount + rowIdx)
-                    : (rowIdx * mUnitCount + columnIdx);
+            int index = WIDE ? (columnIdx * mUnitCount + rowIdx) : (rowIdx * mUnitCount + columnIdx);
 
             return index >= mSlotCount ? INDEX_NONE : index;
         }
@@ -666,8 +652,7 @@ public class SlotView extends GLView {
         }
     }
 
-    private class MyGestureListener implements
-            GestureDetector.OnGestureListener {
+    private class MyGestureListener implements GestureDetector.OnGestureListener {
         private boolean isDown;
 
         // We call the listener's onDown() when our onShowPress() is called and
@@ -694,8 +679,7 @@ public class SlotView extends GLView {
         }
 
         @Override
-        public boolean onFling(MotionEvent e1,
-                               MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             cancelDown();
             int scrollLimit = mLayout.getScrollLimit();
             if (scrollLimit == 0) return false;
@@ -707,12 +691,10 @@ public class SlotView extends GLView {
         }
 
         @Override
-        public boolean onScroll(MotionEvent e1,
-                                MotionEvent e2, float distanceX, float distanceY) {
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             cancelDown();
             float distance = WIDE ? distanceX : distanceY;
-            int overDistance = mScroller.startScroll(
-                    Math.round(distance), 0, mLayout.getScrollLimit());
+            int overDistance = mScroller.startScroll(Math.round(distance), 0, mLayout.getScrollLimit());
             if (mOverscrollEffect == OVERSCROLL_3D && overDistance != 0) {
                 mPaper.overScroll(overDistance);
             }

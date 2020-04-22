@@ -61,8 +61,7 @@ public class SpinnerVisibilitySetter {
             switch (msg.what) {
                 case SHOW_SPINNER_REQUESTED:
                     mPendingVisibilityRequest = true;
-                    sendEmptyMessageDelayed(SHOW_SPINNER_DELAY_REACHED,
-                            SPINNER_DISPLAY_DELAY);
+                    sendEmptyMessageDelayed(SHOW_SPINNER_DELAY_REACHED, SPINNER_DISPLAY_DELAY);
                     break;
                 case HIDE_SPINNER_REQUESTED:
                     mPendingVisibilityRequest = false;
@@ -83,9 +82,7 @@ public class SpinnerVisibilitySetter {
                         // The spinner is visible but hasn't been visible for long
                         // enough yet.
                         // Send a delayed hide message.
-                        sendEmptyMessageAtTime(HIDE_SPINNER_DELAY_REACHED,
-                                mSpinnerVisibilityStartTime
-                                        + MIN_SPINNER_DISPLAY_TIME);
+                        sendEmptyMessageAtTime(HIDE_SPINNER_DELAY_REACHED, mSpinnerVisibilityStartTime + MIN_SPINNER_DISPLAY_TIME);
                     }
                     break;
                 case SHOW_SPINNER_DELAY_REACHED:
@@ -99,8 +96,7 @@ public class SpinnerVisibilitySetter {
                         // issues.
                         mSpinnerVisibilityStartTime = SystemClock.uptimeMillis();
                         if (mActivity instanceof GalleryActivity) {
-                            Handler handler = ((GalleryActivity) mActivity)
-                                    .getHandler();
+                            Handler handler = ((GalleryActivity) mActivity).getHandler();
                             if (handler != null)
                                 handler.post(new SetProgressVisibilityRunnable(true));
                         }
@@ -109,10 +105,8 @@ public class SpinnerVisibilitySetter {
                 case HIDE_SPINNER_DELAY_REACHED:
                     mActiveVisibilityRequest = false;
                     if (mActivity instanceof GalleryActivity) {
-                        Handler handler = ((GalleryActivity) mActivity)
-                                .getHandler();
-                        if (handler != null)
-                            handler.post(new SetProgressVisibilityRunnable(false));
+                        Handler handler = ((GalleryActivity) mActivity).getHandler();
+                        if (handler != null) handler.post(new SetProgressVisibilityRunnable(false));
                     }
                     break;
             }
@@ -126,8 +120,7 @@ public class SpinnerVisibilitySetter {
     public static SpinnerVisibilitySetter getInstance(Activity activity) {
         synchronized (sInstanceMap) {
             if (sInstanceMap.get(activity) == null) {
-                sInstanceMap.put(activity,
-                        new SpinnerVisibilitySetter(activity));
+                sInstanceMap.put(activity, new SpinnerVisibilitySetter(activity));
             }
             return sInstanceMap.get(activity);
         }
@@ -142,8 +135,7 @@ public class SpinnerVisibilitySetter {
     }
 
     public void setSpinnerVisibility(boolean visible) {
-        mHandler.sendEmptyMessage(visible ? SHOW_SPINNER_REQUESTED
-                : HIDE_SPINNER_REQUESTED);
+        mHandler.sendEmptyMessage(visible ? SHOW_SPINNER_REQUESTED : HIDE_SPINNER_REQUESTED);
     }
 
     private class SetProgressVisibilityRunnable implements Runnable {

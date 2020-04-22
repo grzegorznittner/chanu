@@ -25,17 +25,14 @@ public class ClusterAlbum extends MediaSet implements ContentListener {
     private DataManager mDataManager;
     private MediaSet mClusterAlbumSet;
 
-    public ClusterAlbum(Path path, DataManager dataManager,
-                        MediaSet clusterAlbumSet) {
+    public ClusterAlbum(Path path, DataManager dataManager, MediaSet clusterAlbumSet) {
         super(path, nextVersionNumber());
         mDataManager = dataManager;
         mClusterAlbumSet = clusterAlbumSet;
         mClusterAlbumSet.addContentListener(this);
     }
 
-    public static ArrayList<MediaItem> getMediaItemFromPath(
-            ArrayList<Path> paths, int start, int count,
-            DataManager dataManager) {
+    public static ArrayList<MediaItem> getMediaItemFromPath(ArrayList<Path> paths, int start, int count, DataManager dataManager) {
         if (start >= paths.size()) {
             return new ArrayList<MediaItem>();
         }

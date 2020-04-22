@@ -56,20 +56,14 @@ public class ReportPostDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.report_post_dialog_fragment, null);
-        builder
-                .setView(view)
-                .setPositiveButton(R.string.report_post, null)
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ReportPostDialogFragment.this.dismiss();
-                    }
-                });
+        builder.setView(view).setPositiveButton(R.string.report_post, null).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ReportPostDialogFragment.this.dismiss();
+            }
+        });
         reportTypeSpinner = view.findViewById(R.id.report_post_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getActivity(),
-                R.array.report_post_types,
-                android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.report_post_types, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         reportTypeSpinner.setAdapter(adapter);
         recaptchaView = view.findViewById(R.id.report_recaptcha_webview);
@@ -122,22 +116,17 @@ public class ReportPostDialogFragment extends DialogFragment {
                 }
 
                 closeKeyboard();
-                ReportPostTask reportPostTask = new ReportPostTask(
-                        (ChanIdentifiedActivity) getActivity(), boardCode, threadNo, postNos,
-                        reportType, reportTypeIndex, recaptchaResponse);
+                ReportPostTask reportPostTask = new ReportPostTask((ChanIdentifiedActivity) getActivity(), boardCode, threadNo, postNos, reportType, reportTypeIndex, recaptchaResponse);
                 ReportingPostDialogFragment dialogFragment = new ReportingPostDialogFragment(reportPostTask);
                 dialogFragment.show(getActivity().getSupportFragmentManager(), ReportingPostDialogFragment.TAG);
-                if (!reportPostTask.isCancelled())
-                    reportPostTask.execute(dialogFragment);
+                if (!reportPostTask.isCancelled()) reportPostTask.execute(dialogFragment);
                 dismiss();
             }
         });
     }
 
     private void closeKeyboard() {
-        IBinder windowToken = getActivity().getCurrentFocus() != null ?
-                getActivity().getCurrentFocus().getWindowToken()
-                : null;
+        IBinder windowToken = getActivity().getCurrentFocus() != null ? getActivity().getCurrentFocus().getWindowToken() : null;
         if (windowToken != null) { // close the keyboard
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(windowToken, 0);

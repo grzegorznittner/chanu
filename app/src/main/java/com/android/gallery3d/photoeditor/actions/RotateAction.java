@@ -48,8 +48,7 @@ public class RotateAction extends EffectAction {
         rotateView.setOnRotateChangeListener(new RotateView.OnRotateChangeListener() {
 
             // Directly transform photo-view because running the rotate filter isn't fast enough.
-            PhotoView photoView = rotateView.getRootView().findViewById(
-                    R.id.photo_view);
+            PhotoView photoView = rotateView.getRootView().findViewById(R.id.photo_view);
 
             @Override
             public void onAngleChanged(float degrees, boolean fromUser) {

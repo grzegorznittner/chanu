@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2011 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2011 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,44 +13,55 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="40dp">
-        <TextView android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-        <ProgressBar android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:max="100"
-            android:progress="30"
-            android:secondaryProgress="65"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp"
-            android:layout_width="130dp"
-            android:layout_height="4dp"
-            android:layout_below="@id/status"
-            android:layout_centerHorizontal="true"/>
+
+        <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+        <ProgressBar
+                android:id="@+id/progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="130dp"
+                android:layout_height="4dp"
+                android:layout_below="@id/status"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:max="100"
+                android:progress="30"
+                android:secondaryProgress="65" />
     </RelativeLayout>
-    <RelativeLayout android:layout_width="fill_parent"
-                android:layout_height="@dimen/manage_cache_bottom_height"
-                android:background="#1f1f1f">
-        <TextView android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/make_available_offline"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:drawableLeft="@drawable/ic_menu_make_offline"
-            android:drawablePadding="3dp"/>
-        <Button android:id="@+id/done"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/done"
-            android:layout_alignParentRight="true"/>
+
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/manage_cache_bottom_height"
+            android:background="#1f1f1f">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:drawableLeft="@drawable/ic_menu_make_offline"
+                android:drawablePadding="3dp"
+                android:gravity="center_vertical"
+                android:text="@string/make_available_offline" />
+
+        <Button
+                android:id="@+id/done"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:text="@string/done" />
     </RelativeLayout>
 </LinearLayout>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,51 +13,57 @@
      limitations under the License.
 -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ActionBarInner"
-    android:background="@drawable/photoeditor_actionbar_translucent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/ActionBarInner"
+        android:background="@drawable/photoeditor_actionbar_translucent">
 
     <LinearLayout style="@style/ActionBarLinearLayout">
 
         <LinearLayout
-            android:id="@+id/action_bar_back"
-            style="@style/ActionBarBackLinearLayout">
-            <ImageView style="@style/ActionBarArrow"/>
-            <ImageView style="@style/ActionBarIcon"/>
+                android:id="@+id/action_bar_back"
+                style="@style/ActionBarBackLinearLayout">
+
+            <ImageView style="@style/ActionBarArrow" />
+
+            <ImageView style="@style/ActionBarIcon" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/action_bar_title"
-            style="@style/ActionBarTitle"
-            android:text="@string/edit"/>
+                android:id="@+id/action_bar_title"
+                style="@style/ActionBarTitle"
+                android:text="@string/edit" />
     </LinearLayout>
 
-    <LinearLayout style="@style/ActionBarLinearLayout" android:layout_alignParentRight="true">
+    <LinearLayout
+            style="@style/ActionBarLinearLayout"
+            android:layout_alignParentRight="true">
 
         <ImageButton
-            android:id="@+id/undo_button"
-            style="@style/ImageActionButton"
-            android:src="@drawable/photoeditor_undo"/>
+                android:id="@+id/undo_button"
+                style="@style/ImageActionButton"
+                android:src="@drawable/photoeditor_undo" />
+
         <ImageButton
-            android:id="@+id/redo_button"
-            style="@style/ImageActionButton"
-            android:src="@drawable/photoeditor_redo"/>
+                android:id="@+id/redo_button"
+                style="@style/ImageActionButton"
+                android:src="@drawable/photoeditor_redo" />
 
         <ViewSwitcher
-            android:id="@+id/save_share_buttons"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent">
+                android:id="@+id/save_share_buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent">
+
             <Button
-                android:id="@+id/save_button"
-                style="@style/TextActionButton"
-                android:layout_width="fill_parent"
-                android:text="@string/save"/>
+                    android:id="@+id/save_button"
+                    style="@style/TextActionButton"
+                    android:layout_width="fill_parent"
+                    android:text="@string/save" />
+
             <ImageButton
-                android:id="@+id/share_button"
-                style="@style/ImageActionButton"
-                android:layout_width="fill_parent"
-                android:src="@drawable/ic_menu_share_holo_light"/>
+                    android:id="@+id/share_button"
+                    style="@style/ImageActionButton"
+                    android:layout_width="fill_parent"
+                    android:src="@drawable/ic_menu_share_holo_light" />
         </ViewSwitcher>
 
     </LinearLayout>

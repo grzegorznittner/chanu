@@ -39,8 +39,7 @@ public class CropFilter extends Filter {
 
     @Override
     public void process(Photo src, Photo dst) {
-        dst.changeDimension(Math.round(bounds.width() * src.width()),
-                Math.round(bounds.height() * src.height()));
+        dst.changeDimension(Math.round(bounds.width() * src.width()), Math.round(bounds.height() * src.height()));
 
         Effect effect = getEffect(EffectFactory.EFFECT_CROP);
         effect.setParameter("xorigin", Math.round(bounds.left * src.width()));

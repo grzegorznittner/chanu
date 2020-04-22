@@ -33,8 +33,7 @@ public class IconPreferenceScreen extends Preference {
         super(context, attrs, defStyle);
         this.context = context;
         setLayoutResource(R.layout.about_preference_icon);
-        typedArray = context.obtainStyledAttributes(attrs,
-                R.styleable.IconPreferenceScreen, defStyle, 0);
+        typedArray = context.obtainStyledAttributes(attrs, R.styleable.IconPreferenceScreen, defStyle, 0);
     }
 
     @Override
@@ -44,9 +43,7 @@ public class IconPreferenceScreen extends Preference {
         int resourceId = typedArray.getResourceId(R.styleable.IconPreferenceScreen_icon, 0);
         if (imageView != null && resourceId > 0) {
             String uri = "drawable://" + resourceId;
-            DisplayImageOptions options = (new DisplayImageOptions.Builder())
-                    .cacheInMemory()
-                    .build();
+            DisplayImageOptions options = (new DisplayImageOptions.Builder()).cacheInMemory().build();
             ChanImageLoader.getInstance(context).displayImage(uri, imageView, options);
         }
     }

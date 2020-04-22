@@ -42,14 +42,10 @@ public class GenericDialogFragment extends DialogFragment {
         title.setText(titleString);
         message.setText(messageString);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setNegativeButton(R.string.dismiss,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                .create();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).create();
     }
 }

@@ -135,8 +135,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
     // If mItemPath is not null, mCurrentIndex is only a hint for where we
     // can find the item. If mItemPath is null, then we use the mCurrentIndex to
     // find the image being viewed.
-    public PhotoDataAdapter(GalleryActivity activity,
-                            PhotoView view, MediaSet mediaSet, Path itemPath, int indexHint) {
+    public PhotoDataAdapter(GalleryActivity activity, PhotoView view, MediaSet mediaSet, Path itemPath, int indexHint) {
         mSource = Utils.checkNotNull(mediaSet);
         mPhotoView = Utils.checkNotNull(view);
         mItemPath = Utils.checkNotNull(itemPath);
@@ -393,8 +392,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         BitmapRegionDecoder fullImage = entry.fullImage;
         if (screenNail != null) {
             if (fullImage != null) {
-                mTileProvider.setBackupImage(screenNail,
-                        fullImage.getWidth(), fullImage.getHeight());
+                mTileProvider.setBackupImage(screenNail, fullImage.getWidth(), fullImage.getHeight());
                 mTileProvider.setRegionDecoder(fullImage);
             } else {
                 int width = screenNail.getWidth();
@@ -409,8 +407,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
 
     private void updateSlidingWindow() {
         // 1. Update the image window
-        int start = Utils.clamp(mCurrentIndex - IMAGE_CACHE_SIZE / 2,
-                0, Math.max(0, mSize - IMAGE_CACHE_SIZE));
+        int start = Utils.clamp(mCurrentIndex - IMAGE_CACHE_SIZE / 2, 0, Math.max(0, mSize - IMAGE_CACHE_SIZE));
         int end = Math.min(mSize, start + IMAGE_CACHE_SIZE);
 
         if (mActiveStart == start && mActiveEnd == end) return;
@@ -419,11 +416,9 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         mActiveEnd = end;
 
         // 2. Update the data window
-        start = Utils.clamp(mCurrentIndex - DATA_CACHE_SIZE / 2,
-                0, Math.max(0, mSize - DATA_CACHE_SIZE));
+        start = Utils.clamp(mCurrentIndex - DATA_CACHE_SIZE / 2, 0, Math.max(0, mSize - DATA_CACHE_SIZE));
         end = Math.min(mSize, start + DATA_CACHE_SIZE);
-        if (mContentStart > mActiveStart || mContentEnd < mActiveEnd
-                || Math.abs(start - mContentStart) > MIN_LOAD_COUNT) {
+        if (mContentStart > mActiveStart || mContentEnd < mActiveEnd || Math.abs(start - mContentStart) > MIN_LOAD_COUNT) {
             for (int i = mContentStart; i < mContentEnd; ++i) {
                 if (i < start || i >= end) {
                     mData[i % DATA_CACHE_SIZE] = null;
@@ -485,23 +480,15 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         MediaItem item = mData[index % DATA_CACHE_SIZE];
         Utils.assertTrue(item != null);
 
-        if (which == BIT_SCREEN_NAIL
-                && (entry.requestedBits & BIT_SCREEN_NAIL) == 0) {
+        if (which == BIT_SCREEN_NAIL && (entry.requestedBits & BIT_SCREEN_NAIL) == 0) {
             entry.requestedBits |= BIT_SCREEN_NAIL;
-            entry.screenNailTask = mThreadPool.submit(
-                    new ScreenNailJob(item),
-                    new ScreenNailListener(item.getDataVersion()));
+            entry.screenNailTask = mThreadPool.submit(new ScreenNailJob(item), new ScreenNailListener(item.getDataVersion()));
             // request screen nail
             return entry.screenNailTask;
         }
-        if (which == BIT_FULL_IMAGE
-                && (entry.requestedBits & BIT_FULL_IMAGE) == 0
-                && (item.getSupportedOperations()
-                & MediaItem.SUPPORT_FULL_IMAGE) != 0) {
+        if (which == BIT_FULL_IMAGE && (entry.requestedBits & BIT_FULL_IMAGE) == 0 && (item.getSupportedOperations() & MediaItem.SUPPORT_FULL_IMAGE) != 0) {
             entry.requestedBits |= BIT_FULL_IMAGE;
-            entry.fullImageTask = mThreadPool.submit(
-                    item.requestLargeImage(),
-                    new FullImageListener(item.getDataVersion()));
+            entry.fullImageTask = mThreadPool.submit(item.requestLargeImage(), new FullImageListener(item.getDataVersion()));
             // request full image
             return entry.fullImageTask;
         }
@@ -512,9 +499,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         HashSet<Long> toBeRemoved = new HashSet<Long>(mImageCache.keySet());
         for (int i = mActiveStart; i < mActiveEnd; ++i) {
             MediaItem item = mData[i % DATA_CACHE_SIZE];
-            long version = item == null
-                    ? MediaObject.INVALID_DATA_VERSION
-                    : item.getDataVersion();
+            long version = item == null ? MediaObject.INVALID_DATA_VERSION : item.getDataVersion();
             if (version == MediaObject.INVALID_DATA_VERSION) continue;
             ImageEntry entry = mImageCache.get(version);
             toBeRemoved.remove(version);
@@ -544,8 +529,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
 
     private <T> T executeAndWait(Callable<T> callable) {
         FutureTask<T> task = new FutureTask<T>(callable);
-        mMainHandler.sendMessage(
-                mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
+        mMainHandler.sendMessage(mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
         try {
             return task.get();
         } catch (InterruptedException e) {
@@ -583,8 +567,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
             Bitmap bitmap = mItem.requestImage(MediaItem.TYPE_THUMBNAIL).run(jc);
             if (jc.isCancelled()) return null;
             if (bitmap != null) {
-                bitmap = BitmapUtils.rotateBitmap(bitmap,
-                        mItem.getRotation() - mItem.getFullImageRotation(), true);
+                bitmap = BitmapUtils.rotateBitmap(bitmap, mItem.getRotation() - mItem.getFullImageRotation(), true);
             }
             return bitmap;
         }
@@ -612,8 +595,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         public ArrayList<MediaItem> items;
     }
 
-    private class FullImageListener
-            implements Runnable, FutureListener<BitmapRegionDecoder> {
+    private class FullImageListener implements Runnable, FutureListener<BitmapRegionDecoder> {
         private final long mVersion;
         private Future<BitmapRegionDecoder> mFuture;
 
@@ -624,8 +606,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         @Override
         public void onFutureDone(Future<BitmapRegionDecoder> future) {
             mFuture = future;
-            mMainHandler.sendMessage(
-                    mMainHandler.obtainMessage(MSG_RUN_OBJECT, this));
+            mMainHandler.sendMessage(mMainHandler.obtainMessage(MSG_RUN_OBJECT, this));
         }
 
         @Override
@@ -634,8 +615,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         }
     }
 
-    private class ScreenNailListener
-            implements Runnable, FutureListener<Bitmap> {
+    private class ScreenNailListener implements Runnable, FutureListener<Bitmap> {
         private final long mVersion;
         private Future<Bitmap> mFuture;
 
@@ -646,8 +626,7 @@ public class PhotoDataAdapter implements PhotoPage.Model {
         @Override
         public void onFutureDone(Future<Bitmap> future) {
             mFuture = future;
-            mMainHandler.sendMessage(
-                    mMainHandler.obtainMessage(MSG_RUN_OBJECT, this));
+            mMainHandler.sendMessage(mMainHandler.obtainMessage(MSG_RUN_OBJECT, this));
         }
 
         @Override

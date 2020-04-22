@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,31 +13,33 @@
      limitations under the License.
 -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/ActionBarInner"
-    android:background="@drawable/photoeditor_actionbar_translucent_bottom">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/ActionBarInner"
+        android:background="@drawable/photoeditor_actionbar_translucent_bottom">
 
     <LinearLayout
-        android:id="@+id/toggles"
-        style="@style/EffectsMenuContainer">
+            android:id="@+id/toggles"
+            style="@style/EffectsMenuContainer">
 
         <ImageButton
-            android:id="@+id/exposure_button"
-            style="@style/EffectsMenuActionButton"
-            android:src="@drawable/photoeditor_exposure"/>
+                android:id="@+id/exposure_button"
+                style="@style/EffectsMenuActionButton"
+                android:src="@drawable/photoeditor_exposure" />
+
         <ImageButton
-            android:id="@+id/artistic_button"
-            style="@style/EffectsMenuActionButton"
-            android:src="@drawable/photoeditor_artistic"/>
+                android:id="@+id/artistic_button"
+                style="@style/EffectsMenuActionButton"
+                android:src="@drawable/photoeditor_artistic" />
+
         <ImageButton
-            android:id="@+id/color_button"
-            style="@style/EffectsMenuActionButton"
-            android:src="@drawable/photoeditor_color"/>
+                android:id="@+id/color_button"
+                style="@style/EffectsMenuActionButton"
+                android:src="@drawable/photoeditor_color" />
+
         <ImageButton
-            android:id="@+id/fix_button"
-            style="@style/EffectsMenuActionButton"
-            android:src="@drawable/photoeditor_fix"/>
+                android:id="@+id/fix_button"
+                style="@style/EffectsMenuActionButton"
+                android:src="@drawable/photoeditor_fix" />
     </LinearLayout>
 
 </FrameLayout>

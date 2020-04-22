@@ -51,23 +51,17 @@ public class ClearCacheDialogFragment extends DialogFragment {
         title.setText(R.string.pref_cache_category);
         message.setText(R.string.dialog_clear_cache_confirm);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setPositiveButton(R.string.dialog_clear,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                (new ClearCacheAsyncTask(getActivity())).execute();
-                            }
-                        })
-                .setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // ignore
-                            }
-                        })
-                .create();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setPositiveButton(R.string.dialog_clear, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                (new ClearCacheAsyncTask(getActivity())).execute();
+            }
+        }).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // ignore
+            }
+        }).create();
     }
 
     private static class ClearCacheAsyncTask extends AsyncTask<Void, Void, String> {
@@ -97,8 +91,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
 
         @Override
         public String doInBackground(Void... params) {
-            if (runningDelete)
-                return null;
+            if (runningDelete) return null;
             String contentText;
             if (ChanFileStorage.deleteCacheDirectory(context)) {
                 if (DEBUG) Log.i(TAG, "Successfully cleared cache");
@@ -120,8 +113,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
         @Override
         public void onPostExecute(String result) {
             runningDelete = false;
-            if (result == null)
-                return;
+            if (result == null) return;
             if (DEBUG) Log.i(TAG, "Post execute with clear cache result=" + result);
             NotificationComponent.notifyClearCacheResult(context, result);
         }

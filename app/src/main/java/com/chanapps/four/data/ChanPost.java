@@ -82,28 +82,8 @@ public class ChanPost implements Serializable {
     public static final int FLAG_IS_STICKY = 0x20000;
     public static final String SAGE_POST_ID = "Heaven";
     protected static final Pattern EXIF_PATTERN = Pattern.compile(".*<table[^>]*class=\"exif\"[^>]*>(.*)</table>.*");
-    protected static final String[] TWELVE_HOUR_CLOCK_COUNTRY_CODES = {
-            "AL",
-            "SG",
-            "TW",
-            "AU",
-            "BZ",
-            "CA",
-            "JM",
-            "NZ",
-            "PH",
-            "TT",
-            "ZA",
-            "US",
-            "ZW",
-            "GR",
-            "MY",
-            "KP",
-            "KR",
-            "MX"
-    };
-    protected static final Set<String> TWELVE_HOUR_CLOCK_COUNTRY_CODES_SET
-            = new HashSet<String>(Arrays.asList(TWELVE_HOUR_CLOCK_COUNTRY_CODES));
+    protected static final String[] TWELVE_HOUR_CLOCK_COUNTRY_CODES = {"AL", "SG", "TW", "AU", "BZ", "CA", "JM", "NZ", "PH", "TT", "ZA", "US", "ZW", "GR", "MY", "KP", "KR", "MX"};
+    protected static final Set<String> TWELVE_HOUR_CLOCK_COUNTRY_CODES_SET = new HashSet<String>(Arrays.asList(TWELVE_HOUR_CLOCK_COUNTRY_CODES));
     protected static final Pattern BACKLINK_PATTERN = Pattern.compile("#p(\\d+)\"");
     private static final boolean DEBUG = false;
     //public static final String HEADLINE_THREADLEVEL_DELIMITER = " &middot; ";
@@ -116,181 +96,26 @@ public class ChanPost implements Serializable {
     private static final String POST_SPOILER_TEXT = "spoilerText";
     private static final String HIGHLIGHT_COLOR = "#aaa268";
     private static final String LINK_COLOR = "#33b5e5";
-    private static final String[] POST_COLUMNS = {
-            POST_ID,
-            POST_BOARD_CODE,
-            POST_RESTO,
-            POST_IMAGE_URL,
-            POST_FULL_IMAGE_URL,
-            POST_COUNTRY_URL,
-            POST_HEADLINE_TEXT,
-            POST_NUM_REPLIES,
-            POST_NUM_IMAGES,
-            POST_SUBJECT_TEXT,
-            POST_TEXT,
-            POST_DATE_TEXT,
-            POST_TN_W,
-            POST_TN_H,
-            POST_W,
-            POST_H,
-            POST_TIM,
-            POST_SPOILER_SUBJECT,
-            POST_SPOILER_TEXT,
-            POST_EXIF_TEXT,
-            POST_USER_ID,
-            POST_TRIPCODE,
-            POST_NAME,
-            POST_EMAIL,
-            POST_THUMBNAIL_ID,
-            POST_EXT,
-            POST_BACKLINKS_BLOB,
-            POST_REPLIES_BLOB,
-            POST_SAME_IDS_BLOB,
-            POST_FSIZE,
-            POST_FLAGS
-    };
-    private static final String[] NAMES = {
-            "Aries",
-            "Bian",
-            "Chikage",
-            "Dragon",
-            "Eki",
-            "Fidel",
-            "Goku",
-            "Hotaru",
-            "Ideki",
-            "Judo",
-            "Kendo",
-            "Lima",
-            "Moto",
-            "Noko",
-            "Oni",
-            "Piku",
-            "Queen",
-            "Radium",
-            "Sensei",
-            "Totoro",
-            "Usagi",
-            "Virgo",
-            "Waka",
-            "Xi",
-            "Yoto",
-            "Zulu",
+    private static final String[] POST_COLUMNS = {POST_ID, POST_BOARD_CODE, POST_RESTO, POST_IMAGE_URL, POST_FULL_IMAGE_URL, POST_COUNTRY_URL, POST_HEADLINE_TEXT, POST_NUM_REPLIES, POST_NUM_IMAGES, POST_SUBJECT_TEXT, POST_TEXT, POST_DATE_TEXT, POST_TN_W, POST_TN_H, POST_W, POST_H, POST_TIM, POST_SPOILER_SUBJECT, POST_SPOILER_TEXT, POST_EXIF_TEXT, POST_USER_ID, POST_TRIPCODE, POST_NAME, POST_EMAIL, POST_THUMBNAIL_ID, POST_EXT, POST_BACKLINKS_BLOB, POST_REPLIES_BLOB, POST_SAME_IDS_BLOB, POST_FSIZE, POST_FLAGS};
+    private static final String[] NAMES = {"Aries", "Bian", "Chikage", "Dragon", "Eki", "Fidel", "Goku", "Hotaru", "Ideki", "Judo", "Kendo", "Lima", "Moto", "Noko", "Oni", "Piku", "Queen", "Radium", "Sensei", "Totoro", "Usagi", "Virgo", "Waka", "Xi", "Yoto", "Zulu",
 
-            "Akira",
-            "Balrog",
-            "Chidori",
-            "Diva",
-            "Endo",
-            "Fap",
-            "Godo",
-            "Hero",
-            "Ichigo",
-            "Joro",
-            "Kai",
-            "Li",
-            "Mini",
-            "Naruto",
-            "Opa",
-            "Pei",
-            "Quest",
-            "Rune",
-            "Shura",
-            "Tetsuo",
-            "Unit",
-            "Victor",
-            "Wiki",
-            "Xenu",
-            "Yolo",
-            "Zolan",
+            "Akira", "Balrog", "Chidori", "Diva", "Endo", "Fap", "Godo", "Hero", "Ichigo", "Joro", "Kai", "Li", "Mini", "Naruto", "Opa", "Pei", "Quest", "Rune", "Shura", "Tetsuo", "Unit", "Victor", "Wiki", "Xenu", "Yolo", "Zolan",
 
-            "One",
-            "Two",
-            "Three",
-            "Four",
-            "Five",
-            "Six",
-            "Seven",
-            "Eight",
-            "Nine",
-            "Ten",
+            "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
 
-            "Plus",
-            "Slash"
+            "Plus", "Slash"
 
     };
-    private static final String[] NAMES_2 = {
-            "Arctic",
-            "Brain",
-            "Chimp",
-            "Duck",
-            "Elf",
-            "Frog",
-            "Gimp",
-            "Hippy",
-            "Imp",
-            "Jumper",
-            "Kitchen",
-            "Lamp",
-            "Mittens",
-            "Night",
-            "Owl",
-            "Phantom",
-            "Quack",
-            "Rocket",
-            "Storm",
-            "Thunder",
-            "Urchin",
-            "Vampire",
-            "Whale",
-            "Xerxes",
-            "Yuppie",
-            "Zebra",
+    private static final String[] NAMES_2 = {"Arctic", "Brain", "Chimp", "Duck", "Elf", "Frog", "Gimp", "Hippy", "Imp", "Jumper", "Kitchen", "Lamp", "Mittens", "Night", "Owl", "Phantom", "Quack", "Rocket", "Storm", "Thunder", "Urchin", "Vampire", "Whale", "Xerxes", "Yuppie", "Zebra",
 
-            "Ape",
-            "Banana",
-            "Crown",
-            "Dread",
-            "Eel",
-            "Factor",
-            "General",
-            "Hound",
-            "Ink",
-            "Jack",
-            "Killer",
-            "Loader",
-            "Master",
-            "Nasty",
-            "Onion",
-            "Paste",
-            "Quitter",
-            "Rim",
-            "Stampede",
-            "Tent",
-            "Unicorn",
-            "Vox",
-            "War",
-            "Xtender",
-            "Yogi",
-            "Zoo",
+            "Ape", "Banana", "Crown", "Dread", "Eel", "Factor", "General", "Hound", "Ink", "Jack", "Killer", "Loader", "Master", "Nasty", "Onion", "Paste", "Quitter", "Rim", "Stampede", "Tent", "Unicorn", "Vox", "War", "Xtender", "Yogi", "Zoo",
 
-            "Ten",
-            "Twenty",
-            "Thirty",
-            "Fourty",
-            "Fifty",
-            "Sixty",
-            "Seventy",
-            "Eighty",
-            "Ninety",
-            "Hundred",
+            "Ten", "Twenty", "Thirty", "Fourty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety", "Hundred",
 
-            "Minus",
-            "Dot"
+            "Minus", "Dot"
 
     };
-    private static final String BASE_64_CODE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            + "abcdefghijklmnopqrstuvwxyz" + "0123456789" + "+/";
+    private static final String BASE_64_CODE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz" + "0123456789" + "+/";
     private static final Map<Character, String> nameMap = new HashMap<Character, String>();
     private static final Map<Character, String> nameMap2 = new HashMap<Character, String>();
     @JsonDeserialize(using = JacksonNonBlockingObjectMapperFactory.NonBlockingStringDeserializer.class)
@@ -393,8 +218,7 @@ public class ChanPost implements Serializable {
     }
 
     public static int countLines(String s) {
-        if (s == null || s.isEmpty())
-            return 0;
+        if (s == null || s.isEmpty()) return 0;
         int i = 1;
         int idx = -1;
         while ((idx = s.indexOf('\n', idx + 1)) != -1) {
@@ -404,8 +228,7 @@ public class ChanPost implements Serializable {
     }
 
     public static final String quoteText(String in, long resto) {
-        if (in == null || in.isEmpty())
-            return "";
+        if (in == null || in.isEmpty()) return "";
         String s = in.replaceAll("<br/>", "\n");
         String o = "> ";
         int l = 0;
@@ -432,14 +255,11 @@ public class ChanPost implements Serializable {
     }
 
     private static final String exifText(String text) {
-        if (text == null || text.isEmpty())
-            return null;
+        if (text == null || text.isEmpty()) return null;
         Matcher m = EXIF_PATTERN.matcher(text);
-        if (!m.matches())
-            return null;
+        if (!m.matches()) return null;
         String g = m.group(1);
-        if (g == null || g.isEmpty())
-            return null;
+        if (g == null || g.isEmpty()) return null;
         String s = g.replaceAll("<tr[^>]*><td colspan=\"2\"[^>]*><b>([^<]*)</b></td></tr>", "$1\n");
         String t = s.replaceAll("<tr[^>]*><td[^>]*>([^<]*)</td><td[^>]*>([^<]*)</td></tr>", "$1: $2\n");
         return textViewFilter(t);
@@ -450,25 +270,10 @@ public class ChanPost implements Serializable {
     }
 
     private static final String textViewFilter(String s, boolean collapseNewlines) {
-        String t = s
-                .replaceAll("<br */?>", "\n")
-                .replaceAll("<[^s/][^>]+>", "") // preserve <s> tags
-                .replaceAll("<s[^>]+>", "")
-                .replaceAll("</[^s][^>]*>", "")
-                .replaceAll("</s[^>]+>", "")
-                .replaceAll("&lt;", "<")
-                .replaceAll("&gt;", ">")
-                .replaceAll("&amp;", "&")
-                .replaceAll("&quot;", "\"")
-                .replaceAll("&#0*39;", "'")
-                .replaceAll("&#0*44;", ",")
-                .replaceAll("&#[0-9abcdef]*;", "")
-                .replaceFirst("^\n+", "")
-                .replaceFirst("\n+$", "");
-        if (collapseNewlines)
-            t = t.replaceAll("\n+", " ");
-        else
-            t = t.replaceAll("\n", "<br/>");
+        String t = s.replaceAll("<br */?>", "\n").replaceAll("<[^s/][^>]+>", "") // preserve <s> tags
+                .replaceAll("<s[^>]+>", "").replaceAll("</[^s][^>]*>", "").replaceAll("</s[^>]+>", "").replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&amp;", "&").replaceAll("&quot;", "\"").replaceAll("&#0*39;", "'").replaceAll("&#0*44;", ",").replaceAll("&#[0-9abcdef]*;", "").replaceFirst("^\n+", "").replaceFirst("\n+$", "");
+        if (collapseNewlines) t = t.replaceAll("\n+", " ");
+        else t = t.replaceAll("\n", "<br/>");
         return t.trim();
     }
 
@@ -480,8 +285,7 @@ public class ChanPost implements Serializable {
     }
 
     public static byte[] blobify(HashSet<?> hashSet) {
-        if (hashSet == null || hashSet.isEmpty())
-            return null;
+        if (hashSet == null || hashSet.isEmpty()) return null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -494,8 +298,7 @@ public class ChanPost implements Serializable {
     }
 
     public static HashSet<?> parseBlob(final byte[] b) {
-        if (b == null || b.length == 0)
-            return null;
+        if (b == null || b.length == 0) return null;
         try {
             InputStream bais = new BufferedInputStream(new ByteArrayInputStream(b));
             ObjectInputStream ois = new ObjectInputStream(bais);
@@ -523,22 +326,17 @@ public class ChanPost implements Serializable {
     }
 
     public static String formattedUserTrip(String trip, boolean useFriendlyIds) {
-        if (trip == null)
-            return "";
-        if (!useFriendlyIds)
-            return trip;
+        if (trip == null) return "";
+        if (!useFriendlyIds) return trip;
         if (trip.charAt(0) == '!' && trip.charAt(1) == '!')
             return "!!" + formattedUserId(trip.substring(2), useFriendlyIds);
-        if (trip.charAt(0) == '!')
-            return "!" + formattedUserId(trip.substring(1), useFriendlyIds);
+        if (trip.charAt(0) == '!') return "!" + formattedUserId(trip.substring(1), useFriendlyIds);
         return trip;
     }
 
     public static String formattedUserId(String id, boolean useFriendlyIds) {
-        if (!useFriendlyIds)
-            return id;
-        if (id.equalsIgnoreCase(SAGE_POST_ID))
-            return id;
+        if (!useFriendlyIds) return id;
+        if (id.equalsIgnoreCase(SAGE_POST_ID)) return id;
         if (id.equalsIgnoreCase("Admin") || id.equalsIgnoreCase("Mod") || id.equalsIgnoreCase("Developer"))
             return id;
         if (DEBUG) Log.d(TAG, "Initial: " + id);
@@ -680,36 +478,23 @@ public class ChanPost implements Serializable {
     }
 
     public static String uniqueId(String board, long no, long resto) {
-        if (no <= 0)
-            return "/" + board + "/";
-        else if (resto <= 0)
-            return "/" + board + "/" + no;
-        else
-            return "/" + board + "/" + resto + "#p" + no;
+        if (no <= 0) return "/" + board + "/";
+        else if (resto <= 0) return "/" + board + "/" + no;
+        else return "/" + board + "/" + resto + "#p" + no;
     }
 
     private int postFlags(String subject, String text, String exifText, String headline) {
         int flags = 0;
-        if (tim > 0)
-            flags |= FLAG_HAS_IMAGE;
-        if (subject != null && !subject.isEmpty())
-            flags |= FLAG_HAS_SUBJECT;
-        if (text != null && !text.isEmpty())
-            flags |= FLAG_HAS_TEXT;
-        if (spoiler > 0)
-            flags |= FLAG_HAS_SPOILER;
-        if (exifText != null && !exifText.isEmpty())
-            flags |= FLAG_HAS_EXIF;
-        if (country != null && !country.isEmpty())
-            flags |= FLAG_HAS_COUNTRY;
-        if (isDead)
-            flags |= FLAG_IS_DEAD;
-        if (closed > 0)
-            flags |= FLAG_IS_CLOSED;
-        if (sticky > 0)
-            flags |= FLAG_IS_STICKY;
-        if (headline != null && !headline.isEmpty())
-            flags |= FLAG_HAS_HEAD;
+        if (tim > 0) flags |= FLAG_HAS_IMAGE;
+        if (subject != null && !subject.isEmpty()) flags |= FLAG_HAS_SUBJECT;
+        if (text != null && !text.isEmpty()) flags |= FLAG_HAS_TEXT;
+        if (spoiler > 0) flags |= FLAG_HAS_SPOILER;
+        if (exifText != null && !exifText.isEmpty()) flags |= FLAG_HAS_EXIF;
+        if (country != null && !country.isEmpty()) flags |= FLAG_HAS_COUNTRY;
+        if (isDead) flags |= FLAG_IS_DEAD;
+        if (closed > 0) flags |= FLAG_IS_CLOSED;
+        if (sticky > 0) flags |= FLAG_IS_STICKY;
+        if (headline != null && !headline.isEmpty()) flags |= FLAG_HAS_HEAD;
         return flags;
     }
 
@@ -717,33 +502,20 @@ public class ChanPost implements Serializable {
         String[] textComponents = textComponents("");
         String s = textComponents[0];
         String t = textComponents[1];
-        String u = (s != null && !s.isEmpty() ? "<b>" + s + "</b><br/>" : "")
-                + t;
+        String u = (s != null && !s.isEmpty() ? "<b>" + s + "</b><br/>" : "") + t;
         return u;
     }
 
     private String cleanSubject(String subject) {
-        return subject
-                .trim()
-                .replaceFirst("^(<br/?>)+", "")
-                .replaceAll("(<br/?>)(<br/?>)+", "$1")
-                .replaceFirst("(<br/?>)+$", "")
-                .trim();
+        return subject.trim().replaceFirst("^(<br/?>)+", "").replaceAll("(<br/?>)(<br/?>)+", "$1").replaceFirst("(<br/?>)+$", "").trim();
     }
 
     private String cleanMessage(String message) {
-        return message
-                .trim()
-                .replaceFirst("^(<br/?>)+", "")
-                .replaceFirst("(<br/?>)+$", "")
-                .trim();
+        return message.trim().replaceFirst("^(<br/?>)+", "").replaceFirst("(<br/?>)+$", "").trim();
     }
 
     private String highlightOP(String text) {
-        return text.replaceAll(">>" + resto,
-                ">>"
-                        + resto
-                        + "<font color=\"" + LINK_COLOR + "\"><u> (OP)</u></font>");
+        return text.replaceAll(">>" + resto, ">>" + resto + "<font color=\"" + LINK_COLOR + "\"><u> (OP)</u></font>");
     }
 
     public String[] textComponents(String query) {
@@ -806,8 +578,7 @@ public class ChanPost implements Serializable {
     }
 
     private String highlightComponent(String component, String query) {
-        if (query.isEmpty())
-            return component;
+        if (query.isEmpty()) return component;
         String regex = "(?i)(" + query + ")";
         String replace = "<b><font color=\"" + HIGHLIGHT_COLOR + "\">$1</font></b>";
         return component.replaceAll(regex, replace);
@@ -815,15 +586,12 @@ public class ChanPost implements Serializable {
 
     public String threadSubject(Context context) {
         String subText = sanitizeText(sub, false);
-        if (subText != null && !subText.isEmpty())
-            return subText;
+        if (subText != null && !subText.isEmpty()) return subText;
         String comText = sanitizeText(com, false);
         if (comText != null && !comText.isEmpty())
             return comText.substring(0, Math.min(comText.length(), MAX_THREAD_SUBJECT_LEN)); // always shorter than this since only one line
-        if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
-            return name;
-        if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage"))
-            return email;
+        if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous")) return name;
+        if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage")) return email;
         return "";
     }
 
@@ -833,29 +601,23 @@ public class ChanPost implements Serializable {
         String subText = sanitizeText(sub, false);
         String comText = sanitizeText(com, false);
         String suffix;
-        if (subText != null && !subText.isEmpty())
-            suffix = subText;
+        if (subText != null && !subText.isEmpty()) suffix = subText;
         else if (comText != null && !comText.isEmpty())
             suffix = comText.substring(0, Math.min(comText.length(), MAX_THREAD_SUBJECT_LEN)); // always shorter than this since only one line
-        else
-            suffix = "";
+        else suffix = "";
         suffix = suffix.replaceAll("<[^>]*>", "");
         return prefix + (suffix.length() > 0 ? " " : "") + suffix;
     }
 
     private String sanitizeText(String text, boolean collapseNewlines) {
-        if (text == null || text.isEmpty())
-            return "";
+        if (text == null || text.isEmpty()) return "";
 
         long start = System.currentTimeMillis();
 
-        if (hidePostNumbers)
-            text = text.replaceAll("<a[^>]*class=\"quotelink\">[^<]*</a>", "");
-        else
-            text = text.replaceAll("<a[^>]*class=\"quotelink\">([^<]*)</a>", "$1");
+        if (hidePostNumbers) text = text.replaceAll("<a[^>]*class=\"quotelink\">[^<]*</a>", "");
+        else text = text.replaceAll("<a[^>]*class=\"quotelink\">([^<]*)</a>", "$1");
 
-        text = text
-                .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
+        text = text.replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
                 .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "");  // exif info
         text = textViewFilter(text, collapseNewlines);
 
@@ -875,39 +637,30 @@ public class ChanPost implements Serializable {
 
     public String thumbnailUrl(Context context) { // thumbnail with fallback
         int stickyId = ChanBoard.imagelessStickyDrawableId(board, no);
-        if (stickyId > 0)
-            return "drawable://" + stickyId;
-        else if (spoiler > 0)
-            return ChanBoard.spoilerThumbnailUrl(context, board);
+        if (stickyId > 0) return "drawable://" + stickyId;
+        else if (spoiler > 0) return ChanBoard.spoilerThumbnailUrl(context, board);
         else if (tim > 0 && filedeleted == 0) // && tn_w > 2 && tn_h > 2)
             return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_THUMBS_URL_FORMAT), board, tim);
         else if (resto <= 0) // thread default
             return "drawable://" + ChanBoard.getRandomImageResourceId(board, no);
-        else
-            return "";
+        else return "";
     }
 
     public String lastReplyThumbnailUrl(final Context context, final String board) {
-        if (spoiler > 0)
-            return ChanBoard.spoilerThumbnailUrl(context, board);
+        if (spoiler > 0) return ChanBoard.spoilerThumbnailUrl(context, board);
         else if (tim > 0 && filedeleted == 0) // && tn_w > 2 && tn_h > 2)
             return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_THUMBS_URL_FORMAT), board, tim);
-        else
-            return "";
+        else return "";
     }
 
     public int thumbnailId() { // for resource types
         int stickyId = ChanBoard.imagelessStickyDrawableId(board, no);
-        if (stickyId > 0)
-            return stickyId;
-        else if (spoiler > 0)
-            return 0;
-        else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
-            return 0;
+        if (stickyId > 0) return stickyId;
+        else if (spoiler > 0) return 0;
+        else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2) return 0;
         else if (resto <= 0) // thread default
             return ChanBoard.getRandomImageResourceId(board, no);
-        else
-            return 0;
+        else return 0;
     }
 
     public String imageUrl(Context context) {
@@ -921,30 +674,24 @@ public class ChanPost implements Serializable {
     public String lastReplyCountryFlagUrl(Context context, String boardCode) {
         if (country != null && !country.isEmpty())
             return countryFlagUrl(context, boardCode, country);
-        else
-            return null;
+        else return null;
     }
 
     public String countryFlagUrl(Context context) {
-        if (country != null && !country.isEmpty())
-            return countryFlagUrl(context, board, country);
-        else
-            return null;
+        if (country != null && !country.isEmpty()) return countryFlagUrl(context, board, country);
+        else return null;
     }
 
     public String countryFlagUrl(Context context, String boardCode, String countryCode) {
         if (boardCode.equals("pol"))
-            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POL_COUNTRY_IMAGE_URL_FORMAT),
-                    countryCode.toLowerCase());
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POL_COUNTRY_IMAGE_URL_FORMAT), countryCode.toLowerCase());
         else
-            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_COUNTRY_IMAGE_URL_FORMAT),
-                    countryCode.toLowerCase());
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_COUNTRY_IMAGE_URL_FORMAT), countryCode.toLowerCase());
     }
 
     public String dateText(Context context) {
         long timeMs = time > 0 ? 1000 * time : tim;
-        if (timeMs <= 0)
-            return "";
+        if (timeMs <= 0) return "";
         Date postDate = new Date();
         postDate.setTime(timeMs);
         Calendar postCal = Calendar.getInstance();
@@ -954,9 +701,7 @@ public class ChanPost implements Serializable {
         if (postCal.get(Calendar.YEAR) != nowCal.get(Calendar.YEAR)) {
             return "" + postCal.get(Calendar.YEAR);
         } else if (postCal.get(Calendar.DAY_OF_YEAR) != nowCal.get(Calendar.DAY_OF_YEAR)) {
-            return postCal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())
-                    + " "
-                    + postCal.get(Calendar.DAY_OF_MONTH);
+            return postCal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + " " + postCal.get(Calendar.DAY_OF_MONTH);
         } else {
             return timeString(context, postCal);
         }
@@ -965,28 +710,19 @@ public class ChanPost implements Serializable {
     protected String timeString(Context context, Calendar postCal) {
         if (TWELVE_HOUR_CLOCK_COUNTRY_CODES_SET.contains(context.getResources().getConfiguration().locale.getCountry()))
             return twelveHourString(postCal);
-        else
-            return twentyFourHourString(postCal);
+        else return twentyFourHourString(postCal);
     }
 
     protected String twelveHourString(Calendar postCal) {
         int hour = postCal.get(Calendar.HOUR_OF_DAY);
         int min = postCal.get(Calendar.MINUTE);
-        return (hour == 0 ? 12 : hour)
-                + ":"
-                + (min < 10 ? "0" : "")
-                + min
-                + " "
-                + postCal.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
+        return (hour == 0 ? 12 : hour) + ":" + (min < 10 ? "0" : "") + min + " " + postCal.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
     }
 
     protected String twentyFourHourString(Calendar postCal) {
         int hour = postCal.get(Calendar.HOUR_OF_DAY);
         int min = postCal.get(Calendar.MINUTE);
-        return hour
-                + ":"
-                + (min < 10 ? "0" : "")
-                + min;
+        return hour + ":" + (min < 10 ? "0" : "") + min;
     }
 
     public String imageDimensions() {
@@ -996,8 +732,7 @@ public class ChanPost implements Serializable {
             String fileinfo;
             if (filename != null && !filename.isEmpty()) {
                 fileinfo = " ~ " + filename;
-                if (ext != null && !ext.isEmpty())
-                    fileinfo += ext;
+                if (ext != null && !ext.isEmpty()) fileinfo += ext;
             } else {
                 fileinfo = "";
             }
@@ -1006,26 +741,17 @@ public class ChanPost implements Serializable {
         return "";
     }
 
-    public String headline(Context context, String query, boolean boardLevel, byte[] repliesBlob,
-                           boolean showNumReplies, boolean abbrev) {
+    public String headline(Context context, String query, boolean boardLevel, byte[] repliesBlob, boolean showNumReplies, boolean abbrev) {
         List<String> items = new ArrayList<String>();
         if (!boardLevel) {
-            if (email != null && !email.isEmpty() && email.equals("sage"))
-                items.add("sage");
-            if (id != null && !id.isEmpty() && id.equals(SAGE_POST_ID))
-                items.add("sage");
-            if (id != null && !id.isEmpty())
-                items.add("Id: " + formattedUserId());
-            if (name != null && !name.isEmpty() && !name.equals("Anonymous"))
-                items.add(name);
-            if (trip != null && !trip.isEmpty())
-                items.add(formattedUserTrip());
-            if (email != null && !email.isEmpty() && !email.equals("sage"))
-                items.add(email);
-            if (country_name != null && !country_name.isEmpty())
-                items.add(country_name);
-            if (fsize > 0)
-                items.add(imageDimensions());
+            if (email != null && !email.isEmpty() && email.equals("sage")) items.add("sage");
+            if (id != null && !id.isEmpty() && id.equals(SAGE_POST_ID)) items.add("sage");
+            if (id != null && !id.isEmpty()) items.add("Id: " + formattedUserId());
+            if (name != null && !name.isEmpty() && !name.equals("Anonymous")) items.add(name);
+            if (trip != null && !trip.isEmpty()) items.add(formattedUserTrip());
+            if (email != null && !email.isEmpty() && !email.equals("sage")) items.add(email);
+            if (country_name != null && !country_name.isEmpty()) items.add(country_name);
+            if (fsize > 0) items.add(imageDimensions());
             /*
             if (resto == 0) {
                 String threadUrl = ChanThread.threadUrl(board, no);
@@ -1036,8 +762,7 @@ public class ChanPost implements Serializable {
         }
         //if (boardLevel && resto <= 0) {
         String s = threadInfoLine(context, boardLevel, showNumReplies, abbrev);
-        if (!s.isEmpty())
-            items.add(s);
+        if (!s.isEmpty()) items.add(s);
         //}
         /*
         if (repliesBlob != null && repliesBlob.length > 0) { // don't show text for threads
@@ -1059,14 +784,10 @@ public class ChanPost implements Serializable {
             return context.getString(R.string.thread_is_sticky) + (closed > 0 ? " " + context.getString(R.string.thread_is_closed) : "");
         String text = "";
         if (!boardLevel && resto == 0) {
-            if (imagelimit == 1)
-                text += " " + context.getString(R.string.thread_has_imagelimit);
-            if (bumplimit == 1)
-                text += " " + context.getString(R.string.thread_has_bumplimit);
-            if (sticky > 0)
-                text += " " + context.getString(R.string.thread_is_sticky);
-            if (closed > 0)
-                text += " " + context.getString(R.string.thread_is_closed);
+            if (imagelimit == 1) text += " " + context.getString(R.string.thread_has_imagelimit);
+            if (bumplimit == 1) text += " " + context.getString(R.string.thread_has_bumplimit);
+            if (sticky > 0) text += " " + context.getString(R.string.thread_is_sticky);
+            if (closed > 0) text += " " + context.getString(R.string.thread_is_closed);
         }
         return text.trim();
     }
@@ -1128,8 +849,7 @@ public class ChanPost implements Serializable {
     }
 
     public boolean refersTo(long postNo) {
-        if (postNo <= 0 || com == null || com.isEmpty())
-            return false;
+        if (postNo <= 0 || com == null || com.isEmpty()) return false;
         boolean matches = com.indexOf("#p" + postNo + "\"") >= 0;
         if (DEBUG)
             Log.i(TAG, "Matching postNo=" + postNo + " is " + matches + " against com=" + com);
@@ -1141,8 +861,7 @@ public class ChanPost implements Serializable {
         if (com != null && !com.isEmpty()) {
             Matcher m = BACKLINK_PATTERN.matcher(com);
             while (m.find()) {
-                if (backlinks == null)
-                    backlinks = new HashSet<Long>();
+                if (backlinks == null) backlinks = new HashSet<Long>();
                 backlinks.add(Long.valueOf(m.group(1)));
             }
         }
@@ -1150,17 +869,13 @@ public class ChanPost implements Serializable {
     }
 
     public String formattedUserId() {
-        if (id == null)
-            return "";
-        else
-            return formattedUserId(id, useFriendlyIds);
+        if (id == null) return "";
+        else return formattedUserId(id, useFriendlyIds);
     }
 
     public String formattedUserTrip() {
-        if (trip == null)
-            return "";
-        else
-            return formattedUserTrip(trip, useFriendlyIds);
+        if (trip == null) return "";
+        else return formattedUserTrip(trip, useFriendlyIds);
     }
 
     public void clearImageInfo() {
@@ -1175,25 +890,16 @@ public class ChanPost implements Serializable {
     }
 
     public boolean matchesQuery(String query) {
-        if (query == null || query.isEmpty())
-            return true;
+        if (query == null || query.isEmpty()) return true;
         // should use StringUtils.containsIgnoreCase
-        if (no != 0 && Long.toString(no).contains(query))
-            return true;
-        if (id != null && id.toLowerCase().contains(query))
-            return true;
-        if (name != null && name.toLowerCase().contains(query))
-            return true;
-        if (trip != null && trip.toLowerCase().contains(query))
-            return true;
-        if (email != null && email.toLowerCase().contains(query))
-            return true;
-        if (country_name != null && country_name.toLowerCase().contains(query))
-            return true;
-        if (sub != null && sub.toLowerCase().contains(query))
-            return true;
-        if (com != null && com.toLowerCase().contains(query))
-            return true;
+        if (no != 0 && Long.toString(no).contains(query)) return true;
+        if (id != null && id.toLowerCase().contains(query)) return true;
+        if (name != null && name.toLowerCase().contains(query)) return true;
+        if (trip != null && trip.toLowerCase().contains(query)) return true;
+        if (email != null && email.toLowerCase().contains(query)) return true;
+        if (country_name != null && country_name.toLowerCase().contains(query)) return true;
+        if (sub != null && sub.toLowerCase().contains(query)) return true;
+        if (com != null && com.toLowerCase().contains(query)) return true;
         if (DEBUG) Log.i(TAG, "skipping post not matching query: " + no + " " + sub + " " + com);
         return false;
     }
@@ -1203,41 +909,8 @@ public class ChanPost implements Serializable {
         String exifText = exifText();
         String headline = headline(context, query, false, repliesBlob, false, false);
         int flags = postFlags(textComponents[0], textComponents[1], exifText, headline);
-        if (resto == 0)
-            flags |= FLAG_IS_HEADER;
-        return new Object[]{
-                no,
-                board,
-                resto,
-                thumbnailUrl(context),
-                imageUrl(context),
-                countryFlagUrl(context),
-                headline,
-                replies,
-                images,
-                textComponents[0],
-                textComponents[1],
-                dateText(context),
-                tn_w,
-                tn_h,
-                w,
-                h,
-                tim,
-                null,
-                null,
-                exifText(),
-                id,
-                trip,
-                name,
-                email,
-                thumbnailId(),
-                ext,
-                backlinksBlob,
-                repliesBlob,
-                sameIdsBlob,
-                fsize,
-                flags
-        };
+        if (resto == 0) flags |= FLAG_IS_HEADER;
+        return new Object[]{no, board, resto, thumbnailUrl(context), imageUrl(context), countryFlagUrl(context), headline, replies, images, textComponents[0], textComponents[1], dateText(context), tn_w, tn_h, w, h, tim, null, null, exifText(), id, trip, name, email, thumbnailId(), ext, backlinksBlob, repliesBlob, sameIdsBlob, fsize, flags};
     }
 
     public void updateThreadData(ChanThread t) {
@@ -1247,8 +920,7 @@ public class ChanPost implements Serializable {
         omitted_posts = t.omitted_posts;
 
         if (t.posts.length > 0 && t.posts[0] != null) {
-            if (t.posts[0].isDead)
-                isDead = t.isDead;
+            if (t.posts[0].isDead) isDead = t.isDead;
             replies = t.posts[0].replies;
             images = t.posts[0].images;
             bumplimit = t.posts[0].bumplimit;

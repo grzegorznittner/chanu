@@ -38,8 +38,7 @@ public class FaceClustering extends Clustering {
 
     @Override
     public void run(MediaSet baseSet) {
-        final TreeMap<Face, ArrayList<Path>> map =
-                new TreeMap<Face, ArrayList<Path>>();
+        final TreeMap<Face, ArrayList<Path>> map = new TreeMap<Face, ArrayList<Path>>();
         final ArrayList<Path> untagged = new ArrayList<Path>();
 
         baseSet.enumerateTotalMediaItems(new MediaSet.ItemConsumer() {

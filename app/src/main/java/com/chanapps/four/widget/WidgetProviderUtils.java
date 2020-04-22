@@ -64,8 +64,7 @@ public final class WidgetProviderUtils {
         for (String widgetBoard : widgetConf) {
             String[] components = widgetBoard.split(WidgetConf.DELIM);
             int widgetId = Integer.valueOf(components[0]);
-            if (activeWidgetIds.contains(widgetId))
-                savedWidgetConf.add(widgetBoard);
+            if (activeWidgetIds.contains(widgetId)) savedWidgetConf.add(widgetBoard);
         }
 
         if (DEBUG) {
@@ -79,10 +78,7 @@ public final class WidgetProviderUtils {
     }
 
     public static void saveWidgetBoardPref(Context context, Set<String> savedWidgetConf) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf)
-                .commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf).commit();
     }
 
     public static WidgetConf loadWidgetConf(Context context, int appWidgetId) {
@@ -90,8 +86,7 @@ public final class WidgetProviderUtils {
         Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         for (String widgetBoard : widgetBoards) {
             WidgetConf widgetConf = new WidgetConf(widgetBoard);
-            if (widgetConf.appWidgetId == appWidgetId)
-                return widgetConf;
+            if (widgetConf.appWidgetId == appWidgetId) return widgetConf;
         }
         return null;
     }
@@ -114,10 +109,8 @@ public final class WidgetProviderUtils {
             //else
             if (ChanBoard.isPopularBoard(boardCode))
                 FetchPopularThreadsService.schedulePopularFetchService(context, false, true);
-            else if (ChanBoard.isVirtualBoard(boardCode))
-                ;// skip
-            else
-                FetchChanDataService.scheduleBoardFetch(context, boardCode, false, true);
+            else if (ChanBoard.isVirtualBoard(boardCode)) ;// skip
+            else FetchChanDataService.scheduleBoardFetch(context, boardCode, false, true);
         }
     }
 
@@ -202,8 +195,7 @@ public final class WidgetProviderUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (hasWidgets(context))
-                    fetchAllWidgets(context);
+                if (hasWidgets(context)) fetchAllWidgets(context);
 
                 /*
                 ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
@@ -241,9 +233,7 @@ public final class WidgetProviderUtils {
             return widgetThreads;
         }
 
-        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
-                ? board.loadedThreads
-                : board.threads;
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0 ? board.loadedThreads : board.threads;
         if (boardThreads == null || boardThreads.length == 0) {
             Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode + " making pseudo threads");
             for (int i = 0; i < numThreads; i++) {
@@ -283,8 +273,7 @@ public final class WidgetProviderUtils {
         threadIndex = 0;
         if (filledCount < numThreads) {
             for (int i = 0; i < numThreads; i++) {
-                if (widgetThreads[i] != null)
-                    continue;
+                if (widgetThreads[i] != null) continue;
                 ChanPost thread = null;
                 while (threadIndex < boardThreads.length) {
                     ChanPost test = boardThreads[threadIndex];
@@ -312,9 +301,7 @@ public final class WidgetProviderUtils {
             return null;
         }
 
-        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
-                ? board.loadedThreads
-                : board.threads;
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0 ? board.loadedThreads : board.threads;
         if (boardThreads == null || boardThreads.length == 0 || boardThreads[0] == null || boardThreads[0].defData) {
             Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
             return null;
@@ -328,10 +315,8 @@ public final class WidgetProviderUtils {
             if (thread != null && thread.sticky <= 0 && thread.tim > 0 && thread.no > 0) {
                 String url = thread.thumbnailUrl(context);
                 File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-                if (f == null || !f.canRead() || f.length() <= 0)
-                    preloadURLs.add(url);
-                if (++validThreads >= maxThreads)
-                    break;
+                if (f == null || !f.canRead() || f.length() <= 0) preloadURLs.add(url);
+                if (++validThreads >= maxThreads) break;
             }
         }
 
@@ -345,9 +330,7 @@ public final class WidgetProviderUtils {
             return new ArrayList<ChanPost>();
         }
 
-        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
-                ? board.loadedThreads
-                : board.threads;
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0 ? board.loadedThreads : board.threads;
         if (boardThreads == null || boardThreads.length == 0) {
             Log.e(TAG, "viableThreads() couldn't load widget no threads for boardCode=" + boardCode);
             return new ArrayList<ChanPost>();
@@ -359,22 +342,18 @@ public final class WidgetProviderUtils {
         for (int i = 0; i < boardThreads.length; i++) {
             ChanPost thread = boardThreads[i];
             boolean viable;
-            if (thread == null)
-                viable = false;
+            if (thread == null) viable = false;
             else if (board.isPopularBoard()) // never have images or sticky, so always viable
                 viable = true;
             else viable = thread.sticky <= 0 && thread.tim > 0 && thread.no > 0;
-            if (!viable)
-                continue;
+            if (!viable) continue;
             String url = thread.thumbnailUrl(context);
             File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-            if (f == null || !f.canRead() || f.length() <= 0)
-                continue;
+            if (f == null || !f.canRead() || f.length() <= 0) continue;
             if (viableThreads.size() < maxThreads) {
                 if (DEBUG) Log.i(TAG, "viableThreads adding " + thread);
                 viableThreads.add(thread);
-                if (viableThreads.size() >= maxThreads)
-                    break;
+                if (viableThreads.size() >= maxThreads) break;
             }
         }
 
@@ -392,11 +371,9 @@ public final class WidgetProviderUtils {
 
     static public void downloadAndCacheUrl(final Context context, final String url, final Runnable downloadCallback) {
         Bitmap b = downloadBitmap(url);
-        if (b == null || b.getByteCount() <= 0)
-            return;
+        if (b == null || b.getByteCount() <= 0) return;
         File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-        if (f == null)
-            return;
+        if (f == null) return;
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(f);
@@ -404,8 +381,7 @@ public final class WidgetProviderUtils {
             fos.flush();
             if (DEBUG)
                 Log.i(TAG, "downloadAndCacheUrl complete for url=" + url + " notifying callback");
-            if (downloadCallback != null)
-                downloadCallback.run();
+            if (downloadCallback != null) downloadCallback.run();
         } catch (IOException e) {
             Log.e(TAG, "Coludn't write file " + f.getAbsolutePath(), e);
         } finally {

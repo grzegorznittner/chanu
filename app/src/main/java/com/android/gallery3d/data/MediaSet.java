@@ -63,8 +63,7 @@ public abstract class MediaSet extends MediaObject {
         public void waitDone() {
         }
     };
-    private WeakHashMap<ContentListener, Object> mListeners =
-            new WeakHashMap<ContentListener, Object>();
+    private WeakHashMap<ContentListener, Object> mListeners = new WeakHashMap<ContentListener, Object>();
 
     public MediaSet(Path path, long version) {
         super(path, version);
@@ -109,10 +108,8 @@ public abstract class MediaSet extends MediaObject {
     public int getIndexOfItem(Path path, int hint) {
         // hint < 0 is handled below
         // first, try to find it around the hint
-        int start = Math.max(0,
-                hint - MEDIAITEM_BATCH_FETCH_COUNT / 2);
-        ArrayList<MediaItem> list = getMediaItem(
-                start, MEDIAITEM_BATCH_FETCH_COUNT);
+        int start = Math.max(0, hint - MEDIAITEM_BATCH_FETCH_COUNT / 2);
+        ArrayList<MediaItem> list = getMediaItem(start, MEDIAITEM_BATCH_FETCH_COUNT);
         int index = getIndexOf(path, list);
         if (index != INDEX_NOT_FOUND) return start + index;
 
@@ -203,14 +200,12 @@ public abstract class MediaSet extends MediaObject {
 
     // Recursively enumerate all media items under this set.
     // Returns the number of items enumerated.
-    protected int enumerateTotalMediaItems(
-            ItemConsumer consumer, int startIndex) {
+    protected int enumerateTotalMediaItems(ItemConsumer consumer, int startIndex) {
         int start = 0;
         start += enumerateMediaItems(consumer, startIndex);
         int m = getSubMediaSetCount();
         for (int i = 0; i < m; i++) {
-            start += getSubMediaSet(i).enumerateTotalMediaItems(
-                    consumer, startIndex + start);
+            start += getSubMediaSet(i).enumerateTotalMediaItems(consumer, startIndex + start);
         }
         return start;
     }
@@ -256,8 +251,7 @@ public abstract class MediaSet extends MediaObject {
     private class MultiSetSyncFuture implements Future<Integer>, SyncListener {
         private static final String TAG = "Gallery.MultiSetSync";
 
-        private final HashMap<MediaSet, Future<Integer>> mMediaSetMap =
-                new HashMap<MediaSet, Future<Integer>>();
+        private final HashMap<MediaSet, Future<Integer>> mMediaSetMap = new HashMap<MediaSet, Future<Integer>>();
         private final SyncListener mListener;
 
         private boolean mIsCancelled = false;
@@ -321,8 +315,7 @@ public abstract class MediaSet extends MediaObject {
             SyncListener listener = null;
             synchronized (this) {
                 if (mMediaSetMap.remove(mediaSet) != null) {
-                    Log.d(TAG, "onSyncDone: " + Utils.maskDebugInfo(mediaSet.getName())
-                            + " #pending=" + mMediaSetMap.size());
+                    Log.d(TAG, "onSyncDone: " + Utils.maskDebugInfo(mediaSet.getName()) + " #pending=" + mMediaSetMap.size());
                     if (resultCode == SYNC_RESULT_ERROR) {
                         mResult = SYNC_RESULT_ERROR;
                     }

@@ -31,8 +31,7 @@ public class SearchActivity extends Activity {
         try {
             SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
             SearchView searchView = (SearchView) searchMenuItem.getActionView();
-            if (searchView == null)
-                return;
+            if (searchView == null) return;
             searchView.setSubmitButtonEnabled(true);
             searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
             searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {

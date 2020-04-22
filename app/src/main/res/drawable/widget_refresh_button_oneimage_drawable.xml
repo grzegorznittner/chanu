@@ -5,7 +5,6 @@
     <item
             android:drawable="@drawable/widget_refresh_btn_oneimage_gradient_bg" />
     -->
-    <item
-            android:drawable="@drawable/navigation_refresh" />
+    <item android:drawable="@drawable/navigation_refresh" />
 
 </layer-list>

@@ -79,8 +79,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     }
     */
 
-    public static boolean scheduleBoardFetch(Context context, String boardCode, boolean priority, boolean backgroundLoad,
-                                             long threadNo) {
+    public static boolean scheduleBoardFetch(Context context, String boardCode, boolean priority, boolean backgroundLoad, long threadNo) {
         if (ChanBoard.isPopularBoard(boardCode)) {
             if (DEBUG)
                 Log.i(TAG, "Redirecting refresh request for /" + boardCode + "/ to popular fetch service");
@@ -92,8 +91,8 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         }
 
         if (!ChanBoard.boardNeedsRefresh(context, boardCode, priority)) {
-            if (DEBUG) Log.i(TAG, "Skipping not needing refresh normal board fetch service for "
-                    + boardCode + " priority=" + priority);
+            if (DEBUG)
+                Log.i(TAG, "Skipping not needing refresh normal board fetch service for " + boardCode + " priority=" + priority);
             return false;
         }
         if (DEBUG)
@@ -125,11 +124,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 Log.i(TAG, "scheduleThreadFetch /" + boardCode + "/" + threadNo + " exiting due to dead thread");
             return false;
         }
-        if (DEBUG) Log.i(TAG, "Start chan fetch thread service for " + boardCode + "/" + threadNo
-                + " priority=" + priority + " background=" + backgroundLoad);
+        if (DEBUG)
+            Log.i(TAG, "Start chan fetch thread service for " + boardCode + "/" + threadNo + " priority=" + priority + " background=" + backgroundLoad);
         if (boardCode == null || threadNo == 0) {
-            Log.e(TAG, "Wrong params passed, boardCode: " + boardCode + " threadNo: " + threadNo,
-                    new Exception("Locate caller and fix issue!"));
+            Log.e(TAG, "Wrong params passed, boardCode: " + boardCode + " threadNo: " + threadNo, new Exception("Locate caller and fix issue!"));
         }
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
@@ -155,15 +153,13 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     protected void onHandleIntent(Intent intent) {
         backgroundLoad = intent.getBooleanExtra(BACKGROUND_LOAD, false);
         if (!isChanForegroundActivity() && !backgroundLoad) {
-            if (DEBUG)
-                Log.i(TAG, "Not foreground activity, exiting");
+            if (DEBUG) Log.i(TAG, "Not foreground activity, exiting");
             return;
         }
 
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this.getBaseContext());
         NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
-        if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
-                || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION) {
+        if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION) {
             if (DEBUG) Log.i(TAG, "No network connection, exiting");
             profile.onDataFetchFailure(this, Failure.NETWORK);
             return;
@@ -209,20 +205,16 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 board.lastFetched = 0;
             }
             File boardFile = ChanFileStorage.getBoardFile(getBaseContext(), boardCode, pageNo);
-            if (board != null && !board.defData
-                    && boardFile != null && boardFile.exists()
-                    && (new Date().getTime() - boardFile.lastModified() < 10000)) {
+            if (board != null && !board.defData && boardFile != null && boardFile.exists() && (new Date().getTime() - boardFile.lastModified() < 10000)) {
                 if (DEBUG) Log.i(TAG, "Board file exists within last modified time, quiting fetch");
                 return;
             }
 
             String apiUrl;
             if (boardCatalog) {
-                apiUrl = String.format(URLFormatComponent.getUrl(getApplicationContext(),
-                        URLFormatComponent.CHAN_CATALOG_API_URL_FORMAT), boardCode);
+                apiUrl = String.format(URLFormatComponent.getUrl(getApplicationContext(), URLFormatComponent.CHAN_CATALOG_API_URL_FORMAT), boardCode);
             } else {
-                apiUrl = String.format(URLFormatComponent.getUrl(getApplicationContext(),
-                        URLFormatComponent.CHAN_PAGE_API_URL_FORMAT), boardCode, pageNo);
+                apiUrl = String.format(URLFormatComponent.getUrl(getApplicationContext(), URLFormatComponent.CHAN_PAGE_API_URL_FORMAT), boardCode, pageNo);
             }
             URL chanApi = new URL(apiUrl);
             if (DEBUG) Log.i(TAG, "Fetching " + apiUrl + " priority=" + priority);
@@ -234,14 +226,13 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             tc.setConnectTimeout(fetchParams.connectTimeout);
 
             if (board != null && board.lastFetched > 0 && !priority) {
-                if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
-                        + ((startTime - board.lastFetched) / 1000) + "s ago");
+                if (DEBUG)
+                    Log.i(TAG, "IfModifiedSince set as last fetch happened " + ((startTime - board.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(board.lastFetched);
             }
             String contentType = tc.getContentType();
             if (DEBUG)
-                Log.i(TAG, "handleBoard() Called API " + tc.getURL() + " response length=" + tc.getContentLength()
-                        + " code=" + tc.getResponseCode() + " type=" + contentType);
+                Log.i(TAG, "handleBoard() Called API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode() + " type=" + contentType);
             if (tc.getResponseCode() == 304) {
                 if (DEBUG)
                     Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + board.lastFetched);
@@ -258,8 +249,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             } else if (contentType == null || !contentType.contains("json")) {
                 // happens if 4chan is temporarily down or when access requires authentication to wifi router
                 if (DEBUG)
-                    Log.i(TAG, "Wrong content type returned board=" + board + " contentType='" + contentType
-                            + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
+                    Log.i(TAG, "Wrong content type returned board=" + board + " contentType='" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
             } else {
                 board.lastFetched = new Date().getTime();
                 long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new BufferedInputStream(tc.getInputStream()));
@@ -267,8 +257,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 long storeTime = new Date().getTime() - board.lastFetched;
 
                 if (DEBUG)
-                    Log.w(TAG, "Fetched " + chanApi + " in " + fetchTime + "ms, stored in " + storeTime + "ms, "
-                            + "stored fileSize=" + fileSize / 1024 + "KB");
+                    Log.w(TAG, "Fetched " + chanApi + " in " + fetchTime + "ms, stored in " + storeTime + "ms, " + "stored fileSize=" + fileSize / 1024 + "KB");
                 if (DEBUG) Log.i(TAG, "Calling finishedFetchingData priority=" + priority);
                 /*
                 final ChanActivityId activityId = getChanActivityId();
@@ -333,21 +322,19 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             }
 
             long startTime = Calendar.getInstance().getTimeInMillis();
-            String apiUrl = String.format(
-                    URLFormatComponent.getUrl(getApplicationContext(), URLFormatComponent.CHAN_THREAD_URL_FORMAT), boardCode, threadNo);
+            String apiUrl = String.format(URLFormatComponent.getUrl(getApplicationContext(), URLFormatComponent.CHAN_THREAD_URL_FORMAT), boardCode, threadNo);
             URL chanApi = new URL(apiUrl);
             if (DEBUG) Log.i(TAG, "Fetching " + apiUrl);
             tc = (HttpURLConnection) chanApi.openConnection();
             tc.setReadTimeout(NetworkProfileManager.instance().getFetchParams().readTimeout);
             if (thread.lastFetched > 0 && !priority) {
-                if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
-                        + ((startTime - thread.lastFetched) / 1000) + "s ago");
+                if (DEBUG)
+                    Log.i(TAG, "IfModifiedSince set as last fetch happened " + ((startTime - thread.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(thread.lastFetched);
             }
             String contentType = tc.getContentType();
             if (DEBUG)
-                Log.i(TAG, "handleThread() Called API " + tc.getURL() + " response length=" + tc.getContentLength()
-                        + " code=" + tc.getResponseCode() + " type=" + contentType);
+                Log.i(TAG, "handleThread() Called API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode() + " type=" + contentType);
             if (tc.getResponseCode() == 304) {
                 if (DEBUG)
                     Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + thread.lastFetched);
@@ -409,9 +396,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
     private void updateAfterDeadThread() throws IOException {
         Context context = getBaseContext();
-        if (PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true)) {
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true)) {
             ChanFileStorage.cleanDeadWatchedThreads(context);
             BoardActivity.refreshWatchlist(context);
         }
@@ -425,8 +410,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         } else {
             id = new ChanActivityId(boardCode, pageNo, priority);
         }
-        if (secondaryThreadNo > 0)
-            id.secondaryThreadNo = secondaryThreadNo;
+        if (secondaryThreadNo > 0) id.secondaryThreadNo = secondaryThreadNo;
         return id;
     }
 

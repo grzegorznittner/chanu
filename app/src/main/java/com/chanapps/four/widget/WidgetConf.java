@@ -36,14 +36,7 @@ public class WidgetConf implements Serializable {
         this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, false, true, true, true, widgetType);
     }
 
-    public WidgetConf(int appWidgetId,
-                      String boardCode,
-                      int boardTitleColor,
-                      boolean roundedCorners,
-                      boolean showBoardTitle,
-                      boolean showRefreshButton,
-                      boolean showConfigureButton,
-                      String widgetType) {
+    public WidgetConf(int appWidgetId, String boardCode, int boardTitleColor, boolean roundedCorners, boolean showBoardTitle, boolean showRefreshButton, boolean showConfigureButton, String widgetType) {
         this.appWidgetId = appWidgetId;
         this.boardCode = boardCode;
         this.boardTitleColor = boardTitleColor;
@@ -55,19 +48,11 @@ public class WidgetConf implements Serializable {
     }
 
     public String serialize() {
-        return appWidgetId + DELIM +
-                boardCode + DELIM +
-                boardTitleColor + DELIM +
-                roundedCorners + DELIM +
-                showBoardTitle + DELIM +
-                showRefreshButton + DELIM +
-                showConfigureButton + DELIM +
-                widgetType + DELIM;
+        return appWidgetId + DELIM + boardCode + DELIM + boardTitleColor + DELIM + roundedCorners + DELIM + showBoardTitle + DELIM + showRefreshButton + DELIM + showConfigureButton + DELIM + widgetType + DELIM;
     }
 
     public void deserialize(String s) {
-        if (s == null || s.isEmpty())
-            return;
+        if (s == null || s.isEmpty()) return;
         String[] c = s.split(DELIM);
         appWidgetId = c.length > 0 ? Integer.parseInt(c[0]) : 0;
         boardCode = c.length > 1 ? c[1] : "";

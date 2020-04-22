@@ -33,8 +33,7 @@ public class WidgetClickHandler extends Activity {
     private boolean isValidDataUri(Uri dataUri) {
         if (dataUri == null) return false;
         try {
-            AssetFileDescriptor f = getContentResolver()
-                    .openAssetFileDescriptor(dataUri, "r");
+            AssetFileDescriptor f = getContentResolver().openAssetFileDescriptor(dataUri, "r");
             f.close();
             return true;
         } catch (Throwable e) {
@@ -50,8 +49,7 @@ public class WidgetClickHandler extends Activity {
         if (isValidDataUri(intent.getData())) {
             startActivity(new Intent(Intent.ACTION_VIEW, intent.getData()));
         } else {
-            Toast.makeText(this,
-                    R.string.no_such_item, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_such_item, Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, Gallery.class));
         }
         finish();

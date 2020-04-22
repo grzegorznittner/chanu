@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<manifest android:versionCode="30682"
-        android:versionName="1.1.30682"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.chanapps.four.gallery3d">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        package="com.chanapps.four.gallery3d"
+        android:versionCode="30682"
+        android:versionName="1.1.30682">
 
     <original-package android:name="com.android.gallery3d" />
 
@@ -13,8 +13,6 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-
 
 
 </manifest>

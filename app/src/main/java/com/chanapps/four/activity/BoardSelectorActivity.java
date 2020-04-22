@@ -46,13 +46,12 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
                     if (DEBUG)
                         Log.i(TAG, "boardSelector onResume() activityChange to /" + boardCode + "/");
                     NetworkProfileManager.instance().activityChange(activity);
-                    if (handler != null)
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                new TutorialOverlay(layout, TutorialOverlay.Page.BOARD);
-                            }
-                        });
+                    if (handler != null) handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            new TutorialOverlay(layout, TutorialOverlay.Page.BOARD);
+                        }
+                    });
                 }
             }
         }).start();
@@ -61,8 +60,7 @@ public class BoardSelectorActivity extends BoardActivity implements ChanIdentifi
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (absListView != null)
-            viewPosition = absListView.getFirstVisiblePosition();
+        if (absListView != null) viewPosition = absListView.getFirstVisiblePosition();
         switchBoardInternal(boardCode, "");
         //if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
 

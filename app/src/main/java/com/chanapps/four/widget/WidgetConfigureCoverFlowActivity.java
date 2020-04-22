@@ -51,19 +51,14 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
             public void run() {
                 urls = boardThreadUrls(context, widgetConf.boardCode, MAX_CONFIG_THREADS);
                 if (DEBUG)
-                    Log.i(TAG, "setBoardImages() /" + widgetConf.boardCode + "/ found " + urls.length
-                            + " urls=" + Arrays.toString(urls));
+                    Log.i(TAG, "setBoardImages() /" + widgetConf.boardCode + "/ found " + urls.length + " urls=" + Arrays.toString(urls));
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (emptyView == null)
-                            emptyView = findViewById(R.id.stack_view_empty);
-                        if (emptyView != null)
-                            emptyView.setVisibility(View.VISIBLE);
-                        if (stackView == null)
-                            stackView = findViewById(R.id.stack_view_coverflow);
-                        if (stackView == null)
-                            return;
+                        if (emptyView == null) emptyView = findViewById(R.id.stack_view_empty);
+                        if (emptyView != null) emptyView.setVisibility(View.VISIBLE);
+                        if (stackView == null) stackView = findViewById(R.id.stack_view_coverflow);
+                        if (stackView == null) return;
                         if (adapter == null) {
                             if (DEBUG)
                                 Log.i(TAG, "setBoardImages() /" + widgetConf.boardCode + "/ stackView.setAdapter");
@@ -90,8 +85,7 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
     @Override
     protected void addDoneClickHandler() {
         Button doneButton = findViewById(R.id.done);
-        if (doneButton == null)
-            return;
+        if (doneButton == null) return;
         final WidgetConfigureCoverFlowActivity activity = this;
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override

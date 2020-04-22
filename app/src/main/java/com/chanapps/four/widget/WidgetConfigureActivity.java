@@ -65,8 +65,7 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
     @Override
     protected void addDoneClickHandler() {
         Button doneButton = findViewById(R.id.done);
-        if (doneButton == null)
-            return;
+        if (doneButton == null) return;
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

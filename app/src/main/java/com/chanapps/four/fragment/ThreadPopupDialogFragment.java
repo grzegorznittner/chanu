@@ -80,8 +80,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (DEBUG)
-                Log.i(TAG, "onLoadFinished /" + boardCode + "/" + threadNo + " id=" + loader.getId()
-                        + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
+                Log.i(TAG, "onLoadFinished /" + boardCode + "/" + threadNo + " id=" + loader.getId() + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
             int count = data == null ? 0 : data.getCount();
             Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " callback returned " + count + " rows");
             cursor = data;
@@ -122,22 +121,10 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            return ThreadViewer.setViewValue(view, cursor, boardCode,
-                    false,
-                    0,
-                    0,
-                    null, //threadListener.thumbOnClickListener,
-                    threadListener.backlinkOnClickListener,
-                    null,
-                    null,
-                    threadListener.repliesOnClickListener,
-                    null, //threadListener.sameIdOnClickListener,
+            return ThreadViewer.setViewValue(view, cursor, boardCode, false, 0, 0, null, //threadListener.thumbOnClickListener,
+                    threadListener.backlinkOnClickListener, null, null, threadListener.repliesOnClickListener, null, //threadListener.sameIdOnClickListener,
                     null, //threadListener.exifOnClickListener,
-                    null,
-                    threadListener.expandedImageListener,
-                    null,
-                    null
-            );
+                    null, threadListener.expandedImageListener, null, null);
         }
     };
 
@@ -164,8 +151,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         LayoutInflater inflater = getActivity().getLayoutInflater();
         if (popupType == PopupType.SELF)
             layout = inflater.inflate(R.layout.thread_single_popup_dialog_fragment, null);
-        else
-            layout = inflater.inflate(R.layout.thread_popup_dialog_fragment, null);
+        else layout = inflater.inflate(R.layout.thread_popup_dialog_fragment, null);
     }
 
     @Override
@@ -183,16 +169,13 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             if (DEBUG)
                 Log.i(TAG, "onCreateDialog() /" + boardCode + "/" + threadNo + " null bundle");
         }
-        if (popupType == null)
-            popupType = PopupType.SELF;
+        if (popupType == null) popupType = PopupType.SELF;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         inflateLayout();
         init();
         setStyle(STYLE_NO_TITLE, 0);
         if (DEBUG) Log.i(TAG, "creating dialog");
-        Dialog dialog = builder
-                .setView(layout)
-                .create();
+        Dialog dialog = builder.setView(layout).create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
     }
@@ -231,16 +214,14 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     @Override
     public void onStart() {
         super.onStart();
-        if (handler == null)
-            handler = new Handler();
+        if (handler == null) handler = new Handler();
         loadAdapter();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (handler == null)
-            handler = new Handler();
+        if (handler == null) handler = new Handler();
     }
 
     protected void loadAdapter() {
@@ -268,8 +249,8 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                     Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null adapter, exiting");
                 dismiss();
             } else {
-                if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo
-                        + " loading empty query cursor async count=" + fragmentAdapter.getCount());
+                if (DEBUG)
+                    Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " loading empty query cursor async count=" + fragmentAdapter.getCount());
                 cursor = fragmentAdapter.getCursor();
                 loadCursorAsync();
             }
@@ -321,13 +302,12 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                 final Cursor detailCursor = detailsCursor();
                 if (DEBUG)
                     Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " detail cursor size=" + detailCursor.getCount());
-                if (handler != null)
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.swapCursor(detailCursor);
-                        }
-                    });
+                if (handler != null) handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.swapCursor(detailCursor);
+                    }
+                });
             }
         }).start();
     }
@@ -466,11 +446,9 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                 if (DEBUG)
                     Log.d(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " found link at pos=" + cursor.getPosition());
                 Object[] row = ChanPost.extractPostRow(cursor);
-                if (row != null)
-                    matrixCursor.addRow(row);
+                if (row != null) matrixCursor.addRow(row);
             }
-            if (!cursor.moveToNext())
-                break;
+            if (!cursor.moveToNext()) break;
         }
         return count;
     }
@@ -493,8 +471,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     }
 
     @Override
-    public void showDialog(String boardCode, long threadNo, long postNo, int pos,
-                           ThreadPopupDialogFragment.PopupType popupType) {
+    public void showDialog(String boardCode, long threadNo, long postNo, int pos, ThreadPopupDialogFragment.PopupType popupType) {
         Activity activity = getActivity();
         if (activity == null || !(activity instanceof ThreadActivity)) {
             if (DEBUG) Log.i(TAG, "onItemClick() no activity");
@@ -508,15 +485,11 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         if (DEBUG) Log.i(TAG, "onItemClick() scrolling to postNo=" + postNo);
         dismiss();
         //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, popupType, query))
-        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, popupType, query))
-                .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
+        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, popupType, query)).show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
     }
 
     public enum PopupType {
-        SELF,
-        BACKLINKS,
-        REPLIES,
-        SAME_ID
+        SELF, BACKLINKS, REPLIES, SAME_ID
     }
 
 }

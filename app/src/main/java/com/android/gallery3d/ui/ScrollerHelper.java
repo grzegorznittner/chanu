@@ -59,8 +59,7 @@ public class ScrollerHelper {
     }
 
     public void setPosition(int position) {
-        mScroller.startScroll(
-                position, 0,    // startX, startY
+        mScroller.startScroll(position, 0,    // startX, startY
                 0, 0, 0);       // dx, dy, duration
 
         // This forces the scroller to reach the final position.
@@ -73,8 +72,7 @@ public class ScrollerHelper {
 
     public void fling(int velocity, int min, int max) {
         int currX = getPosition();
-        mScroller.fling(
-                currX, 0,      // startX, startY
+        mScroller.fling(currX, 0,      // startX, startY
                 velocity, 0,   // velocityX, velocityY
                 min, max,      // minX, maxX
                 0, 0,          // minY, maxY
@@ -87,8 +85,7 @@ public class ScrollerHelper {
         int finalPosition = mScroller.getFinalX();
         int newPosition = Utils.clamp(finalPosition + distance, min, max);
         if (newPosition != currPosition) {
-            mScroller.startScroll(
-                    currPosition, 0,                    // startX, startY
+            mScroller.startScroll(currPosition, 0,                    // startX, startY
                     newPosition - currPosition, 0, 0);  // dx, dy, duration
         }
         return finalPosition + distance - newPosition;

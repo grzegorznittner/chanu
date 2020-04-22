@@ -78,16 +78,11 @@ public class ChanFileStorage {
     }
 
     private static String getRootCacheDirectory(Context context) {
-        return ANDROID_ROOT + FILE_SEP
-                + ANDROID_DATA_DIR + FILE_SEP
-                + context.getPackageName() + FILE_SEP
-                + CACHE_PKG_DIR;
+        return ANDROID_ROOT + FILE_SEP + ANDROID_DATA_DIR + FILE_SEP + context.getPackageName() + FILE_SEP + CACHE_PKG_DIR;
     }
 
     private static String getRootPersistentDirectory(Context context) {
-        return ANDROID_ROOT + FILE_SEP
-                + ANDROID_DATA_DIR + FILE_SEP
-                + context.getPackageName();
+        return ANDROID_ROOT + FILE_SEP + ANDROID_DATA_DIR + FILE_SEP + context.getPackageName();
     }
 
     public static File getCacheDirectory(Context context) {
@@ -222,8 +217,7 @@ public class ChanFileStorage {
         } else {
             Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
         }
-        if (!board.isVirtualBoard())
-            addMissingWatchedThreads(context, board);
+        if (!board.isVirtualBoard()) addMissingWatchedThreads(context, board);
         boardCache.put(board.link, board);
         if (DEBUG)
             Log.i(TAG, "put cached board=" + board.link + " threadCount=" + board.threads.length);
@@ -335,22 +329,13 @@ public class ChanFileStorage {
         }
         if (boardCache.containsKey(boardCode)) {
             ChanBoard cachedBoard = boardCache.get(boardCode);
-            if (cachedBoard != null && cachedBoard.threads != null
-                    && cachedBoard.threads.length > 0 && !cachedBoard.defData) {
-                if (DEBUG) Log.i(TAG, "Returning board " + boardCode
-                        + " data from cache threads=" + cachedBoard.threads.length
-                        + " loadedthreads=" + cachedBoard.loadedThreads.length
-                        + " newThreads=" + cachedBoard.newThreads
-                        + " updatedThreads=" + cachedBoard.updatedThreads
-                );
+            if (cachedBoard != null && cachedBoard.threads != null && cachedBoard.threads.length > 0 && !cachedBoard.defData) {
+                if (DEBUG)
+                    Log.i(TAG, "Returning board " + boardCode + " data from cache threads=" + cachedBoard.threads.length + " loadedthreads=" + cachedBoard.loadedThreads.length + " newThreads=" + cachedBoard.newThreads + " updatedThreads=" + cachedBoard.updatedThreads);
                 return cachedBoard;
             } else {
-                if (DEBUG) Log.i(TAG, "Ignoring missing data cached board " + boardCode
-                        + " data from cache threads=" + cachedBoard.threads.length
-                        + " loadedthreads=" + cachedBoard.loadedThreads.length
-                        + " newThreads=" + cachedBoard.newThreads
-                        + " updatedThreads=" + cachedBoard.updatedThreads
-                );
+                if (DEBUG)
+                    Log.i(TAG, "Ignoring missing data cached board " + boardCode + " data from cache threads=" + cachedBoard.threads.length + " loadedthreads=" + cachedBoard.loadedThreads.length + " newThreads=" + cachedBoard.newThreads + " updatedThreads=" + cachedBoard.updatedThreads);
             }
         }
         File boardFile = null;
@@ -362,8 +347,7 @@ public class ChanFileStorage {
                     ObjectMapper mapper = BoardParserService.getJsonMapper();
                     ChanBoard board = mapper.readValue(boardFile, ChanBoard.class);
                     if (DEBUG)
-                        Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link
-                                + "' isFile=" + boardFile.isFile() + " size=" + boardFile.length() / 1000 + "KB");
+                        Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link + "' isFile=" + boardFile.isFile() + " size=" + boardFile.length() / 1000 + "KB");
                     /*
                     if (board.hasNewBoardData()) {
                         board.swapLoadedThreads();
@@ -372,8 +356,7 @@ public class ChanFileStorage {
                     }
                     else {
                     */
-                    if (!board.isVirtualBoard())
-                        addMissingWatchedThreads(context, board);
+                    if (!board.isVirtualBoard()) addMissingWatchedThreads(context, board);
                     boardCache.put(boardCode, board);
                     //}
                     return board;
@@ -390,8 +373,7 @@ public class ChanFileStorage {
             }
         }
         ChanBoard board = prepareDefaultBoardData(context, boardCode);
-        if (board != null && !board.isVirtualBoard())
-            addMissingWatchedThreads(context, board);
+        if (board != null && !board.isVirtualBoard()) addMissingWatchedThreads(context, board);
         return board;
     }
 
@@ -399,8 +381,7 @@ public class ChanFileStorage {
         if (DEBUG)
             Log.i(TAG, "addMissingWatchedThreads /" + board.link + "/ start #threads = " + board.threads.length);
         ChanBoard watchlist = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-        if (watchlist == null || watchlist.defData
-                || watchlist.threads == null || watchlist.threads.length == 0)
+        if (watchlist == null || watchlist.defData || watchlist.threads == null || watchlist.threads.length == 0)
             return;
         Set<Long> watchedNos = new HashSet<Long>();
         Map<Long, ChanThread> watchedThreads = new HashMap<Long, ChanThread>();
@@ -413,16 +394,13 @@ public class ChanFileStorage {
             }
         }
         if (DEBUG) Log.i(TAG, "addMissingWatchedThreads size=" + watchedNos.size());
-        if (watchedNos.size() == 0)
-            return;
+        if (watchedNos.size() == 0) return;
         synchronized (board) {
             for (ChanThread thread : board.threads) {
-                if (watchedNos.contains(thread.no))
-                    watchedThreads.remove(thread.no);
+                if (watchedNos.contains(thread.no)) watchedThreads.remove(thread.no);
             }
             for (ChanThread thread : board.loadedThreads) {
-                if (watchedNos.contains(thread.no))
-                    watchedLoadedThreads.remove(thread.no);
+                if (watchedNos.contains(thread.no)) watchedLoadedThreads.remove(thread.no);
             }
             if (DEBUG) Log.i(TAG, "addMissingWatchedThreads missing size=" + watchedThreads.size());
             // watchedThreads is now the list of missing board threads
@@ -454,8 +432,7 @@ public class ChanFileStorage {
             ChanBoard.initBoards(context);
             board = ChanBoard.getBoardByCode(context, boardCode);
         }
-        if (board == null)
-            return null;
+        if (board == null) return null;
         board = board.copy();
         ChanThread thread = new ChanThread();
         thread.board = boardCode;
@@ -671,8 +648,7 @@ public class ChanFileStorage {
             if (DEBUG) Log.i(TAG, "Running delete cache command: " + cmd);
             Process process = Runtime.getRuntime().exec(cmd);
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             int read;
             char[] buffer = new char[4096];
             StringBuffer output = new StringBuffer();
@@ -712,8 +688,7 @@ public class ChanFileStorage {
     }
 
     public static File getDownloadFolder(Context context, String boardCode, long threadNo, boolean isSingleImage) {
-        String configuredPath = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(SettingsActivity.PREF_DOWNLOAD_LOCATION, null);
+        String configuredPath = PreferenceManager.getDefaultSharedPreferences(context).getString(SettingsActivity.PREF_DOWNLOAD_LOCATION, null);
         String defaultPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + FILE_SEP + CHANU_FOLDER;
         String suffix = getDownloadSubfolder(context, boardCode, threadNo, isSingleImage);
         String downloadPath = configuredPath != null ? configuredPath + suffix : defaultPath + suffix;
@@ -722,8 +697,7 @@ public class ChanFileStorage {
 
     private static String getDownloadSubfolder(Context context, String boardCode, long threadNo, boolean isSingleImage) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SettingsActivity.DownloadImages downloadType = SettingsActivity.DownloadImages.valueOf(prefs.getString(
-                SettingsActivity.PREF_DOWNLOAD_IMAGES, SettingsActivity.DownloadImages.STANDARD.toString()));
+        SettingsActivity.DownloadImages downloadType = SettingsActivity.DownloadImages.valueOf(prefs.getString(SettingsActivity.PREF_DOWNLOAD_IMAGES, SettingsActivity.DownloadImages.STANDARD.toString()));
         switch (downloadType) {
             case ALL_IN_ONE:
                 return "";
@@ -740,9 +714,7 @@ public class ChanFileStorage {
                 }
             case STANDARD:
             default:
-                return (!isSingleImage && boardCode != null && !boardCode.isEmpty() && threadNo > 0)
-                        ? FILE_SEP + boardCode + "_" + threadNo
-                        : "";
+                return (!isSingleImage && boardCode != null && !boardCode.isEmpty() && threadNo > 0) ? FILE_SEP + boardCode + "_" + threadNo : "";
         }
     }
 
@@ -754,11 +726,9 @@ public class ChanFileStorage {
 
     public static int deletePosts(Context context, String boardCode, long threadNo, long[] postNos, boolean imageOnly) {
         ChanThread thread = loadThreadData(context, boardCode, threadNo);
-        if (thread == null)
-            return 1;
+        if (thread == null) return 1;
         ChanPost[] posts = thread.posts;
-        if (posts == null)
-            return 2;
+        if (posts == null) return 2;
 
         Set<Long> deletePostNos = new HashSet<Long>(postNos.length);
         for (long postNo : postNos)
@@ -884,8 +854,7 @@ public class ChanFileStorage {
         ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
         List<ChanThread> cleanedThreads = new ArrayList<ChanThread>();
         for (ChanThread thread : board.threads) {
-            if (!thread.isDead)
-                cleanedThreads.add(thread);
+            if (!thread.isDead) cleanedThreads.add(thread);
         }
         board.threads = cleanedThreads.size() == 0 ? new ChanThread[]{} : cleanedThreads.toArray(new ChanThread[cleanedThreads.size()]);
         storeBoardData(context, board);
@@ -901,8 +870,7 @@ public class ChanFileStorage {
     private static void updateBoardThread(Context context, ChanThread loadedThread) throws IOException {
         // store updated status into board thread record
         ChanBoard board = loadBoardData(context, loadedThread.board);
-        if (board == null || board.threads == null)
-            return;
+        if (board == null || board.threads == null) return;
         int found = -1;
         for (int i = 0; i < board.threads.length; i++) {
             if (board.threads[i] != null && board.threads[i].no == loadedThread.no) {
@@ -926,8 +894,7 @@ public class ChanFileStorage {
                 NotificationComponent.notifyNewReplies(context, watchedThread, loadedThread);
                 watchlistBoard.threads[i].updateThreadData(loadedThread);
                 if (DEBUG)
-                    Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no
-                            + " replies: " + watchedThread.replies + " images: " + watchedThread.images);
+                    Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no + " replies: " + watchedThread.replies + " images: " + watchedThread.images);
                 storeBoardData(context, watchlistBoard);
                 BoardActivity.refreshWatchlist(context);
             }
@@ -935,13 +902,11 @@ public class ChanFileStorage {
     }
 
     private static void updateWatchedThread(Context context, ChanBoard loadedBoard) throws IOException {
-        if (loadedBoard.defData || loadedBoard.loadedThreads == null || loadedBoard.loadedThreads.length == 0
-                || loadedBoard.loadedThreads[0].defData) {
+        if (loadedBoard.defData || loadedBoard.loadedThreads == null || loadedBoard.loadedThreads.length == 0 || loadedBoard.loadedThreads[0].defData) {
             return;
         }
         ChanBoard watchlist = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-        if (watchlist == null || watchlist.threads == null || watchlist.threads.length == 0)
-            return;
+        if (watchlist == null || watchlist.threads == null || watchlist.threads.length == 0) return;
         boolean updateWatchlist = false;
         for (int i = 0; i < watchlist.threads.length; i++) {
             ChanThread watchedThread = watchlist.threads[i];
@@ -952,8 +917,7 @@ public class ChanFileStorage {
                         NotificationComponent.notifyNewReplies(context, watchedThread, loadedThread);
                         watchedThread.updateThreadDataWithPost(loadedThread);
                         if (DEBUG)
-                            Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no
-                                    + " replies: " + watchedThread.replies + " images: " + watchedThread.images);
+                            Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no + " replies: " + watchedThread.replies + " images: " + watchedThread.images);
                         updateWatchlist = true;
                     }
                 }
@@ -961,17 +925,14 @@ public class ChanFileStorage {
         }
         if (updateWatchlist) {
             storeBoardData(context, watchlist);
-            if (PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
                 ChanFileStorage.cleanDeadWatchedThreads(context);
             BoardActivity.refreshWatchlist(context);
         }
     }
 
     private static boolean isThreadWatched(ChanBoard board, ChanThread thread) {
-        if (board == null || board.threads == null || thread == null)
-            return false;
+        if (board == null || board.threads == null || thread == null) return false;
         for (ChanPost post : board.threads) {
             if (post.board != null && post.board.equals(thread.board) && post.no == thread.no) {
                 return true;
@@ -981,8 +942,7 @@ public class ChanFileStorage {
     }
 
     public static boolean isFavoriteBoard(ChanBoard board, ChanThread thread) {
-        if (board == null || board.threads == null)
-            return false;
+        if (board == null || board.threads == null) return false;
         for (ChanPost post : board.threads) {
             if (post.board != null && post.board.equals(thread.board)) {
                 return true;
@@ -1012,17 +972,14 @@ public class ChanFileStorage {
 
     private static void migrateBoard(Context context, String boardCode) {
         File legacyBoardFile = getLegacyBoardCacheFile(context, boardCode);
-        if (legacyBoardFile == null || !legacyBoardFile.exists())
-            return;
+        if (legacyBoardFile == null || !legacyBoardFile.exists()) return;
         File boardDir = getBoardCacheDirectory(context, boardCode);
-        if (!moveFileToDir(legacyBoardFile, boardDir))
-            return;
+        if (!moveFileToDir(legacyBoardFile, boardDir)) return;
         String cacheDir = getLegacyBoardCachePath(context, boardCode);
         if (!Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
             return;
         File legacyBoardDir = new File(Environment.getExternalStorageDirectory(), cacheDir);
-        if (legacyBoardDir == null || !legacyBoardDir.exists())
-            return;
+        if (legacyBoardDir == null || !legacyBoardDir.exists()) return;
         legacyBoardDir.delete();
     }
 
@@ -1035,8 +992,7 @@ public class ChanFileStorage {
         File destFile = null;
         try {
             destFile = new File(destDir.getAbsolutePath() + FILE_SEP + sourceFile.getName());
-            if (!destFile.createNewFile())
-                return false;
+            if (!destFile.createNewFile()) return false;
 
             fis = new FileInputStream(sourceFile);
             fos = new FileOutputStream(destFile);
@@ -1057,8 +1013,7 @@ public class ChanFileStorage {
             return !sourceFile.exists();
         } catch (Throwable e) {
             Log.e(TAG, "Exception moving file " + sourceFile + " to " + destDir);
-            if (destFile != null)
-                destFile.delete();
+            if (destFile != null) destFile.delete();
             return false;
         } finally {
             IOUtils.closeQuietly(out);

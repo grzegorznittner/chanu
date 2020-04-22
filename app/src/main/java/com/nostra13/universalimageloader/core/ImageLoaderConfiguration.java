@@ -153,8 +153,7 @@ public final class ImageLoaderConfiguration {
         private static final String WARNING_OVERLAP_DISC_CACHE_PARAMS = "discCache(), discCacheSize() and discCacheFileCount calls overlap each other";
         private static final String WARNING_OVERLAP_DISC_CACHE_NAME_GENERATOR = "discCache() and discCacheFileNameGenerator() calls overlap each other";
         private static final String WARNING_OVERLAP_MEMORY_CACHE = "memoryCache() and memoryCacheSize() calls overlap each other";
-        private static final String WARNING_OVERLAP_EXECUTOR = "threadPoolSize(), threadPriority() and tasksProcessingOrder() calls "
-                + "can overlap taskExecutor() and taskExecutorForCachedImages() calls.";
+        private static final String WARNING_OVERLAP_EXECUTOR = "threadPoolSize(), threadPriority() and tasksProcessingOrder() calls " + "can overlap taskExecutor() and taskExecutorForCachedImages() calls.";
         private Context context;
 
         private int maxImageWidthForMemoryCache = 0;

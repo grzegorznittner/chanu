@@ -35,8 +35,7 @@ public class UserStatistics {
     public static final int MAX_TOP_THREADS = 50;
     private static final long MIN_STORE_DELAY = 5000;  // 15s
     private static final long MIN_DELAY_FOR_TIPS = 5 * 60 * 1000; // 5min
-    public static ChanFeature[] MAIN_TUTORIAL_FEATURES = new ChanFeature[]{
-            ChanFeature.INTRO_DESC
+    public static ChanFeature[] MAIN_TUTORIAL_FEATURES = new ChanFeature[]{ChanFeature.INTRO_DESC
             //,
             //ChanFeature.SECTION_DESC,
             //ChanFeature.BOARD_DESC,
@@ -175,8 +174,7 @@ public class UserStatistics {
         // sorting by last modification date desc order
         Collections.sort(topBoards, new Comparator<ChanBoardStat>() {
             public int compare(ChanBoardStat o1, ChanBoardStat o2) {
-                return o1.usage > o2.usage ? 1
-                        : o1.usage < o2.usage ? -1 : 0;
+                return o1.usage > o2.usage ? 1 : o1.usage < o2.usage ? -1 : 0;
             }
         });
         if (topBoards.size() < MIN_TOP_BOARDS) {
@@ -208,8 +206,7 @@ public class UserStatistics {
         // sorting by usage desc
         Collections.sort(topThreads, new Comparator<ChanThreadStat>() {
             public int compare(ChanThreadStat o1, ChanThreadStat o2) {
-                return o1.usage > o2.usage ? 1
-                        : o1.usage < o2.usage ? -1 : 0;
+                return o1.usage > o2.usage ? 1 : o1.usage < o2.usage ? -1 : 0;
             }
         });
         if (topThreads.size() < MAX_TOP_THREADS) {
@@ -373,8 +370,7 @@ public class UserStatistics {
     }
 
     public enum ChanFeature {
-        NONE,
-        INTRO_DESC
+        NONE, INTRO_DESC
         //,
         //SECTION_DESC,
         //BOARD_DESC,

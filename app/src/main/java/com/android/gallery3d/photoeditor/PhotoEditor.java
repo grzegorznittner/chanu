@@ -46,14 +46,13 @@ public class PhotoEditor extends Activity {
         }
 
         actionBar = findViewById(R.id.action_bar);
-        filterStack = new FilterStack((PhotoView) findViewById(R.id.photo_view),
-                new FilterStack.StackListener() {
+        filterStack = new FilterStack((PhotoView) findViewById(R.id.photo_view), new FilterStack.StackListener() {
 
-                    @Override
-                    public void onStackChanged(boolean canUndo, boolean canRedo) {
-                        actionBar.updateButtons(canUndo, canRedo);
-                    }
-                });
+            @Override
+            public void onStackChanged(boolean canUndo, boolean canRedo) {
+                actionBar.updateButtons(canUndo, canRedo);
+            }
+        });
 
         EffectsBar effectsBar = findViewById(R.id.effects_bar);
         effectsBar.initialize(filterStack);
@@ -138,8 +137,7 @@ public class PhotoEditor extends Activity {
                                         saveUri = result;
                                     }
                                 };
-                                new SaveCopyTask(PhotoEditor.this, sourceUri, callback).execute(
-                                        bitmap);
+                                new SaveCopyTask(PhotoEditor.this, sourceUri, callback).execute(bitmap);
                             }
                         });
                     }

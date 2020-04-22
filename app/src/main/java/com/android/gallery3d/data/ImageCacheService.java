@@ -38,9 +38,7 @@ public class ImageCacheService {
     private BlobCache mCache;
 
     public ImageCacheService(Context context) {
-        mCache = CacheManager.getCache(context, IMAGE_CACHE_FILE,
-                IMAGE_CACHE_MAX_ENTRIES, IMAGE_CACHE_MAX_BYTES,
-                IMAGE_CACHE_VERSION);
+        mCache = CacheManager.getCache(context, IMAGE_CACHE_FILE, IMAGE_CACHE_MAX_ENTRIES, IMAGE_CACHE_MAX_BYTES, IMAGE_CACHE_VERSION);
     }
 
     private static byte[] makeKey(Path path, int type) {
@@ -97,6 +95,7 @@ public class ImageCacheService {
     public static class ImageData {
         public byte[] mData;
         public int mOffset;
+
         public ImageData(byte[] data, int offset) {
             mData = data;
             mOffset = offset;

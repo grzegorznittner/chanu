@@ -30,22 +30,15 @@ public abstract class ListDialogFragment extends DialogFragment {
     public ListDialogFragment() {
     }
 
-    public Dialog createListDialog(int titleStringId, int emptyTitleStringId, int emptyStringId, String[] array,
-                                   ListView.OnItemClickListener listener) {
+    public Dialog createListDialog(int titleStringId, int emptyTitleStringId, int emptyStringId, String[] array, ListView.OnItemClickListener listener) {
         return createListDialog(titleStringId, emptyTitleStringId, emptyStringId, array, listener, null);
     }
 
-    public Dialog createListDialog(int titleStringId, int emptyTitleStringId, int emptyStringId, String[] array,
-                                   ListView.OnItemClickListener listener, final DialogInterface.OnCancelListener cancelListener) {
-        return createListDialog(getString(titleStringId), getString(emptyTitleStringId), getString(emptyStringId),
-                array, listener, cancelListener, null, null);
+    public Dialog createListDialog(int titleStringId, int emptyTitleStringId, int emptyStringId, String[] array, ListView.OnItemClickListener listener, final DialogInterface.OnCancelListener cancelListener) {
+        return createListDialog(getString(titleStringId), getString(emptyTitleStringId), getString(emptyStringId), array, listener, cancelListener, null, null);
     }
 
-    public Dialog createListDialog(String title, String emptyTitle, String empty, String[] array,
-                                   ListView.OnItemClickListener listener,
-                                   final DialogInterface.OnCancelListener cancelListener,
-                                   String positiveLabel,
-                                   final DialogInterface.OnClickListener positiveListener) {
+    public Dialog createListDialog(String title, String emptyTitle, String empty, String[] array, ListView.OnItemClickListener listener, final DialogInterface.OnCancelListener cancelListener, String positiveLabel, final DialogInterface.OnClickListener positiveListener) {
         this.array = array;
         this.cancelListener = cancelListener;
         if (array.length > 0) {
@@ -55,33 +48,27 @@ public abstract class ListDialogFragment extends DialogFragment {
             TextView titleView = layout.findViewById(R.id.title);
             titleView.setText(title);
             items = layout.findViewById(R.id.items);
-            int itemLayoutId = ThemeSelector.instance(getActivity()).isDark()
-                    ? R.layout.items_dialog_item_dark
-                    : R.layout.items_dialog_item;
-            adapter = new ArrayAdapter(getActivity().getApplicationContext(),
-                    itemLayoutId, array);
+            int itemLayoutId = ThemeSelector.instance(getActivity()).isDark() ? R.layout.items_dialog_item_dark : R.layout.items_dialog_item;
+            adapter = new ArrayAdapter(getActivity().getApplicationContext(), itemLayoutId, array);
             items.setAdapter(adapter);
-            if (listener != null)
-                items.setOnItemClickListener(listener);
+            if (listener != null) items.setOnItemClickListener(listener);
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(layout);
             if (positiveListener != null) {
                 builder.setPositiveButton(positiveLabel, positiveListener);
             }
             if (cancelListener != null) {
-                builder
-                        .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                cancelListener.onCancel(dialog);
-                            }
-                        });
+                builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        cancelListener.onCancel(dialog);
+                    }
+                });
             } else {
-                builder.setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
+                builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
             }
             Dialog d = builder.create();
             return d;
@@ -95,20 +82,18 @@ public abstract class ListDialogFragment extends DialogFragment {
             setStyle(STYLE_NO_TITLE, 0);
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setView(layout);
             if (cancelListener != null) {
-                builder
-                        .setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                cancelListener.onCancel(dialog);
-                            }
-                        });
+                builder.setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        cancelListener.onCancel(dialog);
+                    }
+                });
             } else {
-                builder.setNegativeButton(R.string.dismiss,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
+                builder.setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
             }
             Dialog d = builder.create();
             return d;
@@ -117,8 +102,7 @@ public abstract class ListDialogFragment extends DialogFragment {
 
     @Override
     public void onCancel(DialogInterface dialogInterface) {
-        if (cancelListener != null)
-            cancelListener.onCancel(dialogInterface);
+        if (cancelListener != null) cancelListener.onCancel(dialogInterface);
     }
 
 }

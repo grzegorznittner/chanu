@@ -48,13 +48,10 @@ public class BoxBlurFilter {
 
     private static int sample(int x, int width, int mode) {
         if (x >= 0 && x < width) return x;
-        return mode == MODE_REPEAT
-                ? x < 0 ? x + width : x - width
-                : x < 0 ? 0 : width - 1;
+        return mode == MODE_REPEAT ? x < 0 ? x + width : x - width : x < 0 ? 0 : width - 1;
     }
 
-    public static void apply(
-            Bitmap bitmap, int horizontalMode, int verticalMode) {
+    public static void apply(Bitmap bitmap, int horizontalMode, int verticalMode) {
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -66,8 +63,7 @@ public class BoxBlurFilter {
         bitmap.setPixels(data, 0, width, 0, 0, width, height);
     }
 
-    private static void applyOneDimension(
-            int[] in, int[] out, int width, int height, int mode) {
+    private static void applyOneDimension(int[] in, int[] out, int width, int height, int mode) {
         for (int y = 0, read = 0; y < height; ++y, read += width) {
             // Evaluate the kernel for the first pixel in the row.
             int red = 0;
@@ -81,10 +77,7 @@ public class BoxBlurFilter {
             }
             for (int x = 0, write = y; x < width; ++x, write += height) {
                 // Output the current pixel.
-                out[write] = 0xFF000000
-                        | (KERNEL_NORM[red] << RED_MASK_SHIFT)
-                        | (KERNEL_NORM[green] << GREEN_MASK_SHIFT)
-                        | KERNEL_NORM[blue];
+                out[write] = 0xFF000000 | (KERNEL_NORM[red] << RED_MASK_SHIFT) | (KERNEL_NORM[green] << GREEN_MASK_SHIFT) | KERNEL_NORM[blue];
 
                 // Slide to the next pixel, adding the new rightmost pixel and
                 // subtracting the former leftmost.

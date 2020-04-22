@@ -59,12 +59,9 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         int tag;
-        if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            tag = TYPE_HEADER;
-        else if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
-            tag = TYPE_IMAGE_ITEM;
-        else
-            tag = TYPE_TEXT_ITEM;
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) tag = TYPE_HEADER;
+        else if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) tag = TYPE_IMAGE_ITEM;
+        else tag = TYPE_TEXT_ITEM;
         return tag;
     }
 
@@ -110,16 +107,14 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    if (view != null)
-                        view.setVisibility(View.VISIBLE);
+                    if (view != null) view.setVisibility(View.VISIBLE);
                     if (p != null) {
                         p.setVisibility(View.GONE);
                     }
                 }
 
                 @Override
-                public void onReceivedError(WebView view, int errorCode,
-                                            String description, String failingUrl) {
+                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                     if (p != null) {
                         p.setVisibility(View.GONE);
                     }
@@ -145,9 +140,7 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
         final long threadNo = resto > 0 ? resto : postId;
         final long postNo = resto > 0 ? postId : 0;
         ThreadViewHolder viewHolder = (ThreadViewHolder) view.getTag(R.id.VIEW_HOLDER);
-        final ThreadFragment fragment = context != null && context instanceof ThreadActivity
-                ? ((ThreadActivity) context).getCurrentFragment()
-                : null;
+        final ThreadFragment fragment = context != null && context instanceof ThreadActivity ? ((ThreadActivity) context).getCurrentFragment() : null;
         final String query = fragment == null ? "" : fragment.getQuery();
         if (resto == 0) { // it's a header
             if (DEBUG)
@@ -155,22 +148,16 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
             int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
             int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
             ThreadViewer.setSubjectIcons(viewHolder, flags);
-            View.OnClickListener listener = fragment != null
-                    ? ThreadViewer.createCommentsOnClickListener(fragment.getAbsListView(), fragment.getHandler())
-                    : null;
-            ThreadViewer.setHeaderNumRepliesImages(viewHolder, cursor,
-                    listener,
-                    ThreadViewer.createImagesOnClickListener(context, boardCode, threadNo));
+            View.OnClickListener listener = fragment != null ? ThreadViewer.createCommentsOnClickListener(fragment.getAbsListView(), fragment.getHandler()) : null;
+            ThreadViewer.setHeaderNumRepliesImages(viewHolder, cursor, listener, ThreadViewer.createImagesOnClickListener(context, boardCode, threadNo));
             ThreadViewer.displayNumDirectReplies(viewHolder, cursor, showContextMenu, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (context instanceof FragmentActivity) {
                         if (DEBUG) Log.i(TAG, "should dismiss parent here fragment=" + fragment);
-                        if (onDismissCallback != null)
-                            onDismissCallback.run();
+                        if (onDismissCallback != null) onDismissCallback.run();
                         //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
-                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, ThreadPopupDialogFragment.PopupType.REPLIES, query))
-                                .show(((FragmentActivity) context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, threadNo, ThreadPopupDialogFragment.PopupType.REPLIES, query)).show(((FragmentActivity) context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
                     }
                 }
             });
@@ -184,11 +171,9 @@ public class ThreadCursorAdapter extends AbstractThreadCursorAdapter {
                 public void onClick(View v) {
                     if (context instanceof FragmentActivity) {
                         if (DEBUG) Log.i(TAG, "should dismiss parent here fragment=" + fragment);
-                        if (onDismissCallback != null)
-                            onDismissCallback.run();
+                        if (onDismissCallback != null) onDismissCallback.run();
                         //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES, query))
-                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, ThreadPopupDialogFragment.PopupType.REPLIES, query))
-                                .show(((FragmentActivity) context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, ThreadPopupDialogFragment.PopupType.REPLIES, query)).show(((FragmentActivity) context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
                     }
                 }
             });

@@ -76,8 +76,7 @@ public class FilePart extends PartBase {
     /**
      * Attachment's file name as a byte array
      */
-    private static final byte[] FILE_NAME_BYTES =
-            EncodingUtils.getAsciiBytes(FILE_NAME);
+    private static final byte[] FILE_NAME_BYTES = EncodingUtils.getAsciiBytes(FILE_NAME);
 
     /**
      * Source of the file part.
@@ -96,12 +95,7 @@ public class FilePart extends PartBase {
      */
     public FilePart(String name, PartSource partSource, String contentType, String charset) {
 
-        super(
-                name,
-                contentType == null ? DEFAULT_CONTENT_TYPE : contentType,
-                charset == null ? "ISO-8859-1" : charset,
-                DEFAULT_TRANSFER_ENCODING
-        );
+        super(name, contentType == null ? DEFAULT_CONTENT_TYPE : contentType, charset == null ? "ISO-8859-1" : charset, DEFAULT_TRANSFER_ENCODING);
 
         if (partSource == null) {
             throw new IllegalArgumentException("Source may not be null");
@@ -127,8 +121,7 @@ public class FilePart extends PartBase {
      * @throws FileNotFoundException if the <i>file</i> is not a normal
      *                               file or if it is not readable.
      */
-    public FilePart(String name, File file)
-            throws FileNotFoundException {
+    public FilePart(String name, File file) throws FileNotFoundException {
         this(name, new FilePartSource(file), null, null);
     }
 
@@ -144,8 +137,7 @@ public class FilePart extends PartBase {
      * @throws FileNotFoundException if the <i>file</i> is not a normal
      *                               file or if it is not readable.
      */
-    public FilePart(String name, File file, String contentType, String charset)
-            throws FileNotFoundException {
+    public FilePart(String name, File file, String contentType, String charset) throws FileNotFoundException {
         this(name, new FilePartSource(file), contentType, charset);
     }
 
@@ -158,8 +150,7 @@ public class FilePart extends PartBase {
      * @throws FileNotFoundException if the <i>file</i> is not a normal
      *                               file or if it is not readable.
      */
-    public FilePart(String name, String fileName, File file)
-            throws FileNotFoundException {
+    public FilePart(String name, String fileName, File file) throws FileNotFoundException {
         this(name, new FilePartSource(fileName, file), null, null);
     }
 
@@ -176,8 +167,7 @@ public class FilePart extends PartBase {
      * @throws FileNotFoundException if the <i>file</i> is not a normal
      *                               file or if it is not readable.
      */
-    public FilePart(String name, String fileName, File file, String contentType, String charset)
-            throws FileNotFoundException {
+    public FilePart(String name, String fileName, File file, String contentType, String charset) throws FileNotFoundException {
         this(name, new FilePartSource(fileName, file), contentType, charset);
     }
 
@@ -189,8 +179,7 @@ public class FilePart extends PartBase {
      * @see Part#sendDispositionHeader(OutputStream)
      */
     @Override
-    protected void sendDispositionHeader(OutputStream out)
-            throws IOException {
+    protected void sendDispositionHeader(OutputStream out) throws IOException {
         if (DEBUG) Log.d(TAG, "enter sendDispositionHeader(OutputStream out)");
         super.sendDispositionHeader(out);
         String filename = this.source.getFileName();

@@ -316,7 +316,9 @@
     <dimen name="widget_board_coverflowcard_height">@dimen/widget_twocol_inner</dimen>
     <dimen name="widget_board_coverflowcard_image_width">@dimen/widget_twocol_inner</dimen>
     <dimen name="widget_board_coverflowcard_image_height">@dimen/widget_twocol_inner</dimen>
-    <dimen name="widget_board_coverflowcard_text_paddingLeft">@dimen/widget_twocol_inner_paddingLeft</dimen>
+    <dimen name="widget_board_coverflowcard_text_paddingLeft">
+        @dimen/widget_twocol_inner_paddingLeft
+    </dimen>
     <dimen name="widget_board_coverflowcard_textSize">@dimen/widget_textSize</dimen>
 
     <!-- drawer -->

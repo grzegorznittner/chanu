@@ -44,8 +44,7 @@ public class WidgetDatabaseHelper extends SQLiteOpenHelper {
     private static final String FIELD_PHOTO_BLOB = "photoBlob";
     private static final String FIELD_WIDGET_TYPE = "widgetType";
     private static final String FIELD_ALBUM_PATH = "albumPath";
-    private static final String[] PROJECTION = {
-            FIELD_WIDGET_TYPE, FIELD_IMAGE_URI, FIELD_PHOTO_BLOB, FIELD_ALBUM_PATH};
+    private static final String[] PROJECTION = {FIELD_WIDGET_TYPE, FIELD_IMAGE_URI, FIELD_PHOTO_BLOB, FIELD_ALBUM_PATH};
     private static final int INDEX_WIDGET_TYPE = 0;
     private static final int INDEX_IMAGE_URI = 1;
     private static final int INDEX_PHOTO_BLOB = 2;
@@ -58,19 +57,12 @@ public class WidgetDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_WIDGETS + " ("
-                + FIELD_APPWIDGET_ID + " INTEGER PRIMARY KEY, "
-                + FIELD_WIDGET_TYPE + " INTEGER DEFAULT 0, "
-                + FIELD_IMAGE_URI + " TEXT, "
-                + FIELD_ALBUM_PATH + " TEXT, "
-                + FIELD_PHOTO_BLOB + " BLOB)");
+        db.execSQL("CREATE TABLE " + TABLE_WIDGETS + " (" + FIELD_APPWIDGET_ID + " INTEGER PRIMARY KEY, " + FIELD_WIDGET_TYPE + " INTEGER DEFAULT 0, " + FIELD_IMAGE_URI + " TEXT, " + FIELD_ALBUM_PATH + " TEXT, " + FIELD_PHOTO_BLOB + " BLOB)");
     }
 
     private void saveData(SQLiteDatabase db, int oldVersion, ArrayList<Entry> data) {
         if (oldVersion <= 2) {
-            Cursor cursor = db.query("photos",
-                    new String[]{FIELD_APPWIDGET_ID, FIELD_PHOTO_BLOB},
-                    null, null, null, null, null);
+            Cursor cursor = db.query("photos", new String[]{FIELD_APPWIDGET_ID, FIELD_PHOTO_BLOB}, null, null, null, null, null);
             if (cursor == null) return;
             try {
                 while (cursor.moveToNext()) {
@@ -84,9 +76,7 @@ public class WidgetDatabaseHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         } else if (oldVersion == 3) {
-            Cursor cursor = db.query("photos",
-                    new String[]{FIELD_APPWIDGET_ID, FIELD_PHOTO_BLOB, FIELD_IMAGE_URI},
-                    null, null, null, null, null);
+            Cursor cursor = db.query("photos", new String[]{FIELD_APPWIDGET_ID, FIELD_PHOTO_BLOB, FIELD_IMAGE_URI}, null, null, null, null, null);
             if (cursor == null) return;
             try {
                 while (cursor.moveToNext()) {
@@ -185,9 +175,7 @@ public class WidgetDatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
-            cursor = db.query(TABLE_WIDGETS, PROJECTION,
-                    WHERE_CLAUSE, new String[]{String.valueOf(appWidgetId)},
-                    null, null, null);
+            cursor = db.query(TABLE_WIDGETS, PROJECTION, WHERE_CLAUSE, new String[]{String.valueOf(appWidgetId)}, null, null, null);
             if (cursor == null || !cursor.moveToNext()) {
                 Log.e(TAG, "query fail: empty cursor: " + cursor, new Exception("location"));
                 return null;
@@ -207,8 +195,7 @@ public class WidgetDatabaseHelper extends SQLiteOpenHelper {
     public void deleteEntry(int appWidgetId) {
         try {
             SQLiteDatabase db = getWritableDatabase();
-            db.delete(TABLE_WIDGETS, WHERE_CLAUSE,
-                    new String[]{String.valueOf(appWidgetId)});
+            db.delete(TABLE_WIDGETS, WHERE_CLAUSE, new String[]{String.valueOf(appWidgetId)});
         } catch (SQLiteException e) {
             Log.e(TAG, "Could not delete photo from database", e);
         }

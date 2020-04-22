@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,79 +13,98 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/EffectsContainer">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/EffectsContainer">
 
     <com.android.gallery3d.photoeditor.actions.CrossProcessAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_crossprocess"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_crossprocess" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/crossprocess"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/crossprocess" />
     </com.android.gallery3d.photoeditor.actions.CrossProcessAction>
+
     <com.android.gallery3d.photoeditor.actions.PosterizeAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_posterize"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_posterize" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/posterize"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/posterize" />
     </com.android.gallery3d.photoeditor.actions.PosterizeAction>
+
     <com.android.gallery3d.photoeditor.actions.LomoishAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_lomoish"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_lomoish" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/lomoish"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/lomoish" />
     </com.android.gallery3d.photoeditor.actions.LomoishAction>
+
     <com.android.gallery3d.photoeditor.actions.DocumentaryAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_documentary"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_documentary" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/documentary"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/documentary" />
     </com.android.gallery3d.photoeditor.actions.DocumentaryAction>
+
     <com.android.gallery3d.photoeditor.actions.VignetteAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_vignette"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_vignette" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/vignette"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/vignette" />
     </com.android.gallery3d.photoeditor.actions.VignetteAction>
+
     <com.android.gallery3d.photoeditor.actions.GrainAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_grain"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_grain" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/grain"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/grain" />
     </com.android.gallery3d.photoeditor.actions.GrainAction>
+
     <com.android.gallery3d.photoeditor.actions.FisheyeAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_fisheye"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_fisheye" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/fisheye"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/fisheye" />
     </com.android.gallery3d.photoeditor.actions.FisheyeAction>
 
 </LinearLayout>

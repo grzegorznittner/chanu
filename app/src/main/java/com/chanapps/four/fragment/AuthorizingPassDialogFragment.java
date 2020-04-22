@@ -40,15 +40,11 @@ public class AuthorizingPassDialogFragment extends DialogFragment {
         title.setText(R.string.pref_pass_category);
         message.setText(R.string.dialog_authorizing_pass);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                task.cancel(true);
-                            }
-                        })
-                .create();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                task.cancel(true);
+            }
+        }).create();
     }
 }

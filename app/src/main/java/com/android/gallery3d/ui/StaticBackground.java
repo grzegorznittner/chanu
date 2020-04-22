@@ -40,8 +40,7 @@ public class StaticBackground extends GLView {
         if (mIsLandscape == isLandscape) return;
         mIsLandscape = isLandscape;
         if (mBackground != null) mBackground.recycle();
-        mBackground = new ResourceTexture(
-                mContext, mIsLandscape ? mLandscapeResource : mPortraitResource);
+        mBackground = new ResourceTexture(mContext, mIsLandscape ? mLandscapeResource : mPortraitResource);
         invalidate();
     }
 
@@ -49,8 +48,7 @@ public class StaticBackground extends GLView {
         mLandscapeResource = landscapeId;
         mPortraitResource = portraitId;
         if (mBackground != null) mBackground.recycle();
-        mBackground = new ResourceTexture(
-                mContext, mIsLandscape ? landscapeId : portraitId);
+        mBackground = new ResourceTexture(mContext, mIsLandscape ? landscapeId : portraitId);
         invalidate();
     }
 

@@ -72,26 +72,20 @@ public class CancelDownloadActivity extends Activity {
             title.setText(R.string.cancel_download_title);
             message.setText(R.string.cancel_download_message);
             setStyle(STYLE_NO_TITLE, 0);
-            return (new AlertDialog.Builder(getActivity()))
-                    .setView(layout)
-                    .setPositiveButton(android.R.string.yes,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (notificationId != 0) {
-                                        ThreadImageDownloadService.cancelDownload(getBaseContext(), notificationId);
-                                    }
-                                    CancelDownloadActivity.this.finish();
-                                }
-                            })
-                    .setNegativeButton(R.string.dismiss,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    CancelDownloadActivity.this.finish();
-                                }
-                            })
-                    .create();
+            return (new AlertDialog.Builder(getActivity())).setView(layout).setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (notificationId != 0) {
+                        ThreadImageDownloadService.cancelDownload(getBaseContext(), notificationId);
+                    }
+                    CancelDownloadActivity.this.finish();
+                }
+            }).setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    CancelDownloadActivity.this.finish();
+                }
+            }).create();
         }
 
     }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2011 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2011 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -18,10 +17,11 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:background="@drawable/appwidget_photo_border">
+
     <ImageView
             android:id="@+id/appwidget_photo_item"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 </FrameLayout>

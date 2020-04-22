@@ -49,15 +49,12 @@ public class DownloadCache {
     private static final String TABLE_NAME = DownloadEntry.SCHEMA.getTableName();
 
     private static final String[] QUERY_PROJECTION = {Columns.ID, Columns.DATA};
-    private static final String WHERE_HASH_AND_URL = String.format(
-            "%s = ? AND %s = ?", Columns.HASH_CODE, Columns.CONTENT_URL);
+    private static final String WHERE_HASH_AND_URL = String.format("%s = ? AND %s = ?", Columns.HASH_CODE, Columns.CONTENT_URL);
     private static final int QUERY_INDEX_ID = 0;
     private static final int QUERY_INDEX_DATA = 1;
 
-    private static final String[] FREESPACE_PROJECTION = {
-            Columns.ID, Columns.DATA, Columns.CONTENT_URL, Columns.CONTENT_SIZE};
-    private static final String FREESPACE_ORDER_BY =
-            String.format("%s ASC", Columns.LAST_ACCESS);
+    private static final String[] FREESPACE_PROJECTION = {Columns.ID, Columns.DATA, Columns.CONTENT_URL, Columns.CONTENT_SIZE};
+    private static final String FREESPACE_ORDER_BY = String.format("%s ASC", Columns.LAST_ACCESS);
     private static final int FREESPACE_IDNEX_ID = 0;
     private static final int FREESPACE_IDNEX_DATA = 1;
     private static final int FREESPACE_INDEX_CONTENT_URL = 2;
@@ -65,14 +62,11 @@ public class DownloadCache {
 
     private static final String ID_WHERE = Columns.ID + " = ?";
 
-    private static final String[] SUM_PROJECTION =
-            {String.format("sum(%s)", Columns.CONTENT_SIZE)};
+    private static final String[] SUM_PROJECTION = {String.format("sum(%s)", Columns.CONTENT_SIZE)};
     private static final int SUM_INDEX_SUM = 0;
 
-    private final LruCache<String, Entry> mEntryMap =
-            new LruCache<String, Entry>(LRU_CAPACITY);
-    private final HashMap<String, DownloadTask> mTaskMap =
-            new HashMap<String, DownloadTask>();
+    private final LruCache<String, Entry> mEntryMap = new LruCache<String, Entry>(LRU_CAPACITY);
+    private final HashMap<String, DownloadTask> mTaskMap = new HashMap<String, DownloadTask>();
     private final File mRoot;
     private final GalleryApp mApplication;
     private final SQLiteDatabase mDatabase;
@@ -86,15 +80,13 @@ public class DownloadCache {
         mRoot = Utils.checkNotNull(root);
         mApplication = Utils.checkNotNull(application);
         mCapacity = capacity;
-        mDatabase = new DatabaseHelper(application.getAndroidContext())
-                .getWritableDatabase();
+        mDatabase = new DatabaseHelper(application.getAndroidContext()).getWritableDatabase();
     }
 
     private Entry findEntryInDatabase(String stringUrl) {
         long hash = Utils.crc64Long(stringUrl);
         String[] whereArgs = {String.valueOf(hash), stringUrl};
-        Cursor cursor = mDatabase.query(TABLE_NAME, QUERY_PROJECTION,
-                WHERE_HASH_AND_URL, whereArgs, null, null, null);
+        Cursor cursor = mDatabase.query(TABLE_NAME, QUERY_PROJECTION, WHERE_HASH_AND_URL, whereArgs, null, null, null);
         try {
             if (cursor.moveToNext()) {
                 File file = new File(cursor.getString(QUERY_INDEX_DATA));
@@ -180,17 +172,14 @@ public class DownloadCache {
     private void updateLastAccess(long id) {
         ContentValues values = new ContentValues();
         values.put(Columns.LAST_ACCESS, System.currentTimeMillis());
-        mDatabase.update(TABLE_NAME, values,
-                ID_WHERE, new String[]{String.valueOf(id)});
+        mDatabase.update(TABLE_NAME, values, ID_WHERE, new String[]{String.valueOf(id)});
     }
 
     private synchronized void freeSomeSpaceIfNeed(int maxDeleteFileCount) {
         if (mTotalBytes <= mCapacity) return;
-        Cursor cursor = mDatabase.query(TABLE_NAME,
-                FREESPACE_PROJECTION, null, null, null, null, FREESPACE_ORDER_BY);
+        Cursor cursor = mDatabase.query(TABLE_NAME, FREESPACE_PROJECTION, null, null, null, null, FREESPACE_ORDER_BY);
         try {
-            while (maxDeleteFileCount > 0
-                    && mTotalBytes > mCapacity && cursor.moveToNext()) {
+            while (maxDeleteFileCount > 0 && mTotalBytes > mCapacity && cursor.moveToNext()) {
                 long id = cursor.getLong(FREESPACE_IDNEX_ID);
                 String url = cursor.getString(FREESPACE_INDEX_CONTENT_URL);
                 long size = cursor.getLong(FREESPACE_INDEX_CONTENT_SIZE);
@@ -203,8 +192,7 @@ public class DownloadCache {
                     --maxDeleteFileCount;
                     mTotalBytes -= size;
                     new File(path).delete();
-                    mDatabase.delete(TABLE_NAME,
-                            ID_WHERE, new String[]{String.valueOf(id)});
+                    mDatabase.delete(TABLE_NAME, ID_WHERE, new String[]{String.valueOf(id)});
                 } else {
                     // skip delete, since it is being used
                 }
@@ -236,8 +224,7 @@ public class DownloadCache {
             throw new RuntimeException("cannot create " + mRoot.getAbsolutePath());
         }
 
-        Cursor cursor = mDatabase.query(
-                TABLE_NAME, SUM_PROJECTION, null, null, null, null, null);
+        Cursor cursor = mDatabase.query(TABLE_NAME, SUM_PROJECTION, null, null, null, null, null);
         mTotalBytes = 0;
         try {
             if (cursor.moveToNext()) {
@@ -385,8 +372,7 @@ public class DownloadCache {
                 tempFile = File.createTempFile("cache", ".tmp", mRoot);
                 try {
                     File f = new File(mRoot, ".nomedia");
-                    if (!f.exists())
-                        f.createNewFile();
+                    if (!f.exists()) f.createNewFile();
                 } catch (IOException e) {
                     L.i("Can't create \".nomedia\" file in gallery cache directory " + mRoot);
                 }

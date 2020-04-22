@@ -77,34 +77,29 @@ public class AboutFragment extends PreferenceFragment {
     }
 
     protected void linkPreference(final String pref, final String url) {
-        findPreference(pref).setOnPreferenceClickListener(
-                new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
-                        return true;
-                    }
-                });
+        findPreference(pref).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
+                return true;
+            }
+        });
     }
 
     protected void intentOrLinkPreference(final String pref, final String googlePlusId, final String url) {
-        findPreference(pref).setOnPreferenceClickListener(
-                new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        if (getActivity() == null)
-                            return true;
+        findPreference(pref).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (getActivity() == null) return true;
 
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setClassName("com.google.android.apps.plus", "com.google.android.apps.plus.phone.UrlGatewayActivity");
-                        i.putExtra("customAppUri", googlePlusId);
-                        if (i.resolveActivity(getActivity().getPackageManager()) != null)
-                            startActivity(i);
-                        else
-                            ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
-                        return true;
-                    }
-                });
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setClassName("com.google.android.apps.plus", "com.google.android.apps.plus.phone.UrlGatewayActivity");
+                i.putExtra("customAppUri", googlePlusId);
+                if (i.resolveActivity(getActivity().getPackageManager()) != null) startActivity(i);
+                else ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
+                return true;
+            }
+        });
     }
 
 }

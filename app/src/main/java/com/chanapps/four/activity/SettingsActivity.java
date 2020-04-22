@@ -75,9 +75,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
 
     static public boolean shouldLoadThumbs(Context context) {
-        String autoloadType = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(PREF_AUTOLOAD_IMAGES,
-                        context.getString(R.string.pref_autoload_images_default_value));
+        String autoloadType = PreferenceManager.getDefaultSharedPreferences(context).getString(PREF_AUTOLOAD_IMAGES, context.getString(R.string.pref_autoload_images_default_value));
         return !(context.getString(R.string.pref_autoload_images_nothumbs_value).equals(autoloadType));
     }
 
@@ -179,11 +177,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                 //BoardActivity.startDefaultActivity(this);
                 return true;
             case R.id.global_rules_menu:
-                (new StringResourceDialog(this,
-                        R.layout.board_rules_dialog,
-                        R.string.global_rules_menu,
-                        R.string.global_rules_detail))
-                        .show();
+                (new StringResourceDialog(this, R.layout.board_rules_dialog, R.string.global_rules_menu, R.string.global_rules_detail)).show();
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(this, null);
@@ -207,10 +201,9 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
         if (task != null) {
             if (DEBUG)
                 Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
-            if (task.baseActivity != null
-                    && !getClass().getName().equals(task.baseActivity.getClassName())) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
-                        + getClass().getName() + " base=" + task.baseActivity.getClassName());
+            if (task.baseActivity != null && !getClass().getName().equals(task.baseActivity.getClassName())) {
+                if (DEBUG)
+                    Log.i(TAG, "navigateUp() using finish instead of intents with me=" + getClass().getName() + " base=" + task.baseActivity.getClassName());
                 finish();
                 return;
             } else if (task.baseActivity != null && numTasks >= 2) {

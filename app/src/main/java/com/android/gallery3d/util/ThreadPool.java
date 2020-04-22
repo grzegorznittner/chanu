@@ -36,11 +36,7 @@ public class ThreadPool {
     ResourceCounter mNetworkCounter = new ResourceCounter(2);
 
     public ThreadPool() {
-        mExecutor = new ThreadPoolExecutor(
-                CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME,
-                TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),
-                new PriorityThreadFactory("thread-pool",
-                        android.os.Process.THREAD_PRIORITY_BACKGROUND));
+        mExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new PriorityThreadFactory("thread-pool", android.os.Process.THREAD_PRIORITY_BACKGROUND));
     }
 
     // Submit a job to the thread pool. The listener will be called when the

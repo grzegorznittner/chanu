@@ -58,8 +58,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         mObserver = new ForceLoadContentObserver();
     }
 
-    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev, boolean header,
-                             BoardSortType boardSortType) {
+    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev, boolean header, BoardSortType boardSortType) {
         this(context);
         this.context = context;
         this.boardName = boardName;
@@ -87,8 +86,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     private static ChanBoard copyBoardSorted(ChanBoard board, BoardSortType boardSortType) {
-        if (boardSortType == BoardSortType.BUMP_ORDER)
-            return board;
+        if (boardSortType == BoardSortType.BUMP_ORDER) return board;
 
         ChanThread[] threads = board.threads;
         Map<Long, List<Integer>> positionMap = new HashMap<Long, List<Integer>>(threads.length);
@@ -98,14 +96,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             long value;
             switch (boardSortType) {
                 case REPLY_COUNT:
-                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
-                            ? thread.replies
-                            : thread.posts[0].replies;
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null ? thread.replies : thread.posts[0].replies;
                     break;
                 case IMAGE_COUNT:
-                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
-                            ? thread.images
-                            : thread.posts[0].images;
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null ? thread.images : thread.posts[0].images;
                     break;
                 case CREATION_DATE:
                     value = thread.no;
@@ -113,8 +107,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 default:
                     throw new AssertionError("board sort type = " + boardSortType + " should have been handled elsewhere");
             }
-            if (!positionMap.containsKey(value))
-                positionMap.put(value, new ArrayList<Integer>(1));
+            if (!positionMap.containsKey(value)) positionMap.put(value, new ArrayList<Integer>(1));
             positionMap.get(value).add(pos);
             valueSet.add(value);
         }
@@ -146,12 +139,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         //if (ChanBoard.META_BOARD_CODE.equals(boardName))
         //    cursor = loadMetaBoard();
         //else
-        if (ChanBoard.isMetaBoard(boardName))
-            cursor = loadMetaTypeBoard();
-        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardName))
-            cursor = loadFavoritesBoard();
-        else
-            cursor = loadBoard();
+        if (ChanBoard.isMetaBoard(boardName)) cursor = loadMetaTypeBoard();
+        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardName)) cursor = loadFavoritesBoard();
+        else cursor = loadBoard();
         registerContentObserver(cursor, mObserver);
         return cursor;
     }
@@ -161,24 +151,18 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         if (DEBUG) Log.i(TAG, "loadMetaTypeBoard showNSFWBoards=" + showNSFWBoards);
         List<ChanBoard> sorted = new ArrayList<ChanBoard>();
         for (BoardType boardType : BoardType.values()) {
-            if (BoardType.ALL_BOARDS == boardType)
-                continue;
-            if (!boardType.isCategory())
-                continue;
-            if (!boardType.isSFW() && !showNSFWBoards)
-                continue;
-            if (!ChanBoard.isMetaBoard(boardType.boardCode()))
-                continue;
+            if (BoardType.ALL_BOARDS == boardType) continue;
+            if (!boardType.isCategory()) continue;
+            if (!boardType.isSFW() && !showNSFWBoards) continue;
+            if (!ChanBoard.isMetaBoard(boardType.boardCode())) continue;
             if (!boardName.equals(boardType.boardCode()) && !boardName.equals(ChanBoard.ALL_BOARDS_BOARD_CODE))
                 continue;
             List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
-            if (boards == null || boards.isEmpty())
-                continue;
+            if (boards == null || boards.isEmpty()) continue;
             if (DEBUG)
                 Log.i(TAG, "Found " + boards.size() + " boards = " + Arrays.toString(boards.toArray()));
             for (ChanBoard board : boards) {
-                if (board.isMetaBoard())
-                    continue;
+                if (board.isMetaBoard()) continue;
                 if (ChanBoard.isRemoved(board.link)) {
                     if (DEBUG) Log.i(TAG, "Board /" + board.link + "/ has been removed from 4chan");
                     continue;
@@ -211,8 +195,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         if (DEBUG) {
             Log.i(TAG, "loadFavoritesBoard /" + boardName + "/");
-            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
-                    + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
+            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0 + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
         }
 
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor(board.threads == null ? 0 : board.threads.length);
@@ -233,8 +216,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 if (DEBUG) Log.i(TAG, "Board /" + thread.board + "/ has been removed from 4chan");
                 continue;
             }
-            if (thread.no <= 0)
-                sorted.add(thread);
+            if (thread.no <= 0) sorted.add(thread);
         }
 
         final AlphanumComparator comparator = new AlphanumComparator();
@@ -250,9 +232,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             String boardCode = thread.board;
             String name = ChanBoard.getName(context, boardCode);
             int imageId = ChanBoard.getImageResourceId(boardCode, 0, 0);
-            if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + boardCode
-                    + "/ name=" + name
-                    + " resourceId=" + imageId);
+            if (DEBUG)
+                Log.i(TAG, "loadBoard adding board link row /" + boardCode + "/ name=" + name + " resourceId=" + imageId);
             Object[] row = ChanThread.makeBoardRow(context, boardCode, name, imageId, 0);
             matrixCursor.addRow(row);
             if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
@@ -268,8 +249,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         if (DEBUG) {
             Log.i(TAG, "loadBoard /" + boardName + "/");
             Log.i(TAG, "boardSortType=" + boardSortType + " ");
-            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
-                    + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
+            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0 + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
         }
 
         if (board.shouldSwapThreads()) { // auto-update if we have no threads to show
@@ -329,9 +309,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         if (thread.no <= 0) {
             String name = ChanBoard.getName(context, thread.board);
             int imageId = ChanBoard.getImageResourceId(thread.board, 0, 0);
-            if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + thread.board
-                    + "/ name=" + name
-                    + " resourceId=" + imageId);
+            if (DEBUG)
+                Log.i(TAG, "loadBoard adding board link row /" + thread.board + "/ name=" + name + " resourceId=" + imageId);
             row = ChanThread.makeBoardRow(context, thread.board, name, imageId, 0);
         } else {
             if (DEBUG) Log.i(TAG, "loadBoard adding thread row " + thread);
@@ -441,14 +420,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             long value;
             switch (boardSortType) {
                 case REPLY_COUNT:
-                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
-                            ? thread.replies
-                            : thread.posts[0].replies;
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null ? thread.replies : thread.posts[0].replies;
                     break;
                 case IMAGE_COUNT:
-                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
-                            ? thread.images
-                            : thread.posts[0].images;
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null ? thread.images : thread.posts[0].images;
                     break;
                 case CREATION_DATE:
                     value = thread.no;
@@ -456,8 +431,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 default:
                     throw new AssertionError("board sort type = " + boardSortType + " should have been handled elsewhere");
             }
-            if (!positionMap.containsKey(value))
-                positionMap.put(value, new ArrayList<Integer>(1));
+            if (!positionMap.containsKey(value)) positionMap.put(value, new ArrayList<Integer>(1));
             positionMap.get(value).add(pos);
             valueSet.add(value);
         }

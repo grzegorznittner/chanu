@@ -48,8 +48,7 @@ public class MtpImage extends MediaItem {
     private long mDateTaken;
     private String mFileName;
 
-    MtpImage(Path path, GalleryApp application, int deviceId,
-             MtpObjectInfo objInfo, MtpContext mtpContext) {
+    MtpImage(Path path, GalleryApp application, int deviceId, MtpObjectInfo objInfo, MtpContext mtpContext) {
         super(path, nextVersionNumber());
         mContext = application.getAndroidContext();
         mDeviceId = deviceId;
@@ -65,8 +64,7 @@ public class MtpImage extends MediaItem {
     }
 
     MtpImage(Path path, GalleryApp app, int deviceId, int objectId, MtpContext mtpContext) {
-        this(path, app, deviceId, MtpDevice.getObjectInfo(mtpContext, deviceId, objectId),
-                mtpContext);
+        this(path, app, deviceId, MtpDevice.getObjectInfo(mtpContext, deviceId, objectId), mtpContext);
     }
 
     @Override
@@ -78,8 +76,7 @@ public class MtpImage extends MediaItem {
     public Job<Bitmap> requestImage(int type) {
         return new Job<Bitmap>() {
             public Bitmap run(JobContext jc) {
-                byte[] thumbnail = mMtpContext.getMtpClient().getThumbnail(
-                        UsbDevice.getDeviceName(mDeviceId), mObjectId);
+                byte[] thumbnail = mMtpContext.getMtpClient().getThumbnail(UsbDevice.getDeviceName(mDeviceId), mObjectId);
                 if (thumbnail == null) {
                     Log.w(TAG, "decoding thumbnail failed");
                     return null;
@@ -93,17 +90,14 @@ public class MtpImage extends MediaItem {
     public Job<BitmapRegionDecoder> requestLargeImage() {
         return new Job<BitmapRegionDecoder>() {
             public BitmapRegionDecoder run(JobContext jc) {
-                byte[] bytes = mMtpContext.getMtpClient().getObject(
-                        UsbDevice.getDeviceName(mDeviceId), mObjectId, mObjectSize);
-                return DecodeUtils.requestCreateBitmapRegionDecoder(
-                        jc, bytes, 0, bytes.length, false);
+                byte[] bytes = mMtpContext.getMtpClient().getObject(UsbDevice.getDeviceName(mDeviceId), mObjectId, mObjectSize);
+                return DecodeUtils.requestCreateBitmapRegionDecoder(jc, bytes, 0, bytes.length, false);
             }
         };
     }
 
     public byte[] getImageData() {
-        return mMtpContext.getMtpClient().getObject(
-                UsbDevice.getDeviceName(mDeviceId), mObjectId, mObjectSize);
+        return mMtpContext.getMtpClient().getObject(UsbDevice.getDeviceName(mDeviceId), mObjectId, mObjectSize);
     }
 
     @Override

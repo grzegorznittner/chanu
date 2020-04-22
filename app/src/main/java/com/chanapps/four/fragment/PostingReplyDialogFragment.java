@@ -51,17 +51,12 @@ public class PostingReplyDialogFragment extends DialogFragment {
         title.setText(titleId);
         message.setText(R.string.dialog_posting_reply);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (task != null)
-                                    task.cancel(true);
-                            }
-                        })
-                .create();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (task != null) task.cancel(true);
+            }
+        }).create();
     }
 
     @Override

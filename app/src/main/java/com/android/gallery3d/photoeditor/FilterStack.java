@@ -37,6 +37,7 @@ public class FilterStack {
     private Runnable queuedTopFilterChange;
     private boolean topFilterOutputted;
     private volatile boolean paused;
+
     public FilterStack(PhotoView photoView, StackListener stackListener) {
         this.photoView = photoView;
         this.stackListener = stackListener;

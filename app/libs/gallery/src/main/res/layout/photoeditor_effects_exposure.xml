@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,49 +13,59 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/EffectsContainer">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/EffectsContainer">
 
     <com.android.gallery3d.photoeditor.actions.FillLightAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_filllight"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_filllight" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/filllight"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/filllight" />
     </com.android.gallery3d.photoeditor.actions.FillLightAction>
+
     <com.android.gallery3d.photoeditor.actions.HighlightAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_highlight"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_highlight" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/highlight"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/highlight" />
     </com.android.gallery3d.photoeditor.actions.HighlightAction>
+
     <com.android.gallery3d.photoeditor.actions.ShadowAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_shadow"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_shadow" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/shadow"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/shadow" />
     </com.android.gallery3d.photoeditor.actions.ShadowAction>
+
     <com.android.gallery3d.photoeditor.actions.AutoFixAction style="@style/Effect">
+
         <ImageButton
-            android:id="@+id/effect_button"
-            style="@style/EffectIcon"
-            android:src="@drawable/photoeditor_effect_autofix"/>
+                android:id="@+id/effect_button"
+                style="@style/EffectIcon"
+                android:src="@drawable/photoeditor_effect_autofix" />
+
         <TextView
-            android:id="@+id/effect_label"
-            android:text="@string/autofix"
-            style="@style/EffectLabel"/>
+                android:id="@+id/effect_label"
+                style="@style/EffectLabel"
+                android:text="@string/autofix" />
     </com.android.gallery3d.photoeditor.actions.AutoFixAction>
 
 </LinearLayout>

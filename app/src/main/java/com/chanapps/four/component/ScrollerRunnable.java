@@ -80,8 +80,7 @@ public class ScrollerRunnable implements Runnable {
                 final int lastViewPixelsShowing = listHeight - lastViewTop;
                 final int extraScroll = lastPos < mList.getCount() - 1 ? mExtraScroll : mList.getPaddingBottom();
 
-                mList.smoothScrollBy(lastViewHeight - lastViewPixelsShowing + extraScroll,
-                        mScrollDuration);
+                mList.smoothScrollBy(lastViewHeight - lastViewPixelsShowing + extraScroll, mScrollDuration);
 
                 mLastSeenPos = lastPos;
                 if (lastPos < mTargetPos) {

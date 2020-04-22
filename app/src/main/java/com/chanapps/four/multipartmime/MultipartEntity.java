@@ -98,8 +98,7 @@ public class MultipartEntity extends AbstractHttpEntity {
     /**
      * The pool of ASCII chars to be used for generating a multipart boundary.
      */
-    private static byte[] MULTIPART_CHARS = EncodingUtils.getAsciiBytes(
-            "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    private static byte[] MULTIPART_CHARS = EncodingUtils.getAsciiBytes("-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
     /**
      * The MIME parts as set by the constructor
      */

@@ -80,12 +80,7 @@ public class StringPart extends PartBase {
      */
     public StringPart(String name, String value, String charset) {
 
-        super(
-                name,
-                DEFAULT_CONTENT_TYPE,
-                charset == null ? DEFAULT_CHARSET : charset,
-                DEFAULT_TRANSFER_ENCODING
-        );
+        super(name, DEFAULT_CONTENT_TYPE, charset == null ? DEFAULT_CHARSET : charset, DEFAULT_TRANSFER_ENCODING);
         if (value == null) {
             throw new IllegalArgumentException("Value may not be null");
         }

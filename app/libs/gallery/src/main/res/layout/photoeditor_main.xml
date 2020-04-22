@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,30 +13,29 @@
      limitations under the License.
 -->
 
-<com.android.gallery3d.photoeditor.Toolbar
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/toolbar"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+<com.android.gallery3d.photoeditor.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
     <com.android.gallery3d.photoeditor.PhotoView
-        android:id="@+id/photo_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+            android:id="@+id/photo_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
 
     <com.android.gallery3d.photoeditor.EffectsBar
-        android:id="@+id/effects_bar"
-        style="@style/EffectsBar">
+            android:id="@+id/effects_bar"
+            style="@style/EffectsBar">
 
         <com.android.gallery3d.photoeditor.EffectsMenu
-            android:id="@+id/effects_menu"
-            style="@style/ActionBarOuter"/>
+                android:id="@+id/effects_menu"
+                style="@style/ActionBarOuter" />
 
     </com.android.gallery3d.photoeditor.EffectsBar>
 
     <com.android.gallery3d.photoeditor.ActionBar
-        android:id="@+id/action_bar"
-        style="@style/ActionBarOuter"
-        android:layout_alignParentTop="true"/>
+            android:id="@+id/action_bar"
+            style="@style/ActionBarOuter"
+            android:layout_alignParentTop="true" />
 
 </com.android.gallery3d.photoeditor.Toolbar>

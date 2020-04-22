@@ -28,8 +28,7 @@ import com.chanapps.four.mColorPicker.views.ColorPanelView;
 import com.chanapps.four.mColorPicker.views.ColorPickerView;
 import com.chanapps.four.mColorPicker.views.ColorPickerView.OnColorChangedListener;
 
-public class ColorPickerDialog extends AlertDialog implements
-        ColorPickerView.OnColorChangedListener {
+public class ColorPickerDialog extends AlertDialog implements ColorPickerView.OnColorChangedListener {
 
     private ColorPickerView mColorPicker;
 
@@ -53,20 +52,16 @@ public class ColorPickerDialog extends AlertDialog implements
     }
 
     private void setUp(int color) {
-        LayoutInflater inflater = (LayoutInflater) getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.dialog_color_picker, null);
 
         setView(layout);
 
-        mColorPicker = layout
-                .findViewById(R.id.color_picker_view);
+        mColorPicker = layout.findViewById(R.id.color_picker_view);
         mOldColor = layout.findViewById(R.id.old_color_panel);
         mNewColor = layout.findViewById(R.id.new_color_panel);
 
-        ((LinearLayout) mOldColor.getParent()).setPadding(Math
-                .round(mColorPicker.getDrawingOffset()), 0, Math
-                .round(mColorPicker.getDrawingOffset()), 0);
+        ((LinearLayout) mOldColor.getParent()).setPadding(Math.round(mColorPicker.getDrawingOffset()), 0, Math.round(mColorPicker.getDrawingOffset()), 0);
 
         mColorPicker.setOnColorChangedListener(this);
 

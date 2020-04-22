@@ -293,11 +293,9 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
         private Bitmap centerCrop(Bitmap srcBmp) {
             Bitmap dstBmp = null;
             if (srcBmp.getWidth() >= srcBmp.getHeight()) {
-                dstBmp = Bitmap.createBitmap(srcBmp, srcBmp.getWidth() / 2 - srcBmp.getHeight() / 2, 0,
-                        srcBmp.getHeight(), srcBmp.getHeight());
+                dstBmp = Bitmap.createBitmap(srcBmp, srcBmp.getWidth() / 2 - srcBmp.getHeight() / 2, 0, srcBmp.getHeight(), srcBmp.getHeight());
             } else {
-                dstBmp = Bitmap.createBitmap(srcBmp, 0, srcBmp.getHeight() / 2 - srcBmp.getWidth() / 2,
-                        srcBmp.getWidth(), srcBmp.getWidth());
+                dstBmp = Bitmap.createBitmap(srcBmp, 0, srcBmp.getHeight() / 2 - srcBmp.getWidth() / 2, srcBmp.getWidth(), srcBmp.getWidth());
             }
             return dstBmp;
         }
@@ -314,8 +312,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
                 Log.e(TAG, "Couldn't open image file " + imageFile, e);
                 return 1;
             }
-            if (imageStream == null)
-                return 1;
+            if (imageStream == null) return 1;
 
             try {
                 BitmapFactory.decodeStream(imageStream, null, options);

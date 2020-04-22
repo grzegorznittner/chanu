@@ -44,8 +44,7 @@ public class EdgeView extends GLView {
     }
 
     @Override
-    protected void onLayout(
-            boolean changeSize, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changeSize, int left, int top, int right, int bottom) {
         if (!changeSize) return;
 
         int w = right - left;

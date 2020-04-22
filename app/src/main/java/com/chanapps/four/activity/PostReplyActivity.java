@@ -116,19 +116,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     public static final String ORIENTATION = "postReplyOrientation";
     public static final int POST_FINISHED = 0x01;
     public static final int PASSWORD_MAX = 100000000;
-    protected static final String[] PREFS = {
-            BOARD_CODE,
-            THREAD_NO,
-            POST_NO,
-            SUBJECT,
-            POST_REPLY_TEXT,
-            SPOILER,
-            POST_REPLY_IMAGE_URL,
-            IMAGE_PATH,
-            CONTENT_TYPE,
-            ORIENTATION,
-            POST_REPLY_QUOTE_TEXT
-    };
+    protected static final String[] PREFS = {BOARD_CODE, THREAD_NO, POST_NO, SUBJECT, POST_REPLY_TEXT, SPOILER, POST_REPLY_IMAGE_URL, IMAGE_PATH, CONTENT_TYPE, ORIENTATION, POST_REPLY_QUOTE_TEXT};
     private static final boolean DEBUG = false;
     private static final Random randomGenerator = new Random();
     private static final DecimalFormat eightDigits = new DecimalFormat("00000000");
@@ -797,11 +785,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         contentType = null;
         orientation = null;
         try {
-            String[] filePathColumn = {
-                    MediaStore.Images.ImageColumns.DATA,
-                    MediaStore.Images.ImageColumns.MIME_TYPE,
-                    MediaStore.Images.ImageColumns.ORIENTATION
-            };
+            String[] filePathColumn = {MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.MIME_TYPE, MediaStore.Images.ImageColumns.ORIENTATION};
             // query so image shows up
             Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null);
             if (cursor != null) {
@@ -835,12 +819,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "Max px:" + maxPx);
         switch (axis) {
             case WIDTH:
-                while (options.outWidth / scale > maxPx)
-                    scale *= 2;
+                while (options.outWidth / scale > maxPx) scale *= 2;
                 break;
             case HEIGHT:
-                while (options.outHeight / scale > maxPx)
-                    scale *= 2;
+                while (options.outHeight / scale > maxPx) scale *= 2;
                 break;
         }
 
@@ -1346,8 +1328,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             try {
                 BufferedReader r = new BufferedReader(new InputStreamReader(is));
                 String l;
-                while ((l = r.readLine()) != null)
-                    if (DEBUG) Log.i(TAG, l);
+                while ((l = r.readLine()) != null) if (DEBUG) Log.i(TAG, l);
             } catch (IOException e) {
                 if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
             }

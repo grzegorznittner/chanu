@@ -75,16 +75,14 @@ public class PhotoAppWidgetConfigure extends Activity {
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         RemoteViews views = PhotoAppWidgetProvider.buildWidget(this, mAppWidgetId, entry);
         manager.updateAppWidget(mAppWidgetId, views);
-        setResult(RESULT_OK, new Intent().putExtra(
-                AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId));
+        setResult(RESULT_OK, new Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId));
         finish();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
-            setResult(resultCode, new Intent().putExtra(
-                    AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId));
+            setResult(resultCode, new Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId));
             finish();
             return;
         }
@@ -122,21 +120,13 @@ public class PhotoAppWidgetConfigure extends Activity {
 
         // We try to crop a larger image (by scale factor), but there is still
         // a bound on the binder limit.
-        float scale = Math.min(WIDGET_SCALE_FACTOR,
-                MAX_WIDGET_SIDE / Math.max(width, height));
+        float scale = Math.min(WIDGET_SCALE_FACTOR, MAX_WIDGET_SIDE / Math.max(width, height));
 
         int widgetWidth = Math.round(width * scale);
         int widgetHeight = Math.round(height * scale);
 
         mPickedItem = data.getData();
-        Intent request = new Intent(CropImage.ACTION_CROP, mPickedItem)
-                .putExtra(CropImage.KEY_OUTPUT_X, widgetWidth)
-                .putExtra(CropImage.KEY_OUTPUT_Y, widgetHeight)
-                .putExtra(CropImage.KEY_ASPECT_X, widgetWidth)
-                .putExtra(CropImage.KEY_ASPECT_Y, widgetHeight)
-                .putExtra(CropImage.KEY_SCALE_UP_IF_NEEDED, true)
-                .putExtra(CropImage.KEY_SCALE, true)
-                .putExtra(CropImage.KEY_RETURN_DATA, true);
+        Intent request = new Intent(CropImage.ACTION_CROP, mPickedItem).putExtra(CropImage.KEY_OUTPUT_X, widgetWidth).putExtra(CropImage.KEY_OUTPUT_Y, widgetHeight).putExtra(CropImage.KEY_ASPECT_X, widgetWidth).putExtra(CropImage.KEY_ASPECT_Y, widgetHeight).putExtra(CropImage.KEY_SCALE_UP_IF_NEEDED, true).putExtra(CropImage.KEY_SCALE, true).putExtra(CropImage.KEY_RETURN_DATA, true);
         startActivityForResult(request, REQUEST_CROP_IMAGE);
     }
 
@@ -144,8 +134,7 @@ public class PhotoAppWidgetConfigure extends Activity {
         String albumPath = data.getStringExtra(AlbumPicker.KEY_ALBUM_PATH);
         WidgetDatabaseHelper helper = new WidgetDatabaseHelper(this);
         try {
-            helper.setWidget(mAppWidgetId,
-                    WidgetDatabaseHelper.TYPE_ALBUM, albumPath);
+            helper.setWidget(mAppWidgetId, WidgetDatabaseHelper.TYPE_ALBUM, albumPath);
             updateWidgetAndFinish(helper.getEntry(mAppWidgetId));
         } finally {
             helper.close();
@@ -167,9 +156,7 @@ public class PhotoAppWidgetConfigure extends Activity {
             }
         } else {
             // Explicitly send the intent to the DialogPhotoPicker
-            Intent request = new Intent(this, DialogPicker.class)
-                    .setAction(Intent.ACTION_GET_CONTENT)
-                    .setType("image/*");
+            Intent request = new Intent(this, DialogPicker.class).setAction(Intent.ACTION_GET_CONTENT).setType("image/*");
             startActivityForResult(request, REQUEST_GET_PHOTO);
         }
     }

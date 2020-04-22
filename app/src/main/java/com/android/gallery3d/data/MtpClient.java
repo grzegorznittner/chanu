@@ -44,8 +44,7 @@ public class MtpClient {
 
     private static final String TAG = "MtpClient";
 
-    private static final String ACTION_USB_PERMISSION =
-            "android.mtp.MtpClient.action.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "android.mtp.MtpClient.action.USB_PERMISSION";
 
     private final Context mContext;
     private final UsbManager mUsbManager;
@@ -94,8 +93,7 @@ public class MtpClient {
                     }
                 } else if (ACTION_USB_PERMISSION.equals(action)) {
                     mRequestPermissionDevices.remove(deviceName);
-                    boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED,
-                            false);
+                    boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false);
                     Log.d(TAG, "ACTION_USB_PERMISSION: " + permission);
                     if (permission) {
                         if (mtpDevice == null) {
@@ -142,9 +140,7 @@ public class MtpClient {
         int count = device.getInterfaceCount();
         for (int i = 0; i < count; i++) {
             UsbInterface intf = device.getInterface(i);
-            if (intf.getInterfaceClass() == UsbConstants.USB_CLASS_STILL_IMAGE &&
-                    intf.getInterfaceSubclass() == 1 &&
-                    intf.getInterfaceProtocol() == 1) {
+            if (intf.getInterfaceClass() == UsbConstants.USB_CLASS_STILL_IMAGE && intf.getInterfaceSubclass() == 1 && intf.getInterfaceProtocol() == 1) {
                 return true;
             }
         }
@@ -163,8 +159,7 @@ public class MtpClient {
 
         // don't try to open devices that we have decided to ignore
         // or are currently asking permission for
-        if (isCamera(usbDevice) && !mIgnoredDevices.contains(deviceName)
-                && !mRequestPermissionDevices.contains(deviceName)) {
+        if (isCamera(usbDevice) && !mIgnoredDevices.contains(deviceName) && !mRequestPermissionDevices.contains(deviceName)) {
             if (!mUsbManager.hasPermission(usbDevice)) {
                 mUsbManager.requestPermission(usbDevice, mPermissionIntent);
                 mRequestPermissionDevices.add(deviceName);

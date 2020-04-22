@@ -53,32 +53,25 @@ public class FavoritesDeleteBoardDialogFragment extends DialogFragment {
         title.setText(R.string.board_favorites);
         message.setText(R.string.dialog_delete_favorites_board);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setPositiveButton(R.string.dialog_remove,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                try {
-                                    Context context = getActivity().getApplicationContext();
-                                    ChanFileStorage.deleteFavoritesBoard(context, thread);
-                                    BoardActivity.refreshFavorites(context);
-                                } catch (IOException e) {
-                                    Log.e(TAG, "Exception deleting favorites board=" + thread, e);
-                                    Toast.makeText(getActivity().getApplicationContext(),
-                                            R.string.favorites_not_deleted_board, Toast.LENGTH_SHORT).show();
-                                }
-                                dismiss();
-                            }
-                        })
-                .setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dismiss();
-                            }
-                        })
-                .create();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setPositiveButton(R.string.dialog_remove, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    Context context = getActivity().getApplicationContext();
+                    ChanFileStorage.deleteFavoritesBoard(context, thread);
+                    BoardActivity.refreshFavorites(context);
+                } catch (IOException e) {
+                    Log.e(TAG, "Exception deleting favorites board=" + thread, e);
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.favorites_not_deleted_board, Toast.LENGTH_SHORT).show();
+                }
+                dismiss();
+            }
+        }).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dismiss();
+            }
+        }).create();
     }
 
 }

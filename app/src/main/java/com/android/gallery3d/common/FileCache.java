@@ -37,19 +37,13 @@ public class FileCache {
     private static final String FILE_PREFIX = "download";
     private static final String FILE_POSTFIX = ".tmp";
 
-    private static final String QUERY_WHERE =
-            FileEntry.Columns.HASH_CODE + "=? AND " + FileEntry.Columns.CONTENT_URL + "=?";
+    private static final String QUERY_WHERE = FileEntry.Columns.HASH_CODE + "=? AND " + FileEntry.Columns.CONTENT_URL + "=?";
     private static final String ID_WHERE = FileEntry.Columns.ID + "=?";
-    private static final String[] PROJECTION_SIZE_SUM =
-            {String.format("sum(%s)", FileEntry.Columns.SIZE)};
-    private static final String[] FREESPACE_PROJECTION = {
-            FileEntry.Columns.ID, FileEntry.Columns.FILENAME,
-            FileEntry.Columns.CONTENT_URL, FileEntry.Columns.SIZE};
-    private static final String FREESPACE_ORDER_BY =
-            String.format("%s ASC", FileEntry.Columns.LAST_ACCESS);
+    private static final String[] PROJECTION_SIZE_SUM = {String.format("sum(%s)", FileEntry.Columns.SIZE)};
+    private static final String[] FREESPACE_PROJECTION = {FileEntry.Columns.ID, FileEntry.Columns.FILENAME, FileEntry.Columns.CONTENT_URL, FileEntry.Columns.SIZE};
+    private static final String FREESPACE_ORDER_BY = String.format("%s ASC", FileEntry.Columns.LAST_ACCESS);
 
-    private final LruCache<String, CacheEntry> mEntryMap =
-            new LruCache<String, CacheEntry>(LRU_CAPACITY);
+    private final LruCache<String, CacheEntry> mEntryMap = new LruCache<String, CacheEntry>(LRU_CAPACITY);
 
     private File mRootDir;
     private long mCapacity;
@@ -71,8 +65,8 @@ public class FileCache {
             if (files == null) return;
             for (File file : rootDir.listFiles()) {
                 String name = file.getName();
-                if (file.isFile() && name.startsWith(FILE_PREFIX)
-                        && name.endsWith(FILE_POSTFIX)) file.delete();
+                if (file.isFile() && name.startsWith(FILE_PREFIX) && name.endsWith(FILE_POSTFIX))
+                    file.delete();
             }
         } catch (Throwable t) {
             Log.w(TAG, "cannot reset database", t);
@@ -102,8 +96,7 @@ public class FileCache {
             } else {
                 mTotalBytes += entry.size;
             }
-            FileEntry.SCHEMA.insertOrReplace(
-                    mDbHelper.getWritableDatabase(), entry);
+            FileEntry.SCHEMA.insertOrReplace(mDbHelper.getWritableDatabase(), entry);
             if (mTotalBytes > mCapacity) freeSomeSpaceIfNeed(MAX_DELETE_COUNT);
         }
     }
@@ -125,12 +118,10 @@ public class FileCache {
         synchronized (this) {
             FileEntry file = queryDatabase(downloadUrl);
             if (file == null) return null;
-            entry = new CacheEntry(
-                    file.id, downloadUrl, new File(mRootDir, file.filename));
+            entry = new CacheEntry(file.id, downloadUrl, new File(mRootDir, file.filename));
             if (!entry.cacheFile.isFile()) { // file has been removed
                 try {
-                    mDbHelper.getWritableDatabase().delete(
-                            TABLE_NAME, ID_WHERE, new String[]{String.valueOf(file.id)});
+                    mDbHelper.getWritableDatabase().delete(TABLE_NAME, ID_WHERE, new String[]{String.valueOf(file.id)});
                     mTotalBytes -= file.size;
                 } catch (Throwable t) {
                     Log.w(TAG, "cannot delete entry: " + file.filename, t);
@@ -147,9 +138,7 @@ public class FileCache {
     private FileEntry queryDatabase(String downloadUrl) {
         long hash = Utils.crc64Long(downloadUrl);
         String[] whereArgs = new String[]{String.valueOf(hash), downloadUrl};
-        Cursor cursor = mDbHelper.getReadableDatabase().query(TABLE_NAME,
-                FileEntry.SCHEMA.getProjection(),
-                QUERY_WHERE, whereArgs, null, null, null);
+        Cursor cursor = mDbHelper.getReadableDatabase().query(TABLE_NAME, FileEntry.SCHEMA.getProjection(), QUERY_WHERE, whereArgs, null, null, null);
         try {
             if (!cursor.moveToNext()) return null;
             FileEntry entry = new FileEntry();
@@ -164,8 +153,7 @@ public class FileCache {
     private void updateLastAccess(long id) {
         ContentValues values = new ContentValues();
         values.put(FileEntry.Columns.LAST_ACCESS, System.currentTimeMillis());
-        mDbHelper.getWritableDatabase().update(TABLE_NAME,
-                values, ID_WHERE, new String[]{String.valueOf(id)});
+        mDbHelper.getWritableDatabase().update(TABLE_NAME, values, ID_WHERE, new String[]{String.valueOf(id)});
     }
 
     public File createFile() throws IOException {
@@ -183,9 +171,7 @@ public class FileCache {
             }
         }
 
-        Cursor cursor = mDbHelper.getReadableDatabase().query(
-                TABLE_NAME, PROJECTION_SIZE_SUM,
-                null, null, null, null, null);
+        Cursor cursor = mDbHelper.getReadableDatabase().query(TABLE_NAME, PROJECTION_SIZE_SUM, null, null, null, null, null);
         try {
             if (cursor.moveToNext()) mTotalBytes = cursor.getLong(0);
         } finally {
@@ -195,12 +181,9 @@ public class FileCache {
     }
 
     private void freeSomeSpaceIfNeed(int maxDeleteFileCount) {
-        Cursor cursor = mDbHelper.getReadableDatabase().query(
-                TABLE_NAME, FREESPACE_PROJECTION,
-                null, null, null, null, FREESPACE_ORDER_BY);
+        Cursor cursor = mDbHelper.getReadableDatabase().query(TABLE_NAME, FREESPACE_PROJECTION, null, null, null, null, FREESPACE_ORDER_BY);
         try {
-            while (maxDeleteFileCount > 0
-                    && mTotalBytes > mCapacity && cursor.moveToNext()) {
+            while (maxDeleteFileCount > 0 && mTotalBytes > mCapacity && cursor.moveToNext()) {
                 long id = cursor.getLong(0);
                 String path = cursor.getString(1);
                 String url = cursor.getString(2);
@@ -214,8 +197,7 @@ public class FileCache {
                 --maxDeleteFileCount;
                 if (new File(mRootDir, path).delete()) {
                     mTotalBytes -= size;
-                    mDbHelper.getWritableDatabase().delete(TABLE_NAME,
-                            ID_WHERE, new String[]{String.valueOf(id)});
+                    mDbHelper.getWritableDatabase().delete(TABLE_NAME, ID_WHERE, new String[]{String.valueOf(id)});
                 } else {
                     Log.w(TAG, "unable to delete file: " + path);
                 }
@@ -253,11 +235,7 @@ public class FileCache {
 
         @Override
         public String toString() {
-            return new StringBuilder()
-                    .append("hash_code: ").append(hashCode).append(", ")
-                    .append("content_url").append(contentUrl).append(", ")
-                    .append("last_access").append(lastAccess).append(", ")
-                    .append("filename").append(filename).toString();
+            return new StringBuilder().append("hash_code: ").append(hashCode).append(", ").append("content_url").append(contentUrl).append(", ").append("last_access").append(lastAccess).append(", ").append("filename").append(filename).toString();
         }
 
         public interface Columns extends Entry.Columns {

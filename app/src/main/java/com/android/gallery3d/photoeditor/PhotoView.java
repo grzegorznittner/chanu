@@ -129,8 +129,7 @@ public class PhotoView extends GLSurfaceView {
             if ((clearTransform && transformed) || (sizeChanged && !transformed)) {
                 // Fit photo when clearing existing transforms or changing surface/photo sizes.
                 if (photo != null) {
-                    RendererUtils.setRenderToFit(renderContext, photo.width(), photo.height(),
-                            viewWidth, viewHeight);
+                    RendererUtils.setRenderToFit(renderContext, photo.width(), photo.height(), viewWidth, viewHeight);
                     rotatedDegrees = 0;
                     flippedHorizontalDegrees = 0;
                     flippedVerticalDegrees = 0;
@@ -147,16 +146,14 @@ public class PhotoView extends GLSurfaceView {
 
         void rotatePhoto(float degrees) {
             if (photo != null) {
-                RendererUtils.setRenderToRotate(renderContext, photo.width(), photo.height(),
-                        viewWidth, viewHeight, degrees);
+                RendererUtils.setRenderToRotate(renderContext, photo.width(), photo.height(), viewWidth, viewHeight, degrees);
                 rotatedDegrees = degrees;
             }
         }
 
         void flipPhoto(float horizontalDegrees, float verticalDegrees) {
             if (photo != null) {
-                RendererUtils.setRenderToFlip(renderContext, photo.width(), photo.height(),
-                        viewWidth, viewHeight, horizontalDegrees, verticalDegrees);
+                RendererUtils.setRenderToFlip(renderContext, photo.width(), photo.height(), viewWidth, viewHeight, horizontalDegrees, verticalDegrees);
                 flippedHorizontalDegrees = horizontalDegrees;
                 flippedVerticalDegrees = verticalDegrees;
             }

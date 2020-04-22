@@ -81,8 +81,7 @@ public abstract class Part {
     /**
      * Content dispostion as a byte array
      */
-    protected static final byte[] QUOTE_BYTES =
-            EncodingUtils.getAsciiBytes(QUOTE);
+    protected static final byte[] QUOTE_BYTES = EncodingUtils.getAsciiBytes(QUOTE);
     /**
      * Extra characters
      */
@@ -90,8 +89,7 @@ public abstract class Part {
     /**
      * Extra characters as a byte array
      */
-    protected static final byte[] EXTRA_BYTES =
-            EncodingUtils.getAsciiBytes(EXTRA);
+    protected static final byte[] EXTRA_BYTES = EncodingUtils.getAsciiBytes(EXTRA);
     /**
      * Content dispostion characters
      */
@@ -99,8 +97,7 @@ public abstract class Part {
     /**
      * Content dispostion as a byte array
      */
-    protected static final byte[] CONTENT_DISPOSITION_BYTES =
-            EncodingUtils.getAsciiBytes(CONTENT_DISPOSITION);
+    protected static final byte[] CONTENT_DISPOSITION_BYTES = EncodingUtils.getAsciiBytes(CONTENT_DISPOSITION);
     /**
      * Content type header
      */
@@ -108,8 +105,7 @@ public abstract class Part {
     /**
      * Content type header as a byte array
      */
-    protected static final byte[] CONTENT_TYPE_BYTES =
-            EncodingUtils.getAsciiBytes(CONTENT_TYPE);
+    protected static final byte[] CONTENT_TYPE_BYTES = EncodingUtils.getAsciiBytes(CONTENT_TYPE);
     /**
      * Content charset
      */
@@ -117,8 +113,7 @@ public abstract class Part {
     /**
      * Content charset as a byte array
      */
-    protected static final byte[] CHARSET_BYTES =
-            EncodingUtils.getAsciiBytes(CHARSET);
+    protected static final byte[] CHARSET_BYTES = EncodingUtils.getAsciiBytes(CHARSET);
     /**
      * Content type header
      */
@@ -126,8 +121,7 @@ public abstract class Part {
     /**
      * Content type header as a byte array
      */
-    protected static final byte[] CONTENT_TRANSFER_ENCODING_BYTES =
-            EncodingUtils.getAsciiBytes(CONTENT_TRANSFER_ENCODING);
+    protected static final byte[] CONTENT_TRANSFER_ENCODING_BYTES = EncodingUtils.getAsciiBytes(CONTENT_TRANSFER_ENCODING);
     private static final boolean DEBUG = false;
     /**
      * The default boundary to be used if {@link #setPartBoundary(byte[])} has not
@@ -156,8 +150,7 @@ public abstract class Part {
      * @param parts The parts to write.
      * @throws IOException If an I/O error occurs while writing the parts.
      */
-    public static void sendParts(OutputStream out, final Part[] parts)
-            throws IOException {
+    public static void sendParts(OutputStream out, final Part[] parts) throws IOException {
         sendParts(out, parts, DEFAULT_BOUNDARY_BYTES);
     }
 
@@ -170,8 +163,7 @@ public abstract class Part {
      * @throws IOException If an I/O error occurs while writing the parts.
      * @since 3.0
      */
-    public static void sendParts(OutputStream out, Part[] parts, byte[] partBoundary)
-            throws IOException {
+    public static void sendParts(OutputStream out, Part[] parts, byte[] partBoundary) throws IOException {
 
         if (parts == null) {
             throw new IllegalArgumentException("Parts may not be null");
@@ -197,8 +189,7 @@ public abstract class Part {
      * @return The total length
      * @throws IOException If an I/O error occurs while writing the parts.
      */
-    public static long getLengthOfParts(Part[] parts)
-            throws IOException {
+    public static long getLengthOfParts(Part[] parts) throws IOException {
         return getLengthOfParts(parts, DEFAULT_BOUNDARY_BYTES);
     }
 

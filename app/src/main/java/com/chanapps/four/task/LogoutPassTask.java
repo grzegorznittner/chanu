@@ -74,8 +74,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
                     LogoutPassResponse logoutPassResponse = new LogoutPassResponse(context, response);
                     logoutPassResponse.processResponse();
 
-                    if (!postSuccessful(logoutPassResponse))
-                        errorCode = R.string.logout_pass_error;
+                    if (!postSuccessful(logoutPassResponse)) errorCode = R.string.logout_pass_error;
                 }
             }
         } catch (Exception e) {
@@ -98,8 +97,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
         //partsList.add(new StringPart("id", passToken, PartBase.ASCII_CHARSET));
         //partsList.add(new StringPart("pin", passPIN, PartBase.ASCII_CHARSET));
         Part[] parts = partsList.toArray(new Part[partsList.size()]);
-        if (DEBUG)
-            dumpPartsList(partsList);
+        if (DEBUG) dumpPartsList(partsList);
         MultipartEntity entity = new MultipartEntity(parts);
         return entity;
     }
@@ -107,8 +105,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
     protected void dumpPartsList(List<Part> partsList) {
         if (DEBUG) Log.i(TAG, "Dumping mime parts list:");
         for (Part p : partsList) {
-            if (!(p instanceof StringPart))
-                continue;
+            if (!(p instanceof StringPart)) continue;
             StringPart s = (StringPart) p;
             String line = s.getName() + ": " + s.getValue() + ", ";
             if (DEBUG) Log.i(TAG, line);
@@ -128,8 +125,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
             HttpPost request = new HttpPost(url);
             entity.setContentEncoding(PartBase.ASCII_CHARSET);
             request.setEntity(entity);
-            if (DEBUG)
-                dumpRequestContent(request.getEntity().getContent());
+            if (DEBUG) dumpRequestContent(request.getEntity().getContent());
             if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse httpResponse = client.execute(request, localContext);
             if (DEBUG)
@@ -167,8 +163,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
         try {
             BufferedReader r = new BufferedReader(new InputStreamReader(is));
             String l;
-            while ((l = r.readLine()) != null)
-                if (DEBUG) Log.i(TAG, l);
+            while ((l = r.readLine()) != null) if (DEBUG) Log.i(TAG, l);
         } catch (IOException e) {
             if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
         }

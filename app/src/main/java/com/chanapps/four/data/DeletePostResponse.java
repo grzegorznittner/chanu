@@ -33,14 +33,11 @@ public class DeletePostResponse {
         try {
             Matcher banMatch = BAN_REG.matcher(response);
             Matcher errorMatch = ERROR_REG.matcher(response);
-            if ("".equals(response))
-                error = ctx.getString(R.string.delete_post_response_error);
+            if ("".equals(response)) error = ctx.getString(R.string.delete_post_response_error);
             else if (banMatch.find())
                 error = banMatch.group(1) + " " + banMatch.group(2) + " " + banMatch.group(3);
-            else if (errorMatch.find())
-                error = errorMatch.group(2).replaceFirst("Error: ", "");
-            else
-                isPosted = true;
+            else if (errorMatch.find()) error = errorMatch.group(2).replaceFirst("Error: ", "");
+            else isPosted = true;
         } catch (Exception e) {
             error = e.getLocalizedMessage();
             isPosted = false;

@@ -54,15 +54,13 @@ public class CheckableFrameLayout extends FrameLayout implements Checkable {
         if (DEBUG) Log.i(TAG, "setBackground() highlight=" + highlight);
         if (highlight) {
             for (int i = 0; i < getChildCount(); i++) {
-                if (i > 0)
-                    return;
+                if (i > 0) return;
                 View v = getChildAt(i);
                 if (v != null && v instanceof ViewGroup && ((ViewGroup) v).getChildCount() > 0) {
                     v = ((ViewGroup) v).getChildAt(0);
                     if (v != null && v instanceof ViewGroup && ((ViewGroup) v).getChildCount() > 1) {
                         v = ((ViewGroup) v).getChildAt(1);
-                        if (v != null)
-                            v.setVisibility(View.VISIBLE);
+                        if (v != null) v.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -70,15 +68,13 @@ public class CheckableFrameLayout extends FrameLayout implements Checkable {
         } else {
             //setForeground(null);
             for (int i = 0; i < getChildCount(); i++) {
-                if (i > 0)
-                    return;
+                if (i > 0) return;
                 View v = getChildAt(i);
                 if (v != null && v instanceof ViewGroup && ((ViewGroup) v).getChildCount() > 0) {
                     v = ((ViewGroup) v).getChildAt(0);
                     if (v != null && v instanceof ViewGroup && ((ViewGroup) v).getChildCount() > 1) {
                         v = ((ViewGroup) v).getChildAt(1);
-                        if (v != null)
-                            v.setVisibility(View.GONE);
+                        if (v != null) v.setVisibility(View.GONE);
                     }
                 }
             }

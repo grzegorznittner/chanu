@@ -43,8 +43,7 @@ public class ResourceTexture extends UploadedTexture {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap b = null;
         try {
-            b = BitmapFactory.decodeResource(
-                    mContext.getResources(), mResId, options);
+            b = BitmapFactory.decodeResource(mContext.getResources(), mResId, options);
         } catch (OutOfMemoryError e) {
             Log.e(TAG, "Couldn't get memory allocated for bitmap resId=" + mResId, e);
         }
@@ -57,8 +56,7 @@ public class ResourceTexture extends UploadedTexture {
         options.inJustDecodeBounds = true;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         try {
-            BitmapFactory.decodeResource(
-                    mContext.getResources(), mResId, options);
+            BitmapFactory.decodeResource(mContext.getResources(), mResId, options);
         } catch (OutOfMemoryError e) {
             Log.e(TAG, "Couldn't get memory allocated for bitmap bounds resId=" + mResId, e);
         }

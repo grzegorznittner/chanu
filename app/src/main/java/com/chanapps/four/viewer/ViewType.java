@@ -8,6 +8,5 @@ package com.chanapps.four.viewer;
  * To change this template use File | Settings | File Templates.
  */
 public enum ViewType {
-    AS_GRID,
-    AS_LIST
+    AS_GRID, AS_LIST
 }

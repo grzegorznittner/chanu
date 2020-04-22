@@ -49,8 +49,7 @@ import javax.microedition.khronos.opengles.GL11;
 // (1) The public methods of HeadUpDisplay
 // (2) The public methods of CameraHeadUpDisplay
 // (3) The overridden methods in GLRootView.
-public class GLRootView extends GLSurfaceView
-        implements GLSurfaceView.Renderer, GLRoot {
+public class GLRootView extends GLSurfaceView implements GLSurfaceView.Renderer, GLRoot {
     private static final String TAG = "GLRootView";
 
     private static final boolean DEBUG_FPS = false;
@@ -59,12 +58,9 @@ public class GLRootView extends GLSurfaceView
     private static final int FLAG_INITIALIZED = 1;
     private static final int FLAG_NEED_LAYOUT = 2;
     private static final int TARGET_FRAME_TIME = 33;
-    private final GalleryEGLConfigChooser mEglConfigChooser =
-            new GalleryEGLConfigChooser();
-    private final ArrayList<CanvasAnimation> mAnimations =
-            new ArrayList<CanvasAnimation>();
-    private final LinkedList<OnGLIdleListener> mIdleListeners =
-            new LinkedList<OnGLIdleListener>();
+    private final GalleryEGLConfigChooser mEglConfigChooser = new GalleryEGLConfigChooser();
+    private final ArrayList<CanvasAnimation> mAnimations = new ArrayList<CanvasAnimation>();
+    private final LinkedList<OnGLIdleListener> mIdleListeners = new LinkedList<OnGLIdleListener>();
     private final IdleRunner mIdleRunner = new IdleRunner();
     private final ReentrantLock mRenderLock = new ReentrantLock();
     private int mFrameCount = 0;
@@ -88,10 +84,8 @@ public class GLRootView extends GLSurfaceView
     public GLRootView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mFlags |= FLAG_INITIALIZED;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-            deprecatedSetBackground(null);
-        else
-            setBackground(null);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) deprecatedSetBackground(null);
+        else setBackground(null);
         setEGLConfigChooser(mEglConfigChooser);
         setRenderer(this);
         getHolder().setFormat(PixelFormat.RGB_565);
@@ -141,8 +135,7 @@ public class GLRootView extends GLSurfaceView
         if (mContentView != null) {
             if (mInDownState) {
                 long now = SystemClock.uptimeMillis();
-                MotionEvent cancelEvent = MotionEvent.obtain(
-                        now, now, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+                MotionEvent cancelEvent = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0, 0, 0);
                 mContentView.dispatchTouchEvent(cancelEvent);
                 cancelEvent.recycle();
                 mInDownState = false;
@@ -199,8 +192,7 @@ public class GLRootView extends GLSurfaceView
     }
 
     @Override
-    protected void onLayout(
-            boolean changed, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         if (changed) requestLayoutContentPane();
     }
 
@@ -231,8 +223,7 @@ public class GLRootView extends GLSurfaceView
     // This is a GLSurfaceView.Renderer callback
     @Override
     public void onSurfaceChanged(GL10 gl1, int width, int height) {
-        Log.i(TAG, "onSurfaceChanged: " + width + "x" + height
-                + ", gl10: " + gl1.toString());
+        Log.i(TAG, "onSurfaceChanged: " + width + "x" + height + ", gl10: " + gl1.toString());
         Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
         GalleryUtils.setRenderThread();
         GL11 gl = (GL11) gl1;
@@ -249,8 +240,7 @@ public class GLRootView extends GLSurfaceView
         if (mFrameCountingStart == 0) {
             mFrameCountingStart = now;
         } else if ((now - mFrameCountingStart) > 1000000000) {
-            Log.d(TAG, "fps: " + (double) mFrameCount
-                    * 1000000000 / (now - mFrameCountingStart));
+            Log.d(TAG, "fps: " + (double) mFrameCount * 1000000000 / (now - mFrameCountingStart));
             mFrameCountingStart = now;
             mFrameCount = 0;
         }
@@ -334,8 +324,7 @@ public class GLRootView extends GLSurfaceView
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         int action = event.getAction();
-        if (action == MotionEvent.ACTION_CANCEL
-                || action == MotionEvent.ACTION_UP) {
+        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
             mInDownState = false;
         } else if (!mInDownState && action != MotionEvent.ACTION_DOWN) {
             return false;
@@ -343,8 +332,7 @@ public class GLRootView extends GLSurfaceView
         mRenderLock.lock();
         try {
             // If this has been detached from root, we don't need to handle event
-            boolean handled = mContentView != null
-                    && mContentView.dispatchTouchEvent(event);
+            boolean handled = mContentView != null && mContentView.dispatchTouchEvent(event);
             if (action == MotionEvent.ACTION_DOWN && handled) {
                 mInDownState = true;
             }
@@ -357,8 +345,7 @@ public class GLRootView extends GLSurfaceView
     public DisplayMetrics getDisplayMetrics() {
         if (mDisplayMetrics == null) {
             mDisplayMetrics = new DisplayMetrics();
-            ((Activity) getContext()).getWindowManager()
-                    .getDefaultDisplay().getMetrics(mDisplayMetrics);
+            ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
         }
         return mDisplayMetrics;
     }

@@ -93,8 +93,7 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
         };
     }
 
-    private static void getRepresentativeItems(MediaSet set, int wanted,
-                                               ArrayList<MediaItem> result) {
+    private static void getRepresentativeItems(MediaSet set, int wanted, ArrayList<MediaItem> result) {
         if (set.getMediaItemCount() > 0) {
             result.addAll(set.getMediaItem(0, wanted));
         }
@@ -122,16 +121,14 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
 
     public MediaSet getMediaSet(int index) {
         if (index < mActiveStart && index >= mActiveEnd) {
-            throw new IllegalArgumentException(String.format(
-                    "%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
+            throw new IllegalArgumentException(String.format("%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
         }
         return mData[index % mData.length];
     }
 
     public MediaItem[] getCoverItems(int index) {
         if (index < mActiveStart && index >= mActiveEnd) {
-            throw new IllegalArgumentException(String.format(
-                    "%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
+            throw new IllegalArgumentException(String.format("%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
         }
         MediaItem[] result = mCoverData[index % mCoverData.length];
 
@@ -191,8 +188,7 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
     public void setActiveWindow(int start, int end) {
         if (start == mActiveStart && end == mActiveEnd) return;
 
-        Utils.assertTrue(start <= end
-                && end - start <= mCoverData.length && end <= mSize);
+        Utils.assertTrue(start <= end && end - start <= mCoverData.length && end <= mSize);
 
         mActiveStart = start;
         mActiveEnd = end;
@@ -201,11 +197,9 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
         // If no data is visible, keep the cache content
         if (start == end) return;
 
-        int contentStart = Utils.clamp((start + end) / 2 - length / 2,
-                0, Math.max(0, mSize - length));
+        int contentStart = Utils.clamp((start + end) / 2 - length / 2, 0, Math.max(0, mSize - length));
         int contentEnd = Math.min(contentStart + length, mSize);
-        if (mContentStart > start || mContentEnd < end
-                || Math.abs(contentStart - mContentStart) > MIN_LOAD_COUNT) {
+        if (mContentStart > start || mContentEnd < end || Math.abs(contentStart - mContentStart) > MIN_LOAD_COUNT) {
             setContentWindow(contentStart, contentEnd);
         }
     }
@@ -220,8 +214,7 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
 
     private <T> T executeAndWait(Callable<T> callable) {
         FutureTask<T> task = new FutureTask<T>(callable);
-        mMainHandler.sendMessage(
-                mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
+        mMainHandler.sendMessage(mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
         try {
             return task.get();
         } catch (InterruptedException e) {
@@ -304,8 +297,7 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
                 mItemVersion[pos] = itemVersion;
                 mData[pos] = info.item;
                 mCoverData[pos] = info.covers;
-                if (mModelListener != null
-                        && info.index >= mActiveStart && info.index < mActiveEnd) {
+                if (mModelListener != null && info.index >= mActiveStart && info.index < mActiveEnd) {
                     mModelListener.onWindowContentChanged(info.index);
                 }
             }

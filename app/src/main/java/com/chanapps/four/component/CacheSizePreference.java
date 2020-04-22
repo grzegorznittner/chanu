@@ -111,10 +111,8 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
     protected View onCreateView(ViewGroup parent) {
         RelativeLayout layout = null;
         try {
-            LayoutInflater mInflater = (LayoutInflater) getContext()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            layout = (RelativeLayout) mInflater.inflate(
-                    R.layout.cache_size_preference, parent, false);
+            LayoutInflater mInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            layout = (RelativeLayout) mInflater.inflate(R.layout.cache_size_preference, parent, false);
         } catch (Exception e) {
             Log.e(TAG, "Error creating seek bar preference", e);
         }
@@ -130,8 +128,7 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
         try {
             // move our seekbar to the new view we've been given
             ViewParent oldContainer = seekBar.getParent();
-            ViewGroup newContainer = view
-                    .findViewById(R.id.seekBarPrefBarContainer);
+            ViewGroup newContainer = view.findViewById(R.id.seekBarPrefBarContainer);
 
             if (oldContainer != newContainer) {
                 // remove the seekbar from the old view
@@ -141,9 +138,7 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
                 // remove the existing seekbar (there may not be one) and add
                 // ours
                 newContainer.removeAllViews();
-                newContainer.addView(seekBar,
-                        ViewGroup.LayoutParams.FILL_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                newContainer.addView(seekBar, ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception ex) {
             Log.e(TAG, "Error binding view: " + ex.toString(), ex);
@@ -180,14 +175,11 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
     }
 
     @Override
-    public void onProgressChanged(SeekBar seekBar, int progress,
-                                  boolean fromUser) {
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         int newValue = progress + minValue;
 
-        if (newValue > maxValue)
-            newValue = maxValue;
-        else if (newValue < minValue)
-            newValue = minValue;
+        if (newValue > maxValue) newValue = maxValue;
+        else if (newValue < minValue) newValue = minValue;
 
         // change rejected, revert to the previous value
         if (!callChangeListener(newValue)) {

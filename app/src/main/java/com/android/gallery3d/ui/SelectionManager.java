@@ -60,9 +60,7 @@ public class SelectionManager {
         int index = 0;
 
         while (index < total) {
-            int count = index + batch < total
-                    ? batch
-                    : total - index;
+            int count = index + batch < total ? batch : total - index;
             ArrayList<MediaItem> list = set.getMediaItem(index, count);
             for (MediaItem item : list) {
                 items.add(item.getPath());
@@ -126,9 +124,7 @@ public class SelectionManager {
         int count = mClickedSet.size();
         if (mInverseSelection) {
             if (mTotal < 0) {
-                mTotal = mIsAlbumSet
-                        ? mSourceMediaSet.getSubMediaSetCount()
-                        : mSourceMediaSet.getMediaItemCount();
+                mTotal = mIsAlbumSet ? mSourceMediaSet.getSubMediaSetCount() : mSourceMediaSet.getMediaItemCount();
             }
             count = mTotal - count;
         }

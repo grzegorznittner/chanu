@@ -55,8 +55,7 @@ public class VideoViewActivity extends Activity {
             myWebView.setBackgroundColor(0xffffff);
             myWebView.getSettings().setJavaScriptEnabled(false);
             myWebView.getSettings().setBuiltInZoomControls(false);
-            String html = "<html><body bgcolor=\"black\"><center><img src=\"" + getIntent().getStringExtra(ImageDownloadService.IMAGE_URL)
-                    + "\"></img></body></html>";
+            String html = "<html><body bgcolor=\"black\"><center><img src=\"" + getIntent().getStringExtra(ImageDownloadService.IMAGE_URL) + "\"></img></body></html>";
             myWebView.loadDataWithBaseURL("/", html, "text/html", "UTF-8", null);
         } catch (Throwable e) {
             Log.e(TAG, "Web view loading error", e);

@@ -1,28 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:padding="4dip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center_horizontal"
-        android:layout_width="match_parent" android:layout_height="match_parent">
+        android:orientation="vertical"
+        android:padding="4dip">
 
     <androidx.viewpager.widget.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="0px"
-            android:layout_weight="1">
-    </androidx.viewpager.widget.ViewPager>
+            android:layout_weight="1"></androidx.viewpager.widget.ViewPager>
 
-    <LinearLayout android:orientation="horizontal"
-            android:gravity="center" android:measureWithLargestChild="true"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_weight="0">
-        <Button android:id="@+id/goto_first"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="First">
-        </Button>
-        <Button android:id="@+id/goto_last"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="Last">
-        </Button>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:measureWithLargestChild="true"
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/goto_first"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First"></Button>
+
+        <Button
+                android:id="@+id/goto_last"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Last"></Button>
     </LinearLayout>
 </LinearLayout>
 

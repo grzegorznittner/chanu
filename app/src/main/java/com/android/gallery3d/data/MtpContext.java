@@ -72,14 +72,12 @@ public class MtpContext implements MtpClient.Listener {
                 return true;
             }
         } else {
-            Log.w(TAG, "No space to import " + objInfo.getName() +
-                    " whose size = " + objInfo.getCompressedSize());
+            Log.w(TAG, "No space to import " + objInfo.getName() + " whose size = " + objInfo.getCompressedSize());
         }
         return false;
     }
 
-    public boolean copyAlbum(String deviceName, String albumName,
-                             List<MtpObjectInfo> children) {
+    public boolean copyAlbum(String deviceName, String albumName, List<MtpObjectInfo> children) {
         File dest = Environment.getExternalStorageDirectory();
         dest = new File(dest, albumName);
         dest.mkdirs();

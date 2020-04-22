@@ -44,8 +44,7 @@ public class EffectsMenu extends RestorableView {
         setToggleRunnalbe(listener, R.id.fix_button, R.layout.photoeditor_effects_fix);
     }
 
-    private void setToggleRunnalbe(final OnToggleListener listener, final int toggleId,
-                                   final int effectsId) {
+    private void setToggleRunnalbe(final OnToggleListener listener, final int toggleId, final int effectsId) {
         setClickRunnable(toggleId, new Runnable() {
 
             @Override

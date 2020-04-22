@@ -115,21 +115,11 @@ public final class HttpClientFactory {
         if (sUserAgent == null) {
             PackageInfo pi;
             try {
-                pi = context.getPackageManager().getPackageInfo(
-                        context.getPackageName(), 0);
+                pi = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             } catch (NameNotFoundException e) {
                 throw new IllegalStateException("getPackageInfo failed");
             }
-            sUserAgent = String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s",
-                    pi.packageName,
-                    pi.versionName,
-                    Build.BRAND,
-                    Build.DEVICE,
-                    Build.MODEL,
-                    Build.ID,
-                    Build.VERSION.SDK_INT,
-                    Build.VERSION.RELEASE,
-                    Build.VERSION.INCREMENTAL);
+            sUserAgent = String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s", pi.packageName, pi.versionName, Build.BRAND, Build.DEVICE, Build.MODEL, Build.ID, Build.VERSION.SDK_INT, Build.VERSION.RELEASE, Build.VERSION.INCREMENTAL);
         }
         return sUserAgent;
     }

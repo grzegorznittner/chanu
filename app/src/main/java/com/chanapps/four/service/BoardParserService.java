@@ -79,8 +79,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
         intent.putExtra(ChanBoard.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
         intent.putExtra(ChanBoard.PAGE, pageNo);
-        if (priority)
-            intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
+        if (priority) intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
         if (secondaryThreadNo > 0)
             intent.putExtra(FetchChanDataService.SECONDARY_THREAD_NO, secondaryThreadNo);
         context.startService(intent);
@@ -135,19 +134,15 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
             } else {
                 parseBoard(boardFile);
             }
-            if (board != null)
-                board.lastFetched = Calendar.getInstance().getTimeInMillis();
+            if (board != null) board.lastFetched = Calendar.getInstance().getTimeInMillis();
 
             if (DEBUG)
-                Log.i(TAG, "Parsed board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
-                        + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+                Log.i(TAG, "Parsed board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo) + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
 
-            if (board != null)
-                ChanFileStorage.storeBoardData(context, board);
+            if (board != null) ChanFileStorage.storeBoardData(context, board);
             if (DEBUG)
-                Log.i(TAG, "Stored board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
-                        + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+                Log.i(TAG, "Stored board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo) + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             //setActionBarSubtitle();
 
             if (!boardCatalog) {
@@ -235,13 +230,12 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
                     try {
                         ChanThread thread = mapper.readValue(threadValue, ChanThread.class);
                         if (DEBUG)
-                            Log.i(TAG, "thread sub=" + thread.sub + " thumb=" + thread.tn_w + "x" + thread.tn_h
-                                    + " full=" + thread.w + "x" + thread.h + " com=" + thread.com);
+                            Log.i(TAG, "thread sub=" + thread.sub + " thumb=" + thread.tn_w + "x" + thread.tn_h + " full=" + thread.w + "x" + thread.h + " com=" + thread.com);
                         if (thread != null) {
                             thread.board = boardCode;
                             threads.add(thread);
-                            if (DEBUG) Log.i(TAG, "thread lastReplies=" + thread.lastReplies
-                                    + " len=" + (thread.lastReplies == null ? 0 : thread.lastReplies.length));
+                            if (DEBUG)
+                                Log.i(TAG, "thread lastReplies=" + thread.lastReplies + " len=" + (thread.lastReplies == null ? 0 : thread.lastReplies.length));
                         }
                     } catch (JsonMappingException e) { // if we have just one error, try and recover
                         Log.e(TAG, "Couldn't parseBoardCatalog deserialize threadValue for board=" + boardCode);
@@ -265,8 +259,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     }
 
     private void updateBoardData(List<ChanThread> threads, boolean firstLoad) {
-        if (board == null)
-            return;
+        if (board == null) return;
 
         final Context context = getBaseContext();
         final String boardCode = board.link;
@@ -304,8 +297,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         // remove watched threads no longer in board (and thus dead)
         if (atLeastOne) {
             try {
-                if (PreferenceManager.getDefaultSharedPreferences(context)
-                        .getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+                if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
                     ChanFileStorage.cleanDeadWatchedThreads(context);
             } catch (IOException e) {
                 Log.e(TAG, "Exception cleaning dead threads for /" + boardCode + "/", e);
@@ -336,8 +328,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     @Override
     public ChanActivityId getChanActivityId() {
         ChanActivityId id = new ChanActivityId(boardCode, pageNo, priority);
-        if (secondaryThreadNo > 0)
-            id.secondaryThreadNo = secondaryThreadNo;
+        if (secondaryThreadNo > 0) id.secondaryThreadNo = secondaryThreadNo;
         return id;
     }
 

@@ -153,8 +153,7 @@ public class ScrollerCompat {
      * @param maxY      Maximum Y value. The scroller will not scroll past this
      *                  point.
      */
-    public void fling(int startX, int startY, int velocityX, int velocityY,
-                      int minX, int maxX, int minY, int maxY) {
+    public void fling(int startX, int startY, int velocityX, int velocityY, int minX, int maxX, int minY, int maxY) {
         mScroller.fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY);
     }
 

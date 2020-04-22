@@ -48,6 +48,7 @@ public class SlideshowDataAdapter implements SlideshowPage.Model {
     private boolean mDataReady;
     private Future<Void> mReloadTask;
     private long mDataVersion = MediaObject.INVALID_DATA_VERSION;
+
     public SlideshowDataAdapter(GalleryContext context, SlideshowSource source, int index) {
         mSource = source;
         mLoadIndex = index;
@@ -123,8 +124,7 @@ public class SlideshowDataAdapter implements SlideshowPage.Model {
         public Void run(JobContext jc) {
             while (true) {
                 synchronized (SlideshowDataAdapter.this) {
-                    while (mIsActive && (!mDataReady
-                            || mImageQueue.size() >= IMAGE_QUEUE_CAPACITY)) {
+                    while (mIsActive && (!mDataReady || mImageQueue.size() >= IMAGE_QUEUE_CAPACITY)) {
                         try {
                             SlideshowDataAdapter.this.wait();
                         } catch (InterruptedException ex) {
@@ -154,14 +154,11 @@ public class SlideshowDataAdapter implements SlideshowPage.Model {
                     continue;
                 }
 
-                Bitmap bitmap = item
-                        .requestImage(MediaItem.TYPE_THUMBNAIL)
-                        .run(jc);
+                Bitmap bitmap = item.requestImage(MediaItem.TYPE_THUMBNAIL).run(jc);
 
                 if (bitmap != null) {
                     synchronized (SlideshowDataAdapter.this) {
-                        mImageQueue.addLast(
-                                new Slide(item, mLoadIndex, bitmap));
+                        mImageQueue.addLast(new Slide(item, mLoadIndex, bitmap));
                         if (mImageQueue.size() == 1) {
                             SlideshowDataAdapter.this.notifyAll();
                         }

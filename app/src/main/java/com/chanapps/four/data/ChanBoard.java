@@ -40,15 +40,8 @@ public class ChanBoard {
     public static final String META_OTHER_BOARD_CODE = BoardType.OTHER.boardCode();
     public static final String META_ADULT_BOARD_CODE = BoardType.ADULT.boardCode();
     public static final String META_MISC_BOARD_CODE = BoardType.MISC.boardCode();
-    public static final String[] VIRTUAL_BOARDS = {ALL_BOARDS_BOARD_CODE, POPULAR_BOARD_CODE, LATEST_BOARD_CODE,
-            LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE, FAVORITES_BOARD_CODE,
-            META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
-            META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
-            META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE};
-    public static final String[] META_BOARDS = {ALL_BOARDS_BOARD_CODE,
-            META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
-            META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
-            META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE};
+    public static final String[] VIRTUAL_BOARDS = {ALL_BOARDS_BOARD_CODE, POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE, FAVORITES_BOARD_CODE, META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE, META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE};
+    public static final String[] META_BOARDS = {ALL_BOARDS_BOARD_CODE, META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE, META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE};
     public static final String[] POPULAR_BOARDS = {POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE};
     public static final String[] TOP_BOARDS = {ALL_BOARDS_BOARD_CODE, FAVORITES_BOARD_CODE, WATCHLIST_BOARD_CODE};
     public static final String DEFAULT_BOARD_CODE = "a";
@@ -102,8 +95,7 @@ public class ChanBoard {
         // public default constructor for Jackson
     }
 
-    private ChanBoard(BoardType boardType, String name, String link, int iconId,
-                      boolean workSafe, boolean classic, boolean textOnly) {
+    private ChanBoard(BoardType boardType, String name, String link, int iconId, boolean workSafe, boolean classic, boolean textOnly) {
         this.boardType = boardType;
         this.name = name;
         this.link = link;
@@ -119,14 +111,10 @@ public class ChanBoard {
 
     public static boolean boardNeedsRefresh(Context context, String boardCode, boolean forceRefresh) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        if (board == null || board.defData)
-            return true;
-        else if (board.threads == null || board.threads.length == 0)
-            return true;
-        else if (board.threads[0] == null || board.threads[0].defData)
-            return true;
-        else if (!board.isCurrent())
-            return true;
+        if (board == null || board.defData) return true;
+        else if (board.threads == null || board.threads.length == 0) return true;
+        else if (board.threads[0] == null || board.threads[0].defData) return true;
+        else if (!board.isCurrent()) return true;
         else return forceRefresh;
     }
 
@@ -145,8 +133,7 @@ public class ChanBoard {
         List<ChanBoard> source = new ArrayList<ChanBoard>(showNSFW(context) ? boards : safeBoards);
         List<ChanBoard> filtered = new ArrayList<ChanBoard>();
         for (ChanBoard b : source)
-            if (!b.isVirtualBoard())
-                filtered.add(b);
+            if (!b.isVirtualBoard()) filtered.add(b);
         return filtered;
     }
 
@@ -154,15 +141,13 @@ public class ChanBoard {
         List<ChanBoard> source = getNewThreadBoardsRespectingNSFW(context);
         List<ChanBoard> filtered = new ArrayList<ChanBoard>();
         ChanBoard board = ChanFileStorage.loadBoardData(context, FAVORITES_BOARD_CODE);
-        if (board == null || board.defData || board.threads == null)
-            return source;
+        if (board == null || board.defData || board.threads == null) return source;
         ChanPost[] threads = board.threads;
         Set<String> boardCodes = new HashSet<String>(threads.length);
         for (ChanPost thread : threads)
             boardCodes.add(thread.board);
         for (ChanBoard b : source)
-            if (!boardCodes.contains(b.link))
-                filtered.add(b);
+            if (!boardCodes.contains(b.link)) filtered.add(b);
         return filtered;
     }
 
@@ -220,8 +205,7 @@ public class ChanBoard {
                 boardsForType.add(b);
                 if (!boardByCode.containsKey(b.link)) {
                     boards.add(b);
-                    if (workSafe)
-                        safeBoards.add(b);
+                    if (workSafe) safeBoards.add(b);
                     boardByCode.put(boardCode, b);
                 }
             }
@@ -268,16 +252,11 @@ public class ChanBoard {
     }
 
     public static int imagelessStickyDrawableId(String boardCode, long threadNo) {
-        if (boardCode.equals("s") && threadNo == 12370429)
-            return R.drawable.s_2;
-        else if (boardCode.equals("s") && threadNo == 9112225)
-            return R.drawable.s_9112225;
-        else if (boardCode.equals("gif") && threadNo == 5404329)
-            return R.drawable.gif_5405329;
-        else if (boardCode.equals("gif") && threadNo == 5412288)
-            return R.drawable.gif_5412288;
-        else
-            return 0;
+        if (boardCode.equals("s") && threadNo == 12370429) return R.drawable.s_2;
+        else if (boardCode.equals("s") && threadNo == 9112225) return R.drawable.s_9112225;
+        else if (boardCode.equals("gif") && threadNo == 5404329) return R.drawable.gif_5405329;
+        else if (boardCode.equals("gif") && threadNo == 5412288) return R.drawable.gif_5412288;
+        else return 0;
     }
 
     public static String getIndexedImageDrawableUrl(String boardCode, int index) {
@@ -290,13 +269,10 @@ public class ChanBoard {
 
     public static int getImageResourceId(String boardCode, long postNo, int index) { // allows special-casing first (usually sticky) and multiple
         int imageId = imagelessStickyDrawableId(boardCode, postNo);
-        if (imageId > 0)
-            return imageId;
+        if (imageId > 0) return imageId;
         int[] imageIds = boardDrawables.get(boardCode);
-        if (imageIds == null || imageIds.length == 0)
-            return STUB_IMAGE_ID;
-        if (index >= 0 && index < 3)
-            return imageIds[index];
+        if (imageIds == null || imageIds.length == 0) return STUB_IMAGE_ID;
+        if (index >= 0 && index < 3) return imageIds[index];
         return imageIds[0];
     }
 
@@ -378,11 +354,9 @@ public class ChanBoard {
         int spoilerImages = spoilerImageCount.containsKey(boardCode) ? spoilerImageCount.get(boardCode) : 1;
         if (spoilerImages > 1) {
             int spoilerImageNum = spoilerGenerator.nextInt(spoilerImages) + 1;
-            return String.format(
-                    URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_SPOILER_NUMBERED_IMAGE_URL_FORMAT), boardCode, spoilerImageNum);
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_SPOILER_NUMBERED_IMAGE_URL_FORMAT), boardCode, spoilerImageNum);
         } else {
-            return String.format(
-                    URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_SPOILER_IMAGE_URL_FORMAT), boardCode);
+            return String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_SPOILER_IMAGE_URL_FORMAT), boardCode);
         }
     }
 
@@ -392,38 +366,30 @@ public class ChanBoard {
 
     public static boolean isVirtualBoard(String boardCode) {
         for (String virtualBoardCode : VIRTUAL_BOARDS)
-            if (virtualBoardCode.equals(boardCode))
-                return true;
+            if (virtualBoardCode.equals(boardCode)) return true;
         return false;
     }
 
     public static boolean isTopBoard(String boardCode) {
         for (String code : TOP_BOARDS)
-            if (code.equals(boardCode))
-                return true;
+            if (code.equals(boardCode)) return true;
         return false;
     }
 
     public static boolean isMetaBoard(String boardCode) {
         for (String metaBoardCode : META_BOARDS)
-            if (metaBoardCode.equals(boardCode))
-                return true;
+            if (metaBoardCode.equals(boardCode)) return true;
         return false;
     }
 
     public static boolean isPopularBoard(String boardCode) {
         for (String popularBoardCode : POPULAR_BOARDS)
-            if (popularBoardCode.equals(boardCode))
-                return true;
+            if (popularBoardCode.equals(boardCode)) return true;
         return false;
     }
 
     public static String getBestWidgetImageUrl(Context context, ChanPost thread, String backupBoardCode, int i) {
-        return (thread != null && thread.tim > 0)
-                ? thread.thumbnailUrl(context)
-                : ChanBoard.getIndexedImageDrawableUrl(
-                thread != null ? thread.board : backupBoardCode,
-                i);
+        return (thread != null && thread.tim > 0) ? thread.thumbnailUrl(context) : ChanBoard.getIndexedImageDrawableUrl(thread != null ? thread.board : backupBoardCode, i);
     }
 
     public static boolean boardHasData(Context context, String boardCode) {
@@ -436,11 +402,9 @@ public class ChanBoard {
 
     public static boolean isFavoriteBoard(final Context context, final String boardCode) {
         ChanBoard favorites = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
-        if (favorites == null || !favorites.hasData())
-            return false;
+        if (favorites == null || !favorites.hasData()) return false;
         for (ChanThread thread : favorites.threads) {
-            if (boardCode.equals(thread.board))
-                return true;
+            if (boardCode.equals(thread.board)) return true;
         }
         return false;
     }
@@ -474,27 +438,22 @@ public class ChanBoard {
         //if (hasWatchlist(context))
         //    return ChanBoard.WATCHLIST_BOARD_CODE;
         //else
-        if (hasFavorites(context))
-            return ChanBoard.FAVORITES_BOARD_CODE;
-        else
-            return ChanBoard.ALL_BOARDS_BOARD_CODE;
+        if (hasFavorites(context)) return ChanBoard.FAVORITES_BOARD_CODE;
+        else return ChanBoard.ALL_BOARDS_BOARD_CODE;
     }
 
     public static boolean isPersistentBoard(final String boardCode) {
-        if (WATCHLIST_BOARD_CODE.equals(boardCode))
-            return true;
+        if (WATCHLIST_BOARD_CODE.equals(boardCode)) return true;
         else return FAVORITES_BOARD_CODE.equals(boardCode);
     }
 
     public ChanBoard copy() {
-        ChanBoard copy = new ChanBoard(this.boardType, this.name, this.link, this.iconId,
-                this.workSafe, this.classic, this.textOnly);
+        ChanBoard copy = new ChanBoard(this.boardType, this.name, this.link, this.iconId, this.workSafe, this.classic, this.textOnly);
         return copy;
     }
 
     public String toString() {
-        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length
-                + ", threads: " + threads.length + ", newThreads: " + loadedThreads.length;
+        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length + ", threads: " + threads.length + ", newThreads: " + loadedThreads.length;
     }
 
     public String getDescription(Context context) {
@@ -548,8 +507,7 @@ public class ChanBoard {
                     updatedThreads++;
                 }
             } else {
-                if (firstNewThread == null)
-                    firstNewThread = newThread;
+                if (firstNewThread == null) firstNewThread = newThread;
                 newThreads++;
             }
         }
@@ -576,8 +534,7 @@ public class ChanBoard {
     }
 
     public boolean isFastBoard() {
-        if (link == null)
-            return false;
+        if (link == null) return false;
         return fastBoardSet.contains(link);
     }
 
@@ -588,33 +545,25 @@ public class ChanBoard {
     */
     public List<ChanBoard> relatedBoards(Context context, long threadNo) {
         initBoards(context);
-        if (isVirtualBoard())
-            return new ArrayList<ChanBoard>();
+        if (isVirtualBoard()) return new ArrayList<ChanBoard>();
 
         List<ChanBoard> boards = relatedBoards.get(link);
         if (DEBUG)
             Log.i(TAG, "Found " + (boards == null ? 0 : boards.size()) + " related boards for /" + link + "/");
-        if (boards == null)
-            return new ArrayList<ChanBoard>();
+        if (boards == null) return new ArrayList<ChanBoard>();
 
-        boolean showAdult = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        boolean showAdult = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         List<ChanBoard> filteredBoards = new ArrayList<ChanBoard>();
         for (ChanBoard board : boards) {
-            if (board != null && (board.workSafe || showAdult))
-                filteredBoards.add(board);
+            if (board != null && (board.workSafe || showAdult)) filteredBoards.add(board);
         }
 
-        if (threadNo <= 0)
-            Collections.shuffle(filteredBoards);
-        else
-            Collections.rotate(filteredBoards, (int) threadNo); // preserve order
+        if (threadNo <= 0) Collections.shuffle(filteredBoards);
+        else Collections.rotate(filteredBoards, (int) threadNo); // preserve order
         List<ChanBoard> boardList = new ArrayList<ChanBoard>(NUM_RELATED_BOARDS);
         int j = 0;
         for (ChanBoard relatedBoard : filteredBoards) {
-            if (j >= NUM_RELATED_BOARDS)
-                break;
+            if (j >= NUM_RELATED_BOARDS) break;
             if (!link.equals(relatedBoard.link)) {
                 boardList.add(relatedBoard);
                 j++;
@@ -624,40 +573,28 @@ public class ChanBoard {
     }
 
     public boolean hasData() {
-        return !defData
-                && threads != null
-                && threads.length > 0
-                && threads[0] != null
-                && !threads[0].defData;
+        return !defData && threads != null && threads.length > 0 && threads[0] != null && !threads[0].defData;
     }
 
     public boolean hasNewBoardData() {
-        if (defData)
-            return false;
-        if (newThreads > 0)
-            return true;
-        if (updatedThreads > 0)
-            return true;
+        if (defData) return false;
+        if (newThreads > 0) return true;
+        if (updatedThreads > 0) return true;
         return loadedThreads != null && loadedThreads.length > 0;
     }
 
     public boolean shouldSwapThreads() {
-        if (loadedThreads == null || loadedThreads.length == 0)
-            return false;
-        if (threads == null || threads.length == 0)
-            return true;
-        if (threads[0] == null || threads[0].defData || threads[0].no <= 0)
-            return true;
-        if (threads.length > MAX_THREADS_BEFORE_SWAP)
-            return true;
+        if (loadedThreads == null || loadedThreads.length == 0) return false;
+        if (threads == null || threads.length == 0) return true;
+        if (threads[0] == null || threads[0].defData || threads[0].no <= 0) return true;
+        if (threads.length > MAX_THREADS_BEFORE_SWAP) return true;
         return !isSwapCurrent();
     }
 
     private boolean isSwapCurrent() {
         long diff = Math.abs(new Date().getTime() - lastSwapped);
         boolean swapCurrent;
-        if (lastSwapped <= 0)
-            swapCurrent = false;
+        if (lastSwapped <= 0) swapCurrent = false;
         else swapCurrent = diff <= SWAP_DELAY_MS;
         if (DEBUG)
             Log.i(TAG, "isSwapCurrent /" + link + "/ lastSwapped=" + lastSwapped + " diff=" + diff + " return=" + swapCurrent);
@@ -680,21 +617,15 @@ public class ChanBoard {
 
     public int getThreadIndex(String boardCode, long threadNo) {
         if (DEBUG) Log.i(TAG, "getThreadIndex /" + boardCode + "/" + threadNo);
-        if (defData)
-            return -1;
-        if (threads == null)
-            return -1;
+        if (defData) return -1;
+        if (threads == null) return -1;
         int index = -1;
         ChanPost thread;
         for (int i = 0; i < threads.length; i++) {
-            if ((thread = threads[i]) == null)
-                continue;
-            if (thread.board == null)
-                continue;
-            if (!thread.board.equals(boardCode))
-                continue;
-            if (thread.no != threadNo)
-                continue;
+            if ((thread = threads[i]) == null) continue;
+            if (thread.board == null) continue;
+            if (!thread.board.equals(boardCode)) continue;
+            if (thread.no != threadNo) continue;
             index = i;
             break;
         }
@@ -706,15 +637,10 @@ public class ChanBoard {
         long now = new Date().getTime();
         long interval = Math.abs(now - lastFetched);
         boolean current;
-        if (lastFetched <= 0)
-            current = false;
+        if (lastFetched <= 0) current = false;
         else current = interval <= params.refreshDelay;
-        if (DEBUG) Log.i(TAG, "isCurrent() /" + link + "/"
-                + " lastFetched=" + lastFetched
-                + " interval=" + interval
-                + " refreshDelay=" + params.refreshDelay
-                + " current=" + current
-        );
+        if (DEBUG)
+            Log.i(TAG, "isCurrent() /" + link + "/" + " lastFetched=" + lastFetched + " interval=" + interval + " refreshDelay=" + params.refreshDelay + " current=" + current);
         return current;
     }
 

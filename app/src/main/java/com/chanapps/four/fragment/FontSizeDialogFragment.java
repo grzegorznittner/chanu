@@ -29,8 +29,7 @@ public class FontSizeDialogFragment extends DialogFragment {
         public void onClick(DialogInterface dialog, int which) {
             CharSequence item = array[which];
             fontSize = FontSize.valueOfDisplayString(getActivity(), item.toString());
-            if (notifyFontSizeListener != null)
-                notifyFontSizeListener.onFontSizeChanged(fontSize);
+            if (notifyFontSizeListener != null) notifyFontSizeListener.onFontSizeChanged(fontSize);
             dismiss();
         }
     };
@@ -47,10 +46,7 @@ public class FontSizeDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         array = getResources().getTextArray(R.array.font_sizes);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder
-                .setTitle(R.string.font_size_menu)
-                .setSingleChoiceItems(array, fontSize.ordinal(), selectFontSizeListener)
-        ;
+        builder.setTitle(R.string.font_size_menu).setSingleChoiceItems(array, fontSize.ordinal(), selectFontSizeListener);
         AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;

@@ -172,10 +172,8 @@ final class LoadAndDisplayImageTask implements Runnable {
                         L.w(FULL_IMAGE_COPY_ERROR, memoryCacheKey);
                     } finally {
                         try {
-                            if (fis != null)
-                                fis.close();
-                            if (fos != null)
-                                fos.close();
+                            if (fis != null) fis.close();
+                            if (fos != null) fos.close();
                         } catch (IOException e) {
                         }
                     }

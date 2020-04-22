@@ -96,8 +96,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
     }
 
     protected ArrayAdapter<String> createSpinnerAdapter() {
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, android.R.id.text1, spinnerArray());
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, android.R.id.text1, spinnerArray());
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         return spinnerAdapter;
     }
@@ -112,31 +111,22 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
         } else {
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
                 String boardText = spinnerAdapter.getItem(i);
-                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)
-                        && boardText.matches(getString(R.string.board_watch))) {
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode) && ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode) && boardText.matches(getString(R.string.board_watch))) {
                     position = i;
                     break;
                 }
-                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && ChanBoard.POPULAR_BOARD_CODE.equals(widgetConf.boardCode)
-                        && boardText.matches(getString(R.string.board_popular))) {
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode) && ChanBoard.POPULAR_BOARD_CODE.equals(widgetConf.boardCode) && boardText.matches(getString(R.string.board_popular))) {
                     position = i;
                     break;
                 }
-                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && ChanBoard.LATEST_BOARD_CODE.equals(widgetConf.boardCode)
-                        && boardText.matches(getString(R.string.board_latest))) {
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode) && ChanBoard.LATEST_BOARD_CODE.equals(widgetConf.boardCode) && boardText.matches(getString(R.string.board_latest))) {
                     position = i;
                     break;
                 }
-                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(widgetConf.boardCode)
-                        && boardText.matches(getString(R.string.board_latest_images))) {
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode) && ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(widgetConf.boardCode) && boardText.matches(getString(R.string.board_latest_images))) {
                     position = i;
                     break;
-                } else if (!ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && boardText.matches("/" + widgetConf.boardCode + "/.*")) {
+                } else if (!ChanBoard.isVirtualBoard(widgetConf.boardCode) && boardText.matches("/" + widgetConf.boardCode + "/.*")) {
                     position = i;
                     break;
                 }
@@ -227,38 +217,31 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
 
     protected void addColorClickHandler() {
         EditText backgroundColorButton = findViewById(R.id.board_title_color);
-        if (backgroundColorButton == null)
-            return;
+        if (backgroundColorButton == null) return;
         backgroundColorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ColorPickerDialog d = new ColorPickerDialog(AbstractWidgetConfigureActivity.this,
-                        widgetConf.boardTitleColor);
+                final ColorPickerDialog d = new ColorPickerDialog(AbstractWidgetConfigureActivity.this, widgetConf.boardTitleColor);
                 d.setAlphaSliderVisible(true);
-                d.setButton(DialogInterface.BUTTON_POSITIVE,
-                        getString(R.string.thread_context_select),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                widgetConf.boardTitleColor = d.getColor();
-                                updateBoardTitleState();
-                            }
-                        });
-                d.setButton(DialogInterface.BUTTON_NEGATIVE,
-                        getString(R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
+                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.thread_context_select), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        widgetConf.boardTitleColor = d.getColor();
+                        updateBoardTitleState();
+                    }
+                });
+                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
                 d.show();
             }
         });
     }
 
     protected void updateWidgetConfWithSelectedBoard(String boardSpinnerLine) {
-        if (boardSpinnerLine == null || boardSpinnerLine.isEmpty())
-            boardSpinnerLine = "";
+        if (boardSpinnerLine == null || boardSpinnerLine.isEmpty()) boardSpinnerLine = "";
         String boardCode;
         if (getString(R.string.board_watch).equals(boardSpinnerLine)) {
             boardCode = ChanBoard.WATCHLIST_BOARD_CODE;
@@ -271,10 +254,8 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
         } else {
             Pattern p = Pattern.compile("/([^/]*)/.*");
             Matcher m = p.matcher(boardSpinnerLine);
-            if (m.matches())
-                boardCode = m.group(1);
-            else
-                boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+            if (m.matches()) boardCode = m.group(1);
+            else boardCode = ChanBoard.DEFAULT_BOARD_CODE;
         }
         widgetConf.boardCode = boardCode;
         updateBoardTitleState();
@@ -299,15 +280,12 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
 
     protected void updateBoardTitleState() {
         ChanBoard board = ChanBoard.getBoardByCode(this, widgetConf.boardCode);
-        if (board == null)
-            board = ChanBoard.getBoardByCode(this, ChanBoard.DEFAULT_BOARD_CODE);
+        if (board == null) board = ChanBoard.getBoardByCode(this, ChanBoard.DEFAULT_BOARD_CODE);
         String boardTitle;
         if (WidgetConstants.WIDGET_TYPE_ONE_IMAGE.equals(widgetConf.widgetType))
             boardTitle = "/" + board.link + "/";
-        else if (ChanBoard.isVirtualBoard(board.link))
-            boardTitle = board.getName(this);
-        else
-            boardTitle = board.getName(this) + " /" + board.link + "/";
+        else if (ChanBoard.isVirtualBoard(board.link)) boardTitle = board.getName(this);
+        else boardTitle = board.getName(this) + " /" + board.link + "/";
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
         TextView tv = findViewById(R.id.board_title);

@@ -8,7 +8,5 @@ package com.chanapps.four.data;
  * To change this template use File | Settings | File Templates.
  */
 public enum DownloadImageTargetType {
-    TO_BOARD,
-    TO_GALLERY,
-    TO_ZIP
+    TO_BOARD, TO_GALLERY, TO_ZIP
 }

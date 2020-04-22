@@ -37,21 +37,17 @@ public class ChanImageLoader {
             final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.widthPixels) - 2 * padding;
             final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.heightPixels) - 2 * padding;
             imageLoader = ImageLoader.getInstance();
-            imageLoader.init(
-                    new ImageLoaderConfiguration
-                            .Builder(context)
-                            //.memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
-                            .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
-                            //.imageDownloader(new ExtendedImageDownloader(context))
-                            //.threadPriority(Thread.MIN_PRIORITY+1)
-                            .threadPoolSize(5)
-                            .discCacheFileNameGenerator(new FileNameGenerator() {
-                                @Override
-                                public String generate(String imageUri) {
-                                    return Math.abs(imageUri.hashCode()) + ".jpg";
-                                }
-                            })
-                            .build());
+            imageLoader.init(new ImageLoaderConfiguration.Builder(context)
+                    //.memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
+                    .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
+                    //.imageDownloader(new ExtendedImageDownloader(context))
+                    //.threadPriority(Thread.MIN_PRIORITY+1)
+                    .threadPoolSize(5).discCacheFileNameGenerator(new FileNameGenerator() {
+                        @Override
+                        public String generate(String imageUri) {
+                            return Math.abs(imageUri.hashCode()) + ".jpg";
+                        }
+                    }).build());
         }
         return imageLoader;
     }

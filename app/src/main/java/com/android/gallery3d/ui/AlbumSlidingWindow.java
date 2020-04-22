@@ -57,9 +57,8 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
     private boolean mIsActive = false;
     private int mCacheThumbSize;  // 0: Don't cache the thumbnails
     private LruCache<Path, Bitmap> mImageCache = new LruCache<Path, Bitmap>(1000);
-    public AlbumSlidingWindow(GalleryActivity activity,
-                              AlbumView.Model source, int cacheSize,
-                              int cacheThumbSize) {
+
+    public AlbumSlidingWindow(GalleryActivity activity, AlbumView.Model source, int cacheSize, int cacheThumbSize) {
         source.setModelListener(this);
         mSource = source;
         mData = new AlbumDisplayItem[cacheSize];
@@ -100,9 +99,7 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
     }
 
     public DisplayItem get(int slotIndex) {
-        Utils.assertTrue(isActiveSlot(slotIndex),
-                "invalid slot: %s outsides (%s, %s)",
-                slotIndex, mActiveStart, mActiveEnd);
+        Utils.assertTrue(isActiveSlot(slotIndex), "invalid slot: %s outsides (%s, %s)", slotIndex, mActiveStart, mActiveEnd);
         return mData[slotIndex % mData.length];
     }
 
@@ -153,16 +150,13 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
     }
 
     public void setActiveWindow(int start, int end) {
-        Utils.assertTrue(start <= end
-                        && end - start <= mData.length && end <= mSize,
-                "%s, %s, %s, %s", start, end, mData.length, mSize);
+        Utils.assertTrue(start <= end && end - start <= mData.length && end <= mSize, "%s, %s, %s, %s", start, end, mData.length, mSize);
         DisplayItem[] data = mData;
 
         mActiveStart = start;
         mActiveEnd = end;
 
-        int contentStart = Utils.clamp((start + end) / 2 - data.length / 2,
-                0, Math.max(0, mSize - data.length));
+        int contentStart = Utils.clamp((start + end) / 2 - data.length / 2, 0, Math.max(0, mSize - data.length));
         int contentEnd = Math.min(contentStart + data.length, mSize);
         setContentWindow(contentStart, contentEnd);
         if (mIsActive) updateAllImageRequests();
@@ -174,8 +168,7 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
     //                   |<-  active  ->|
     //         |<-------- cached range ----------->|
     private void requestNonactiveImages() {
-        int range = Math.max(
-                (mContentEnd - mActiveEnd), (mActiveStart - mContentStart));
+        int range = Math.max((mContentEnd - mActiveEnd), (mActiveStart - mContentStart));
         for (int i = 0; i < range; ++i) {
             requestSlotImage(mActiveEnd + i, false);
             requestSlotImage(mActiveStart - 1 - i, false);
@@ -189,8 +182,7 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
     }
 
     private void cancelNonactiveImages() {
-        int range = Math.max(
-                (mContentEnd - mActiveEnd), (mActiveStart - mContentStart));
+        int range = Math.max((mContentEnd - mActiveEnd), (mActiveStart - mContentStart));
         for (int i = 0; i < range; ++i) {
             cancelSlotImage(mActiveEnd + i, false);
             cancelSlotImage(mActiveStart - 1 - i, false);
@@ -214,8 +206,7 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
     }
 
     private void prepareSlotContent(final int slotIndex) {
-        mData[slotIndex % mData.length] = new AlbumDisplayItem(
-                slotIndex, mSource.get(slotIndex));
+        mData[slotIndex % mData.length] = new AlbumDisplayItem(slotIndex, mSource.get(slotIndex));
     }
 
     private void updateSlotContent(final int slotIndex) {
@@ -293,12 +284,10 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
 
         void onContentInvalidated();
 
-        void onWindowContentChanged(
-                int slot, DisplayItem old, DisplayItem update);
+        void onWindowContentChanged(int slot, DisplayItem old, DisplayItem update);
     }
 
-    private class AlbumDisplayItem extends AbstractDisplayItem
-            implements FutureListener<Bitmap>, Job<Bitmap> {
+    private class AlbumDisplayItem extends AbstractDisplayItem implements FutureListener<Bitmap>, Job<Bitmap> {
         private final int mSlotIndex;
         private final int mMediaType;
         private Future<Bitmap> mFuture;
@@ -308,9 +297,7 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
 
         public AlbumDisplayItem(int slotIndex, MediaItem item) {
             super(item);
-            mMediaType = (item == null)
-                    ? MediaItem.MEDIA_TYPE_UNKNOWN
-                    : item.getMediaType();
+            mMediaType = (item == null) ? MediaItem.MEDIA_TYPE_UNKNOWN : item.getMediaType();
             mSlotIndex = slotIndex;
             mIsPanorama = GalleryUtils.isPanorama(item);
             updateContent(mWaitLoadingTexture);
@@ -358,8 +345,7 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
             if (pass == 0) {
                 Path path = null;
                 if (mMediaItem != null) path = mMediaItem.getPath();
-                mSelectionDrawer.draw(canvas, mContent, width, height,
-                        getRotation(), path, mMediaType, mIsPanorama);
+                mSelectionDrawer.draw(canvas, mContent, width, height, getRotation(), path, mMediaType, mIsPanorama);
                 if (mContent == mWaitLoadingTexture) {
                     mWaitLoadingDisplayed = true;
                 }
@@ -367,8 +353,7 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
                 if (mFocusIndex == mSlotIndex) {
                     result |= RENDER_MORE_PASS;
                 }
-                if ((mContent instanceof FadeInTexture) &&
-                        ((FadeInTexture) mContent).isAnimating()) {
+                if ((mContent instanceof FadeInTexture) && ((FadeInTexture) mContent).isAnimating()) {
                     result |= RENDER_MORE_FRAME;
                 }
                 return result;
@@ -389,19 +374,16 @@ public class AlbumSlidingWindow implements AlbumView.ModelListener {
                 }
                 mFuture = mThreadPool.submit(this, this);
             } else {
-                mFuture = mThreadPool.submit(mMediaItem.requestImage(
-                        MediaItem.TYPE_MICROTHUMBNAIL), this);
+                mFuture = mThreadPool.submit(mMediaItem.requestImage(MediaItem.TYPE_MICROTHUMBNAIL), this);
             }
         }
 
         // This gets the bitmap and scale it down.
         public Bitmap run(JobContext jc) {
-            Job<Bitmap> job = mMediaItem.requestImage(
-                    MediaItem.TYPE_MICROTHUMBNAIL);
+            Job<Bitmap> job = mMediaItem.requestImage(MediaItem.TYPE_MICROTHUMBNAIL);
             Bitmap bitmap = job.run(jc);
             if (bitmap != null) {
-                bitmap = BitmapUtils.resizeDownBySideLength(
-                        bitmap, mCacheThumbSize, true);
+                bitmap = BitmapUtils.resizeDownBySideLength(bitmap, mCacheThumbSize, true);
             }
             return bitmap;
         }

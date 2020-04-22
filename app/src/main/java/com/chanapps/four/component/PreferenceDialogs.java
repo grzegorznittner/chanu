@@ -30,10 +30,7 @@ public class PreferenceDialogs {
     public void showNSFWDialog() {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mActivity);
         final boolean showNSFW = pref.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity)
-                .setTitle(R.string.pref_show_nsfw_boards)
-                .setMessage(R.string.pref_show_nsfw_boards_summ_message)
-                .setNegativeButton(R.string.cancel, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity).setTitle(R.string.pref_show_nsfw_boards).setMessage(R.string.pref_show_nsfw_boards_summ_message).setNegativeButton(R.string.cancel, null);
         if (showNSFW)
             builder.setPositiveButton(R.string.pref_show_nsfw_boards_summ_neg, new DialogInterface.OnClickListener() {
                 @Override
@@ -70,19 +67,15 @@ public class PreferenceDialogs {
         final String[] fontSizes = mActivity.getResources().getStringArray(R.array.font_sizes);
         int checkedItem = 0;
         for (int i = 0; i < fontSizes.length; i++)
-            if (fontSizes[i].equals(fontSize))
-                checkedItem = i;
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity)
-                .setTitle(R.string.font_size_menu)
-                .setNeutralButton(R.string.cancel, null);
+            if (fontSizes[i].equals(fontSize)) checkedItem = i;
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity).setTitle(R.string.font_size_menu).setNeutralButton(R.string.cancel, null);
         builder.setSingleChoiceItems(R.array.font_sizes, checkedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newFontSize = fontSizes[which];
                 pref.edit().putString(SettingsActivity.PREF_FONT_SIZE, newFontSize).commit();
                 dialog.dismiss();
-                if (mActivity != null)
-                    mActivity.recreate();
+                if (mActivity != null) mActivity.recreate();
             }
         });
         AlertDialog d = builder.create();
@@ -100,24 +93,19 @@ public class PreferenceDialogs {
      */
     public void showAutoloadImagesDialog() {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mActivity);
-        final String autoloadValue = pref.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
-                mActivity.getString(R.string.pref_autoload_images_auto_value));
+        final String autoloadValue = pref.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES, mActivity.getString(R.string.pref_autoload_images_auto_value));
         final String[] autoloadValues = mActivity.getResources().getStringArray(R.array.pref_autoload_images_entry_values);
         int checkedItem = 0;
         for (int i = 0; i < autoloadValues.length; i++)
-            if (autoloadValues[i].equals(autoloadValue))
-                checkedItem = i;
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity)
-                .setTitle(R.string.pref_autoload_images_title)
-                .setNeutralButton(R.string.cancel, null);
+            if (autoloadValues[i].equals(autoloadValue)) checkedItem = i;
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity).setTitle(R.string.pref_autoload_images_title).setNeutralButton(R.string.cancel, null);
         builder.setSingleChoiceItems(R.array.pref_autoload_images_entries, checkedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newAutoloadValue = autoloadValues[which];
                 pref.edit().putString(SettingsActivity.PREF_AUTOLOAD_IMAGES, newAutoloadValue).commit();
                 dialog.dismiss();
-                if (mActivity != null)
-                    mActivity.recreate();
+                if (mActivity != null) mActivity.recreate();
             }
         });
         AlertDialog d = builder.create();
@@ -136,24 +124,19 @@ public class PreferenceDialogs {
      */
     public void showThemeDialog() {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mActivity);
-        final String value = pref.getString(SettingsActivity.PREF_THEME,
-                mActivity.getString(R.string.pref_theme_default_value));
+        final String value = pref.getString(SettingsActivity.PREF_THEME, mActivity.getString(R.string.pref_theme_default_value));
         final String[] values = mActivity.getResources().getStringArray(R.array.pref_theme_entry_values);
         int checkedItem = 0;
         for (int i = 0; i < values.length; i++)
-            if (values[i].equals(value))
-                checkedItem = i;
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity)
-                .setTitle(R.string.pref_theme_title)
-                .setNeutralButton(R.string.cancel, null);
+            if (values[i].equals(value)) checkedItem = i;
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity).setTitle(R.string.pref_theme_title).setNeutralButton(R.string.cancel, null);
         builder.setSingleChoiceItems(R.array.pref_theme_entries, checkedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newAutoloadValue = values[which];
                 pref.edit().putString(SettingsActivity.PREF_THEME, newAutoloadValue).commit();
                 dialog.dismiss();
-                if (mActivity != null)
-                    mActivity.recreate();
+                if (mActivity != null) mActivity.recreate();
             }
         });
         AlertDialog d = builder.create();

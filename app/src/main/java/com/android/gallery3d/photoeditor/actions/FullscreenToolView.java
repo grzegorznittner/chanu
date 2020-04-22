@@ -86,8 +86,7 @@ abstract class FullscreenToolView extends View {
             dst.setEmpty();
         } else {
             photoMatrix.mapRect(dst, src);
-            dst.set(dst.left / photoBounds.width(), dst.top / photoBounds.height(),
-                    dst.right / photoBounds.width(), dst.bottom / photoBounds.height());
+            dst.set(dst.left / photoBounds.width(), dst.top / photoBounds.height(), dst.right / photoBounds.width(), dst.bottom / photoBounds.height());
         }
     }
 }

@@ -28,8 +28,7 @@ import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.Path;
 import com.chanapps.four.gallery3d.R;
 
-public class FilmStripView extends GLView implements ScrollBarView.Listener,
-        UserInteractionListener {
+public class FilmStripView extends GLView implements ScrollBarView.Listener, UserInteractionListener {
     @SuppressWarnings("unused")
     private static final String TAG = "FilmStripView";
 
@@ -43,6 +42,7 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
     private Listener mListener;
     private UserInteractionListener mUIListener;
     private NinePatchTexture mBackgroundTexture;
+
     // The layout of FileStripView is
     // topMargin
     //             ----+----+
@@ -57,9 +57,7 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
     //            \    +----+--/
     //             ----+----+
     // bottomMargin
-    public FilmStripView(GalleryActivity activity, MediaSet mediaSet,
-                         int topMargin, int midMargin, int bottomMargin, int contentSize,
-                         int thumbSize, int barSize, int gripSize, int gripWidth) {
+    public FilmStripView(GalleryActivity activity, MediaSet mediaSet, int topMargin, int midMargin, int bottomMargin, int contentSize, int thumbSize, int barSize, int gripSize, int gripWidth) {
         mTopMargin = topMargin;
         mMidMargin = midMargin;
         mBottomMargin = bottomMargin;
@@ -103,14 +101,12 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
         mAlbumView.setUserInteractionListener(this);
         mAlbumDataAdapter = new AlbumDataAdapter(activity, mediaSet);
         addComponent(mAlbumView);
-        mScrollBarView = new ScrollBarView(activity.getAndroidContext(),
-                mGripSize, gripWidth);
+        mScrollBarView = new ScrollBarView(activity.getAndroidContext(), mGripSize, gripWidth);
         mScrollBarView.setListener(this);
         addComponent(mScrollBarView);
 
         mAlbumView.setModel(mAlbumDataAdapter);
-        mBackgroundTexture = new NinePatchTexture(activity.getAndroidContext(),
-                R.drawable.navstrip_translucent);
+        mBackgroundTexture = new NinePatchTexture(activity.getAndroidContext(), R.drawable.navstrip_translucent);
     }
 
     public void setListener(Listener listener) {
@@ -150,14 +146,11 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         int height = mTopMargin + mContentSize + mMidMargin + mBarSize + mBottomMargin;
-        MeasureHelper.getInstance(this)
-                .setPreferredContentSize(MeasureSpec.getSize(widthSpec), height)
-                .measure(widthSpec, heightSpec);
+        MeasureHelper.getInstance(this).setPreferredContentSize(MeasureSpec.getSize(widthSpec), height).measure(widthSpec, heightSpec);
     }
 
     @Override
-    protected void onLayout(
-            boolean changed, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         if (!changed) return;
         mAlbumView.layout(0, mTopMargin, right - left, mTopMargin + mContentSize);
         int barStart = mTopMargin + mContentSize + mMidMargin;

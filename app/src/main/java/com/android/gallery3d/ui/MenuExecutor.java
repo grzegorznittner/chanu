@@ -57,8 +57,7 @@ public class MenuExecutor {
     private ProgressDialog mDialog;
     private Future<?> mTask;
 
-    public MenuExecutor(
-            GalleryActivity activity, SelectionManager selectionManager) {
+    public MenuExecutor(GalleryActivity activity, SelectionManager selectionManager) {
         mActivity = Utils.checkNotNull(activity);
         mSelectionManager = Utils.checkNotNull(selectionManager);
         mHandler = new SynchronizedHandler(mActivity.getGLRoot()) {
@@ -91,8 +90,7 @@ public class MenuExecutor {
         };
     }
 
-    private static ProgressDialog showProgressDialog(
-            Context context, int titleId, int progressMax) {
+    private static ProgressDialog showProgressDialog(Context context, int titleId, int progressMax) {
         ProgressDialog dialog = new ProgressDialog(context);
         dialog.setTitle(titleId);
         dialog.setMax(progressMax);
@@ -105,8 +103,7 @@ public class MenuExecutor {
         return dialog;
     }
 
-    private static void setMenuItemVisibility(
-            Menu menu, int id, boolean visibility) {
+    private static void setMenuItemVisibility(Menu menu, int id, boolean visibility) {
         MenuItem item = menu.findItem(id);
         if (item != null) item.setVisible(visibility);
     }
@@ -163,8 +160,7 @@ public class MenuExecutor {
     }
 
     private void onProgressUpdate(int index, ProgressListener listener) {
-        mHandler.sendMessage(
-                mHandler.obtainMessage(MSG_TASK_UPDATE, index, 0, listener));
+        mHandler.sendMessage(mHandler.obtainMessage(MSG_TASK_UPDATE, index, 0, listener));
     }
 
     private void onProgressComplete(int result, ProgressListener listener) {
@@ -197,8 +193,7 @@ public class MenuExecutor {
         } else if (action == R.id.action_crop) {
             Path path = getSingleSelectedPath();
             String mimeType = getMimeType(manager.getMediaType(path));
-            Intent intent = new Intent(CropImage.ACTION_CROP)
-                    .setDataAndType(manager.getContentUri(path), mimeType);
+            Intent intent = new Intent(CropImage.ACTION_CROP).setDataAndType(manager.getContentUri(path), mimeType);
             ((Activity) mActivity).startActivity(intent);
             return true;
         } else if (action == R.id.action_setas) {
@@ -210,8 +205,7 @@ public class MenuExecutor {
             intent.putExtra("mimeType", mimeType);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             Activity activity = (Activity) mActivity;
-            activity.startActivity(Intent.createChooser(
-                    intent, activity.getString(R.string.set_as)));
+            activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.set_as)));
             return true;
         } else if (action == R.id.action_confirm_delete) {
             title = R.string.delete;
@@ -242,8 +236,7 @@ public class MenuExecutor {
         mTask = mActivity.getThreadPool().submit(operation, null);
     }
 
-    private boolean execute(
-            DataManager manager, JobContext jc, int cmd, Path path) {
+    private boolean execute(DataManager manager, JobContext jc, int cmd, Path path) {
         boolean result = true;
         Log.v(TAG, "Execute cmd: " + cmd + " for " + path);
         long startTime = System.currentTimeMillis();
@@ -277,22 +270,15 @@ public class MenuExecutor {
             Activity activity = (Activity) mActivity;
             MediaItem item = (MediaItem) manager.getMediaObject(path);
             try {
-                activity.startActivity(Intent.createChooser(
-                        new Intent(Intent.ACTION_EDIT)
-                                .setDataAndType(item.getContentUri(), item.getMimeType())
-                                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                        null));
+                activity.startActivity(Intent.createChooser(new Intent(Intent.ACTION_EDIT).setDataAndType(item.getContentUri(), item.getMimeType()).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), null));
             } catch (Throwable t) {
                 Log.w(TAG, "failed to start edit activity: ", t);
-                Toast.makeText(activity,
-                        activity.getString(R.string.activity_not_found),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getString(R.string.activity_not_found), Toast.LENGTH_SHORT).show();
             }
         } else {
             throw new AssertionError();
         }
-        Log.v(TAG, "It takes " + (System.currentTimeMillis() - startTime) +
-                " ms to execute cmd for " + path);
+        Log.v(TAG, "It takes " + (System.currentTimeMillis() - startTime) + " ms to execute cmd for " + path);
         return result;
     }
 
@@ -329,8 +315,7 @@ public class MenuExecutor {
                     onProgressUpdate(index++, mListener);
                 }
             } catch (Throwable th) {
-                Log.e(TAG, "failed to execute operation " + mOperation
-                        + " : " + th);
+                Log.e(TAG, "failed to execute operation " + mOperation + " : " + th);
             } finally {
                 onProgressComplete(result, mListener);
             }

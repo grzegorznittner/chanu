@@ -103,15 +103,12 @@ public class BoardViewer {
         SpanFactory spanFactory = new SpanFactory();
 
         public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
-            if (SPOILER_TAG.equals(tag))
-                handleSpoiler(opening, output);
+            if (SPOILER_TAG.equals(tag)) handleSpoiler(opening, output);
         }
 
         private void handleSpoiler(boolean opening, Editable output) {
-            if (opening)
-                handleSpoilerOpen(output);
-            else
-                handleSpoilerClose(output);
+            if (opening) handleSpoilerOpen(output);
+            else handleSpoilerClose(output);
         }
 
         private void handleSpoilerOpen(Editable output) {
@@ -134,25 +131,21 @@ public class BoardViewer {
 
         private Object getFirst(Editable text, Class kind) {
             Object[] objs = text.getSpans(0, text.length(), kind);
-            if (objs.length == 0)
-                return null;
+            if (objs.length == 0) return null;
             if (DEBUG) Log.i(TAG, "Found " + objs.length + " matching spans");
             for (int i = 0; i < objs.length; i++) {
                 Object span = objs[i];
-                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
-                    return span;
+                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK) return span;
             }
             return null;
         }
 
         private Object getLast(Editable text, Class kind) {
             Object[] objs = text.getSpans(0, text.length(), kind);
-            if (objs.length == 0)
-                return null;
+            if (objs.length == 0) return null;
             for (int i = objs.length - 1; i >= 0; i--) {
                 Object span = objs[i];
-                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
-                    return span;
+                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK) return span;
             }
             return null;
         }
@@ -202,20 +195,10 @@ public class BoardViewer {
         //int stub = isDark
         //        ? R.drawable.stub_image_background_dark
         //        : R.drawable.stub_image_background;
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.NONE)
-                .cacheInMemory()
-                .cacheOnDisc()
-                .displayer(new FadeInBitmapDisplayer(100))
-                .build();
+        displayImageOptions = new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.NONE).cacheInMemory().cacheOnDisc().displayer(new FadeInBitmapDisplayer(100)).build();
     }
 
-    public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode,
-                                       int columnWidth, int columnHeight,
-                                       View.OnClickListener overlayListener,
-                                       View.OnClickListener overflowListener,
-                                       int options,
-                                       Typeface titleTypeface) {
+    public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode, int columnWidth, int columnHeight, View.OnClickListener overlayListener, View.OnClickListener overflowListener, int options, Typeface titleTypeface) {
         if (imageLoader == null)
             throw new IllegalStateException("Must call initStatics() before calling setViewValue()");
 
@@ -248,11 +231,7 @@ public class BoardViewer {
             viewHolder.grid_item_thread_thumb_5.setVisibility(View.GONE);
     }
 
-    protected static boolean setItem(BoardViewHolder viewHolder,
-                                     View.OnClickListener overlayListener,
-                                     View.OnClickListener overflowListener,
-                                     int flags,
-                                     int options) {
+    protected static boolean setItem(BoardViewHolder viewHolder, View.OnClickListener overlayListener, View.OnClickListener overflowListener, int flags, int options) {
         boolean isHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0;
 
         View overflow = viewHolder.grid_item_overflow_icon;
@@ -290,32 +269,24 @@ public class BoardViewer {
             String name = board == null ? null : board.getName(context);
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
                 threadAbbrev += ""; // "/" + boardCode + "/";
-            else if (name != null)
-                threadAbbrev += name; //"/" + boardCode + "/ " + name;
-            else
-                threadAbbrev += ""; // "/" + boardCode + "/";
+            else if (name != null) threadAbbrev += name; //"/" + boardCode + "/ " + name;
+            else threadAbbrev += ""; // "/" + boardCode + "/";
         }
         return threadAbbrev;
     }
 
     protected static boolean setSubject(final BoardViewHolder viewHolder, final Cursor cursor, final int flags) {
-        return setSubject(viewHolder.grid_item_thread_subject,
-                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT)),
-                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT)),
-                flags);
+        return setSubject(viewHolder.grid_item_thread_subject, cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT)), cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT)), flags);
     }
 
     protected static boolean setSubject(final TextView tv, final String s, final String t, final int flags) {
-        if (tv == null)
-            return false;
+        if (tv == null) return false;
         if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0) {
             tv.setVisibility(View.GONE);
             tv.setText("");
             return true;
         }
-        String u = (s != null && !s.isEmpty() ? "<b>" + s + "</b>" : "")
-                + (s != null && t != null && !s.isEmpty() && !t.isEmpty() ? "<br/>" : "")
-                + (t != null && !t.isEmpty() ? t : "");
+        String u = (s != null && !s.isEmpty() ? "<b>" + s + "</b>" : "") + (s != null && t != null && !s.isEmpty() && !t.isEmpty() ? "<br/>" : "") + (t != null && !t.isEmpty() ? t : "");
         if (DEBUG) Log.i(TAG, "setSubject tv=" + tv + " u=" + u);
         if (!u.isEmpty()) {
             String html = ThreadViewer.markupHtml(u);
@@ -332,8 +303,7 @@ public class BoardViewer {
 
     protected static boolean setSubjectLarge(BoardViewHolder viewHolder, Cursor cursor, int flags, Typeface subjectTypeface) {
         TextView tv = viewHolder.grid_item_thread_subject_header;
-        if (tv == null)
-            return false;
+        if (tv == null) return false;
         if ((flags & ChanThread.THREAD_FLAG_HEADER) == 0) {
             tv.setVisibility(View.GONE);
             tv.setText("");
@@ -352,12 +322,10 @@ public class BoardViewer {
         return true;
     }
 
-    protected static boolean setImage(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode,
-                                      int flags, int columnWidth, int columnHeight, int options, Typeface titleTypeface) {
+    protected static boolean setImage(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode, int flags, int columnWidth, int columnHeight, int options, Typeface titleTypeface) {
         if (DEBUG) Log.i(TAG, "setImage()");
         ImageView iv = viewHolder.grid_item_thread_thumb;
-        if (iv == null)
-            return false;
+        if (iv == null) return false;
         boolean isWideHeader = (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & CATALOG_GRID) == 0;
         if (DEBUG)
             Log.i(TAG, "setImage() isWideHeader=" + isWideHeader + " no=" + cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO)));
@@ -410,12 +378,7 @@ public class BoardViewer {
         return true;
     }
 
-    protected static void displayBoardCode(BoardViewHolder viewHolder,
-                                           Cursor cursor,
-                                           String boardCode, String groupBoardCode,
-                                           Typeface titleTypeface,
-                                           int flags,
-                                           int options) {
+    protected static void displayBoardCode(BoardViewHolder viewHolder, Cursor cursor, String boardCode, String groupBoardCode, Typeface titleTypeface, int flags, int options) {
         if (DEBUG) Log.i(TAG, "displayBoardCode");
         if ((options & ABBREV_BOARDS) > 0) {
             if (viewHolder.grid_item_board_code != null) {
@@ -426,11 +389,7 @@ public class BoardViewer {
                 viewHolder.grid_item_bottom_frame.setVisibility(View.GONE);
             displayNicelyFormattedBoardCode(titleTypeface, boardCode, viewHolder.grid_item_thread_subject_header_abbr);
             colorBoardFrame(boardCode, viewHolder.grid_item_thread_subject_header_abbr);
-        } else if (groupBoardCode != null
-                && !ChanBoard.isVirtualBoard(groupBoardCode)
-                && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
-                && (options & CATALOG_GRID) > 0
-                && viewHolder.grid_item_thread_subject_header_abbr != null) { // grid header
+        } else if (groupBoardCode != null && !ChanBoard.isVirtualBoard(groupBoardCode) && (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & CATALOG_GRID) > 0 && viewHolder.grid_item_thread_subject_header_abbr != null) { // grid header
             if (viewHolder.grid_item_board_code != null) {
                 viewHolder.grid_item_board_code.setText("");
                 viewHolder.grid_item_board_code.setVisibility(View.VISIBLE);
@@ -462,28 +421,20 @@ public class BoardViewer {
     protected static void displayNicelyFormattedBoardCode(Typeface titleTypeface, String boardCode, TextView tv) {
         String boardCodeTitle = "/" + boardCode + "/";
         if (DEBUG) Log.i(TAG, "displayBoardCode() boardCodeTitle=" + boardCodeTitle);
-        if (tv == null)
-            return;
-        if (titleTypeface != null)
-            tv.setTypeface(titleTypeface);
+        if (tv == null) return;
+        if (titleTypeface != null) tv.setTypeface(titleTypeface);
         if (tv instanceof LetterSpacingTextView)
             ((LetterSpacingTextView) tv).setTextSpacing(BOARD_CODE_LETTER_SPACING);
         tv.setText(boardCodeTitle);
     }
 
-    protected static String imageUrl(ImageView iv, String boardCode, String groupBoardCode,
-                                     Cursor cursor, int flags, int options) {
+    protected static String imageUrl(ImageView iv, String boardCode, String groupBoardCode, Cursor cursor, int flags, int options) {
         String url;
         long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
         if (DEBUG) Log.i(TAG, "imageUrl() /" + boardCode + "/" + threadNo);
-        if (groupBoardCode != null
-                && !ChanBoard.isVirtualBoard(groupBoardCode)
-                && (flags & ChanThread.THREAD_FLAG_HEADER) > 0
-                && (options & CATALOG_GRID) > 0) { // grid header
+        if (groupBoardCode != null && !ChanBoard.isVirtualBoard(groupBoardCode) && (flags & ChanThread.THREAD_FLAG_HEADER) > 0 && (options & CATALOG_GRID) > 0) { // grid header
             //url = "drawable://" + R.drawable.transparent;
-            int drawableId = ThemeSelector.instance(iv.getContext()).isDark()
-                    ? R.drawable.bg_222
-                    : R.drawable.bg_f4f4f4;
+            int drawableId = ThemeSelector.instance(iv.getContext()).isDark() ? R.drawable.bg_222 : R.drawable.bg_f4f4f4;
             url = "drawable://" + drawableId;
         }
         //else if (threadNo <= 0) {
@@ -566,10 +517,8 @@ public class BoardViewer {
     }
     */
     protected static void colorBoardFrame(String boardCode, TextView v) {
-        if (v == null)
-            return;
-        if (boardCode == null)
-            return;
+        if (v == null) return;
+        if (boardCode == null) return;
         //int colorIndex = boardCode.hashCode() % NUM_BOARD_CODE_COLORS;
         colorIndex = (colorIndex + 1) % NUM_BOARD_CODE_COLORS;
         int colorId = pickColor(colorIndex);
@@ -631,8 +580,7 @@ public class BoardViewer {
     }
 
     protected static boolean setCountryFlag(final ImageView iv, final String url) {
-        if (iv == null)
-            return false;
+        if (iv == null) return false;
         if (!SettingsActivity.shouldLoadThumbs(iv.getContext())) {
             iv.setVisibility(View.GONE);
             iv.setImageBitmap(null);
@@ -654,8 +602,7 @@ public class BoardViewer {
             if (viewHolder.grid_item_thread_info != null)
                 viewHolder.grid_item_thread_info.setText("");
             if (viewHolder.grid_item_thread_info_header != null)
-                viewHolder.grid_item_thread_info_header.setText(
-                        Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE))));
+                viewHolder.grid_item_thread_info_header.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE))));
             return true;
         }
 
@@ -663,30 +610,23 @@ public class BoardViewer {
             viewHolder.grid_item_thread_info_header.setText("");
 
         TextView tv = viewHolder.grid_item_thread_info;
-        if (tv == null)
-            return false;
+        if (tv == null) return false;
         if (cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE)).equals(groupBoardCode)) {
             tv.setText("");
             return true;
         }
 
-        String s = (flags & ChanThread.THREAD_FLAG_BOARD) == 0
-                ? getBoardAbbrev(tv.getContext(), cursor, groupBoardCode)
-                : "";
+        String s = (flags & ChanThread.THREAD_FLAG_BOARD) == 0 ? getBoardAbbrev(tv.getContext(), cursor, groupBoardCode) : "";
         String t = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE));
-        if (t == null)
-            t = "";
+        if (t == null) t = "";
         //String u = s + (s.isEmpty() || t.isEmpty() ? "" : "<br/>") + t;
         String u = s + (s.isEmpty() || t.isEmpty() ? "" : " ") + t;
-        if (!u.isEmpty())
-            tv.setText(Html.fromHtml(u));
-        else
-            tv.setText("");
+        if (!u.isEmpty()) tv.setText(Html.fromHtml(u));
+        else tv.setText("");
         return true;
     }
 
-    protected static boolean setNumReplies(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode,
-                                           int flags, int options) {
+    protected static boolean setNumReplies(BoardViewHolder viewHolder, Cursor cursor, String groupBoardCode, int flags, int options) {
         TextView numReplies = viewHolder.grid_item_num_replies_text;
         TextView numImages = viewHolder.grid_item_num_images_text;
         TextView numRepliesLabel = viewHolder.grid_item_num_replies_label;
@@ -696,26 +636,15 @@ public class BoardViewer {
         ImageView numRepliesImg = viewHolder.grid_item_num_replies_img;
         ImageView numImagesImg = viewHolder.grid_item_num_images_img;
 
-        if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0
-                || (ChanBoard.isVirtualBoard(groupBoardCode) && !ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
-                || ((options & ABBREV_BOARDS) > 0)
-        ) {
-            if (numReplies != null)
-                numReplies.setVisibility(View.GONE);
-            if (numImages != null)
-                numImages.setVisibility(View.GONE);
-            if (numRepliesLabel != null)
-                numRepliesLabel.setVisibility(View.GONE);
-            if (numImagesLabel != null)
-                numImagesLabel.setVisibility(View.GONE);
-            if (numRepliesLabelAbbr != null)
-                numRepliesLabelAbbr.setVisibility(View.GONE);
-            if (numImagesLabelAbbr != null)
-                numImagesLabelAbbr.setVisibility(View.GONE);
-            if (numRepliesImg != null)
-                numRepliesImg.setVisibility(View.GONE);
-            if (numImagesImg != null)
-                numImagesImg.setVisibility(View.GONE);
+        if ((flags & ChanThread.THREAD_FLAG_HEADER) > 0 || (ChanBoard.isVirtualBoard(groupBoardCode) && !ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode)) || ((options & ABBREV_BOARDS) > 0)) {
+            if (numReplies != null) numReplies.setVisibility(View.GONE);
+            if (numImages != null) numImages.setVisibility(View.GONE);
+            if (numRepliesLabel != null) numRepliesLabel.setVisibility(View.GONE);
+            if (numImagesLabel != null) numImagesLabel.setVisibility(View.GONE);
+            if (numRepliesLabelAbbr != null) numRepliesLabelAbbr.setVisibility(View.GONE);
+            if (numImagesLabelAbbr != null) numImagesLabelAbbr.setVisibility(View.GONE);
+            if (numRepliesImg != null) numRepliesImg.setVisibility(View.GONE);
+            if (numImagesImg != null) numImagesImg.setVisibility(View.GONE);
             return true;
         }
 
@@ -743,10 +672,8 @@ public class BoardViewer {
             numImages.setText(i >= 0 ? String.valueOf(i) : "");
             numImages.setVisibility(View.VISIBLE);
         }
-        if (numRepliesImg != null)
-            numRepliesImg.setVisibility(View.VISIBLE);
-        if (numImagesImg != null)
-            numImagesImg.setVisibility(View.VISIBLE);
+        if (numRepliesImg != null) numRepliesImg.setVisibility(View.VISIBLE);
+        if (numImagesImg != null) numImagesImg.setVisibility(View.VISIBLE);
         /*
         if (r >= 0) {
             numReplies.setText(String.valueOf(r));
@@ -775,10 +702,8 @@ public class BoardViewer {
 
     @TargetApi(16)
     protected static void setAlpha(ImageView iv, int alpha) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-            deprecatedSetAlpha(iv, alpha);
-        else
-            iv.setImageAlpha(alpha);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) deprecatedSetAlpha(iv, alpha);
+        else iv.setImageAlpha(alpha);
     }
 
     @SuppressWarnings("deprecation")
@@ -801,54 +726,29 @@ public class BoardViewer {
             setAlpha(viewHolder.grid_item_sticky_icon, alpha);
         }
         if (DEBUG)
-            Log.i(TAG, "setSubjectIcons()"
-                    + " dead=" + ((flags & ChanThread.THREAD_FLAG_DEAD) > 0)
-                    + " closed=" + ((flags & ChanThread.THREAD_FLAG_CLOSED) > 0)
-                    + " sticky=" + ((flags & ChanThread.THREAD_FLAG_STICKY) > 0)
-            );
+            Log.i(TAG, "setSubjectIcons()" + " dead=" + ((flags & ChanThread.THREAD_FLAG_DEAD) > 0) + " closed=" + ((flags & ChanThread.THREAD_FLAG_CLOSED) > 0) + " sticky=" + ((flags & ChanThread.THREAD_FLAG_STICKY) > 0));
         return true;
     }
 
     protected static void setLastReplies(final BoardViewHolder viewHolder, final Cursor cursor, final int options) {
         boolean[] isSet = new boolean[5];
         try {
-            if ((options & CATALOG_GRID) > 0)
-                return;
-            if ((options & HIDE_LAST_REPLIES) > 0)
-                return;
+            if ((options & CATALOG_GRID) > 0) return;
+            if ((options & HIDE_LAST_REPLIES) > 0) return;
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            if (boardCode == null || boardCode.isEmpty())
-                return;
+            if (boardCode == null || boardCode.isEmpty()) return;
             byte[] b = cursor.getBlob(cursor.getColumnIndex(ChanThread.THREAD_LAST_REPLIES_BLOB));
             if (DEBUG) Log.i(TAG, "lastRepliesBlob=" + b);
-            if (b == null)
-                return;
+            if (b == null) return;
             ChanPost[] lastReplies = ChanThread.parseLastRepliesBlob(b);
-            if (lastReplies == null)
-                return;
+            if (lastReplies == null) return;
             if (DEBUG) Log.i(TAG, "lastReplies len=" + lastReplies.length);
-            if (lastReplies.length == 0)
-                return;
-            isSet[0] = lastReplies.length >= 1 && displayLastReply(viewHolder.grid_item_thread_subject_1,
-                    viewHolder.grid_item_thread_thumb_1,
-                    viewHolder.grid_item_country_flag_1,
-                    lastReplies[0], boardCode);
-            isSet[1] = lastReplies.length >= 2 && displayLastReply(viewHolder.grid_item_thread_subject_2,
-                    viewHolder.grid_item_thread_thumb_2,
-                    viewHolder.grid_item_country_flag_2,
-                    lastReplies[1], boardCode);
-            isSet[2] = lastReplies.length >= 3 && displayLastReply(viewHolder.grid_item_thread_subject_3,
-                    viewHolder.grid_item_thread_thumb_3,
-                    viewHolder.grid_item_country_flag_3,
-                    lastReplies[2], boardCode);
-            isSet[3] = lastReplies.length >= 4 && displayLastReply(viewHolder.grid_item_thread_subject_4,
-                    viewHolder.grid_item_thread_thumb_4,
-                    viewHolder.grid_item_country_flag_4,
-                    lastReplies[3], boardCode);
-            isSet[4] = lastReplies.length >= 5 && displayLastReply(viewHolder.grid_item_thread_subject_5,
-                    viewHolder.grid_item_thread_thumb_5,
-                    viewHolder.grid_item_country_flag_5,
-                    lastReplies[4], boardCode);
+            if (lastReplies.length == 0) return;
+            isSet[0] = lastReplies.length >= 1 && displayLastReply(viewHolder.grid_item_thread_subject_1, viewHolder.grid_item_thread_thumb_1, viewHolder.grid_item_country_flag_1, lastReplies[0], boardCode);
+            isSet[1] = lastReplies.length >= 2 && displayLastReply(viewHolder.grid_item_thread_subject_2, viewHolder.grid_item_thread_thumb_2, viewHolder.grid_item_country_flag_2, lastReplies[1], boardCode);
+            isSet[2] = lastReplies.length >= 3 && displayLastReply(viewHolder.grid_item_thread_subject_3, viewHolder.grid_item_thread_thumb_3, viewHolder.grid_item_country_flag_3, lastReplies[2], boardCode);
+            isSet[3] = lastReplies.length >= 4 && displayLastReply(viewHolder.grid_item_thread_subject_4, viewHolder.grid_item_thread_thumb_4, viewHolder.grid_item_country_flag_4, lastReplies[3], boardCode);
+            isSet[4] = lastReplies.length >= 5 && displayLastReply(viewHolder.grid_item_thread_subject_5, viewHolder.grid_item_thread_thumb_5, viewHolder.grid_item_country_flag_5, lastReplies[4], boardCode);
         } catch (Exception e) {
             Log.e(TAG, "Exception reading lastRepliesBlob", e);
         } finally {
@@ -867,17 +767,13 @@ public class BoardViewer {
         }
     }
 
-    protected static boolean displayLastReply(final TextView subject, final ImageView thumb, final ImageView countryFlag,
-                                              final ChanPost post, final String boardCode) {
+    protected static boolean displayLastReply(final TextView subject, final ImageView thumb, final ImageView countryFlag, final ChanPost post, final String boardCode) {
         String[] textComponents = post == null ? new String[]{"", ""} : post.textComponents("");
         String countryFlagUrl = post == null ? null : post.lastReplyCountryFlagUrl(countryFlag.getContext(), boardCode);
         String thumbUrl = post == null ? null : post.lastReplyThumbnailUrl(thumb.getContext(), boardCode);
-        if (subject != null)
-            setSubject(subject, textComponents[0], textComponents[1], 0);
-        if (countryFlag != null)
-            setCountryFlag(countryFlag, countryFlagUrl);
-        if (thumb != null)
-            displayImage(thumb, thumbUrl);
+        if (subject != null) setSubject(subject, textComponents[0], textComponents[1], 0);
+        if (countryFlag != null) setCountryFlag(countryFlag, countryFlagUrl);
+        if (thumb != null) displayImage(thumb, thumbUrl);
         return true;
     }
 

@@ -63,8 +63,7 @@ public class CacheStorageUsageInfo {
         StatFs stat = new StatFs(path);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             deprecatedSetTotalUsedBytes(stat);
-        else
-            setTotalUsedBytes(stat);
+        else setTotalUsedBytes(stat);
 
         mUsedCacheBytes = mActivity.getDataManager().getTotalUsedCacheSize();
         mTargetCacheBytes = mActivity.getDataManager().getTotalTargetCacheSize();

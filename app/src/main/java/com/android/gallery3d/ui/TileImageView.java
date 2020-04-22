@@ -125,8 +125,7 @@ public class TileImageView extends GLView {
     }
 
     // TODO: avoid drawing the unused part of the textures.
-    static boolean drawTile(
-            Tile tile, GLCanvas canvas, RectF source, RectF target) {
+    static boolean drawTile(Tile tile, GLCanvas canvas, RectF source, RectF target) {
         while (true) {
             if (tile.isContentValid(canvas)) {
                 // offset source rectangle for the texture border.
@@ -195,8 +194,7 @@ public class TileImageView extends GLView {
     }
 
     @Override
-    protected void onLayout(
-            boolean changeSize, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changeSize, int left, int top, int right, int bottom) {
         super.onLayout(changeSize, left, top, right, bottom);
         if (changeSize) layoutTiles(mCenterX, mCenterY, mScale, mRotation);
     }
@@ -256,13 +254,11 @@ public class TileImageView extends GLView {
 
         // Recycle unused tiles: if the level of the active tile is outside the
         // range [fromLevel, endLevel) or not in the visible range.
-        Iterator<Map.Entry<Long, Tile>>
-                iter = mActiveTiles.entrySet().iterator();
+        Iterator<Map.Entry<Long, Tile>> iter = mActiveTiles.entrySet().iterator();
         while (iter.hasNext()) {
             Tile tile = iter.next().getValue();
             int level = tile.mTileLevel;
-            if (level < fromLevel || level >= endLevel
-                    || !range[level - fromLevel].contains(tile.mX, tile.mY)) {
+            if (level < fromLevel || level >= endLevel || !range[level - fromLevel].contains(tile.mX, tile.mY)) {
                 iter.remove();
                 recycleTile(tile);
             }
@@ -300,8 +296,7 @@ public class TileImageView extends GLView {
     //
     // (cX, cY) is the point on the original bitmap which will be put in the
     // center of the ImageViewer.
-    private void getRange(Rect out,
-                          int cX, int cY, int level, float scale, int rotation) {
+    private void getRange(Rect out, int cX, int cY, int level, float scale, int rotation) {
 
         double radians = Math.toRadians(-rotation);
         double w = getWidth();
@@ -309,10 +304,8 @@ public class TileImageView extends GLView {
 
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
-        int width = (int) Math.ceil(Math.max(
-                Math.abs(cos * w - sin * h), Math.abs(cos * w + sin * h)));
-        int height = (int) Math.ceil(Math.max(
-                Math.abs(sin * w + cos * h), Math.abs(sin * w - cos * h)));
+        int width = (int) Math.ceil(Math.max(Math.abs(cos * w - sin * h), Math.abs(cos * w + sin * h)));
+        int height = (int) Math.ceil(Math.max(Math.abs(sin * w + cos * h), Math.abs(sin * w - cos * h)));
 
         int left = (int) Math.floor(cX - width / (2f * scale));
         int top = (int) Math.floor(cY - height / (2f * scale));
@@ -330,8 +323,7 @@ public class TileImageView extends GLView {
     }
 
     public boolean setPosition(int centerX, int centerY, float scale, int rotation) {
-        if (mCenterX == centerX
-                && mCenterY == centerY && mScale == scale) return false;
+        if (mCenterX == centerX && mCenterY == centerY && mScale == scale) return false;
         mCenterX = centerX;
         mCenterY = centerY;
         mScale = scale;
@@ -408,9 +400,7 @@ public class TileImageView extends GLView {
                     }
                 }
             } else if (mBackupImage != null) {
-                mBackupImage.draw(canvas, mOffsetX, mOffsetY,
-                        Math.round(mImageWidth * mScale),
-                        Math.round(mImageHeight * mScale));
+                mBackupImage.draw(canvas, mOffsetX, mOffsetY, Math.round(mImageWidth * mScale), Math.round(mImageHeight * mScale));
             }
         } finally {
             if (rotation != 0) canvas.restore();
@@ -503,8 +493,7 @@ public class TileImageView extends GLView {
 
     // Draw the tile to a square at canvas that locates at (x, y) and
     // has a side length of length.
-    public void drawTile(GLCanvas canvas,
-                         int tx, int ty, int level, float x, float y, float length) {
+    public void drawTile(GLCanvas canvas, int tx, int ty, int level, float x, float y, float length) {
         RectF source = mSourceRect;
         RectF target = mTargetRect;
         target.set(x, y, x + length, y + length);
@@ -532,8 +521,7 @@ public class TileImageView extends GLView {
             int size = TILE_SIZE << level;
             float scaleX = (float) backup.getWidth() / mImageWidth;
             float scaleY = (float) backup.getHeight() / mImageHeight;
-            source.set(tx * scaleX, ty * scaleY, (tx + size) * scaleX,
-                    (ty + size) * scaleY);
+            source.set(tx * scaleX, ty * scaleY, (tx + size) * scaleX, (ty + size) * scaleY);
             canvas.drawTexture(backup, source, target);
         }
     }
@@ -622,8 +610,7 @@ public class TileImageView extends GLView {
             int tileLength = (TILE_SIZE + 2 * TILE_BORDER);
             int borderLength = TILE_BORDER << mTileLevel;
             try {
-                mDecodedTile = DecodeUtils.ensureGLCompatibleBitmap(mModel.getTile(
-                        mTileLevel, mX - borderLength, mY - borderLength, tileLength));
+                mDecodedTile = DecodeUtils.ensureGLCompatibleBitmap(mModel.getTile(mTileLevel, mX - borderLength, mY - borderLength, tileLength));
             } catch (Throwable t) {
                 Log.w(TAG, "fail to decode tile", t);
             }
@@ -681,8 +668,7 @@ public class TileImageView extends GLView {
 
         @Override
         public String toString() {
-            return String.format("tile(%s, %s, %s / %s)",
-                    mX / TILE_SIZE, mY / TILE_SIZE, mLevel, mLevelCount);
+            return String.format("tile(%s, %s, %s / %s)", mX / TILE_SIZE, mY / TILE_SIZE, mLevel, mLevelCount);
         }
     }
 

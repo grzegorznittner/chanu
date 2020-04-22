@@ -118,8 +118,7 @@ public class Path {
     static void dumpAll(Path p, String prefix1, String prefix2) {
         synchronized (Path.class) {
             MediaObject obj = p.getObject();
-            Log.d(TAG, prefix1 + p.mSegment + ":"
-                    + (obj == null ? "null" : obj.getClass().getSimpleName()));
+            Log.d(TAG, prefix1 + p.mSegment + ":" + (obj == null ? "null" : obj.getClass().getSimpleName()));
             if (p.mChildren != null) {
                 ArrayList<String> childrenKeys = p.mChildren.keys();
                 int i = 0, n = childrenKeys.size();

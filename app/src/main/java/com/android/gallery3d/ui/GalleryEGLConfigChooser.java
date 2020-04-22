@@ -30,26 +30,9 @@ import javax.microedition.khronos.egl.EGLDisplay;
 class GalleryEGLConfigChooser implements EGLConfigChooser {
 
     private static final String TAG = "GalleryEGLConfigChooser";
-    private static final int[] ATTR_ID = {
-            EGL10.EGL_RED_SIZE,
-            EGL10.EGL_GREEN_SIZE,
-            EGL10.EGL_BLUE_SIZE,
-            EGL10.EGL_ALPHA_SIZE,
-            EGL10.EGL_DEPTH_SIZE,
-            EGL10.EGL_STENCIL_SIZE,
-            EGL10.EGL_CONFIG_ID,
-            EGL10.EGL_CONFIG_CAVEAT
-    };
-    private static final String[] ATTR_NAME = {
-            "R", "G", "B", "A", "D", "S", "ID", "CAVEAT"
-    };
-    private final int[] mConfigSpec = new int[]{
-            EGL10.EGL_RED_SIZE, 5,
-            EGL10.EGL_GREEN_SIZE, 6,
-            EGL10.EGL_BLUE_SIZE, 5,
-            EGL10.EGL_ALPHA_SIZE, 0,
-            EGL10.EGL_NONE
-    };
+    private static final int[] ATTR_ID = {EGL10.EGL_RED_SIZE, EGL10.EGL_GREEN_SIZE, EGL10.EGL_BLUE_SIZE, EGL10.EGL_ALPHA_SIZE, EGL10.EGL_DEPTH_SIZE, EGL10.EGL_STENCIL_SIZE, EGL10.EGL_CONFIG_ID, EGL10.EGL_CONFIG_CAVEAT};
+    private static final String[] ATTR_NAME = {"R", "G", "B", "A", "D", "S", "ID", "CAVEAT"};
+    private final int[] mConfigSpec = new int[]{EGL10.EGL_RED_SIZE, 5, EGL10.EGL_GREEN_SIZE, 6, EGL10.EGL_BLUE_SIZE, 5, EGL10.EGL_ALPHA_SIZE, 0, EGL10.EGL_NONE};
     private int mStencilBits;
 
     public int getStencilBits() {
@@ -67,16 +50,14 @@ class GalleryEGLConfigChooser implements EGLConfigChooser {
         }
 
         EGLConfig[] configs = new EGLConfig[numConfig[0]];
-        if (!egl.eglChooseConfig(display,
-                mConfigSpec, configs, configs.length, numConfig)) {
+        if (!egl.eglChooseConfig(display, mConfigSpec, configs, configs.length, numConfig)) {
             throw new RuntimeException();
         }
 
         return chooseConfig(egl, display, configs);
     }
 
-    private EGLConfig chooseConfig(
-            EGL10 egl, EGLDisplay display, EGLConfig[] configs) {
+    private EGLConfig chooseConfig(EGL10 egl, EGLDisplay display, EGLConfig[] configs) {
 
         EGLConfig result = null;
         int minStencil = Integer.MAX_VALUE;
@@ -86,26 +67,22 @@ class GalleryEGLConfigChooser implements EGLConfigChooser {
         // has stencil support but with smallest number of stencil bits. If
         // none is found, choose any one.
         for (int i = 0, n = configs.length; i < n; ++i) {
-            if (egl.eglGetConfigAttrib(
-                    display, configs[i], EGL10.EGL_RED_SIZE, value)) {
+            if (egl.eglGetConfigAttrib(display, configs[i], EGL10.EGL_RED_SIZE, value)) {
                 // Filter out ARGB 8888 configs.
                 if (value[0] == 8) continue;
             }
-            if (egl.eglGetConfigAttrib(
-                    display, configs[i], EGL10.EGL_STENCIL_SIZE, value)) {
+            if (egl.eglGetConfigAttrib(display, configs[i], EGL10.EGL_STENCIL_SIZE, value)) {
                 if (value[0] == 0) continue;
                 if (value[0] < minStencil) {
                     minStencil = value[0];
                     result = configs[i];
                 }
             } else {
-                throw new RuntimeException(
-                        "eglGetConfigAttrib error: " + egl.eglGetError());
+                throw new RuntimeException("eglGetConfigAttrib error: " + egl.eglGetError());
             }
         }
         if (result == null) result = configs[0];
-        egl.eglGetConfigAttrib(
-                display, result, EGL10.EGL_STENCIL_SIZE, value);
+        egl.eglGetConfigAttrib(display, result, EGL10.EGL_STENCIL_SIZE, value);
         mStencilBits = value[0];
         logConfig(egl, display, result);
         return result;

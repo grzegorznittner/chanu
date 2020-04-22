@@ -54,6 +54,7 @@ public class NetworkProfileManager {
     private WifiProfile wifiProfile = new WifiProfile();
     private NoConnectionProfile noConnectionProfile = new NoConnectionProfile();
     private MobileProfile mobileProfile = new MobileProfile();
+
     private NetworkProfileManager() {
     }
 
@@ -121,8 +122,7 @@ public class NetworkProfileManager {
             if (receiver == null) {
                 // we need to register network changes receiver
                 receiver = new NetworkBroadcastReceiver();
-                newActivity.getBaseContext().getApplicationContext()
-                        .registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+                newActivity.getBaseContext().getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
                 if (DEBUG)
                     Log.i(TAG, ConnectivityManager.CONNECTIVITY_ACTION + " receiver registered");
             }
@@ -138,9 +138,7 @@ public class NetworkProfileManager {
     }
 
     public void startLastActivity(Context context) {
-        LastActivity activity = currentActivityId != null && currentActivityId.activity != null
-                ? currentActivityId.activity
-                : null;
+        LastActivity activity = currentActivityId != null && currentActivityId.activity != null ? currentActivityId.activity : null;
         if (activity == null) {
             if (DEBUG) Log.i(TAG, "startLastActivity() starting default all boards activity");
             BoardSelectorActivity.startActivity(context);
@@ -174,8 +172,7 @@ public class NetworkProfileManager {
 
     public void activityChange(final ChanIdentifiedActivity newActivity) {
         if (DEBUG)
-            Log.i(TAG, "activityChange to newActivityId=" + newActivity.getChanActivityId() + " receiver=" + receiver
-                    + " lastActivity=" + currentActivity);
+            Log.i(TAG, "activityChange to newActivityId=" + newActivity.getChanActivityId() + " receiver=" + receiver + " lastActivity=" + currentActivity);
 
         ensureInitialized(newActivity);
         ActivityDispatcher.store(newActivity);

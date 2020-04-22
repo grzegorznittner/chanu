@@ -33,8 +33,7 @@ public abstract class ImageCacheRequest implements Job<Bitmap> {
     private int mType;
     private int mTargetSize;
 
-    public ImageCacheRequest(GalleryApp application,
-                             Path path, int type, int targetSize) {
+    public ImageCacheRequest(GalleryApp application, Path path, int type, int targetSize) {
         mApplication = application;
         mPath = path;
         mType = type;
@@ -42,9 +41,7 @@ public abstract class ImageCacheRequest implements Job<Bitmap> {
     }
 
     public Bitmap run(JobContext jc) {
-        String debugTag = mPath + "," +
-                ((mType == MediaItem.TYPE_THUMBNAIL) ? "THUMB" :
-                        (mType == MediaItem.TYPE_MICROTHUMBNAIL) ? "MICROTHUMB" : "?");
+        String debugTag = mPath + "," + ((mType == MediaItem.TYPE_THUMBNAIL) ? "THUMB" : (mType == MediaItem.TYPE_MICROTHUMBNAIL) ? "MICROTHUMB" : "?");
         ImageCacheService cacheService = mApplication.getImageCacheService();
 
         ImageData data = cacheService.getImageData(mPath, mType);
@@ -53,8 +50,7 @@ public abstract class ImageCacheRequest implements Job<Bitmap> {
         if (data != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = DecodeUtils.requestDecode(jc, data.mData,
-                    data.mOffset, data.mData.length - data.mOffset, options);
+            Bitmap bitmap = DecodeUtils.requestDecode(jc, data.mData, data.mOffset, data.mData.length - data.mOffset, options);
             if (bitmap == null && !jc.isCancelled()) {
                 Log.w(TAG, "decode cached failed " + debugTag);
             }
@@ -69,11 +65,9 @@ public abstract class ImageCacheRequest implements Job<Bitmap> {
             }
 
             if (mType == MediaItem.TYPE_MICROTHUMBNAIL) {
-                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap,
-                        mTargetSize, true);
+                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap, mTargetSize, true);
             } else {
-                bitmap = BitmapUtils.resizeDownBySideLength(bitmap,
-                        mTargetSize, true);
+                bitmap = BitmapUtils.resizeDownBySideLength(bitmap, mTargetSize, true);
             }
             if (jc.isCancelled()) return null;
 

@@ -211,8 +211,7 @@ public abstract class BaseChanService extends Service {
                     }
                 }
             }
-            if (intent != null)
-                onHandleIntent(intent);
+            if (intent != null) onHandleIntent(intent);
             stopSelf(msg.arg1);
         }
     }

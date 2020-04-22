@@ -35,8 +35,7 @@ public class AlbumView extends SlotView {
 
     private boolean mIsActive = false;
 
-    public AlbumView(GalleryActivity activity, SlotView.Spec spec,
-                     int cacheThumbSize) {
+    public AlbumView(GalleryActivity activity, SlotView.Spec spec, int cacheThumbSize) {
         super(activity.getAndroidContext());
         mCacheThumbSize = cacheThumbSize;
         setSlotSpec(spec);
@@ -55,9 +54,7 @@ public class AlbumView extends SlotView {
             mDataWindow = null;
         }
         if (model != null) {
-            mDataWindow = new AlbumSlidingWindow(
-                    mActivity, model, CACHE_SIZE,
-                    mCacheThumbSize);
+            mDataWindow = new AlbumSlidingWindow(mActivity, model, CACHE_SIZE, mCacheThumbSize);
             mDataWindow.setSelectionDrawer(mSelectionDrawer);
             mDataWindow.setListener(new MyDataModelListener());
             setSlotCount(model.size());
@@ -73,8 +70,7 @@ public class AlbumView extends SlotView {
 
     private void putSlotContent(int slotIndex, DisplayItem item) {
         Rect rect = getSlotRect(slotIndex);
-        Position position = new Position(
-                (rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2, 0);
+        Position position = new Position((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2, 0);
         putDisplayItem(position, position, item);
     }
 
@@ -194,8 +190,7 @@ public class AlbumView extends SlotView {
             invalidate();
         }
 
-        public void onWindowContentChanged(
-                int slotIndex, DisplayItem old, DisplayItem update) {
+        public void onWindowContentChanged(int slotIndex, DisplayItem old, DisplayItem update) {
             removeDisplayItem(old);
             putSlotContent(slotIndex, update);
         }

@@ -69,10 +69,7 @@ public class LocalAlbumSet extends MediaSet {
     //
     // The order of columns below is important: it must match to the index in
     // MediaStore.
-    private static final String[] PROJECTION_BUCKET = {
-            ImageColumns.BUCKET_ID,
-            FileColumns.MEDIA_TYPE,
-            ImageColumns.BUCKET_DISPLAY_NAME};
+    private static final String[] PROJECTION_BUCKET = {ImageColumns.BUCKET_ID, FileColumns.MEDIA_TYPE, ImageColumns.BUCKET_DISPLAY_NAME};
 
     // We want to order the albums by reverse chronological order. We abuse the
     // "WHERE" parameter to insert a "GROUP BY" clause into the SQL statement.
@@ -83,8 +80,7 @@ public class LocalAlbumSet extends MediaSet {
     // The "(1)" means true. The "1,(2)" means the first two columns specified
     // after SELECT. Note that because there is a ")" in the template, we use
     // "(2" to match it.
-    private static final String BUCKET_GROUP_BY =
-            "1) GROUP BY 1,(2";
+    private static final String BUCKET_GROUP_BY = "1) GROUP BY 1,(2";
     private static final String BUCKET_ORDER_BY = "MAX(datetaken) DESC";
 
     private final GalleryApp mApplication;
@@ -100,8 +96,7 @@ public class LocalAlbumSet extends MediaSet {
         mType = getTypeFromPath(path);
         mNotifierImage = new ChangeNotifier(this, mWatchUriImage, application);
         mNotifierVideo = new ChangeNotifier(this, mWatchUriVideo, application);
-        mName = application.getResources().getString(
-                R.string.set_label_local_albums);
+        mName = application.getResources().getString(R.string.set_label_local_albums);
     }
 
     private static int getTypeFromPath(Path path) {
@@ -123,22 +118,16 @@ public class LocalAlbumSet extends MediaSet {
     }
 
     public static String getBucketName(ContentResolver resolver, int bucketId) {
-        Uri uri = mBaseUri.buildUpon()
-                .appendQueryParameter("limit", "1")
-                .build();
+        Uri uri = mBaseUri.buildUpon().appendQueryParameter("limit", "1").build();
 
-        Cursor cursor = resolver.query(
-                uri, PROJECTION_BUCKET, "bucket_id = ?",
-                new String[]{String.valueOf(bucketId)}, null);
+        Cursor cursor = resolver.query(uri, PROJECTION_BUCKET, "bucket_id = ?", new String[]{String.valueOf(bucketId)}, null);
 
         if (cursor == null) {
             Log.w(TAG, "query fail: " + uri);
             return "";
         }
         try {
-            return cursor.moveToNext()
-                    ? cursor.getString(INDEX_BUCKET_NAME)
-                    : "";
+            return cursor.moveToNext() ? cursor.getString(INDEX_BUCKET_NAME) : "";
         } finally {
             cursor.close();
         }
@@ -181,9 +170,7 @@ public class LocalAlbumSet extends MediaSet {
         try {
             while (cursor.moveToNext()) {
                 if ((typeBits & (1 << cursor.getInt(INDEX_MEDIA_TYPE))) != 0) {
-                    BucketEntry entry = new BucketEntry(
-                            cursor.getInt(INDEX_BUCKET_ID),
-                            cursor.getString(INDEX_BUCKET_NAME));
+                    BucketEntry entry = new BucketEntry(cursor.getInt(INDEX_BUCKET_ID), cursor.getString(INDEX_BUCKET_NAME));
                     if (!buffer.contains(entry)) {
                         buffer.add(entry);
                     }
@@ -202,8 +189,7 @@ public class LocalAlbumSet extends MediaSet {
 
         Uri uri = mBaseUri;
         GalleryUtils.assertNotInRenderThread();
-        Cursor cursor = mApplication.getContentResolver().query(
-                uri, PROJECTION_BUCKET, BUCKET_GROUP_BY, null, BUCKET_ORDER_BY);
+        Cursor cursor = mApplication.getContentResolver().query(uri, PROJECTION_BUCKET, BUCKET_GROUP_BY, null, BUCKET_ORDER_BY);
         if (cursor == null) {
             Log.w(TAG, "cannot open local database: " + uri);
             return new ArrayList<MediaSet>();
@@ -225,8 +211,7 @@ public class LocalAlbumSet extends MediaSet {
         ArrayList<MediaSet> albums = new ArrayList<MediaSet>();
         DataManager dataManager = mApplication.getDataManager();
         for (BucketEntry entry : entries) {
-            albums.add(getLocalAlbum(dataManager,
-                    mType, mPath, entry.bucketId, entry.bucketName));
+            albums.add(getLocalAlbum(dataManager, mType, mPath, entry.bucketId, entry.bucketName));
         }
         for (int i = 0, n = albums.size(); i < n; ++i) {
             albums.get(i).reload();
@@ -234,8 +219,7 @@ public class LocalAlbumSet extends MediaSet {
         return albums;
     }
 
-    private MediaSet getLocalAlbum(
-            DataManager manager, int type, Path parent, int id, String name) {
+    private MediaSet getLocalAlbum(DataManager manager, int type, Path parent, int id, String name) {
         Path path = parent.getChild(id);
         MediaObject object = manager.peekMediaObject(path);
         if (object != null) return (MediaSet) object;
@@ -246,9 +230,7 @@ public class LocalAlbumSet extends MediaSet {
                 return new LocalAlbum(path, mApplication, id, false, name);
             case MEDIA_TYPE_ALL:
                 Comparator<MediaItem> comp = DataManager.sDateTakenComparator;
-                return new LocalMergeAlbum(path, comp, new MediaSet[]{
-                        getLocalAlbum(manager, MEDIA_TYPE_IMAGE, PATH_IMAGE, id, name),
-                        getLocalAlbum(manager, MEDIA_TYPE_VIDEO, PATH_VIDEO, id, name)});
+                return new LocalMergeAlbum(path, comp, new MediaSet[]{getLocalAlbum(manager, MEDIA_TYPE_IMAGE, PATH_IMAGE, id, name), getLocalAlbum(manager, MEDIA_TYPE_VIDEO, PATH_VIDEO, id, name)});
         }
         throw new IllegalArgumentException(String.valueOf(type));
     }

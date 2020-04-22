@@ -38,8 +38,7 @@ public class BitmapTileProvider implements TileImageView.Model {
         mImageHeight = bitmap.getHeight();
         ArrayList<Bitmap> list = new ArrayList<Bitmap>();
         list.add(bitmap);
-        while (bitmap.getWidth() > maxBackupSize
-                || bitmap.getHeight() > maxBackupSize) {
+        while (bitmap.getWidth() > maxBackupSize || bitmap.getHeight() > maxBackupSize) {
             bitmap = BitmapUtils.resizeBitmapByScale(bitmap, 0.5f, false);
             list.add(bitmap);
         }

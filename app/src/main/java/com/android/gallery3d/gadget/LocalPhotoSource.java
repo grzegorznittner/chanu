@@ -51,8 +51,7 @@ public class LocalPhotoSource implements WidgetSource {
     private static final String[] PROJECTION = {Media._ID};
     private static final String[] COUNT_PROJECTION = {"count(*)"};
     /* We don't want to include the download directory */
-    private static final String SELECTION =
-            String.format("%s != %s", Media.BUCKET_ID, getDownloadBucketId());
+    private static final String SELECTION = String.format("%s != %s", Media.BUCKET_ID, getDownloadBucketId());
     private static final String ORDER = String.format("%s DESC", DATE_TAKEN);
     private static final Path LOCAL_IMAGE_ROOT = Path.fromString("/local/image/item");
     private Context mContext;
@@ -72,8 +71,7 @@ public class LocalPhotoSource implements WidgetSource {
                 if (mContentListener != null) mContentListener.onContentDirty();
             }
         };
-        mContext.getContentResolver()
-                .registerContentObserver(CONTENT_URI, true, mContentObserver);
+        mContext.getContentResolver().registerContentObserver(CONTENT_URI, true, mContentObserver);
     }
 
     /**
@@ -82,9 +80,7 @@ public class LocalPhotoSource implements WidgetSource {
      * @return the bucket ID
      */
     private static int getDownloadBucketId() {
-        String downloadsPath = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                .getAbsolutePath();
+        String downloadsPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
         return GalleryUtils.getBucketId(downloadsPath);
     }
 
@@ -95,9 +91,7 @@ public class LocalPhotoSource implements WidgetSource {
     @Override
     public Uri getContentUri(int index) {
         if (index < mPhotos.size()) {
-            return CONTENT_URI.buildUpon()
-                    .appendPath(String.valueOf(mPhotos.get(index)))
-                    .build();
+            return CONTENT_URI.buildUpon().appendPath(String.valueOf(mPhotos.get(index))).build();
         }
         return null;
     }
@@ -106,8 +100,7 @@ public class LocalPhotoSource implements WidgetSource {
     public Bitmap getImage(int index) {
         if (index >= mPhotos.size()) return null;
         long id = mPhotos.get(index);
-        MediaItem image = (MediaItem)
-                mDataManager.getMediaObject(LOCAL_IMAGE_ROOT.getChild(id));
+        MediaItem image = (MediaItem) mDataManager.getMediaObject(LOCAL_IMAGE_ROOT.getChild(id));
         if (image == null) return null;
 
         return WidgetUtils.createWidgetBitmap(image);
@@ -130,8 +123,7 @@ public class LocalPhotoSource implements WidgetSource {
     }
 
     private int getPhotoCount(ContentResolver resolver) {
-        Cursor cursor = resolver.query(
-                CONTENT_URI, COUNT_PROJECTION, SELECTION, null, null);
+        Cursor cursor = resolver.query(CONTENT_URI, COUNT_PROJECTION, SELECTION, null, null);
         if (cursor == null) return 0;
         try {
             Utils.assertTrue(cursor.moveToNext());
@@ -150,10 +142,7 @@ public class LocalPhotoSource implements WidgetSource {
             if (builder.length() > 0) builder.append(",");
             builder.append(imageId);
         }
-        Cursor cursor = mContext.getContentResolver().query(
-                CONTENT_URI, COUNT_PROJECTION,
-                String.format("%s in (%s)", Media._ID, builder.toString()),
-                null, null);
+        Cursor cursor = mContext.getContentResolver().query(CONTENT_URI, COUNT_PROJECTION, String.format("%s in (%s)", Media._ID, builder.toString()), null, null);
         if (cursor == null) return false;
         try {
             Utils.assertTrue(cursor.moveToNext());
@@ -175,8 +164,7 @@ public class LocalPhotoSource implements WidgetSource {
         Arrays.sort(choosedIds);
 
         mPhotos.clear();
-        Cursor cursor = mContext.getContentResolver().query(
-                CONTENT_URI, PROJECTION, SELECTION, null, ORDER);
+        Cursor cursor = mContext.getContentResolver().query(CONTENT_URI, PROJECTION, SELECTION, null, ORDER);
         if (cursor == null) return;
         try {
             for (int index : choosedIds) {

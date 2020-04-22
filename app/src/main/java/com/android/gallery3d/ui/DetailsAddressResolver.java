@@ -43,37 +43,25 @@ public class DetailsAddressResolver {
 
     public String resolveAddress(double[] latlng, AddressResolvingListener listener) {
         mListener = listener;
-        mAddressLookupJob = mContext.getThreadPool().submit(
-                new AddressLookupJob(latlng),
-                new FutureListener<Address>() {
-                    public void onFutureDone(final Future<Address> future) {
-                        mAddressLookupJob = null;
-                        if (!future.isCancelled()) {
-                            mHandler.post(new Runnable() {
-                                public void run() {
-                                    updateLocation(future.get());
-                                }
-                            });
+        mAddressLookupJob = mContext.getThreadPool().submit(new AddressLookupJob(latlng), new FutureListener<Address>() {
+            public void onFutureDone(final Future<Address> future) {
+                mAddressLookupJob = null;
+                if (!future.isCancelled()) {
+                    mHandler.post(new Runnable() {
+                        public void run() {
+                            updateLocation(future.get());
                         }
-                    }
-                });
+                    });
+                }
+            }
+        });
         return GalleryUtils.formatLatitudeLongitude("(%f,%f)", latlng[0], latlng[1]);
     }
 
     private void updateLocation(Address address) {
         if (address != null) {
             Context context = mContext.getAndroidContext();
-            String[] parts = {
-                    address.getAdminArea(),
-                    address.getSubAdminArea(),
-                    address.getLocality(),
-                    address.getSubLocality(),
-                    address.getThoroughfare(),
-                    address.getSubThoroughfare(),
-                    address.getPremises(),
-                    address.getPostalCode(),
-                    address.getCountryName()
-            };
+            String[] parts = {address.getAdminArea(), address.getSubAdminArea(), address.getLocality(), address.getSubLocality(), address.getThoroughfare(), address.getSubThoroughfare(), address.getPremises(), address.getPostalCode(), address.getCountryName()};
 
             String addressText = "";
             for (int i = 0; i < parts.length; i++) {
@@ -83,8 +71,7 @@ public class DetailsAddressResolver {
                 }
                 addressText += parts[i];
             }
-            String text = String.format("%s : %s", DetailsHelper.getDetailsName(
-                    context, MediaDetails.INDEX_LOCATION), addressText);
+            String text = String.format("%s : %s", DetailsHelper.getDetailsName(context, MediaDetails.INDEX_LOCATION), addressText);
             mListener.onAddressAvailable(text);
         }
     }

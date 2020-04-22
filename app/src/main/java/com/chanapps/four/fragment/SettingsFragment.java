@@ -29,8 +29,7 @@ import java.io.File;
  * Time: 3:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SettingsFragment
-        extends PreferenceFragment
+public class SettingsFragment extends PreferenceFragment
 //        implements SharedPreferences.OnSharedPreferenceChangeListener
 {
 
@@ -49,11 +48,7 @@ public class SettingsFragment
                 if (file.exists() && file.isDirectory() && file.canWrite()) {
                     String msg = String.format(getString(R.string.pref_download_location_set), file.getAbsolutePath());
                     Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-                    getPreferenceManager()
-                            .getSharedPreferences()
-                            .edit()
-                            .putString(SettingsActivity.PREF_DOWNLOAD_LOCATION, file.getAbsolutePath())
-                            .commit();
+                    getPreferenceManager().getSharedPreferences().edit().putString(SettingsActivity.PREF_DOWNLOAD_LOCATION, file.getAbsolutePath()).commit();
                     downloadLocationButton.setSummary(file.getAbsolutePath());
                 } else {
                     Toast.makeText(getActivity(), R.string.pref_download_location_error, Toast.LENGTH_SHORT).show();
@@ -181,8 +176,7 @@ public class SettingsFragment
         resetPrefsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                (new ResetPreferencesDialogFragment(SettingsFragment.this))
-                        .show(getFragmentManager(), SettingsFragment.TAG);
+                (new ResetPreferencesDialogFragment(SettingsFragment.this)).show(getFragmentManager(), SettingsFragment.TAG);
                 return true;
             }
         });
@@ -191,8 +185,7 @@ public class SettingsFragment
         clearCacheButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                (new ClearCacheDialogFragment(SettingsFragment.this))
-                        .show(getFragmentManager(), SettingsFragment.TAG);
+                (new ClearCacheDialogFragment(SettingsFragment.this)).show(getFragmentManager(), SettingsFragment.TAG);
                 return true;
             }
         });
@@ -232,8 +225,7 @@ public class SettingsFragment
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 File downloadFolder = ChanFileStorage.getDownloadFolder(getActivity(), null, 0, true);
-                DialogChooseDirectory d = new DialogChooseDirectory(getActivity(), chooseDirectoryHandler,
-                        downloadFolder.getAbsolutePath());
+                DialogChooseDirectory d = new DialogChooseDirectory(getActivity(), chooseDirectoryHandler, downloadFolder.getAbsolutePath());
                 return true;
             }
         });
@@ -302,8 +294,7 @@ public class SettingsFragment
                 }
                 Intent mStartActivity = new Intent(context, StartupActivity.class);
                 int mPendingIntentId = STARTUP_INTENT;
-                PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, mStartActivity,
-                        PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
                 AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 mgr.set(AlarmManager.RTC, System.currentTimeMillis() + RESTART_DELAY_MS, mPendingIntent);
                 System.exit(0);
@@ -312,8 +303,7 @@ public class SettingsFragment
     }
 
     public Handler ensureHandler() {
-        if (handler == null)
-            handler = new ReloadPrefsHandler(this);
+        if (handler == null) handler = new ReloadPrefsHandler(this);
         return handler;
     }
 

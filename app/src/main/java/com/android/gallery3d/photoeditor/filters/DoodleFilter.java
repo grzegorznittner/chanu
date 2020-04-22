@@ -58,8 +58,7 @@ public class DoodleFilter extends Filter {
         Canvas canvas = new Canvas(bitmap);
 
         Matrix matrix = new Matrix();
-        matrix.setRectToRect(new RectF(0, 0, 1, 1),
-                new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), Matrix.ScaleToFit.FILL);
+        matrix.setRectToRect(new RectF(0, 0, 1, 1), new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), Matrix.ScaleToFit.FILL);
 
         Path drawingPath = new Path();
         Paint paint = new DoodlePaint();

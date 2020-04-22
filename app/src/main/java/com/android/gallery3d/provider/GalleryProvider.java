@@ -47,14 +47,7 @@ public class GalleryProvider extends ContentProvider {
     public static final String AUTHORITY = "com.android.gallery3d.provider";
     public static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
     private static final String TAG = "GalleryProvider";
-    private static final String[] SUPPORTED_PICASA_COLUMNS = {
-            ImageColumns.DISPLAY_NAME,
-            ImageColumns.SIZE,
-            ImageColumns.MIME_TYPE,
-            ImageColumns.DATE_TAKEN,
-            ImageColumns.LATITUDE,
-            ImageColumns.LONGITUDE,
-            ImageColumns.ORIENTATION};
+    private static final String[] SUPPORTED_PICASA_COLUMNS = {ImageColumns.DISPLAY_NAME, ImageColumns.SIZE, ImageColumns.MIME_TYPE, ImageColumns.DATE_TAKEN, ImageColumns.LATITUDE, ImageColumns.LONGITUDE, ImageColumns.ORIENTATION};
     private static Uri sBaseUri;
     private DataManager mDataManager;
     private DownloadCache mDownloadCache;
@@ -67,8 +60,7 @@ public class GalleryProvider extends ContentProvider {
         if (sBaseUri == null) {
             sBaseUri = Uri.parse("content://" + context.getPackageName() + ".provider");
         }
-        return sBaseUri.buildUpon()
-                .appendEncodedPath(path.toString().substring(1)) // ignore the leading '/'
+        return sBaseUri.buildUpon().appendEncodedPath(path.toString().substring(1)) // ignore the leading '/'
                 .build();
     }
 
@@ -112,8 +104,7 @@ public class GalleryProvider extends ContentProvider {
 
     // TODO: consider concurrent access
     @Override
-    public Cursor query(Uri uri, String[] projection,
-                        String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         long token = Binder.clearCallingIdentity();
         try {
             Path path = Path.fromString(uri.getPath());
@@ -123,11 +114,9 @@ public class GalleryProvider extends ContentProvider {
                 return null;
             }
             if (PicasaSource.isPicasaImage(object)) {
-                return queryPicasaItem(object,
-                        projection, selection, selectionArgs, sortOrder);
+                return queryPicasaItem(object, projection, selection, selectionArgs, sortOrder);
             } else if (object instanceof MtpImage) {
-                return queryMtpItem((MtpImage) object,
-                        projection, selection, selectionArgs, sortOrder);
+                return queryMtpItem((MtpImage) object, projection, selection, selectionArgs, sortOrder);
             } else {
                 return null;
             }
@@ -136,8 +125,7 @@ public class GalleryProvider extends ContentProvider {
         }
     }
 
-    private Cursor queryMtpItem(MtpImage image, String[] projection,
-                                String selection, String[] selectionArgs, String sortOrder) {
+    private Cursor queryMtpItem(MtpImage image, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Object[] columnValues = new Object[projection.length];
         for (int i = 0, n = projection.length; i < n; ++i) {
             String column = projection[i];
@@ -158,8 +146,7 @@ public class GalleryProvider extends ContentProvider {
         return cursor;
     }
 
-    private Cursor queryPicasaItem(MediaObject image, String[] projection,
-                                   String selection, String[] selectionArgs, String sortOrder) {
+    private Cursor queryPicasaItem(MediaObject image, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         if (projection == null) projection = SUPPORTED_PICASA_COLUMNS;
         Object[] columnValues = new Object[projection.length];
         double latitude = PicasaSource.getLatitude(image);
@@ -192,8 +179,7 @@ public class GalleryProvider extends ContentProvider {
     }
 
     @Override
-    public ParcelFileDescriptor openFile(Uri uri, String mode)
-            throws FileNotFoundException {
+    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         long token = Binder.clearCallingIdentity();
         try {
             if (mode.contains("w")) {
@@ -207,8 +193,7 @@ public class GalleryProvider extends ContentProvider {
             if (PicasaSource.isPicasaImage(object)) {
                 return PicasaSource.openFile(getContext(), object, mode);
             } else if (object instanceof MtpImage) {
-                return openPipeHelper(uri, null, null, null,
-                        new MtpPipeDataWriter((MtpImage) object));
+                return openPipeHelper(uri, null, null, null, new MtpPipeDataWriter((MtpImage) object));
             } else {
                 throw new FileNotFoundException("unspported type: " + object);
             }
@@ -230,8 +215,7 @@ public class GalleryProvider extends ContentProvider {
         }
 
         @Override
-        public void writeDataToPipe(ParcelFileDescriptor output,
-                                    Uri uri, String mimeType, Bundle opts, Object args) {
+        public void writeDataToPipe(ParcelFileDescriptor output, Uri uri, String mimeType, Bundle opts, Object args) {
             OutputStream os = null;
             try {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);

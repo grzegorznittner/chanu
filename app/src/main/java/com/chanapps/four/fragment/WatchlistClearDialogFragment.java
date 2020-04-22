@@ -44,34 +44,26 @@ public class WatchlistClearDialogFragment extends DialogFragment {
         title.setText(R.string.board_watch);
         message.setText(R.string.dialog_clear_watchlist);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setPositiveButton(R.string.dialog_delete,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                try {
-                                    if (DEBUG) Log.i(TAG, "Clearing watchlist...");
-                                    Context context = getActivity().getApplicationContext();
-                                    ChanFileStorage.clearWatchedThreads(context);
-                                    BoardActivity.refreshWatchlist(context);
-                                    Toast.makeText(getActivity().getApplicationContext(),
-                                            R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT).show();
-                                } catch (IOException e) {
-                                    Log.e(TAG, "Couldn't clear watchlist", e);
-                                    Toast.makeText(getActivity().getApplicationContext(),
-                                            R.string.thread_watchlist_not_cleared, Toast.LENGTH_SHORT).show();
-                                }
-                                dismiss();
-                            }
-                        })
-                .setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dismiss();
-                            }
-                        })
-                .create();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    if (DEBUG) Log.i(TAG, "Clearing watchlist...");
+                    Context context = getActivity().getApplicationContext();
+                    ChanFileStorage.clearWatchedThreads(context);
+                    BoardActivity.refreshWatchlist(context);
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't clear watchlist", e);
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.thread_watchlist_not_cleared, Toast.LENGTH_SHORT).show();
+                }
+                dismiss();
+            }
+        }).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dismiss();
+            }
+        }).create();
     }
 }

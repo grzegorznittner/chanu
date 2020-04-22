@@ -51,14 +51,13 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
     }
 
     public static void startService(Context context, String boardCode, long threadNo, boolean priority) {
-        if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo
-                + " priority=" + priority);
+        if (DEBUG)
+            Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo + " priority=" + priority);
         Intent intent = new Intent(context, ThreadParserService.class);
         intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
         intent.putExtra(ChanThread.THREAD_NO, threadNo);
         intent.putExtra(THREAD_FETCH_TIME, new Date().getTime());
-        if (priority)
-            intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
+        if (priority) intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
         context.startService(intent);
     }
 
@@ -92,8 +91,8 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
                 thread.no = threadNo;
                 thread.isDead = false;
             } else if (thread.lastFetched > threadFetchTime) {
-                if (DEBUG) Log.i(TAG, "Thread " + boardCode + "/" + threadNo + " won't be parsed. "
-                        + "Last fetched " + new Date(thread.lastFetched) + ", scheduled " + new Date(threadFetchTime));
+                if (DEBUG)
+                    Log.i(TAG, "Thread " + boardCode + "/" + threadNo + " won't be parsed. " + "Last fetched " + new Date(thread.lastFetched) + ", scheduled " + new Date(threadFetchTime));
                 NetworkProfileManager.instance().finishedParsingData(this);
                 return;
             }
@@ -109,8 +108,8 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
             }
             parseThread(threadFile);
 
-            if (DEBUG) Log.i(TAG, "Parsed thread " + boardCode + "/" + threadNo
-                    + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+            if (DEBUG)
+                Log.i(TAG, "Parsed thread " + boardCode + "/" + threadNo + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
             threadFile.delete();
 
@@ -127,8 +126,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
                     Log.i(TAG, "In onHandleIntent in ThreadParserService calling storeThreadData for /" + thread.board + "/" + thread.no);
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
                 if (DEBUG)
-                    Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo + " with " + thread.posts.length + " posts"
-                            + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+                    Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo + " with " + thread.posts.length + " posts" + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             }
             threadUpdateMessage = null;
             NetworkProfileManager.instance().finishedParsingData(this);
@@ -153,8 +151,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
             }
             //if (DEBUG) Log.v(TAG, "Added post " + post.no + " to thread " + boardCode + "/" + threadNo);
         }
-        if (thread != null)
-            thread.mergePosts(posts);
+        if (thread != null) thread.mergePosts(posts);
 
         if (DEBUG) Log.i(TAG, "finished parsing thread " + boardCode + "/" + threadNo);
     }
@@ -162,8 +159,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
     @Override
     public ChanActivityId getChanActivityId() {
         ChanActivityId id = new ChanActivityId(boardCode, threadNo, priority);
-        if (threadUpdateMessage != null)
-            id.threadUpdateMessage = threadUpdateMessage;
+        if (threadUpdateMessage != null) id.threadUpdateMessage = threadUpdateMessage;
         return id;
     }
 

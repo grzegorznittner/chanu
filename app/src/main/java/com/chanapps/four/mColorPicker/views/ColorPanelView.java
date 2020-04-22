@@ -130,10 +130,7 @@ public class ColorPanelView extends View {
 
         mAlphaPattern = new AlphaPatternDrawable((int) (5 * mDensity));
 
-        mAlphaPattern.setBounds(Math.round(mColorRect.left),
-                Math.round(mColorRect.top),
-                Math.round(mColorRect.right),
-                Math.round(mColorRect.bottom));
+        mAlphaPattern.setBounds(Math.round(mColorRect.left), Math.round(mColorRect.top), Math.round(mColorRect.right), Math.round(mColorRect.bottom));
 
     }
 

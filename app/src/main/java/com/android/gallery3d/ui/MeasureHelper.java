@@ -56,9 +56,7 @@ class MeasureHelper {
 
     public void measure(int widthSpec, int heightSpec) {
         Rect p = mComponent.getPaddings();
-        setMeasuredSize(
-                getLength(widthSpec, mPreferredWidth + p.left + p.right),
-                getLength(heightSpec, mPreferredHeight + p.top + p.bottom));
+        setMeasuredSize(getLength(widthSpec, mPreferredWidth + p.left + p.right), getLength(heightSpec, mPreferredHeight + p.top + p.bottom));
     }
 
     protected void setMeasuredSize(int width, int height) {

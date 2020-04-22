@@ -49,6 +49,7 @@ class RotateView extends FullscreenToolView {
     private float currentRotatedAngle;
     private float lastRotatedAngle;
     private float touchStartAngle;
+
     public RotateView(Context context, AttributeSet attrs) {
         super(context, attrs);
 

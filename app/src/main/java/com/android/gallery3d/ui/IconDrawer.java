@@ -31,7 +31,7 @@ public abstract class IconDrawer extends SelectionDrawer {
     private final NinePatchTexture mFramePressed;
     private final NinePatchTexture mFrameSelected;
     private final NinePatchTexture mDarkStrip;
-//    private final NinePatchTexture mPanoramaBorder;
+    //    private final NinePatchTexture mPanoramaBorder;
     private final Texture mVideoOverlay;
     private final Texture mVideoPlayIcon;
     private final int mIconSize;
@@ -47,16 +47,14 @@ public abstract class IconDrawer extends SelectionDrawer {
         mFramePressed = new NinePatchTexture(context, R.drawable.grid_pressed);
         mFrameSelected = new NinePatchTexture(context, R.drawable.grid_selected);
         mDarkStrip = new NinePatchTexture(context, R.drawable.dark_strip);
-        mIconSize = context.getResources().getDimensionPixelSize(
-                R.dimen.albumset_icon_size);
+        mIconSize = context.getResources().getDimensionPixelSize(R.dimen.albumset_icon_size);
     }
 
     @Override
     public void prepareDrawing() {
     }
 
-    protected IconDimension drawIcon(GLCanvas canvas, int width, int height,
-                                     int dataSourceType) {
+    protected IconDimension drawIcon(GLCanvas canvas, int width, int height, int dataSourceType) {
         ResourceTexture icon = getIcon(dataSourceType);
 
         if (icon != null) {
@@ -89,8 +87,7 @@ public abstract class IconDrawer extends SelectionDrawer {
         return icon;
     }
 
-    protected IconDimension getIconDimension(ResourceTexture icon, int width,
-                                             int height) {
+    protected IconDimension getIconDimension(ResourceTexture icon, int width, int height) {
         IconDimension id = new IconDimension();
         float scale = (float) mIconSize / icon.getWidth();
         id.width = Math.round(scale * icon.getWidth());
@@ -100,8 +97,7 @@ public abstract class IconDrawer extends SelectionDrawer {
         return id;
     }
 
-    protected void drawMediaTypeOverlay(GLCanvas canvas, int mediaType,
-                                        boolean isPanorama, int x, int y, int width, int height) {
+    protected void drawMediaTypeOverlay(GLCanvas canvas, int mediaType, boolean isPanorama, int x, int y, int width, int height) {
         if (mediaType == MediaObject.MEDIA_TYPE_VIDEO) {
             drawVideoOverlay(canvas, x, y, width, height);
         }
@@ -112,8 +108,7 @@ public abstract class IconDrawer extends SelectionDrawer {
 //        }
     }
 
-    protected void drawVideoOverlay(GLCanvas canvas, int x, int y,
-                                    int width, int height) {
+    protected void drawVideoOverlay(GLCanvas canvas, int x, int y, int width, int height) {
         // Scale the video overlay to the height of the thumbnail and put it
         // on the left side.
         float scale = (float) height / mVideoOverlay.getHeight();
@@ -136,20 +131,17 @@ public abstract class IconDrawer extends SelectionDrawer {
 //        mPanoramaBorder.draw(canvas, x, y + width - h, w, h);
 //    }
 
-    protected void drawLabelBackground(GLCanvas canvas, int width, int height,
-                                       int drawLabelBackground) {
+    protected void drawLabelBackground(GLCanvas canvas, int width, int height, int drawLabelBackground) {
         int x = -width / 2;
         int y = (height + 1) / 2 - drawLabelBackground;
         drawFrame(canvas, mDarkStrip, x, y, width, drawLabelBackground);
     }
 
-    protected void drawPressedFrame(GLCanvas canvas, int x, int y, int width,
-                                    int height) {
+    protected void drawPressedFrame(GLCanvas canvas, int x, int y, int width, int height) {
         drawFrame(canvas, mFramePressed, x, y, width, height);
     }
 
-    protected void drawSelectedFrame(GLCanvas canvas, int x, int y, int width,
-                                     int height) {
+    protected void drawSelectedFrame(GLCanvas canvas, int x, int y, int width, int height) {
         drawFrame(canvas, mFrameSelected, x, y, width, height);
     }
 

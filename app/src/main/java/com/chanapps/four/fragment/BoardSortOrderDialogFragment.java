@@ -47,10 +47,7 @@ public class BoardSortOrderDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         array = getResources().getTextArray(R.array.sort_order_types);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder
-                .setTitle(R.string.sort_order_menu)
-                .setSingleChoiceItems(array, sortType.ordinal(), selectSortOrderListener)
-        ;
+        builder.setTitle(R.string.sort_order_menu).setSingleChoiceItems(array, sortType.ordinal(), selectSortOrderListener);
         AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;

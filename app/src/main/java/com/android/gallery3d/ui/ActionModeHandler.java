@@ -50,9 +50,7 @@ import java.util.ArrayList;
 
 public class ActionModeHandler implements ActionMode.Callback {
     private static final String TAG = "ActionModeHandler";
-    private static final int SUPPORT_MULTIPLE_MASK = MediaObject.SUPPORT_DELETE
-            | MediaObject.SUPPORT_ROTATE | MediaObject.SUPPORT_SHARE
-            | MediaObject.SUPPORT_CACHE | MediaObject.SUPPORT_IMPORT;
+    private static final int SUPPORT_MULTIPLE_MASK = MediaObject.SUPPORT_DELETE | MediaObject.SUPPORT_ROTATE | MediaObject.SUPPORT_SHARE | MediaObject.SUPPORT_CACHE | MediaObject.SUPPORT_IMPORT;
     private final GalleryActivity mActivity;
     private final MenuExecutor mMenuExecutor;
     private final SelectionManager mSelectionManager;
@@ -62,8 +60,8 @@ public class ActionModeHandler implements ActionMode.Callback {
     private Future<?> mMenuTask;
     private Handler mMainHandler;
     private ShareActionProvider mShareActionProvider;
-    public ActionModeHandler(
-            GalleryActivity activity, SelectionManager selectionManager) {
+
+    public ActionModeHandler(GalleryActivity activity, SelectionManager selectionManager) {
         mActivity = Utils.checkNotNull(activity);
         mSelectionManager = Utils.checkNotNull(selectionManager);
         mMenuExecutor = new MenuExecutor(activity, selectionManager);
@@ -74,12 +72,9 @@ public class ActionModeHandler implements ActionMode.Callback {
         Activity a = (Activity) mActivity;
         final ActionMode actionMode = a.startActionMode(this);
         CustomMenu customMenu = new CustomMenu(a);
-        View customView = LayoutInflater.from(a).inflate(
-                R.layout.action_mode, null);
+        View customView = LayoutInflater.from(a).inflate(R.layout.action_mode, null);
         actionMode.setCustomView(customView);
-        mSelectionMenu = customMenu.addDropDownMenu(
-                (Button) customView.findViewById(R.id.selection_menu),
-                R.menu.selection);
+        mSelectionMenu = customMenu.addDropDownMenu((Button) customView.findViewById(R.id.selection_menu), R.menu.selection);
         updateSelectionMenu();
         customMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
@@ -121,8 +116,7 @@ public class ActionModeHandler implements ActionMode.Callback {
     private void updateSelectionMenu() {
         // update title
         int count = mSelectionManager.getSelectedCount();
-        String format = mActivity.getResources().getQuantityString(
-                R.plurals.number_of_items_selected, count);
+        String format = mActivity.getResources().getQuantityString(R.plurals.number_of_items_selected, count);
         setTitle(String.format(format, count));
         // For clients who call SelectionManager.selectAll() directly, we need to ensure the
         // menu status is consistent with selection manager.

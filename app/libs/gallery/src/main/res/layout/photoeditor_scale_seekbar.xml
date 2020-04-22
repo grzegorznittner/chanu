@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,11 +13,10 @@
      limitations under the License.
 -->
 
-<com.android.gallery3d.photoeditor.actions.ScaleSeekBar
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/seekbar_width"
-    android:layout_height="@dimen/seekbar_height"
-    android:layout_marginBottom="@dimen/seekbar_margin_bottom"
-    android:minHeight="@dimen/seekbar_height"
-    android:maxHeight="@dimen/seekbar_height"
-    android:progressDrawable="@android:color/transparent"/>
+<com.android.gallery3d.photoeditor.actions.ScaleSeekBar xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="@dimen/seekbar_width"
+        android:layout_height="@dimen/seekbar_height"
+        android:layout_marginBottom="@dimen/seekbar_margin_bottom"
+        android:maxHeight="@dimen/seekbar_height"
+        android:minHeight="@dimen/seekbar_height"
+        android:progressDrawable="@android:color/transparent" />

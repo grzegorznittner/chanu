@@ -26,12 +26,7 @@ public class InverseCheckableRelativeLayout extends RelativeLayout implements Ch
 
     public InverseCheckableRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.InverseCheckableRelativeLayout,
-                0,
-                0
-        );
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.InverseCheckableRelativeLayout, 0, 0);
         try {
             checkedBackgroundDrawable = a.getResourceId(R.styleable.InverseCheckableRelativeLayout_checkedBackground, 0);
             inverseBackgroundDrawable = a.getResourceId(R.styleable.InverseCheckableRelativeLayout_inverseBackground, 0);

@@ -34,10 +34,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
         Intent intent = getIntent();
         String type = intent.getType();
         Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        if (Intent.ACTION_SEND.equals(intent.getAction())
-                && type != null
-                && type.startsWith("image/")
-                && !"".equals(imageUri)) {
+        if (Intent.ACTION_SEND.equals(intent.getAction()) && type != null && type.startsWith("image/") && !"".equals(imageUri)) {
             handleSendImage(imageUri);
         } else {
             Toast.makeText(this, R.string.post_reply_share_error, Toast.LENGTH_SHORT).show();
@@ -51,8 +48,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
 
     @Override
     protected synchronized Handler ensureHandler() {
-        if (handler == null && ActivityDispatcher.onUIThread())
-            handler = new ShareHandler();
+        if (handler == null && ActivityDispatcher.onUIThread()) handler = new ShareHandler();
         return handler;
     }
 

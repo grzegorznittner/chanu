@@ -67,9 +67,7 @@ public class Wallpaper extends Activity {
             case STATE_INIT: {
                 mPickedItem = intent.getData();
                 if (mPickedItem == null) {
-                    Intent request = new Intent(Intent.ACTION_GET_CONTENT)
-                            .setClass(this, DialogPicker.class)
-                            .setType(IMAGE_TYPE);
+                    Intent request = new Intent(Intent.ACTION_GET_CONTENT).setClass(this, DialogPicker.class).setType(IMAGE_TYPE);
                     startActivityForResult(request, STATE_PHOTO_PICKED);
                     return;
                 }
@@ -84,18 +82,7 @@ public class Wallpaper extends Activity {
                 display.getSize(size);
                 float spotlightX = (float) size.x / width;
                 float spotlightY = (float) size.y / height;
-                Intent request = new Intent(CropImage.ACTION_CROP)
-                        .setDataAndType(mPickedItem, IMAGE_TYPE)
-                        .addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-                        .putExtra(CropImage.KEY_OUTPUT_X, width)
-                        .putExtra(CropImage.KEY_OUTPUT_Y, height)
-                        .putExtra(CropImage.KEY_ASPECT_X, width)
-                        .putExtra(CropImage.KEY_ASPECT_Y, height)
-                        .putExtra(CropImage.KEY_SPOTLIGHT_X, spotlightX)
-                        .putExtra(CropImage.KEY_SPOTLIGHT_Y, spotlightY)
-                        .putExtra(CropImage.KEY_SCALE, true)
-                        .putExtra(CropImage.KEY_NO_FACE_DETECTION, true)
-                        .putExtra(CropImage.KEY_SET_AS_WALLPAPER, true);
+                Intent request = new Intent(CropImage.ACTION_CROP).setDataAndType(mPickedItem, IMAGE_TYPE).addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT).putExtra(CropImage.KEY_OUTPUT_X, width).putExtra(CropImage.KEY_OUTPUT_Y, height).putExtra(CropImage.KEY_ASPECT_X, width).putExtra(CropImage.KEY_ASPECT_Y, height).putExtra(CropImage.KEY_SPOTLIGHT_X, spotlightX).putExtra(CropImage.KEY_SPOTLIGHT_Y, spotlightY).putExtra(CropImage.KEY_SCALE, true).putExtra(CropImage.KEY_NO_FACE_DETECTION, true).putExtra(CropImage.KEY_SET_AS_WALLPAPER, true);
                 startActivity(request);
                 finish();
             }

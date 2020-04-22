@@ -45,13 +45,10 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         WidgetProviderUtils.updateAll(context);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context); // always check since state may have changed
         NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
-        boolean backgroundDataOnMobile = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(SettingsActivity.PREF_BACKGROUND_DATA_ON_MOBILE, false);
+        boolean backgroundDataOnMobile = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_BACKGROUND_DATA_ON_MOBILE, false);
         if (DEBUG)
             Log.i(TAG, "updateAndFetch network profile=" + profile + " health=" + profile.getConnectionHealth());
-        if (profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION ||
-                profile.getConnectionHealth() == NetworkProfile.Health.BAD) {
+        if (profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION || profile.getConnectionHealth() == NetworkProfile.Health.BAD) {
             if (DEBUG) Log.i(TAG, "updateAndFetch no connection, skipping fetch");
         } else if (profile.getConnectionType() == NetworkProfile.Type.MOBILE && !backgroundDataOnMobile) {
             if (DEBUG)
@@ -74,8 +71,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     public static void fetchWatchlistThreads(Context context) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-        if (board == null || board.threads == null)
-            return;
+        if (board == null || board.threads == null) return;
         for (ChanPost thread : board.threads) {
             FetchChanDataService.scheduleThreadFetch(context, thread.board, thread.no, false, true);
         }
@@ -83,8 +79,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     public static void fetchFavoriteBoards(Context context) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
-        if (!board.hasData())
-            return;
+        if (!board.hasData()) return;
         for (ChanPost thread : board.threads) {
             FetchChanDataService.scheduleBoardFetch(context, thread.board, false, true);
         }
@@ -98,10 +93,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = getPendingIntentForGlobalAlarm(context);
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, scheduleAt, WIDGET_UPDATE_INTERVAL_MS, pendingIntent);
         if (DEBUG)
-            Log.i(TAG, "scheduleGlobalAlarm currentElapsed=" + currentElapsed
-                    + " scheduled GlobalAlarmReceiver"
-                    + " scheduleAt=" + scheduleAt
-                    + " repeating every delta=" + WIDGET_UPDATE_INTERVAL_MS + "ms");
+            Log.i(TAG, "scheduleGlobalAlarm currentElapsed=" + currentElapsed + " scheduled GlobalAlarmReceiver" + " scheduleAt=" + scheduleAt + " repeating every delta=" + WIDGET_UPDATE_INTERVAL_MS + "ms");
     }
 
     private static PendingIntent getPendingIntentForGlobalAlarm(Context context) {

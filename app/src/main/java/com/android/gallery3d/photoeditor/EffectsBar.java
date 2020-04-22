@@ -95,8 +95,7 @@ public class EffectsBar extends LinearLayout {
                     exitEffectsGallery();
                     // Create effect tool panel first before the factory could create tools within.
                     createEffectToolPanel();
-                    activeEffect.begin(filterStack,
-                            new EffectToolFactory(effectToolPanel, inflater));
+                    activeEffect.begin(filterStack, new EffectToolFactory(effectToolPanel, inflater));
                 }
             }
 
@@ -108,8 +107,7 @@ public class EffectsBar extends LinearLayout {
     }
 
     private void createEffectToolPanel() {
-        effectToolPanel = (ViewGroup) inflater.inflate(
-                R.layout.photoeditor_effect_tool_panel, this, false);
+        effectToolPanel = (ViewGroup) inflater.inflate(R.layout.photoeditor_effect_tool_panel, this, false);
         ((TextView) effectToolPanel.findViewById(R.id.effect_label)).setText(activeEffect.name());
         addView(effectToolPanel, 0);
     }
@@ -130,8 +128,7 @@ public class EffectsBar extends LinearLayout {
 
     private boolean exitActiveEffect(final Runnable runnableOnDone) {
         if (activeEffect != null) {
-            final SpinnerProgressDialog progressDialog = SpinnerProgressDialog.show(
-                    (ViewGroup) getRootView().findViewById(R.id.toolbar));
+            final SpinnerProgressDialog progressDialog = SpinnerProgressDialog.show((ViewGroup) getRootView().findViewById(R.id.toolbar));
             activeEffect.end(new Runnable() {
 
                 @Override

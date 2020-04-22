@@ -37,8 +37,7 @@ public class ChanAlbum extends MediaSet {
             this.board = ChanBoard.DEFAULT_BOARD_CODE;
             ChanBoard board = ChanBoard.getBoardByCode(application.getAndroidContext(), this.board);
             String rawName = ChanBoard.getName(application.getAndroidContext(), this.board);
-            this.name = (rawName == null ? "" : rawName + " ")
-                    + "/" + this.board + "/";
+            this.name = (rawName == null ? "" : rawName + " ") + "/" + this.board + "/";
             this.threadNo = 0;
             return;
         }
@@ -89,8 +88,7 @@ public class ChanAlbum extends MediaSet {
 
     @Override
     public long reload() {
-        if (application == null)
-            return mDataVersion;
+        if (application == null) return mDataVersion;
         ChanThread thread = ChanFileStorage.loadThreadData(application.getAndroidContext(), board, threadNo);
         int prevSize = posts.size();
         posts.clear();

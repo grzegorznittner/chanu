@@ -66,14 +66,11 @@ RESPONSE ERROR:
             Matcher banMatch = BAN_REG.matcher(response);
             Matcher errorMatch = ERROR_REG.matcher(response);
             Matcher genericErrorMatch = GENERIC_ERROR_REG.matcher(response);
-            if ("".equals(response))
-                error = ctx.getString(R.string.delete_post_response_error);
-            else if (successMatch.find())
-                isAuthorized = true;
+            if ("".equals(response)) error = ctx.getString(R.string.delete_post_response_error);
+            else if (successMatch.find()) isAuthorized = true;
             else if (banMatch.find())
                 error = banMatch.group(1) + " " + banMatch.group(2) + " " + banMatch.group(3);
-            else if (errorMatch.find())
-                error = errorMatch.group(2).replaceFirst("Error: ", "");
+            else if (errorMatch.find()) error = errorMatch.group(2).replaceFirst("Error: ", "");
             else if (genericErrorMatch.find())
                 error = genericErrorMatch.group(2).replaceFirst("Error: ", "");
         } catch (Exception e) {

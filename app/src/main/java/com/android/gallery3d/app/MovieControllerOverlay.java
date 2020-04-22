@@ -40,11 +40,7 @@ import com.chanapps.four.gallery3d.R;
 /**
  * The playback controller for the Movie Player.
  */
-public class MovieControllerOverlay extends FrameLayout implements
-        ControllerOverlay,
-        OnClickListener,
-        AnimationListener,
-        TimeBar.Listener {
+public class MovieControllerOverlay extends FrameLayout implements ControllerOverlay, OnClickListener, AnimationListener, TimeBar.Listener {
 
     private static final float ERROR_MESSAGE_RELATIVE_PADDING = 1.0f / 6;
     private final View background;
@@ -66,10 +62,8 @@ public class MovieControllerOverlay extends FrameLayout implements
 
         state = State.LOADING;
 
-        LayoutParams wrapContent =
-                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        LayoutParams matchParent =
-                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        LayoutParams wrapContent = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams matchParent = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -113,8 +107,7 @@ public class MovieControllerOverlay extends FrameLayout implements
         hideAnimation = AnimationUtils.loadAnimation(context, R.anim.player_out);
         hideAnimation.setAnimationListener(this);
 
-        RelativeLayout.LayoutParams params =
-                new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         setLayoutParams(params);
         hide();
     }
@@ -186,8 +179,7 @@ public class MovieControllerOverlay extends FrameLayout implements
         mainView = view;
         errorView.setVisibility(mainView == errorView ? View.VISIBLE : View.INVISIBLE);
         loadingView.setVisibility(mainView == loadingView ? View.VISIBLE : View.INVISIBLE);
-        playPauseReplayView.setVisibility(
-                mainView == playPauseReplayView ? View.VISIBLE : View.INVISIBLE);
+        playPauseReplayView.setVisibility(mainView == playPauseReplayView ? View.VISIBLE : View.INVISIBLE);
         show();
     }
 
@@ -310,9 +302,7 @@ public class MovieControllerOverlay extends FrameLayout implements
         int playbackButtonsCenterline = t + h / 2;
         bw = playPauseReplayView.getMeasuredWidth();
         bh = playPauseReplayView.getMeasuredHeight();
-        playPauseReplayView.layout(
-                cx - bw / 2, playbackButtonsCenterline - bh / 2, cx + bw / 2,
-                playbackButtonsCenterline + bh / 2);
+        playPauseReplayView.layout(cx - bw / 2, playbackButtonsCenterline - bh / 2, cx + bw / 2, playbackButtonsCenterline + bh / 2);
 
         // Space available on each side of the error message for the next and previous buttons
         int errorMessagePadding = (int) (w * ERROR_MESSAGE_RELATIVE_PADDING);
@@ -342,14 +332,8 @@ public class MovieControllerOverlay extends FrameLayout implements
         }
         background.setVisibility(View.VISIBLE);
         timeBar.setVisibility(View.VISIBLE);
-        playPauseReplayView.setImageResource(
-                state == State.PAUSED ? R.drawable.ic_vidcontrol_play :
-                        state == State.PLAYING ? R.drawable.ic_vidcontrol_pause :
-                                R.drawable.ic_vidcontrol_reload);
-        playPauseReplayView.setVisibility(
-                (state != State.LOADING && state != State.ERROR &&
-                        !(state == State.ENDED && !canReplay))
-                        ? View.VISIBLE : View.GONE);
+        playPauseReplayView.setImageResource(state == State.PAUSED ? R.drawable.ic_vidcontrol_play : state == State.PLAYING ? R.drawable.ic_vidcontrol_pause : R.drawable.ic_vidcontrol_reload);
+        playPauseReplayView.setVisibility((state != State.LOADING && state != State.ERROR && !(state == State.ENDED && !canReplay)) ? View.VISIBLE : View.GONE);
         requestLayout();
     }
 
@@ -371,11 +355,7 @@ public class MovieControllerOverlay extends FrameLayout implements
     }
 
     private enum State {
-        PLAYING,
-        PAUSED,
-        ENDED,
-        ERROR,
-        LOADING
+        PLAYING, PAUSED, ENDED, ERROR, LOADING
     }
 
 }

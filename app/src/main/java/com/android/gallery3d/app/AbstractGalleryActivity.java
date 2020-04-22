@@ -145,13 +145,7 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
                     dialog.cancel();
                 }
             };
-            mAlertDialog = new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("No Storage")
-                    .setMessage("No external storage available.")
-                    .setNegativeButton(android.R.string.cancel, onClick)
-                    .setOnCancelListener(onCancel)
-                    .show();
+            mAlertDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("No Storage").setMessage("No external storage available.").setNegativeButton(android.R.string.cancel, onClick).setOnCancelListener(onCancel).show();
             registerReceiver(mMountReceiver, mMountFilter);
         }
     }
@@ -202,8 +196,7 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
         if (mGLRootView != null) {
             mGLRootView.lockRenderThread();
             try {
-                getStateManager().notifyActivityResult(
-                        requestCode, resultCode, data);
+                getStateManager().notifyActivityResult(requestCode, resultCode, data);
             } finally {
                 mGLRootView.unlockRenderThread();
             }

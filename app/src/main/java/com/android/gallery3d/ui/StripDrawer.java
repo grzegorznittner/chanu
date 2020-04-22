@@ -47,10 +47,7 @@ public class StripDrawer extends SelectionDrawer {
     }
 
     @Override
-    public void draw(GLCanvas canvas, Texture content,
-                     int width, int height, int rotation, Path path,
-                     int dataSourceType, int mediaType, boolean isPanorama,
-                     int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
+    public void draw(GLCanvas canvas, Texture content, int width, int height, int rotation, Path path, int dataSourceType, int mediaType, boolean isPanorama, int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
 
         int x = -width / 2;
         int y = -height / 2;
@@ -67,7 +64,6 @@ public class StripDrawer extends SelectionDrawer {
         int x = -width / 2;
         int y = -height / 2;
         Rect p = mFocusBoxPadding;
-        mFocusBox.draw(canvas, x - p.left, y - p.top,
-                width + p.left + p.right, height + p.top + p.bottom);
+        mFocusBox.draw(canvas, x - p.left, y - p.top, width + p.left + p.right, height + p.top + p.bottom);
     }
 }

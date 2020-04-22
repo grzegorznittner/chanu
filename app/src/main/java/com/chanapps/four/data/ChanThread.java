@@ -58,25 +58,7 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_HEADER = 0x400;
     private static final String TAG = ChanThread.class.getSimpleName();
     private static final boolean DEBUG = false;
-    private static final String[] THREAD_COLUMNS = {
-            THREAD_COMPOSITE_ID,
-            THREAD_BOARD_CODE,
-            THREAD_NO,
-            THREAD_SUBJECT,
-            THREAD_HEADLINE,
-            THREAD_TEXT,
-            THREAD_THUMBNAIL_URL,
-            THREAD_COUNTRY_FLAG_URL,
-            THREAD_CLICK_URL,
-            THREAD_NUM_REPLIES,
-            THREAD_NUM_IMAGES,
-            THREAD_TN_W,
-            THREAD_TN_H,
-            THREAD_JUMP_TO_POST_NO,
-            THREAD_NUM_LAST_REPLIES,
-            THREAD_LAST_REPLIES_BLOB,
-            THREAD_FLAGS
-    };
+    private static final String[] THREAD_COLUMNS = {THREAD_COMPOSITE_ID, THREAD_BOARD_CODE, THREAD_NO, THREAD_SUBJECT, THREAD_HEADLINE, THREAD_TEXT, THREAD_THUMBNAIL_URL, THREAD_COUNTRY_FLAG_URL, THREAD_CLICK_URL, THREAD_NUM_REPLIES, THREAD_NUM_IMAGES, THREAD_TN_W, THREAD_TN_H, THREAD_JUMP_TO_POST_NO, THREAD_NUM_LAST_REPLIES, THREAD_LAST_REPLIES_BLOB, THREAD_FLAGS};
     @JsonDeserialize(using = JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
     public long lastFetched = 0;
     @JsonDeserialize(using = JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
@@ -94,102 +76,41 @@ public class ChanThread extends ChanPost {
 
     private static int threadFlags(ChanPost post) {
         int flags = 0;
-        if (post.isDead)
-            flags |= THREAD_FLAG_DEAD;
-        if (post.closed > 0)
-            flags |= THREAD_FLAG_CLOSED;
-        if (post.sticky > 0)
-            flags |= THREAD_FLAG_STICKY;
+        if (post.isDead) flags |= THREAD_FLAG_DEAD;
+        if (post.closed > 0) flags |= THREAD_FLAG_CLOSED;
+        if (post.sticky > 0) flags |= THREAD_FLAG_STICKY;
         return flags;
     }
 
-    public static Object[] makeRow(Context context, ChanThread thread, String query, int extraFlags,
-                                   boolean showNumReplies, boolean abbrev) {
+    public static Object[] makeRow(Context context, ChanThread thread, String query, int extraFlags, boolean showNumReplies, boolean abbrev) {
         String id = thread.board + "/" + thread.no;
         String[] textComponents = thread.textComponents(query);
         byte[] lastRepliesBlob = blobifyLastReplies(thread.lastReplies);
         if (DEBUG)
             Log.i(TAG, "makeRow /" + thread.board + "/" + thread.no + " lastRepliesBlob=" + lastRepliesBlob);
-        return new Object[]{
-                id.hashCode(),
-                thread.board,
-                thread.no,
-                textComponents[0],
-                thread.headline(context, query, true, null, showNumReplies, abbrev),
-                textComponents[1],
-                thread.thumbnailUrl(context),
-                thread.countryFlagUrl(context),
-                "",
-                thread.replies,
-                thread.images,
-                thread.tn_w > 0 ? thread.tn_w : MAX_THUMBNAIL_PX,
-                thread.tn_h > 0 ? thread.tn_h : MAX_THUMBNAIL_PX,
-                thread.jumpToPostNo,
-                thread.lastReplies == null ? 0 : thread.lastReplies.length,
-                lastRepliesBlob,
-                threadFlags(thread) | extraFlags
-        };
+        return new Object[]{id.hashCode(), thread.board, thread.no, textComponents[0], thread.headline(context, query, true, null, showNumReplies, abbrev), textComponents[1], thread.thumbnailUrl(context), thread.countryFlagUrl(context), "", thread.replies, thread.images, thread.tn_w > 0 ? thread.tn_w : MAX_THUMBNAIL_PX, thread.tn_h > 0 ? thread.tn_h : MAX_THUMBNAIL_PX, thread.jumpToPostNo, thread.lastReplies == null ? 0 : thread.lastReplies.length, lastRepliesBlob, threadFlags(thread) | extraFlags};
     }
 
     public static Object[] makeBoardRow(Context context, String boardCode, String boardName, int boardImageResourceId, int extraFlags) {
-        return new Object[]{
-                boardCode.hashCode(),
-                boardCode,
-                0,
-                boardName,
-                ChanBoard.getDescription(context, boardCode),
-                "",
-                boardImageResourceId > 0 ? "drawable://" + boardImageResourceId : "",
-                "",
-                "",
-                0,
-                0,
-                MAX_THUMBNAIL_PX,
-                MAX_THUMBNAIL_PX,
-                0,
-                0,
-                null,
-                THREAD_FLAG_BOARD | extraFlags
-        };
+        return new Object[]{boardCode.hashCode(), boardCode, 0, boardName, ChanBoard.getDescription(context, boardCode), "", boardImageResourceId > 0 ? "drawable://" + boardImageResourceId : "", "", "", 0, 0, MAX_THUMBNAIL_PX, MAX_THUMBNAIL_PX, 0, 0, null, THREAD_FLAG_BOARD | extraFlags};
     }
 
     public static Object[] makeHeaderRow(Context context, ChanBoard board) {
         String boardCode = board.link;
         String boardName = "/" + boardCode + "/ " + board.getName(context);
         //String safeText = context.getString(board.isWorksafe(context, boardCode) ? R.string.board_type_worksafe : R.string.board_type_adult);
-        String dateText = String.format(context.getString(R.string.board_last_updated),
-                DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date(board.lastFetched)));
+        String dateText = String.format(context.getString(R.string.board_last_updated), DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date(board.lastFetched)));
         //String description = board.getDescription(context) + "<br/>"
         //        + safeText + "<br/>"
         //        + dateText;
         String description = dateText;
-        return new Object[]{
-                boardCode.hashCode(),
-                boardCode,
-                0,
-                boardName,
-                description,
-                "",
-                "",
-                "",
-                "",
-                0,
-                0,
-                MAX_THUMBNAIL_PX,
-                MAX_THUMBNAIL_PX,
-                0,
-                0,
-                null,
-                THREAD_FLAG_BOARD | THREAD_FLAG_HEADER
-        };
+        return new Object[]{boardCode.hashCode(), boardCode, 0, boardName, description, "", "", "", "", 0, 0, MAX_THUMBNAIL_PX, MAX_THUMBNAIL_PX, 0, 0, null, THREAD_FLAG_BOARD | THREAD_FLAG_HEADER};
     }
 
     public static boolean threadNeedsRefresh(Context context, String boardCode, long threadNo, boolean forceRefresh) {
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
-        if (thread == null)
-            return true;
-        if (forceRefresh)
-            return true;
+        if (thread == null) return true;
+        if (forceRefresh) return true;
         return thread.threadNeedsRefresh();
     }
 
@@ -198,8 +119,7 @@ public class ChanThread extends ChanPost {
     }
 
     public static byte[] blobifyLastReplies(ChanPost[] list) {
-        if (list == null || list.length == 0)
-            return null;
+        if (list == null || list.length == 0) return null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -212,8 +132,7 @@ public class ChanThread extends ChanPost {
     }
 
     public static ChanPost[] parseLastRepliesBlob(final byte[] b) {
-        if (b == null || b.length == 0)
-            return null;
+        if (b == null || b.length == 0) return null;
         try {
             InputStream bais = new BufferedInputStream(new ByteArrayInputStream(b));
             ObjectInputStream ois = new ObjectInputStream(bais);
@@ -226,28 +145,16 @@ public class ChanThread extends ChanPost {
     }
 
     public boolean threadNeedsRefresh() {
-        if (isDead)
-            return false;
-        else if (defData)
-            return true;
-        else if (posts == null || posts.length == 0)
-            return true;
-        else if (posts[0] == null || posts[0].defData)
-            return true;
-        else if (posts.length < replies)
-            return true;
+        if (isDead) return false;
+        else if (defData) return true;
+        else if (posts == null || posts.length == 0) return true;
+        else if (posts[0] == null || posts[0].defData) return true;
+        else if (posts.length < replies) return true;
         else return !isCurrent();
     }
 
     public String toString() {
-        return "Thread " + no + ", defData:" + defData + " dead:" + isDead + ", images: " + images
-                + " com: " + com + ", sub:" + sub + ", replies: " + replies + ", posts.length: " + posts.length
-                + (posts.length > 0
-                ? ", posts[0].no: " + posts[0].no + ", posts[0].replies: " + posts[0].replies
-                + ", posts[0].images: " + posts[0].images + ", posts[0].defData: " + posts[0].defData
-                + ", posts[0].isDead: " + posts[0].isDead
-                : "")
-                + ", tn_w: " + tn_w + " tn_h: " + tn_h;
+        return "Thread " + no + ", defData:" + defData + " dead:" + isDead + ", images: " + images + " com: " + com + ", sub:" + sub + ", replies: " + replies + ", posts.length: " + posts.length + (posts.length > 0 ? ", posts[0].no: " + posts[0].no + ", posts[0].replies: " + posts[0].replies + ", posts[0].images: " + posts[0].images + ", posts[0].defData: " + posts[0].defData + ", posts[0].isDead: " + posts[0].isDead : "") + ", tn_w: " + tn_w + " tn_h: " + tn_h;
     }
 
     public void mergePosts(List<ChanPost> newPosts) {
@@ -260,12 +167,9 @@ public class ChanThread extends ChanPost {
         Arrays.sort(postArray, new Comparator<ChanPost>() {
             @Override
             public int compare(ChanPost lhs, ChanPost rhs) {
-                if (lhs.no == rhs.no)
-                    return 0;
-                else if (lhs.no < rhs.no)
-                    return -1;
-                else
-                    return 1;
+                if (lhs.no == rhs.no) return 0;
+                else if (lhs.no < rhs.no) return -1;
+                else return 1;
             }
         });
         this.posts = postArray; // swap
@@ -275,8 +179,7 @@ public class ChanThread extends ChanPost {
         Map<Long, HashSet<Long>> backlinksMap = new HashMap<Long, HashSet<Long>>();
         for (ChanPost post : posts) {
             HashSet<Long> backlinks = post.backlinks();
-            if (backlinks != null && !backlinks.isEmpty())
-                backlinksMap.put(post.no, backlinks);
+            if (backlinks != null && !backlinks.isEmpty()) backlinksMap.put(post.no, backlinks);
         }
         return backlinksMap;
     }
@@ -358,22 +261,17 @@ public class ChanThread extends ChanPost {
 
     public boolean isCurrent() {
         FetchParams params = NetworkProfileManager.instance().getCurrentProfile().getFetchParams();
-        if (defData)
-            return false;
-        else if (lastFetched <= 0)
-            return false;
+        if (defData) return false;
+        else if (lastFetched <= 0) return false;
         else return Math.abs(new Date().getTime() - lastFetched) <= params.refreshDelay;
     }
 
     public boolean matchesQuery(String query) {
-        if (query == null || query.isEmpty())
-            return true;
-        if (super.matchesQuery(query))
-            return true;
+        if (query == null || query.isEmpty()) return true;
+        if (super.matchesQuery(query)) return true;
         if (lastReplies != null) {
             for (ChanPost p : lastReplies) {
-                if (p.matchesQuery(query))
-                    return true;
+                if (p.matchesQuery(query)) return true;
             }
         }
         return false;

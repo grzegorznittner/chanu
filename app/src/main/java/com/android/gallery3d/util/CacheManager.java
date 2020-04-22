@@ -29,15 +29,13 @@ import java.util.HashMap;
 public class CacheManager {
     private static final String TAG = "CacheManager";
     private static final String KEY_CACHE_UP_TO_DATE = "cache-up-to-date";
-    private static HashMap<String, BlobCache> sCacheMap =
-            new HashMap<String, BlobCache>();
+    private static HashMap<String, BlobCache> sCacheMap = new HashMap<String, BlobCache>();
     private static boolean sOldCheckDone = false;
 
     // Return null when we cannot instantiate a BlobCache, e.g.:
     // there is no SD card found.
     // This can only be called from data thread.
-    public static BlobCache getCache(Context context, String filename,
-                                     int maxEntries, int maxBytes, int version) {
+    public static BlobCache getCache(Context context, String filename, int maxEntries, int maxBytes, int version) {
         synchronized (sCacheMap) {
             if (!sOldCheckDone) {
                 removeOldFilesIfNecessary(context);
@@ -48,8 +46,7 @@ public class CacheManager {
                 File cacheDir = context.getExternalCacheDir();
                 String path = cacheDir.getAbsolutePath() + "/" + filename;
                 try {
-                    cache = new BlobCache(path, maxEntries, maxBytes, false,
-                            version);
+                    cache = new BlobCache(path, maxEntries, maxBytes, false, version);
                     sCacheMap.put(filename, cache);
                 } catch (IOException e) {
                     Log.e(TAG, "Cannot instantiate cache!", e);
@@ -61,8 +58,7 @@ public class CacheManager {
 
     // Removes the old files if the data is wiped.
     private static void removeOldFilesIfNecessary(Context context) {
-        SharedPreferences pref = PreferenceManager
-                .getDefaultSharedPreferences(context);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         int n = 0;
         try {
             n = pref.getInt(KEY_CACHE_UP_TO_DATE, 0);

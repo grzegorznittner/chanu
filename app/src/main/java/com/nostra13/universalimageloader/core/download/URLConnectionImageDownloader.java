@@ -48,8 +48,7 @@ public class URLConnectionImageDownloader extends BaseImageDownloader {
     @Override
     public InputStream getStreamFromNetwork(String imageUri, Object extra) throws IOException {
         NetworkProfile activeProfile = NetworkProfileManager.instance().getCurrentProfile();
-        if (activeProfile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
-                || activeProfile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION) {
+        if (activeProfile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION || activeProfile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION) {
             Log.e(TAG, "Slow network, bypassed downloading url=" + imageUri);
             return null;
         } else {
@@ -62,8 +61,7 @@ public class URLConnectionImageDownloader extends BaseImageDownloader {
                 return fis;
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "Couldn't get image from network", e);
-                NetworkProfileManager.instance().failedFetchingData(
-                        null, NetworkProfile.Failure.NETWORK);
+                NetworkProfileManager.instance().failedFetchingData(null, NetworkProfile.Failure.NETWORK);
                 return null;
             }
         }

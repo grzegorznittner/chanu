@@ -40,10 +40,8 @@ public class DialogChooseDirectory implements AdapterView.OnItemClickListener, D
         m_context = ctx;
         m_result = res;
 
-        if (startDir != null)
-            m_currentDir = new File(startDir);
-        else
-            m_currentDir = Environment.getExternalStorageDirectory();
+        if (startDir != null) m_currentDir = new File(startDir);
+        else m_currentDir = Environment.getExternalStorageDirectory();
 
         listDirs();
         DirAdapter adapter = new DirAdapter(ITEM_LAYOUT_ID);
@@ -54,8 +52,7 @@ public class DialogChooseDirectory implements AdapterView.OnItemClickListener, D
 
         builder.setPositiveButton(R.string.dialog_choose, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                if (m_result != null)
-                    m_result.onChooseDirectory(m_currentDir.getAbsolutePath());
+                if (m_result != null) m_result.onChooseDirectory(m_currentDir.getAbsolutePath());
                 dialog.dismiss();
             }
         });
@@ -79,13 +76,11 @@ public class DialogChooseDirectory implements AdapterView.OnItemClickListener, D
         File[] files = m_currentDir.listFiles();
 
         // Add the ".." entry
-        if (m_currentDir.getParent() != null)
-            m_entries.add(new File(".."));
+        if (m_currentDir.getParent() != null) m_entries.add(new File(".."));
 
         if (files != null) {
             for (File file : files) {
-                if (!file.isDirectory())
-                    continue;
+                if (!file.isDirectory()) continue;
 
                 m_entries.add(file);
             }
@@ -100,13 +95,10 @@ public class DialogChooseDirectory implements AdapterView.OnItemClickListener, D
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View list, int pos, long id) {
-        if (pos < 0 || pos >= m_entries.size())
-            return;
+        if (pos < 0 || pos >= m_entries.size()) return;
 
-        if (m_entries.get(pos).getName().equals(".."))
-            m_currentDir = m_currentDir.getParentFile();
-        else
-            m_currentDir = m_entries.get(pos);
+        if (m_entries.get(pos).getName().equals("..")) m_currentDir = m_currentDir.getParentFile();
+        else m_currentDir = m_entries.get(pos);
 
         String title = m_currentDir.getAbsolutePath();
         m_alertDialog.setTitle(title);
@@ -137,11 +129,8 @@ public class DialogChooseDirectory implements AdapterView.OnItemClickListener, D
                 //textview.setCompoundDrawablesWithIntrinsicBounds( m_context.getResources().getDrawable( R.drawable.collections_collection ), null, null, null );
             } else {
                 textview.setText(m_entries.get(position).getName());
-                int iconId = ThemeSelector.instance(getContext()).isDark()
-                        ? R.drawable.collections_collection_light
-                        : R.drawable.collections_collection;
-                textview.setCompoundDrawablesWithIntrinsicBounds(
-                        m_context.getResources().getDrawable(iconId), null, null, null);
+                int iconId = ThemeSelector.instance(getContext()).isDark() ? R.drawable.collections_collection_light : R.drawable.collections_collection;
+                textview.setCompoundDrawablesWithIntrinsicBounds(m_context.getResources().getDrawable(iconId), null, null, null);
             }
 
             return textview;

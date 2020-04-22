@@ -28,8 +28,7 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.mColorPicker.views.ColorPanelView;
 import com.chanapps.four.mColorPicker.views.ColorPickerView;
 
-public class ColorPickerActivity extends Activity implements
-        View.OnClickListener {
+public class ColorPickerActivity extends Activity implements View.OnClickListener {
 
     public final static String INTENT_DATA_INITIAL_COLOR = "color";
     public final static String RESULT_COLOR = "color";
@@ -67,18 +66,15 @@ public class ColorPickerActivity extends Activity implements
         mOkButton = findViewById(R.id.ok_button);
         mCancelButton = findViewById(R.id.cancel_button);
 
-        ((LinearLayout) mOldColorPanel.getParent()).setPadding(Math
-                .round(mColorPickerView.getDrawingOffset()), 0, Math
-                .round(mColorPickerView.getDrawingOffset()), 0);
+        ((LinearLayout) mOldColorPanel.getParent()).setPadding(Math.round(mColorPickerView.getDrawingOffset()), 0, Math.round(mColorPickerView.getDrawingOffset()), 0);
 
-        mColorPickerView
-                .setOnColorChangedListener(new ColorPickerView.OnColorChangedListener() {
+        mColorPickerView.setOnColorChangedListener(new ColorPickerView.OnColorChangedListener() {
 
-                    @Override
-                    public void onColorChanged(int color) {
-                        mNewColorPanel.setColor(color);
-                    }
-                });
+            @Override
+            public void onColorChanged(int color) {
+                mNewColorPanel.setColor(color);
+            }
+        });
 
         mOldColorPanel.setColor(color);
         mColorPickerView.setColor(color, true);

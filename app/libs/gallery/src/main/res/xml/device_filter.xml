@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2011 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2011 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,5 +14,8 @@
 -->
 <resources>
     <!-- filter for PTP devices -->
-    <usb-device class="6" subclass="1" protocol="1" />
+    <usb-device
+            class="6"
+            protocol="1"
+            subclass="1" />
 </resources>

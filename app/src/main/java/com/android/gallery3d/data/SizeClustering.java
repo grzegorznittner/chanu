@@ -27,15 +27,7 @@ public class SizeClustering extends Clustering {
     private static final String TAG = "SizeClustering";
     private static final long MEGA_BYTES = 1024L * 1024;
     private static final long GIGA_BYTES = 1024L * 1024 * 1024;
-    private static final long[] SIZE_LEVELS = {
-            0,
-            1 * MEGA_BYTES,
-            10 * MEGA_BYTES,
-            100 * MEGA_BYTES,
-            1 * GIGA_BYTES,
-            2 * GIGA_BYTES,
-            4 * GIGA_BYTES,
-    };
+    private static final long[] SIZE_LEVELS = {0, 1 * MEGA_BYTES, 10 * MEGA_BYTES, 100 * MEGA_BYTES, 1 * GIGA_BYTES, 2 * GIGA_BYTES, 4 * GIGA_BYTES,};
     private Context mContext;
     private ArrayList<Path>[] mClusters;
     private String[] mNames;
@@ -47,8 +39,7 @@ public class SizeClustering extends Clustering {
 
     @Override
     public void run(MediaSet baseSet) {
-        final ArrayList<Path>[] group =
-                (ArrayList<Path>[]) new ArrayList[SIZE_LEVELS.length];
+        final ArrayList<Path>[] group = (ArrayList<Path>[]) new ArrayList[SIZE_LEVELS.length];
         baseSet.enumerateTotalMediaItems(new MediaSet.ItemConsumer() {
             public void consume(int index, MediaItem item) {
                 // Find the cluster this item belongs to.
@@ -89,16 +80,13 @@ public class SizeClustering extends Clustering {
 
             mClusters[k] = group[i];
             if (i == 0) {
-                mNames[k] = String.format(
-                        res.getString(R.string.size_below), getSizeString(i + 1));
+                mNames[k] = String.format(res.getString(R.string.size_below), getSizeString(i + 1));
             } else if (i == group.length - 1) {
-                mNames[k] = String.format(
-                        res.getString(R.string.size_above), getSizeString(i));
+                mNames[k] = String.format(res.getString(R.string.size_above), getSizeString(i));
             } else {
                 String minSize = getSizeString(i);
                 String maxSize = getSizeString(i + 1);
-                mNames[k] = String.format(
-                        res.getString(R.string.size_between), minSize, maxSize);
+                mNames[k] = String.format(res.getString(R.string.size_between), minSize, maxSize);
             }
             mMinSizes[k] = SIZE_LEVELS[i];
             k++;

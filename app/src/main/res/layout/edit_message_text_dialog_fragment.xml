@@ -8,17 +8,15 @@
     <EditText
             android:id="@+id/edit_message_text"
             style="@style/PostReplyEditText"
-            android:hint="@string/post_reply_text_hint"
             android:layout_height="match_parent"
-            android:inputType="textMultiLine"
-            android:layout_marginTop="8dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             android:layout_marginRight="8dp"
-            android:minHeight="384dp"
-            android:scrollbars="horizontal|vertical"
+            android:hint="@string/post_reply_text_hint"
             android:imeOptions="actionNone"
+            android:inputType="textMultiLine"
             android:maxLength="2000"
-            >
-    </EditText>
+            android:minHeight="384dp"
+            android:scrollbars="horizontal|vertical"></EditText>
 
 </LinearLayout>

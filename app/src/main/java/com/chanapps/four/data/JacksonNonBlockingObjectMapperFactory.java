@@ -1,7 +1,6 @@
 package com.chanapps.four.data;
 
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -39,19 +38,16 @@ public class JacksonNonBlockingObjectMapperFactory {
         public Integer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
             } catch (JsonMappingException e) {
                 try {
                     boolean b = jp.getBooleanValue();
                     o = b ? 1 : 0;
                 } catch (Exception e2) {
-                    if (delegate != null)
-                        o = delegate.getNullValue();
+                    if (delegate != null) o = delegate.getNullValue();
                 }
             } catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
+                if (delegate != null) o = delegate.getNullValue();
             }
             return (Integer) o;
         }
@@ -68,11 +64,9 @@ public class JacksonNonBlockingObjectMapperFactory {
         public Long deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
             } catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
+                if (delegate != null) o = delegate.getNullValue();
             }
             return (Long) o;
         }
@@ -89,11 +83,9 @@ public class JacksonNonBlockingObjectMapperFactory {
         public Boolean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
             } catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
+                if (delegate != null) o = delegate.getNullValue();
             }
             return (Boolean) o;
         }
@@ -110,11 +102,9 @@ public class JacksonNonBlockingObjectMapperFactory {
         public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
             } catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
+                if (delegate != null) o = delegate.getNullValue();
             }
             return (String) o;
         }
@@ -131,11 +121,9 @@ public class JacksonNonBlockingObjectMapperFactory {
         public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
             } catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
+                if (delegate != null) o = delegate.getNullValue();
             }
             return null;
         }

@@ -32,8 +32,7 @@ public class ManageCacheDrawer extends IconDrawer {
     private final int mCachePinSize;
     private final int mCachePinMargin;
 
-    public ManageCacheDrawer(Context context, SelectionManager selectionManager,
-                             int cachePinSize, int cachePinMargin) {
+    public ManageCacheDrawer(Context context, SelectionManager selectionManager, int cachePinSize, int cachePinMargin) {
         super(context);
         mCheckedItem = new ResourceTexture(context, R.drawable.btn_make_offline_normal_on_holo_dark);
         mUnCheckedItem = new ResourceTexture(context, R.drawable.btn_make_offline_normal_off_holo_dark);
@@ -54,10 +53,7 @@ public class ManageCacheDrawer extends IconDrawer {
     }
 
     @Override
-    public void draw(GLCanvas canvas, Texture content, int width,
-                     int height, int rotation, Path path,
-                     int dataSourceType, int mediaType, boolean isPanorama,
-                     int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
+    public void draw(GLCanvas canvas, Texture content, int width, int height, int rotation, Path path, int dataSourceType, int mediaType, boolean isPanorama, int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
 
         int x = -width / 2;
         int y = -height / 2;
@@ -75,16 +71,14 @@ public class ManageCacheDrawer extends IconDrawer {
         drawMediaTypeOverlay(canvas, mediaType, isPanorama, x, y, width, height);
         drawLabelBackground(canvas, width, height, labelBackgroundHeight);
         drawIcon(canvas, width, height, dataSourceType);
-        drawCachingPin(canvas, path, dataSourceType, isCaching, wantCache,
-                width, height);
+        drawCachingPin(canvas, path, dataSourceType, isCaching, wantCache, width, height);
 
         if (mSelectionManager.isPressedPath(path)) {
             drawPressedFrame(canvas, x, y, width, height);
         }
     }
 
-    private void drawCachingPin(GLCanvas canvas, Path path, int dataSourceType,
-                                boolean isCaching, boolean wantCache, int width, int height) {
+    private void drawCachingPin(GLCanvas canvas, Path path, int dataSourceType, boolean isCaching, boolean wantCache, int width, int height) {
         boolean selected = mSelectionManager.isItemSelected(path);
         boolean chooseToCache = wantCache ^ selected;
 

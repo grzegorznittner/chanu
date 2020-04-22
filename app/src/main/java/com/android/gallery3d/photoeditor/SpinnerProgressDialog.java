@@ -35,8 +35,7 @@ public class SpinnerProgressDialog extends Dialog {
     private SpinnerProgressDialog(ViewGroup tools) {
         super(tools.getContext(), R.style.SpinnerProgressDialog);
 
-        addContentView(new ProgressBar(tools.getContext()), new LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        addContentView(new ProgressBar(tools.getContext()), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         this.tools = tools;
         enableTools(false);

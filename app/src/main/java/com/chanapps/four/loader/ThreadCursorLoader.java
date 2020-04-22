@@ -98,12 +98,9 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         int i = 0;
         int numQueryMatches = 0;
         for (ChanPost post : thread.posts) {
-            if (ChanBlocklist.isBlocked(context, post))
-                continue;
-            if (!post.matchesQuery(query))
-                continue;
-            if (!query.isEmpty())
-                numQueryMatches++;
+            if (ChanBlocklist.isBlocked(context, post)) continue;
+            if (!post.matchesQuery(query)) continue;
+            if (!query.isEmpty()) numQueryMatches++;
             post.isDead = thread.isDead; // inherit from parent
             post.closed = thread.closed; // inherit
             post.hidePostNumbers = false; // always show
@@ -116,8 +113,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             i++;
         }
 
-        if (thread.defData)
-            return;
+        if (thread.defData) return;
 
         if (!thread.isDead && (thread.posts != null && thread.replies > thread.posts.length))
             return;

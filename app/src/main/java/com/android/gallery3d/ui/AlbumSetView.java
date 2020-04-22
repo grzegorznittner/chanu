@@ -40,8 +40,7 @@ public class AlbumSetView extends SlotView {
     private AlbumSetSlidingWindow mDataWindow;
     private SelectionDrawer mSelectionDrawer;
 
-    public AlbumSetView(GalleryActivity activity, SelectionDrawer drawer,
-                        SlotView.Spec slotViewSpec, LabelSpec labelSpec) {
+    public AlbumSetView(GalleryActivity activity, SelectionDrawer drawer, SlotView.Spec slotViewSpec, LabelSpec labelSpec) {
         super(activity.getAndroidContext());
         mActivity = activity;
         setSelectionDrawer(drawer);
@@ -63,8 +62,7 @@ public class AlbumSetView extends SlotView {
             mDataWindow = null;
         }
         if (model != null) {
-            mDataWindow = new AlbumSetSlidingWindow(mActivity, mLabelSpec,
-                    mSelectionDrawer, model, CACHE_SIZE);
+            mDataWindow = new AlbumSetSlidingWindow(mActivity, mLabelSpec, mSelectionDrawer, model, CACHE_SIZE);
             mDataWindow.setListener(new MyCacheListener());
             setSlotCount(mDataWindow.size());
             updateVisibleRange(getVisibleStart(), getVisibleEnd());

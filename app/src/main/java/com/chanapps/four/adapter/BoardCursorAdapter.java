@@ -36,23 +36,17 @@ public class BoardCursorAdapter extends AbstractBoardCursorAdapter {
 
     public BoardCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context, viewBinder);
-        hideLastReplies = PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, false);
+        hideLastReplies = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_HIDE_LAST_REPLIES, false);
     }
 
     @Override
     public int getItemViewType(int position) {
         Cursor cursor = getCursor();
-        if (cursor == null || !cursor.moveToPosition(position))
-            return TYPE_GRID_ITEM;
-        if (isHeader(cursor))
-            return TYPE_GRID_HEADER;
-        if (isBlocked(cursor))
-            return TYPE_GRID_EMPTY;
-        if (isOffWatchlist(cursor))
-            return TYPE_GRID_EMPTY;
-        if (hideLastReplies)
-            return TYPE_GRID_ITEM;
+        if (cursor == null || !cursor.moveToPosition(position)) return TYPE_GRID_ITEM;
+        if (isHeader(cursor)) return TYPE_GRID_HEADER;
+        if (isBlocked(cursor)) return TYPE_GRID_EMPTY;
+        if (isOffWatchlist(cursor)) return TYPE_GRID_EMPTY;
+        if (hideLastReplies) return TYPE_GRID_ITEM;
         int numLastReplies = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_LAST_REPLIES));
         switch (numLastReplies) {
             case 5:
@@ -73,16 +67,11 @@ public class BoardCursorAdapter extends AbstractBoardCursorAdapter {
 
     protected int getItemViewLayout(int position) {
         Cursor cursor = getCursor();
-        if (cursor == null || !cursor.moveToPosition(position))
-            return R.layout.board_grid_item;
-        if (isHeader(cursor))
-            return R.layout.board_grid_header;
-        if (isBlocked(cursor))
-            return R.layout.board_grid_item_empty;
-        if (isOffWatchlist(cursor))
-            return R.layout.board_grid_item_empty;
-        if (hideLastReplies)
-            return R.layout.board_grid_item;
+        if (cursor == null || !cursor.moveToPosition(position)) return R.layout.board_grid_item;
+        if (isHeader(cursor)) return R.layout.board_grid_header;
+        if (isBlocked(cursor)) return R.layout.board_grid_item_empty;
+        if (isOffWatchlist(cursor)) return R.layout.board_grid_item_empty;
+        if (hideLastReplies) return R.layout.board_grid_item;
         int numLastReplies = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_LAST_REPLIES));
         switch (numLastReplies) {
             case 5:
@@ -113,10 +102,8 @@ public class BoardCursorAdapter extends AbstractBoardCursorAdapter {
 
     @Override
     public int getViewTypeCount() {
-        if (hideLastReplies)
-            return TYPE_HIDE_LAST_COUNT;
-        else
-            return TYPE_MAX_COUNT;
+        if (hideLastReplies) return TYPE_HIDE_LAST_COUNT;
+        else return TYPE_MAX_COUNT;
     }
 
 }

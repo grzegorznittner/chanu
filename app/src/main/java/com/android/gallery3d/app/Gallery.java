@@ -82,8 +82,7 @@ public final class Gallery extends AbstractGalleryActivity {
                 if (type.endsWith("/video")) intent.setType("video/*");
             }
             startGetContent(intent);
-        } else if (Intent.ACTION_VIEW.equalsIgnoreCase(action)
-                || ACTION_REVIEW.equalsIgnoreCase(action)) {
+        } else if (Intent.ACTION_VIEW.equalsIgnoreCase(action) || ACTION_REVIEW.equalsIgnoreCase(action)) {
             startViewAction(intent);
         } else {
             startDefaultPage();
@@ -93,20 +92,16 @@ public final class Gallery extends AbstractGalleryActivity {
     public void startDefaultPage() {
         PicasaSource.showSignInReminder(this);
         Bundle data = new Bundle();
-        data.putString(AlbumSetPage.KEY_MEDIA_PATH,
-                getDataManager().getTopSetPath(DataManager.INCLUDE_ALL));
+        data.putString(AlbumSetPage.KEY_MEDIA_PATH, getDataManager().getTopSetPath(DataManager.INCLUDE_ALL));
         getStateManager().startState(AlbumSetPage.class, data);
     }
 
     private void startGetContent(Intent intent) {
-        Bundle data = intent.getExtras() != null
-                ? new Bundle(intent.getExtras())
-                : new Bundle();
+        Bundle data = intent.getExtras() != null ? new Bundle(intent.getExtras()) : new Bundle();
         data.putBoolean(KEY_GET_CONTENT, true);
         int typeBits = GalleryUtils.determineTypeBits(this, intent);
         data.putInt(KEY_TYPE_BITS, typeBits);
-        data.putString(AlbumSetPage.KEY_MEDIA_PATH,
-                getDataManager().getTopSetPath(typeBits));
+        data.putString(AlbumSetPage.KEY_MEDIA_PATH, getDataManager().getTopSetPath(typeBits));
         getStateManager().setLaunchGalleryOnTop(true);
         getStateManager().startState(AlbumSetPage.class, data);
     }
@@ -131,10 +126,8 @@ public final class Gallery extends AbstractGalleryActivity {
             getActionBar().hide();
             DataManager manager = getDataManager();
             Path path = manager.findPathByUri(intent.getData());
-            if (path == null || manager.getMediaObject(path)
-                    instanceof MediaItem) {
-                path = Path.fromString(
-                        manager.getTopSetPath(DataManager.INCLUDE_IMAGE));
+            if (path == null || manager.getMediaObject(path) instanceof MediaItem) {
+                path = Path.fromString(manager.getTopSetPath(DataManager.INCLUDE_IMAGE));
             }
             Bundle data = new Bundle();
             data.putString(SlideshowPage.KEY_SET_PATH, path.toString());
@@ -147,25 +140,20 @@ public final class Gallery extends AbstractGalleryActivity {
             Uri uri = intent.getData();
             String contentType = getContentType(intent);
             if (contentType == null) {
-                Toast.makeText(this,
-                        R.string.no_such_item, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.no_such_item, Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
             if (uri == null) {
                 int typeBits = GalleryUtils.determineTypeBits(this, intent);
                 data.putInt(KEY_TYPE_BITS, typeBits);
-                data.putString(AlbumSetPage.KEY_MEDIA_PATH,
-                        getDataManager().getTopSetPath(typeBits));
+                data.putString(AlbumSetPage.KEY_MEDIA_PATH, getDataManager().getTopSetPath(typeBits));
                 getStateManager().setLaunchGalleryOnTop(true);
                 getStateManager().startState(AlbumSetPage.class, data);
-            } else if (contentType.startsWith(
-                    ContentResolver.CURSOR_DIR_BASE_TYPE)) {
+            } else if (contentType.startsWith(ContentResolver.CURSOR_DIR_BASE_TYPE)) {
                 int mediaType = intent.getIntExtra(KEY_MEDIA_TYPES, 0);
                 if (mediaType != 0) {
-                    uri = uri.buildUpon().appendQueryParameter(
-                            KEY_MEDIA_TYPES, String.valueOf(mediaType))
-                            .build();
+                    uri = uri.buildUpon().appendQueryParameter(KEY_MEDIA_TYPES, String.valueOf(mediaType)).build();
                 }
                 Path setPath = dm.findPathByUri(uri);
                 MediaSet mediaSet = null;
@@ -189,8 +177,7 @@ public final class Gallery extends AbstractGalleryActivity {
                 // TODO: Make this parameter public so other activities can reference it.
                 boolean singleItemOnly = intent.getBooleanExtra("SingleItemOnly", false);
                 if (!singleItemOnly && albumPath != null) {
-                    data.putString(PhotoPage.KEY_MEDIA_SET_PATH,
-                            albumPath.toString());
+                    data.putString(PhotoPage.KEY_MEDIA_SET_PATH, albumPath.toString());
                 }
                 data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
                 getStateManager().startState(PhotoPage.class, data);

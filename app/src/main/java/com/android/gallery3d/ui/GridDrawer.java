@@ -45,10 +45,7 @@ public class GridDrawer extends IconDrawer {
     }
 
     @Override
-    public void draw(GLCanvas canvas, Texture content, int width,
-                     int height, int rotation, Path path,
-                     int dataSourceType, int mediaType, boolean isPanorama,
-                     int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
+    public void draw(GLCanvas canvas, Texture content, int width, int height, int rotation, Path path, int dataSourceType, int mediaType, boolean isPanorama, int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
 
         int x = -width / 2;
         int y = -height / 2;
@@ -81,11 +78,7 @@ public class GridDrawer extends IconDrawer {
     private void drawImportLabel(GLCanvas canvas, int width, int height) {
         if (mImportLabel == null || mGridWidth != width) {
             mGridWidth = width;
-            mImportLabel = MultiLineTexture.newInstance(
-                    mContext.getString(R.string.click_import),
-                    width - 2 * IMPORT_LABEL_MARGIN,
-                    IMPORT_FONT_SIZE, IMPORT_FONT_COLOR,
-                    Layout.Alignment.ALIGN_CENTER);
+            mImportLabel = MultiLineTexture.newInstance(mContext.getString(R.string.click_import), width - 2 * IMPORT_LABEL_MARGIN, IMPORT_FONT_SIZE, IMPORT_FONT_COLOR, Layout.Alignment.ALIGN_CENTER);
         }
         int w = mImportLabel.getWidth();
         int h = mImportLabel.getHeight();

@@ -32,8 +32,7 @@ public class DetailsHelper {
         mContainer = new DialogDetailsView(activity, source);
     }
 
-    public static String resolveAddress(GalleryActivity activity, double[] latlng,
-                                        AddressResolvingListener listener) {
+    public static String resolveAddress(GalleryActivity activity, double[] latlng, AddressResolvingListener listener) {
         if (sAddressResolver == null) {
             sAddressResolver = new DetailsAddressResolver(activity);
         } else {
@@ -94,8 +93,7 @@ public class DetailsHelper {
     public void layout(int left, int top, int right, int bottom) {
         if (mContainer instanceof GLView) {
             GLView view = (GLView) mContainer;
-            view.measure(MeasureSpec.UNSPECIFIED,
-                    MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.AT_MOST));
+            view.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.AT_MOST));
             view.layout(0, top, view.getMeasuredWidth(), top + view.getMeasuredHeight());
         }
     }

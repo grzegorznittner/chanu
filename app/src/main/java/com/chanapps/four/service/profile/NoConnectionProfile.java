@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.widget.Toast;
 
-import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
@@ -44,15 +43,14 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
     @Override
     public void onBoardSelectorRefreshed(final Context context, Handler handler, String boardCode) {
         super.onBoardSelectorRefreshed(context, handler, boardCode);
-        if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    activity.setProgress(false);
-                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (handler != null) handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                activity.setProgress(false);
+                Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -60,29 +58,27 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
         super.onBoardRefreshed(context, handler, boardCode);
         if (ChanFileStorage.hasNewBoardData(context, boardCode))
             onUpdateViewData(context, handler, boardCode);
-        else if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    activity.setProgress(false);
-                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                }
-            });
+        else if (handler != null) handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                activity.setProgress(false);
+                Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onThreadRefreshed(Context context, Handler handler, String boardCode, long threadNo) {
         super.onThreadRefreshed(context, handler, boardCode, threadNo);
-        if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    activity.setProgress(false);
-                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (handler != null) handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                activity.setProgress(false);
+                Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -100,13 +96,9 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
         }
         final String refreshMessage = refreshText;
 
-        boolean boardActivity = currentActivityId != null
-                && currentActivityId.boardCode != null
-                && currentActivityId.boardCode.equals(boardCode);
+        boolean boardActivity = currentActivityId != null && currentActivityId.boardCode != null && currentActivityId.boardCode.equals(boardCode);
 
-        if (boardActivity
-                && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
-                && currentActivityId.threadNo == 0 && handler != null)
+        if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY && currentActivityId.threadNo == 0 && handler != null)
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -144,11 +136,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 
         if (data.threadNo == 0) {
             // board fetching
-            boolean boardActivity = currentActivityId != null
-                    && currentActivityId.boardCode != null
-                    && currentActivityId.boardCode.equals(data.boardCode);
-            if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
-                    && currentActivityId.threadNo == 0) {
+            boolean boardActivity = currentActivityId != null && currentActivityId.boardCode != null && currentActivityId.boardCode.equals(data.boardCode);
+            if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY && currentActivityId.threadNo == 0) {
                 // user is on the board page, we need to be reloaded it
                 Handler handler = activity.getChanHandler();
                 if (handler != null) {
@@ -157,11 +146,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
             }
         } else if (data.postNo == 0) {
             // thread fetching
-            boolean threadActivity = currentActivityId != null && currentActivityId.boardCode != null
-                    && currentActivityId.boardCode.equals(data.boardCode)
-                    && currentActivityId.threadNo == data.threadNo;
-            if (currentActivityId != null && threadActivity && currentActivityId.activity == LastActivity.THREAD_ACTIVITY
-                    && currentActivityId.postNo == 0) {
+            boolean threadActivity = currentActivityId != null && currentActivityId.boardCode != null && currentActivityId.boardCode.equals(data.boardCode) && currentActivityId.threadNo == data.threadNo;
+            if (currentActivityId != null && threadActivity && currentActivityId.activity == LastActivity.THREAD_ACTIVITY && currentActivityId.postNo == 0) {
                 // user is on the thread page, we need to reload it
                 Handler handler = activity.getChanHandler();
                 if (handler != null) {

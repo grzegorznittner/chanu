@@ -68,11 +68,7 @@ public class StartupActivity extends Activity {
             dispatchBoardSelector();
         } else if (params.size() == 1 && params.get(0).trim().matches("[a-z0-9]+")) {
             dispatchBoard(params.get(0).trim());
-        } else if (params.size() == 3
-                && params.get(0).trim().matches("[a-z0-9]+")
-                && params.get(1).trim().matches("res")
-                && params.get(2).trim().matches("[0-9]+.*")
-        ) {
+        } else if (params.size() == 3 && params.get(0).trim().matches("[a-z0-9]+") && params.get(1).trim().matches("res") && params.get(2).trim().matches("[0-9]+.*")) {
             dispatchThread(params.get(0).trim(), params.get(2).trim());
         } else {
             dispatchBoardSelector();

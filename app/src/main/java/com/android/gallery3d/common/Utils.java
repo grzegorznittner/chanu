@@ -39,8 +39,7 @@ public class Utils {
 
     private static final long POLY64REV = 0x95AC9329AC4BC9B5L;
     private static final long INITIALCRC = 0xFFFFFFFFFFFFFFFFL;
-    private static final boolean IS_DEBUG_BUILD =
-            Build.TYPE.equals("eng") || Build.TYPE.equals("userdebug");
+    private static final boolean IS_DEBUG_BUILD = Build.TYPE.equals("eng") || Build.TYPE.equals("userdebug");
     private static final String MASK_STRING = "********************************";
     private static long[] sCrcTable = new long[256];
 
@@ -66,8 +65,7 @@ public class Utils {
     // Throws AssertionError if the input is false.
     public static void assertTrue(boolean cond, String message, Object... args) {
         if (!cond) {
-            throw new AssertionError(
-                    args.length == 0 ? message : String.format(message, args));
+            throw new AssertionError(args.length == 0 ? message : String.format(message, args));
         }
     }
 
@@ -233,8 +231,7 @@ public class Utils {
         }
     }
 
-    public static float interpolateAngle(
-            float source, float target, float progress) {
+    public static float interpolateAngle(float source, float target, float progress) {
         // interpolate the angle from source to target
         // We make the difference in the range of [-179, 180], this is the
         // shortest path to change source to target.
@@ -246,8 +243,7 @@ public class Utils {
         return result < 0 ? result + 360f : result;
     }
 
-    public static float interpolateScale(
-            float source, float target, float progress) {
+    public static float interpolateScale(float source, float target, float progress) {
         return source + progress * (target - source);
     }
 
@@ -298,8 +294,7 @@ public class Utils {
             long availableSize;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 availableSize = deprecatedAvailableSize(stat);
-            else
-                availableSize = availableSize(stat);
+            else availableSize = availableSize(stat);
             return availableSize > size;
         } catch (Exception e) {
             Log.i(TAG, "Fail to access external storage", e);
@@ -337,8 +332,7 @@ public class Utils {
     public static boolean handleInterrruptedException(Throwable e) {
         // A helper to deal with the interrupt exception
         // If an interrupt detected, we will setup the bit again.
-        if (e instanceof InterruptedIOException
-                || e instanceof InterruptedException) {
+        if (e instanceof InterruptedIOException || e instanceof InterruptedException) {
             Thread.currentThread().interrupt();
             return true;
         }
@@ -382,16 +376,7 @@ public class Utils {
         } catch (NameNotFoundException e) {
             throw new IllegalStateException("getPackageInfo failed");
         }
-        return String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s",
-                packageInfo.packageName,
-                packageInfo.versionName,
-                Build.BRAND,
-                Build.DEVICE,
-                Build.MODEL,
-                Build.ID,
-                Build.VERSION.SDK_INT,
-                Build.VERSION.RELEASE,
-                Build.VERSION.INCREMENTAL);
+        return String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s", packageInfo.packageName, packageInfo.versionName, Build.BRAND, Build.DEVICE, Build.MODEL, Build.ID, Build.VERSION.SDK_INT, Build.VERSION.RELEASE, Build.VERSION.INCREMENTAL);
     }
 
     public static String[] copyOf(String[] source, int newSize) {

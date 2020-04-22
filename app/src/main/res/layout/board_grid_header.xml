@@ -1,29 +1,26 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:id="@+id/grid_item"
-             android:layout_width="match_parent"
-             android:layout_height="@dimen/BoardGridItemHeightOuter"
-        >
+        android:id="@+id/grid_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/BoardGridItemHeightOuter">
 
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/BoardGridItemHeight"
             android:background="?themedLargeCardBackground"
-            android:foreground="@drawable/board_grid_selector_bg"
-            >
+            android:foreground="@drawable/board_grid_selector_bg">
 
         <TextView
                 android:id="@+id/grid_item_thread_subject_header"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_above="@+id/grid_item_thread_info_header"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
                 android:paddingLeft="@dimen/BoardGridView.spacing"
                 android:paddingRight="@dimen/BoardGridView.spacing"
-                android:layout_gravity="center"
-                android:layout_centerInParent="true"
-                android:layout_above="@+id/grid_item_thread_info_header"
-                android:gravity="center"
                 android:textColor="?themedCardSubjectTextColor"
-                android:textSize="@dimen/BoardGridSubjectHeader"
-                />
+                android:textSize="@dimen/BoardGridSubjectHeader" />
 
         <TextView
                 android:id="@+id/grid_item_thread_info_header"
@@ -33,13 +30,12 @@
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
                 android:paddingLeft="8dp"
+                android:paddingTop="4dp"
                 android:paddingRight="8dp"
+                android:paddingBottom="4dp"
                 android:textColor="@color/PaletteLightGray"
-                android:textSize="@dimen/BoardGridInfoHeader"
-                />
+                android:textSize="@dimen/BoardGridInfoHeader" />
 
     </RelativeLayout>
 

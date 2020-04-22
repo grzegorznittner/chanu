@@ -53,41 +53,34 @@ public class DeletePostDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        this.password = PreferenceManager
-                .getDefaultSharedPreferences(getActivity())
-                .getString(SettingsActivity.PREF_USER_PASSWORD, "");
+        this.password = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(SettingsActivity.PREF_USER_PASSWORD, "");
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.delete_post_dialog_fragment, null);
         TextView title = layout.findViewById(R.id.title);
         title.setText(R.string.delete_post_title);
         setStyle(STYLE_NO_TITLE, 0);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder
-                .setView(layout)
-                .setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        password = passwordText.getText().toString();
-                        if ("".equals(password)) {
-                            Toast.makeText(getActivity(), R.string.delete_post_enter_password, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        closeKeyboard();
-                        boolean onlyImages = imageOnlyCheckbox.isChecked();
-                        DeletePostTask deletePostTask = new DeletePostTask(
-                                (ChanIdentifiedActivity) getActivity(), boardCode, threadNo, postNos, password, onlyImages);
-                        DeletingPostDialogFragment dialogFragment = new DeletingPostDialogFragment(deletePostTask, onlyImages);
-                        dialogFragment.show(getActivity().getSupportFragmentManager(), DeletingPostDialogFragment.TAG);
-                        if (!deletePostTask.isCancelled())
-                            deletePostTask.execute(dialogFragment);
-                        //mode.finish();
-                    }
-                })
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
+        builder.setView(layout).setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                password = passwordText.getText().toString();
+                if ("".equals(password)) {
+                    Toast.makeText(getActivity(), R.string.delete_post_enter_password, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                closeKeyboard();
+                boolean onlyImages = imageOnlyCheckbox.isChecked();
+                DeletePostTask deletePostTask = new DeletePostTask((ChanIdentifiedActivity) getActivity(), boardCode, threadNo, postNos, password, onlyImages);
+                DeletingPostDialogFragment dialogFragment = new DeletingPostDialogFragment(deletePostTask, onlyImages);
+                dialogFragment.show(getActivity().getSupportFragmentManager(), DeletingPostDialogFragment.TAG);
+                if (!deletePostTask.isCancelled()) deletePostTask.execute(dialogFragment);
+                //mode.finish();
+            }
+        }).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
         passwordText = layout.findViewById(R.id.delete_post_password);
         passwordText.setText(password);
         imageOnlyCheckbox = layout.findViewById(R.id.delete_post_only_image_checkbox);
@@ -102,9 +95,7 @@ public class DeletePostDialogFragment extends DialogFragment {
     }
 
     private void closeKeyboard() {
-        IBinder windowToken = getActivity().getCurrentFocus() != null ?
-                getActivity().getCurrentFocus().getWindowToken()
-                : null;
+        IBinder windowToken = getActivity().getCurrentFocus() != null ? getActivity().getCurrentFocus().getWindowToken() : null;
         if (windowToken != null) { // close the keyboard
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(windowToken, 0);

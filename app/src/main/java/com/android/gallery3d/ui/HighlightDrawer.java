@@ -33,10 +33,7 @@ public class HighlightDrawer extends IconDrawer {
     }
 
     @Override
-    public void draw(GLCanvas canvas, Texture content, int width,
-                     int height, int rotation, Path path,
-                     int dataSourceType, int mediaType, boolean isPanorama,
-                     int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
+    public void draw(GLCanvas canvas, Texture content, int width, int height, int rotation, Path path, int dataSourceType, int mediaType, boolean isPanorama, int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
         int x = -width / 2;
         int y = -height / 2;
 

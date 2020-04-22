@@ -43,6 +43,7 @@ class DoodleView extends FullscreenToolView {
     private Bitmap bitmap;
     private Canvas bitmapCanvas;
     private OnDoodleChangeListener listener;
+
     public DoodleView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -57,8 +58,7 @@ class DoodleView extends FullscreenToolView {
 
         RectF r = new RectF(0, 0, getPhotoWidth(), getPhotoHeight());
         if ((bitmap == null) && !r.isEmpty()) {
-            bitmap = Bitmap.createBitmap((int) r.width(), (int) r.height(),
-                    Bitmap.Config.ARGB_8888);
+            bitmap = Bitmap.createBitmap((int) r.width(), (int) r.height(), Bitmap.Config.ARGB_8888);
             bitmap.eraseColor(0x00000000);
             bitmapCanvas = new Canvas(bitmap);
 
@@ -80,8 +80,7 @@ class DoodleView extends FullscreenToolView {
         // Reset path to draw in a new color.
         finishCurrentPath();
         normalizedPath.moveTo(lastPoint.x, lastPoint.y);
-        doodlePaint.setColor(Color.argb(192, Color.red(color), Color.green(color),
-                Color.blue(color)));
+        doodlePaint.setColor(Color.argb(192, Color.red(color), Color.green(color), Color.blue(color)));
     }
 
     private void finishCurrentPath() {
@@ -124,8 +123,7 @@ class DoodleView extends FullscreenToolView {
                     float lastX = lastPoint.x;
                     float lastY = lastPoint.y;
                     mapPhotoPoint(x, y, lastPoint);
-                    normalizedPath.quadTo(lastX, lastY, (lastX + lastPoint.x) / 2,
-                            (lastY + lastPoint.y) / 2);
+                    normalizedPath.quadTo(lastX, lastY, (lastX + lastPoint.x) / 2, (lastY + lastPoint.y) / 2);
                     checkCurrentPathInBounds();
                     invalidate();
                     break;

@@ -98,8 +98,8 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
             }
             boardFile.delete();
 
-            if (DEBUG) Log.i(TAG, "Parsed board " + boardCode + " page " + pageNo
-                    + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+            if (DEBUG)
+                Log.i(TAG, "Parsed board " + boardCode + " page " + pageNo + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
         } catch (Exception e) {
             Log.e(TAG, "Board parsing error", e);
@@ -119,8 +119,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
                 try {
                     ChanPost post = mapper.readValue(postValue, ChanPost.class);
                     if (post != null) {
-                        if (post.board == null || post.board.isEmpty())
-                            post.board = boardCode;
+                        if (post.board == null || post.board.isEmpty()) post.board = boardCode;
                         if (first) {
                             thread = ChanFileStorage.loadThreadData(getBaseContext(), post.board, post.no);
                             // if thread was not stored create a new object
@@ -168,8 +167,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
                     try {
                         ChanPost post = mapper.readValue(threadValue, ChanPost.class);
                         if (post != null) {
-                            if (post.board == null || post.board.isEmpty())
-                                post.board = boardCode;
+                            if (post.board == null || post.board.isEmpty()) post.board = boardCode;
                             ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), post.board, post.no);
                             if (thread == null || thread.defData) {
                                 thread = new ChanThread();

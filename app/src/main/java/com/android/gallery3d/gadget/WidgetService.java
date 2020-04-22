@@ -77,8 +77,7 @@ public class WidgetService extends RemoteViewsService {
         }
     }
 
-    private static class PhotoRVFactory implements
-            RemoteViewsService.RemoteViewsFactory, ContentListener {
+    private static class PhotoRVFactory implements RemoteViewsService.RemoteViewsFactory, ContentListener {
 
         private final int mAppWidgetId;
         private final int mType;
@@ -100,16 +99,12 @@ public class WidgetService extends RemoteViewsService {
                 Path path = Path.fromString(mAlbumPath);
                 DataManager manager = mApp.getDataManager();
                 MediaSet mediaSet = (MediaSet) manager.getMediaObject(path);
-                mSource = mediaSet == null
-                        ? new EmptySource()
-                        : new MediaSetSource(mediaSet);
+                mSource = mediaSet == null ? new EmptySource() : new MediaSetSource(mediaSet);
             } else {
                 mSource = new LocalPhotoSource(mApp.getAndroidContext());
             }
             mSource.setContentListener(this);
-            AppWidgetManager.getInstance(mApp.getAndroidContext())
-                    .notifyAppWidgetViewDataChanged(
-                            mAppWidgetId, R.id.appwidget_stack_view);
+            AppWidgetManager.getInstance(mApp.getAndroidContext()).notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.appwidget_stack_view);
         }
 
         @Override
@@ -135,9 +130,7 @@ public class WidgetService extends RemoteViewsService {
         }
 
         public RemoteViews getLoadingView() {
-            RemoteViews rv = new RemoteViews(
-                    mApp.getAndroidContext().getPackageName(),
-                    R.layout.appwidget_loading_item);
+            RemoteViews rv = new RemoteViews(mApp.getAndroidContext().getPackageName(), R.layout.appwidget_loading_item);
             rv.setProgressBar(R.id.appwidget_loading_item, 0, 0, true);
             return rv;
         }
@@ -145,13 +138,9 @@ public class WidgetService extends RemoteViewsService {
         public RemoteViews getViewAt(int position) {
             Bitmap bitmap = mSource.getImage(position);
             if (bitmap == null) return getLoadingView();
-            RemoteViews views = new RemoteViews(
-                    mApp.getAndroidContext().getPackageName(),
-                    R.layout.appwidget_photo_item);
+            RemoteViews views = new RemoteViews(mApp.getAndroidContext().getPackageName(), R.layout.appwidget_photo_item);
             views.setImageViewBitmap(R.id.appwidget_photo_item, bitmap);
-            views.setOnClickFillInIntent(R.id.appwidget_photo_item, new Intent()
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .setData(mSource.getContentUri(position)));
+            views.setOnClickFillInIntent(R.id.appwidget_photo_item, new Intent().setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).setData(mSource.getContentUri(position)));
             return views;
         }
 
@@ -162,9 +151,7 @@ public class WidgetService extends RemoteViewsService {
 
         @Override
         public void onContentDirty() {
-            AppWidgetManager.getInstance(mApp.getAndroidContext())
-                    .notifyAppWidgetViewDataChanged(
-                            mAppWidgetId, R.id.appwidget_stack_view);
+            AppWidgetManager.getInstance(mApp.getAndroidContext()).notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.appwidget_stack_view);
         }
     }
 }

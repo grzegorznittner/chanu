@@ -144,21 +144,16 @@ public class WebImageDialogFragment extends DialogFragment {
         webBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityDispatcher.launchUrlInBrowser(getActivity(),
-                        URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
+                ActivityDispatcher.launchUrlInBrowser(getActivity(), URLFormatComponent.getUrl(getActivity(), URLFormatComponent.GOOGLE_IMAGE_SEARCH_URL));
             }
         });
         frame = view.findViewById(R.id.frame);
-        return new AlertDialog.Builder(getActivity())
-                .setView(view)
-                .setPositiveButton(R.string.web_image_button_attach, null)
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        WebImageDialogFragment.this.dismiss();
-                    }
-                })
-                .create();
+        return new AlertDialog.Builder(getActivity()).setView(view).setPositiveButton(R.string.web_image_button_attach, null).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                WebImageDialogFragment.this.dismiss();
+            }
+        }).create();
     }
 
     protected void downloadImage() {
@@ -170,15 +165,7 @@ public class WebImageDialogFragment extends DialogFragment {
         String postExt = "_downloaded_" + UUID.randomUUID() + ".jpg"; // correct?
         fullImageUri = ChanFileStorage.getHiddenLocalImageUri(urlTextView.getContext(), boardCode, threadNo, postExt);
         fullImagePath = (new File(URI.create(fullImageUri.toString()))).getAbsolutePath();
-        DisplayImageOptions options = (new DisplayImageOptions.Builder())
-                .cacheInMemory()
-                .cacheOnDisc()
-                .showStubImage(R.drawable.stub_image_background)
-                .resetViewBeforeLoading()
-                .displayer(new FadeInBitmapDisplayer(100))
-                .fullSizeImageLocation(fullImagePath)
-                .imageSize(new ImageSize(300, 300))
-                .build();
+        DisplayImageOptions options = (new DisplayImageOptions.Builder()).cacheInMemory().cacheOnDisc().showStubImage(R.drawable.stub_image_background).resetViewBeforeLoading().displayer(new FadeInBitmapDisplayer(100)).fullSizeImageLocation(fullImagePath).imageSize(new ImageSize(300, 300)).build();
         ChanImageLoader.getInstance(urlTextView.getContext()).displayImage(url, webImage, options, imageListener);
     }
 
@@ -205,9 +192,7 @@ public class WebImageDialogFragment extends DialogFragment {
     }
 
     private void closeKeyboard() {
-        IBinder windowToken = getActivity().getCurrentFocus() != null ?
-                getActivity().getCurrentFocus().getWindowToken()
-                : null;
+        IBinder windowToken = getActivity().getCurrentFocus() != null ? getActivity().getCurrentFocus().getWindowToken() : null;
         if (windowToken != null) { // close the keyboard
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(windowToken, 0);

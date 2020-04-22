@@ -66,8 +66,7 @@ class Paper {
         mHeight = height;
     }
 
-    public float[] getTransform(Position target, Position base,
-                                float scrollX, float scrollY) {
+    public float[] getTransform(Position target, Position base, float scrollX, float scrollY) {
         float left = mAnimationLeft.getValue();
         float right = mAnimationRight.getValue();
         float screenX = target.x - scrollX;
@@ -80,13 +79,11 @@ class Paper {
         // compress t to the range (-1, 1) by the function
         // f(t) = (1 / (1 + e^-t) - 0.5) * 2
         // then multiply by 90 to make the range (-45, 45)
-        float degrees =
-                (1 / (1 + (float) Math.exp(-t * ROTATE_FACTOR)) - 0.5f) * 2 * -45;
+        float degrees = (1 / (1 + (float) Math.exp(-t * ROTATE_FACTOR)) - 0.5f) * 2 * -45;
         Matrix.setIdentityM(mMatrix, 0);
         Matrix.translateM(mMatrix, 0, mMatrix, 0, base.x, base.y, base.z);
         Matrix.rotateM(mMatrix, 0, degrees, 0, 1, 0);
-        Matrix.translateM(mMatrix, 0, mMatrix, 0,
-                target.x - base.x, target.y - base.y, target.z - base.z);
+        Matrix.translateM(mMatrix, 0, mMatrix, 0, target.x - base.x, target.y - base.y, target.z - base.z);
         return mMatrix;
     }
 }
@@ -122,8 +119,7 @@ class EdgeAnimation {
         mState = STATE_IDLE;
     }
 
-    private void startAnimation(float start, float finish, long duration,
-                                int newState) {
+    private void startAnimation(float start, float finish, long duration, int newState) {
         mValueStart = start;
         mValueFinish = finish;
         mDuration = duration;
@@ -146,8 +142,7 @@ class EdgeAnimation {
     }
 
     public void onAbsorb(float velocity) {
-        float finish = Utils.clamp(mValue + velocity * VELOCITY_FACTOR,
-                -1.0f, 1.0f);
+        float finish = Utils.clamp(mValue + velocity * VELOCITY_FACTOR, -1.0f, 1.0f);
         startAnimation(mValue, finish, ABSORB_TIME, STATE_ABSORB);
     }
 
@@ -157,8 +152,7 @@ class EdgeAnimation {
 
         float t = Utils.clamp((float) (now() - mStartTime) / mDuration, 0.0f, 1.0f);
         /* Use linear interpolation for absorb, quadratic for others */
-        float interp = (mState == STATE_ABSORB)
-                ? t : mInterpolator.getInterpolation(t);
+        float interp = (mState == STATE_ABSORB) ? t : mInterpolator.getInterpolation(t);
 
         mValue = mValueStart + (mValueFinish - mValueStart) * interp;
 

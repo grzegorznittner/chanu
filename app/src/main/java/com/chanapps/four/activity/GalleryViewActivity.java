@@ -29,7 +29,6 @@ import com.android.gallery3d.app.GalleryActionBar;
 import com.android.gallery3d.app.PhotoPage;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.GLRoot;
-import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
@@ -172,10 +171,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         setContentView(R.layout.gallery_layout);
         progressBar = findViewById(R.id.full_screen_progress_bar);
-        if (bundle != null)
-            onRestoreInstanceState(bundle);
-        else
-            setFromIntent(getIntent());
+        if (bundle != null) onRestoreInstanceState(bundle);
+        else setFromIntent(getIntent());
     }
 
     @Override
@@ -188,14 +185,10 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         ActivityState state = getStateManager().getTopState();
         if (DEBUG) Log.i(TAG, "onSaveInstanceState activityState=" + state);
         ViewType v;
-        if (state instanceof PhotoPage)
-            v = ViewType.PHOTO_VIEW;
-        else if (state instanceof AlbumPage)
-            v = ViewType.ALBUM_VIEW;
-        else if (state instanceof AlbumSetPage)
-            v = ViewType.OFFLINE_ALBUMSET_VIEW;
-        else
-            v = ViewType.ALBUM_VIEW;
+        if (state instanceof PhotoPage) v = ViewType.PHOTO_VIEW;
+        else if (state instanceof AlbumPage) v = ViewType.ALBUM_VIEW;
+        else if (state instanceof AlbumSetPage) v = ViewType.OFFLINE_ALBUMSET_VIEW;
+        else v = ViewType.ALBUM_VIEW;
         return v;
     }
 
@@ -227,15 +220,12 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     protected long topPostNo() {
         ActivityState state = getStateManager().getTopState();
-        if (state == null)
-            return 0;
+        if (state == null) return 0;
         Bundle b = state.getData();
         String path = (String) b.get(MEDIA_ITEM_PATH);
-        if (path == null || path.isEmpty())
-            return 0;
+        if (path == null || path.isEmpty()) return 0;
         int i = path.lastIndexOf("/");
-        if (i == -1 || (++i + 1) >= path.length())
-            return 0;
+        if (i == -1 || (++i + 1) >= path.length()) return 0;
         String postNoStr = path.substring(i);
         return Long.valueOf(postNoStr);
     }
@@ -243,15 +233,13 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     protected void setFromIntent(Intent intent) {
         String s = intent.getStringExtra(VIEW_TYPE);
         if (DEBUG) Log.i(TAG, "setFromIntent viewType=" + s);
-        if (s != null && !s.isEmpty())
-            viewType = ViewType.valueOf(s);
-        else
-            viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
+        if (s != null && !s.isEmpty()) viewType = ViewType.valueOf(s);
+        else viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
         boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
         threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
         postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
-        if (DEBUG) Log.i(TAG, "setFromIntent() loaded /" + boardCode + "/" + threadNo + "#" + postNo
-                + " viewType=" + viewType.toString());
+        if (DEBUG)
+            Log.i(TAG, "setFromIntent() loaded /" + boardCode + "/" + threadNo + "#" + postNo + " viewType=" + viewType.toString());
     }
 
     @Override
@@ -366,16 +354,15 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     private void displayGallery() {
-        if (postHandler != null)
-            postHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    setActionBarTitle();
-                    setProgressBar(false);
-                    prepareGalleryView();
-                    activityChangeAsync();
-                }
-            });
+        if (postHandler != null) postHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                setActionBarTitle();
+                setProgressBar(false);
+                prepareGalleryView();
+                activityChangeAsync();
+            }
+        });
     }
 
     protected void activityChangeAsync() {
@@ -395,23 +382,17 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private void setProgressBar(boolean on) {
         if (progressBar != null) {
             if (DEBUG) Log.i(TAG, "setProgressBar(" + on + ")");
-            if (on)
-                progressBar.setVisibility(View.VISIBLE);
-            else
-                progressBar.setVisibility(View.GONE);
+            if (on) progressBar.setVisibility(View.VISIBLE);
+            else progressBar.setVisibility(View.GONE);
         }
     }
 
     private long calcDelayMs() {
         boolean loaded;
-        if (thread == null || thread.defData)
-            loaded = false;
-        else if (thread.isDead)
-            loaded = true;
-        else if (thread.posts == null || thread.posts.length == 0)
-            loaded = false;
-        else if (thread.posts[0] == null || thread.posts[0].defData)
-            loaded = false;
+        if (thread == null || thread.defData) loaded = false;
+        else if (thread.isDead) loaded = true;
+        else if (thread.posts == null || thread.posts.length == 0) loaded = false;
+        else if (thread.posts[0] == null || thread.posts[0].defData) loaded = false;
         else loaded = thread.posts.length >= thread.posts[0].images;
 
         if (DEBUG)
@@ -420,18 +401,15 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         if (++loadTryCount > MAX_LOAD_TRIES) {
             loadTryCount = 0;
             return 0;
-        } else if (loaded)
-            return 0;
+        } else if (loaded) return 0;
         else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION)
             return 0;
-        else
-            return NetworkProfileManager.instance().getFetchParams().readTimeout / 10;
+        else return NetworkProfileManager.instance().getFetchParams().readTimeout / 10;
     }
 
     private void prepareGalleryView() {
         handler = new ProgressHandler(this);
-        View contentView = inflater.inflate(R.layout.gallery_layout,
-                (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content), false);
+        View contentView = inflater.inflate(R.layout.gallery_layout, (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content), false);
         setContentView(contentView);
         super.mGLRootView = contentView.findViewById(R.id.gl_root_view);
 
@@ -439,28 +417,23 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         try {
             switch (viewType) {
                 case PHOTO_VIEW:
-                    data.putString(PhotoPage.KEY_MEDIA_SET_PATH,
-                            Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
-                    data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH,
-                            Path.fromString("/chan/" + boardCode + "/" + threadNo + "/" + postNo).toString());
+                    data.putString(PhotoPage.KEY_MEDIA_SET_PATH, Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
+                    data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, Path.fromString("/chan/" + boardCode + "/" + threadNo + "/" + postNo).toString());
                     if (DEBUG) Log.i(TAG, "starting photo state");
                     getStateManager().startState(PhotoPage.class, data);
                     break;
                 case ALBUM_VIEW:
-                    data.putString(AlbumPage.KEY_MEDIA_PATH,
-                            Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
+                    data.putString(AlbumPage.KEY_MEDIA_PATH, Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
                     if (DEBUG) Log.i(TAG, "starting album state");
                     getStateManager().startState(AlbumPage.class, data);
                     break;
                 case OFFLINE_ALBUM_VIEW:
-                    data.putString(AlbumPage.KEY_MEDIA_PATH,
-                            Path.fromString("/chan-offline/" + boardCode).toString());
+                    data.putString(AlbumPage.KEY_MEDIA_PATH, Path.fromString("/chan-offline/" + boardCode).toString());
                     if (DEBUG) Log.i(TAG, "starting offline album state");
                     getStateManager().startState(AlbumPage.class, data);
                     break;
                 case OFFLINE_ALBUMSET_VIEW:
-                    data.putString(AlbumSetPage.KEY_MEDIA_PATH,
-                            Path.fromString("/chan-offline").toString());
+                    data.putString(AlbumSetPage.KEY_MEDIA_PATH, Path.fromString("/chan-offline").toString());
                     if (DEBUG) Log.i(TAG, "starting offline albumset state");
                     getStateManager().startState(AlbumSetPage.class, data);
                     break;
@@ -510,10 +483,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                     return true;
                 case R.id.web_menu:
                     String url;
-                    if (postNo > 0)
-                        url = ChanPost.postUrl(this, boardCode, threadNo, postNo);
-                    else
-                        url = ChanThread.threadUrl(this, boardCode, threadNo);
+                    if (postNo > 0) url = ChanPost.postUrl(this, boardCode, threadNo, postNo);
+                    else url = ChanThread.threadUrl(this, boardCode, threadNo);
                     ActivityDispatcher.launchUrlInBrowser(this, url);
                 default:
                     return getStateManager().itemSelected(item);
@@ -531,8 +502,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             if (DEBUG)
                 Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null && !this.getClass().getName().equals(task.baseActivity.getClassName())) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
-                        + this.getClass().getName() + " base=" + task.baseActivity.getClassName());
+                if (DEBUG)
+                    Log.i(TAG, "navigateUp() using finish instead of intents with me=" + this.getClass().getName() + " base=" + task.baseActivity.getClassName());
                 finish();
                 return;
             }
@@ -643,32 +614,23 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     protected ViewType defaultViewType() {
-        if (boardCode == null || boardCode.isEmpty())
-            return ViewType.OFFLINE_ALBUMSET_VIEW;
-        else if (threadNo <= 0)
-            return ViewType.OFFLINE_ALBUM_VIEW;
-        else if (postNo <= 0)
-            return ViewType.ALBUM_VIEW;
-        else
-            return ViewType.PHOTO_VIEW;
+        if (boardCode == null || boardCode.isEmpty()) return ViewType.OFFLINE_ALBUMSET_VIEW;
+        else if (threadNo <= 0) return ViewType.OFFLINE_ALBUM_VIEW;
+        else if (postNo <= 0) return ViewType.ALBUM_VIEW;
+        else return ViewType.PHOTO_VIEW;
     }
 
     protected ViewType currentViewType() {
         ActivityState activityState = getStateManager().getTopState();
         ViewType t;
-        if (activityState == null)
-            return ViewType.OFFLINE_ALBUMSET_VIEW;
-        if (activityState instanceof PhotoPage)
-            return ViewType.PHOTO_VIEW;
+        if (activityState == null) return ViewType.OFFLINE_ALBUMSET_VIEW;
+        if (activityState instanceof PhotoPage) return ViewType.PHOTO_VIEW;
         if (activityState instanceof AlbumPage) {
             Bundle data = activityState.getData();
-            if (data == null)
-                return ViewType.OFFLINE_ALBUM_VIEW;
+            if (data == null) return ViewType.OFFLINE_ALBUM_VIEW;
             String path = data.getString(AlbumPage.KEY_MEDIA_PATH);
-            if (path == null || path.isEmpty())
-                return ViewType.OFFLINE_ALBUM_VIEW;
-            if (path.matches("/chan-offline/.*"))
-                return ViewType.OFFLINE_ALBUM_VIEW;
+            if (path == null || path.isEmpty()) return ViewType.OFFLINE_ALBUM_VIEW;
+            if (path.matches("/chan-offline/.*")) return ViewType.OFFLINE_ALBUM_VIEW;
             return ViewType.ALBUM_VIEW;
         }
         return ViewType.OFFLINE_ALBUMSET_VIEW;
@@ -696,10 +658,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     public enum ViewType {
-        PHOTO_VIEW,
-        ALBUM_VIEW,
-        OFFLINE_ALBUM_VIEW,
-        OFFLINE_ALBUMSET_VIEW
+        PHOTO_VIEW, ALBUM_VIEW, OFFLINE_ALBUM_VIEW, OFFLINE_ALBUMSET_VIEW
     }
 
     private class ProgressHandler extends Handler {

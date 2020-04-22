@@ -34,10 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
-abstract public class
-AbstractDrawerActivity
-        extends AbstractBoardSpinnerActivity
-        implements ChanIdentifiedActivity {
+abstract public class AbstractDrawerActivity extends AbstractBoardSpinnerActivity implements ChanIdentifiedActivity {
     protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
     protected static final boolean DEBUG = false;
 
@@ -45,17 +42,9 @@ AbstractDrawerActivity
     protected static final String TEXT = "text";
     protected static final String DRAWABLE_ID = "drawableid";
 
-    protected static final String[] adapterFrom = {
-            ROW_ID,
-            TEXT,
-            DRAWABLE_ID
-    };
+    protected static final String[] adapterFrom = {ROW_ID, TEXT, DRAWABLE_ID};
 
-    protected static final int[] adapterTo = {
-            R.id.drawer_list_item,
-            R.id.drawer_list_item_text,
-            R.id.drawer_list_item_icon
-    };
+    protected static final int[] adapterTo = {R.id.drawer_list_item, R.id.drawer_list_item_text, R.id.drawer_list_item_icon};
 
     protected String[] mDrawerArray;
     protected ListView mDrawerList;
@@ -72,8 +61,7 @@ AbstractDrawerActivity
 
             else if (getApplicationContext() != null && ThemeSelector.instance(getApplicationContext()).isDark())
                 selector = R.drawable.drawer_list_selector_inverse_bg_dark;
-            else
-                selector = R.drawable.drawer_list_selector_inverse_bg;
+            else selector = R.drawable.drawer_list_selector_inverse_bg;
             return selector;
         }
 
@@ -99,8 +87,7 @@ AbstractDrawerActivity
                     View divider = view.findViewById(R.id.drawer_list_item_divider);
 
                     if (//type == BoardType.META ||
-                            (type != null && type == BoardType.FAVORITES && hasFavorites) ||
-                                    (type != null && type == BoardType.WATCHLIST && hasWatchlist)) {
+                            (type != null && type == BoardType.FAVORITES && hasFavorites) || (type != null && type == BoardType.WATCHLIST && hasWatchlist)) {
                         title.setText(drawerText);
                         detail.setText("");
                         text.setText("");
@@ -159,9 +146,8 @@ AbstractDrawerActivity
                     text.setTextColor(getResources().getColor(textColor));
                     */
 
-                    if (DEBUG) Log.v(TAG, "mViewBinder:setViewValue() item pos=" + pos
-                            + " checked=" + (selector == R.drawable.drawer_list_selector_checked_bg) + " type=" + type
-                            + " text=" + text + " item=" + item);
+                    if (DEBUG)
+                        Log.v(TAG, "mViewBinder:setViewValue() item pos=" + pos + " checked=" + (selector == R.drawable.drawer_list_selector_checked_bg) + " type=" + type + " text=" + text + " item=" + item);
 
                     return true;
 
@@ -178,14 +164,12 @@ AbstractDrawerActivity
                 String drawerText = mDrawerArray[i];
                 BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
                 int drawableId;
-                if (type != null)
-                    drawableId = type.drawableId();
+                if (type != null) drawableId = type.drawableId();
                 else if (getString(R.string.settings_menu).equals(drawerText))
                     drawableId = R.drawable.gear;
                 else if (getString(R.string.send_feedback_menu).equals(drawerText))
                     drawableId = R.drawable.speech_bubble_ellipsis;
-                else
-                    drawableId = 0;
+                else drawableId = 0;
                 if (DEBUG)
                     Log.v(TAG, "row=" + i + " text=" + drawerText + " drawableId=" + drawableId);
                 HashMap<String, String> map = new HashMap<String, String>();
@@ -264,8 +248,7 @@ AbstractDrawerActivity
         loadFooter(drawer);
         mDrawerArray = drawer.toArray(new String[drawer.size()]);
         Handler callbackHandler = getChanHandler();
-        if (callbackHandler != null)
-            callbackHandler.post(setAdaptersCallback);
+        if (callbackHandler != null) callbackHandler.post(setAdaptersCallback);
     }
 
     protected void loadFooter(List<String> drawer) {
@@ -323,13 +306,11 @@ AbstractDrawerActivity
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
+        mDrawerToggle = new ActionBarDrawerToggle(this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
                 R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description for accessibility */
-                R.string.drawer_close  /* "close drawer" description for accessibility */
-        ) {
+                R.string.drawer_close  /* "close drawer" description for accessibility */) {
             public void onDrawerClosed(View view) {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
@@ -350,8 +331,7 @@ AbstractDrawerActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item))
-            return true;
+        if (mDrawerToggle.onOptionsItemSelected(item)) return true;
         closeDrawer();
         return super.onOptionsItemSelected(item);
     }

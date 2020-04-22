@@ -12,41 +12,40 @@
         -->
     <View
             style="@style/ThreadListHeaderNumHorizontalBorder"
-            android:layout_marginTop="@dimen/BoardGridItemHeight4"
-            />
+            android:layout_marginTop="@dimen/BoardGridItemHeight4" />
+
     <ImageView
             android:id="@+id/grid_item_thread_thumb_5"
-            android:layout_marginTop="@dimen/BoardGridItemHeight4"
             android:layout_width="@dimen/BoardGridImageSizeHalf"
             android:layout_height="@dimen/BoardGridImageSizeHalf"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/thread_post_image"
+            android:layout_marginTop="@dimen/BoardGridItemHeight4"
             android:background="@drawable/board_grid_selector_bg"
-            android:visibility="gone"
-            />
+            android:contentDescription="@string/thread_post_image"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
     <TextView
             android:id="@+id/grid_item_thread_subject_5"
-            android:layout_marginTop="@dimen/BoardGridItemHeight4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/grid_item_thread_thumb_5"
+            android:layout_marginTop="@dimen/BoardGridItemHeight4"
             android:layout_toLeftOf="@+id/grid_item_country_flag_5"
-            android:paddingLeft="@dimen/BoardGridView.spacing"
-            android:paddingRight="@dimen/BoardGridView.rightSpacing"
-            android:paddingTop="@dimen/BoardGridView.topSpacing"
-            android:textColor="?themedCardSubjectTextColor"
-            android:textSize="@dimen/BoardGridLargeSubject"
+            android:layout_toRightOf="@+id/grid_item_thread_thumb_5"
             android:maxLines="@integer/BoardGridView.Half.maxLines"
-            />
+            android:paddingLeft="@dimen/BoardGridView.spacing"
+            android:paddingTop="@dimen/BoardGridView.topSpacing"
+            android:paddingRight="@dimen/BoardGridView.rightSpacing"
+            android:textColor="?themedCardSubjectTextColor"
+            android:textSize="@dimen/BoardGridLargeSubject" />
+
     <ImageView
             android:id="@+id/grid_item_country_flag_5"
-            android:layout_marginTop="@dimen/BoardGridItemHeight4"
             android:layout_width="@dimen/BoardGridItemIconWidth"
             android:layout_height="@dimen/BoardGridImageSizeHalfMinusSpacing"
-            android:layout_marginRight="@dimen/BoardGridView.spacing"
-            android:scaleType="fitEnd"
             android:layout_alignParentRight="true"
-            android:gravity="bottom|right"
+            android:layout_marginTop="@dimen/BoardGridItemHeight4"
+            android:layout_marginRight="@dimen/BoardGridView.spacing"
             android:contentDescription="@string/thread_country_flag"
-            />
+            android:gravity="bottom|right"
+            android:scaleType="fitEnd" />
 </merge>

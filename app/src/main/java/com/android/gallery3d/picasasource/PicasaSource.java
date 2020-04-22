@@ -81,8 +81,7 @@ public class PicasaSource extends MediaSource {
         throw new UnsupportedOperationException();
     }
 
-    public static ParcelFileDescriptor openFile(Context context, MediaObject image, String mode)
-            throws FileNotFoundException {
+    public static ParcelFileDescriptor openFile(Context context, MediaObject image, String mode) throws FileNotFoundException {
         throw new UnsupportedOperationException();
     }
 

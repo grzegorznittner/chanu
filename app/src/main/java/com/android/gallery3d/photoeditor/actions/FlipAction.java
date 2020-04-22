@@ -49,12 +49,10 @@ public class FlipAction extends EffectAction {
         flipView.setOnFlipChangeListener(new FlipView.OnFlipChangeListener() {
 
             // Directly transform photo-view because running the flip filter isn't fast enough.
-            PhotoView photoView = flipView.getRootView().findViewById(
-                    R.id.photo_view);
+            PhotoView photoView = flipView.getRootView().findViewById(R.id.photo_view);
 
             @Override
-            public void onAngleChanged(float horizontalDegrees, float verticalDegrees,
-                                       boolean fromUser) {
+            public void onAngleChanged(float horizontalDegrees, float verticalDegrees, boolean fromUser) {
                 if (fromUser) {
                     horizontalFlipDegrees = horizontalDegrees;
                     verticalFlipDegrees = verticalDegrees;
@@ -76,8 +74,7 @@ public class FlipAction extends EffectAction {
                 flipView.setFlippedAngles(horizontalFlipDegrees, verticalFlipDegrees);
             }
 
-            private void transformPhotoView(final float horizontalDegrees,
-                                            final float verticalDegrees) {
+            private void transformPhotoView(final float horizontalDegrees, final float verticalDegrees) {
                 // Remove the outdated flip change before queuing a new one.
                 if (queuedFlipChange != null) {
                     photoView.remove(queuedFlipChange);
@@ -121,8 +118,7 @@ public class FlipAction extends EffectAction {
 
     private void updateFlipFilter(boolean outputFilter) {
         // Flip the filter if the flipped degrees are at the opposite directions.
-        filter.setFlip(((int) horizontalFlipDegrees / 180) % 2 != 0,
-                ((int) verticalFlipDegrees / 180) % 2 != 0);
+        filter.setFlip(((int) horizontalFlipDegrees / 180) % 2 != 0, ((int) verticalFlipDegrees / 180) % 2 != 0);
         notifyFilterChanged(filter, outputFilter);
     }
 }

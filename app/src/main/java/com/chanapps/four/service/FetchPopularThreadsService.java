@@ -61,10 +61,8 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
         if (DEBUG)
             Log.i(TAG, "Start popular threads fetch service priority=" + priority + " background=" + backgroundLoad);
         Intent intent = new Intent(context, FetchPopularThreadsService.class);
-        if (priority)
-            intent.putExtra(PRIORITY_MESSAGE_FETCH, priority ? 1 : 0);
-        if (backgroundLoad)
-            intent.putExtra(BACKGROUND_LOAD, true);
+        if (priority) intent.putExtra(PRIORITY_MESSAGE_FETCH, priority ? 1 : 0);
+        if (backgroundLoad) intent.putExtra(BACKGROUND_LOAD, true);
         context.startService(intent);
         return true;
     }
@@ -84,8 +82,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
             if (now - board.lastFetched < refresh) {
                 if (DEBUG)
-                    Log.i(TAG, "Skiping board " + ChanBoard.POPULAR_BOARD_CODE + " fetch as it was fetched "
-                            + ((now - board.lastFetched) / 1000) + "s ago, refresh delay is " + (refresh / 1000) + "s");
+                    Log.i(TAG, "Skiping board " + ChanBoard.POPULAR_BOARD_CODE + " fetch as it was fetched " + ((now - board.lastFetched) / 1000) + "s ago, refresh delay is " + (refresh / 1000) + "s");
                 return false;
             }
         }
@@ -96,15 +93,13 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
     protected void onHandleIntent(Intent intent) {
         backgroundLoad = intent.getBooleanExtra(BACKGROUND_LOAD, false);
         if (!isChanForegroundActivity() && !backgroundLoad) {
-            if (DEBUG)
-                Log.i(TAG, "Not foreground activity, exiting");
+            if (DEBUG) Log.i(TAG, "Not foreground activity, exiting");
             return;
         }
 
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this.getBaseContext());
         NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
-        if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
-                || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION) {
+        if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION) {
             if (DEBUG) Log.i(TAG, "No network connection, exiting");
             return;
         }
@@ -144,14 +139,13 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
                 if (DEBUG) Log.i(TAG, "Upping priority for first fetch");
             }
             if (board != null && board.lastFetched > 0 && !priority) {
-                if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
-                        + ((startTime - board.lastFetched) / 1000) + "s ago");
+                if (DEBUG)
+                    Log.i(TAG, "IfModifiedSince set as last fetch happened " + ((startTime - board.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(board.lastFetched);
             }
             String contentType = tc.getContentType();
             if (DEBUG)
-                Log.i(TAG, "Called API " + tc.getURL() + " response length=" + tc.getContentLength()
-                        + " code=" + tc.getResponseCode() + " type=" + contentType);
+                Log.i(TAG, "Called API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode() + " type=" + contentType);
             if (tc.getResponseCode() == 304) {
                 if (DEBUG)
                     Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + board.lastFetched);
@@ -292,9 +286,8 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
                 try {
                     if (DEBUG) Log.v(TAG, "paring line=" + strings[i]);
                     ChanThread thread = parseThread(strings[i]);
-                    if (DEBUG) Log.v(TAG, "parsed thread /" + thread.board + "/" + thread.no
-                            + " tn_w=" + thread.tn_w + " tn_h=" + thread.tn_h + " tim=" + thread.tim
-                            + " thumbUrl=" + thread.thumbnailUrl(getApplicationContext()));
+                    if (DEBUG)
+                        Log.v(TAG, "parsed thread /" + thread.board + "/" + thread.no + " tn_w=" + thread.tn_w + " tn_h=" + thread.tn_h + " tim=" + thread.tim + " thumbUrl=" + thread.thumbnailUrl(getApplicationContext()));
                     threads.add(thread);
                 } catch (Exception e) {
                     Log.e(TAG, "Problem occured for: " + strings[i], e);
@@ -372,13 +365,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
         thread.com = str.extract("<blockquote>", "</blockquote>");
 
         if (DEBUG)
-            Log.i(TAG, "Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim
-                    + ", sub: " + thread.sub + ", com: " + thread.com
-                    + ", size: " + thread.fsize + ", wXh=" + thread.w + "x" + thread.h
-                    + ", tn_wXtn_h=" + thread.tn_w + "x" + thread.tn_h
-                    + ", img: " + thread.imageUrl(getApplicationContext())
-                    + ", thumb: " + thread.thumbnailUrl(getApplicationContext())
-                    + ", topic: " + thread.sub);
+            Log.i(TAG, "Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim + ", sub: " + thread.sub + ", com: " + thread.com + ", size: " + thread.fsize + ", wXh=" + thread.w + "x" + thread.h + ", tn_wXtn_h=" + thread.tn_w + "x" + thread.tn_h + ", img: " + thread.imageUrl(getApplicationContext()) + ", thumb: " + thread.thumbnailUrl(getApplicationContext()) + ", topic: " + thread.sub);
         return thread;
     }
 

@@ -11,8 +11,7 @@ import com.chanapps.four.gallery3d.R;
  */
 public class YesNoCancelDialogBuilder extends AlertDialog.Builder {
 
-    public YesNoCancelDialogBuilder(Context context, final Runnable yes, final Runnable no,
-                                    int messageId) {
+    public YesNoCancelDialogBuilder(Context context, final Runnable yes, final Runnable no, int messageId) {
         super(context);
         setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 
@@ -20,20 +19,18 @@ public class YesNoCancelDialogBuilder extends AlertDialog.Builder {
             public void onClick(DialogInterface dialog, int which) {
                 yes.run();
             }
-        })
-                .setNeutralButton(R.string.no, new DialogInterface.OnClickListener() {
+        }).setNeutralButton(R.string.no, new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        no.run();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                no.run();
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // no-op
-                    }
-                }).setMessage(messageId);
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // no-op
+            }
+        }).setMessage(messageId);
     }
 }

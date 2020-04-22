@@ -44,15 +44,11 @@ public class DeletingPostDialogFragment extends DialogFragment {
         int messageId = onlyImages ? R.string.delete_post_deleting_image : R.string.delete_post_deleting;
         message.setText(messageId);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
-                .setView(layout)
-                .setNegativeButton(R.string.dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                task.cancel(true);
-                            }
-                        })
-                .create();
+        return (new AlertDialog.Builder(getActivity())).setView(layout).setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                task.cancel(true);
+            }
+        }).create();
     }
 }

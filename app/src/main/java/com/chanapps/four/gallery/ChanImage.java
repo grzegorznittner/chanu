@@ -107,9 +107,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     }
 
     public static boolean isCallable(Context context, Intent intent) {
-        List<ResolveInfo> list = context.getPackageManager() == null
-                ? null
-                : context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        List<ResolveInfo> list = context.getPackageManager() == null ? null : context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list != null && list.size() > 0;
     }
 
@@ -223,8 +221,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
             closeConnection(conn);
 
             NetworkProfileManager.instance().finishedImageDownload(this, (int) (endTime - startTime), fileLength);
-            if (DEBUG) Log.i(TAG, "Stored image " + url + " to file "
-                    + targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
+            if (DEBUG)
+                Log.i(TAG, "Stored image " + url + " to file " + targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
 
             //notifyDownloadFinished(fileLength);
         } catch (Exception e) {
@@ -330,12 +328,10 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         MediaDetails details = super.getDetails();
         if (sub != null && !sub.isEmpty())
             details.addDetail(MediaDetails.INDEX_TITLE, Html.fromHtml("<b>" + sub + "</b>"));
-        else
-            details.addDetail(MediaDetails.INDEX_TITLE, name);
+        else details.addDetail(MediaDetails.INDEX_TITLE, name);
         if (com != null && !com.isEmpty())
             details.addDetail(MediaDetails.INDEX_DESCRIPTION, Html.fromHtml(com));
-        else
-            details.addDetail(MediaDetails.INDEX_DESCRIPTION, "");
+        else details.addDetail(MediaDetails.INDEX_DESCRIPTION, "");
         if (width != 0 && height != 0) {
             details.addDetail(MediaDetails.INDEX_WIDTH, w);
             details.addDetail(MediaDetails.INDEX_HEIGHT, h);
@@ -504,11 +500,9 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         private Bitmap centerCrop(Bitmap srcBmp) {
             Bitmap dstBmp = null;
             if (srcBmp.getWidth() >= srcBmp.getHeight()) {
-                dstBmp = Bitmap.createBitmap(srcBmp, srcBmp.getWidth() / 2 - srcBmp.getHeight() / 2, 0,
-                        srcBmp.getHeight(), srcBmp.getHeight());
+                dstBmp = Bitmap.createBitmap(srcBmp, srcBmp.getWidth() / 2 - srcBmp.getHeight() / 2, 0, srcBmp.getHeight(), srcBmp.getHeight());
             } else {
-                dstBmp = Bitmap.createBitmap(srcBmp, 0, srcBmp.getHeight() / 2 - srcBmp.getWidth() / 2,
-                        srcBmp.getWidth(), srcBmp.getWidth());
+                dstBmp = Bitmap.createBitmap(srcBmp, 0, srcBmp.getHeight() / 2 - srcBmp.getWidth() / 2, srcBmp.getWidth(), srcBmp.getWidth());
             }
             return dstBmp;
         }

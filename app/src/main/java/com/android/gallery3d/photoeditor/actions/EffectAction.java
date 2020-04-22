@@ -40,20 +40,20 @@ public abstract class EffectAction extends LinearLayout {
     private FilterStack filterStack;
     private boolean pushedFilter;
     private FilterChangedCallback lastFilterChangedCallback;
+
     public EffectAction(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     public void setListener(Listener l) {
         listener = l;
-        findViewById(R.id.effect_button).setOnClickListener(
-                (listener == null) ? null : new View.OnClickListener() {
+        findViewById(R.id.effect_button).setOnClickListener((listener == null) ? null : new View.OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        listener.onClick();
-                    }
-                });
+            @Override
+            public void onClick(View v) {
+                listener.onClick();
+            }
+        });
     }
 
     public CharSequence name() {

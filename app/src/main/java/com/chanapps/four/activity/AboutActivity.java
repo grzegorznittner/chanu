@@ -132,11 +132,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
                 // BoardSelectorActivity.startDefaultActivity(this);
                 return true;
             case R.id.global_rules_menu:
-                (new StringResourceDialog(this,
-                        R.layout.board_rules_dialog,
-                        R.string.global_rules_menu,
-                        R.string.global_rules_detail))
-                        .show();
+                (new StringResourceDialog(this, R.layout.board_rules_dialog, R.string.global_rules_menu, R.string.global_rules_detail)).show();
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(this, null);
@@ -150,8 +146,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (DEBUG)
             Log.i(TAG, "onActivityResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
-        if (requestCode != PURCHASE_REQUEST_CODE)
-            return;
+        if (requestCode != PURCHASE_REQUEST_CODE) return;
         if (resultCode != RESULT_OK) {
             Log.e(TAG, "Error while processing purchase request resultCode=" + resultCode);
             Toast.makeText(this, R.string.purchase_error, Toast.LENGTH_SHORT).show();
@@ -173,11 +168,9 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
         if (task != null) {
             if (DEBUG)
                 android.util.Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
-            if (task.baseActivity != null
-                    && !getClass().getName().equals(task.baseActivity.getClassName())) {
+            if (task.baseActivity != null && !getClass().getName().equals(task.baseActivity.getClassName())) {
                 if (DEBUG)
-                    android.util.Log.i(TAG, "navigateUp() using finish instead of intents with me="
-                            + getClass().getName() + " base=" + task.baseActivity.getClassName());
+                    android.util.Log.i(TAG, "navigateUp() using finish instead of intents with me=" + getClass().getName() + " base=" + task.baseActivity.getClassName());
                 finish();
                 return;
             } else if (task.baseActivity != null && numTasks >= 2) {

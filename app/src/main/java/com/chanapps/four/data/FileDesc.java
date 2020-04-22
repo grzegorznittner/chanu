@@ -18,10 +18,12 @@ public class FileDesc {
     public String path;
     public long size;
     public long lastModified;
+
     public FileDesc() {
         size = 0;
         lastModified = 0;
     }
+
     public FileDesc(File file) {
         try {
             path = file.getAbsolutePath();

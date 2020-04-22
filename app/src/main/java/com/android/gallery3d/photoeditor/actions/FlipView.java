@@ -36,6 +36,7 @@ class FlipView extends FullscreenToolView {
     private float lastVerticalDegrees;
     private boolean fixedDirection;
     private boolean fixedDirectionHorizontal;
+
     public FlipView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -97,8 +98,7 @@ class FlipView extends FullscreenToolView {
                     // direction fixed once it exceeds threshold.
                     float x = ev.getX();
                     float y = ev.getY();
-                    boolean flipHorizontal = fixedDirection ? fixedDirectionHorizontal
-                            : (Math.abs(x - touchStartX) >= Math.abs(y - touchStartY));
+                    boolean flipHorizontal = fixedDirection ? fixedDirectionHorizontal : (Math.abs(x - touchStartX) >= Math.abs(y - touchStartY));
                     float degrees = calculateAngle(flipHorizontal, x, y);
                     if (!fixedDirection && (Math.abs(degrees) > FIXED_DIRECTION_THRESHOLD)) {
                         fixedDirection = true;

@@ -102,8 +102,7 @@ public final class StorageUtils {
         }
         try {
             File f = new File(appCacheDir, ".nomedia");
-            if (!f.exists())
-                f.createNewFile();
+            if (!f.exists()) f.createNewFile();
         } catch (IOException e) {
             L.i("Can't create \".nomedia\" file in app external cache dir " + appCacheDir);
         }

@@ -59,8 +59,7 @@ public class TimeClustering extends Clustering {
     // Make the cluster split time of a large cluster half that of a regular
     // cluster.
     private static final int PARTITION_CLUSTER_SPLIT_TIME_FACTOR = 2;
-    private static final Comparator<SmallItem> sDateComparator =
-            new DateComparator();
+    private static final Comparator<SmallItem> sDateComparator = new DateComparator();
     // Initially put 2 items in the same cluster as long as they are within
     // 3 cluster frequencies of each other.
     private static int CLUSTER_SPLIT_MULTIPLIER = 3;
@@ -68,10 +67,8 @@ public class TimeClustering extends Clustering {
     private ArrayList<Cluster> mClusters;
     private String[] mNames;
     private Cluster mCurrCluster;
-    private long mClusterSplitTime =
-            (MIN_CLUSTER_SPLIT_TIME_IN_MS + MAX_CLUSTER_SPLIT_TIME_IN_MS) / 2;
-    private long mLargeClusterSplitTime =
-            mClusterSplitTime / PARTITION_CLUSTER_SPLIT_TIME_FACTOR;
+    private long mClusterSplitTime = (MIN_CLUSTER_SPLIT_TIME_IN_MS + MAX_CLUSTER_SPLIT_TIME_IN_MS) / 2;
+    private long mLargeClusterSplitTime = mClusterSplitTime / PARTITION_CLUSTER_SPLIT_TIME_FACTOR;
     private int mMinClusterSize = (MIN_MIN_CLUSTER_SIZE + MAX_MIN_CLUSTER_SIZE) / 2;
     private int mMaxClusterSize = (MIN_MAX_CLUSTER_SIZE + MAX_MAX_CLUSTER_SIZE) / 2;
 
@@ -83,16 +80,11 @@ public class TimeClustering extends Clustering {
 
     // Returns true if a, b are sufficiently geographically separated.
     private static boolean isGeographicallySeparated(SmallItem itemA, SmallItem itemB) {
-        if (!GalleryUtils.isValidLocation(itemA.lat, itemA.lng)
-                || !GalleryUtils.isValidLocation(itemB.lat, itemB.lng)) {
+        if (!GalleryUtils.isValidLocation(itemA.lat, itemA.lng) || !GalleryUtils.isValidLocation(itemB.lat, itemB.lng)) {
             return false;
         }
 
-        double distance = GalleryUtils.fastDistanceMeters(
-                Math.toRadians(itemA.lat),
-                Math.toRadians(itemA.lng),
-                Math.toRadians(itemB.lat),
-                Math.toRadians(itemB.lng));
+        double distance = GalleryUtils.fastDistanceMeters(Math.toRadians(itemA.lat), Math.toRadians(itemA.lng), Math.toRadians(itemB.lat), Math.toRadians(itemB.lng));
         return (GalleryUtils.toMile(distance) > GEOGRAPHIC_DISTANCE_CUTOFF_IN_MILES);
     }
 
@@ -214,8 +206,7 @@ public class TimeClustering extends Clustering {
                 } else if (timeDistance(prevItem, currentItem) < mClusterSplitTime) {
                     mCurrCluster.addItem(currentItem);
                     itemAddedToCurrentCluster = true;
-                } else if (numClusters > 0 && numCurrClusterItems < mMinClusterSize
-                        && !mCurrCluster.mGeographicallySeparatedFromPrevCluster) {
+                } else if (numClusters > 0 && numCurrClusterItems < mMinClusterSize && !mCurrCluster.mGeographicallySeparatedFromPrevCluster) {
                     mergeAndAddCurrentCluster();
                 } else {
                     mClusters.add(mCurrCluster);
@@ -238,8 +229,7 @@ public class TimeClustering extends Clustering {
                 // The last cluster may potentially be too big or too small.
                 if (numCurrClusterItems > mMaxClusterSize) {
                     splitAndAddCurrentCluster();
-                } else if (numClusters > 0 && numCurrClusterItems < mMinClusterSize
-                        && !mCurrCluster.mGeographicallySeparatedFromPrevCluster) {
+                } else if (numClusters > 0 && numCurrClusterItems < mMinClusterSize && !mCurrCluster.mGeographicallySeparatedFromPrevCluster) {
                     mergeAndAddCurrentCluster();
                 } else {
                     mClusters.add(mCurrCluster);
@@ -383,16 +373,13 @@ class Cluster {
         if (minTimestamp == 0) return "";
 
         String caption;
-        String minDay = DateFormat.format(MMDDYY_FORMAT, minTimestamp)
-                .toString();
-        String maxDay = DateFormat.format(MMDDYY_FORMAT, maxTimestamp)
-                .toString();
+        String minDay = DateFormat.format(MMDDYY_FORMAT, minTimestamp).toString();
+        String maxDay = DateFormat.format(MMDDYY_FORMAT, maxTimestamp).toString();
 
         if (minDay.substring(4).equals(maxDay.substring(4))) {
             // The items are from the same year - show at least as
             // much granularity as abbrev_all allows.
-            caption = DateUtils.formatDateRange(context, minTimestamp,
-                    maxTimestamp, DateUtils.FORMAT_ABBREV_ALL);
+            caption = DateUtils.formatDateRange(context, minTimestamp, maxTimestamp, DateUtils.FORMAT_ABBREV_ALL);
 
             // Get a more granular date range string if the min and
             // max timestamp are on the same day and from the
@@ -401,27 +388,22 @@ class Cluster {
                 int flags = DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE;
                 // Contains the year only if the date does not
                 // correspond to the current year.
-                String dateRangeWithOptionalYear = DateUtils.formatDateTime(
-                        context, minTimestamp, flags);
-                String dateRangeWithYear = DateUtils.formatDateTime(
-                        context, minTimestamp, flags | DateUtils.FORMAT_SHOW_YEAR);
+                String dateRangeWithOptionalYear = DateUtils.formatDateTime(context, minTimestamp, flags);
+                String dateRangeWithYear = DateUtils.formatDateTime(context, minTimestamp, flags | DateUtils.FORMAT_SHOW_YEAR);
                 if (!dateRangeWithOptionalYear.equals(dateRangeWithYear)) {
                     // This means both dates are from the same year
                     // - show the time.
                     // Not enough room to display the time range.
                     // Pick the mid-point.
                     long midTimestamp = (minTimestamp + maxTimestamp) / 2;
-                    caption = DateUtils.formatDateRange(context, midTimestamp,
-                            midTimestamp, DateUtils.FORMAT_SHOW_TIME | flags);
+                    caption = DateUtils.formatDateRange(context, midTimestamp, midTimestamp, DateUtils.FORMAT_SHOW_TIME | flags);
                 }
             }
         } else {
             // The items are not from the same year - only show
             // month and year.
-            int flags = DateUtils.FORMAT_NO_MONTH_DAY
-                    | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE;
-            caption = DateUtils.formatDateRange(context, minTimestamp,
-                    maxTimestamp, flags);
+            int flags = DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE;
+            caption = DateUtils.formatDateRange(context, minTimestamp, maxTimestamp, flags);
         }
 
         return caption;

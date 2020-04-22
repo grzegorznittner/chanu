@@ -16,8 +16,7 @@ public class ListViewKeyScroller {
     protected static final int PAGE_SCROLL_DURATION_MS = 1000;
 
     public static boolean dispatchKeyEvent(KeyEvent event, AbsListView absListView) {
-        if (absListView == null)
-            return false;
+        if (absListView == null) return false;
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
                 case KeyEvent.KEYCODE_VOLUME_UP:
@@ -28,26 +27,20 @@ public class ListViewKeyScroller {
                     return true;
             }
         }
-        return event.getAction() == KeyEvent.ACTION_UP
-                && (event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP
-                || event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN);
+        return event.getAction() == KeyEvent.ACTION_UP && (event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP || event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN);
     }
 
     private static void scrollToPrevious(AbsListView absListView) {
-        if (absListView == null)
-            return;
+        if (absListView == null) return;
         int height = absListView.getHeight() - PAGE_SCROLL_OFFSET_PX;
-        if (height <= 0)
-            height = absListView.getHeight();
+        if (height <= 0) height = absListView.getHeight();
         absListView.smoothScrollBy(-1 * height, PAGE_SCROLL_DURATION_MS);
     }
 
     private static void scrollToNext(AbsListView absListView) {
-        if (absListView == null)
-            return;
+        if (absListView == null) return;
         int height = absListView.getHeight() - PAGE_SCROLL_OFFSET_PX;
-        if (height <= 0)
-            height = absListView.getHeight();
+        if (height <= 0) height = absListView.getHeight();
         absListView.smoothScrollBy(height, PAGE_SCROLL_DURATION_MS);
     }
 }

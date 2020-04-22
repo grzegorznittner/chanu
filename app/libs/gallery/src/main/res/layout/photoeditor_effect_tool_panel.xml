@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,16 +13,15 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/effect_tool_panel_padding"
-    android:background="@color/translucent_black"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/translucent_black"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/effect_tool_panel_padding">
 
     <TextView
-        android:id="@+id/effect_label"
-        style="@style/EffectLabel"/>
+            android:id="@+id/effect_label"
+            style="@style/EffectLabel" />
 </LinearLayout>

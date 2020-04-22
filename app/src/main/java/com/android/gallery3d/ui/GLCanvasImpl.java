@@ -42,8 +42,7 @@ public class GLCanvasImpl implements GLCanvas {
     private static final int OFFSET_FILL_RECT = 0;
     private static final int OFFSET_DRAW_LINE = 4;
     private static final int OFFSET_DRAW_RECT = 6;
-    private static final float[] BOX_COORDINATES = {
-            0, 0, 1, 0, 0, 1, 1, 1,  // used for filling a rectangle
+    private static final float[] BOX_COORDINATES = {0, 0, 1, 0, 0, 1, 1, 1,  // used for filling a rectangle
             0, 0, 1, 1,              // used for drawing a line
             0, 0, 0, 1, 1, 1, 1, 0}; // used for drawing the outline of a rectangle
     // TODO: the code only work for 2D should get fixed for 3D or removed
@@ -59,8 +58,7 @@ public class GLCanvasImpl implements GLCanvas {
     private final float[] mTextureColor = new float[4];
     private final GLState mGLState;
     private final Rect mClipRect = new Rect();
-    private final Stack<ConfigState> mRestoreStack =
-            new Stack<ConfigState>();
+    private final Stack<ConfigState> mRestoreStack = new Stack<ConfigState>();
     private final RectF mDrawTextureSourceRect = new RectF();
     private final RectF mDrawTextureTargetRect = new RectF();
     private final float[] mTempMatrix = new float[32];
@@ -91,10 +89,7 @@ public class GLCanvasImpl implements GLCanvas {
 
     private static boolean isMatrixRotatedOrFlipped(float[] matrix) {
         final float eps = 1e-5f;
-        return Math.abs(matrix[MSKEW_X]) > eps
-                || Math.abs(matrix[MSKEW_Y]) > eps
-                || matrix[MSCALE_X] < -eps
-                || matrix[MSCALE_Y] > eps;
+        return Math.abs(matrix[MSKEW_X]) > eps || Math.abs(matrix[MSKEW_Y]) > eps || matrix[MSCALE_X] < -eps || matrix[MSCALE_Y] > eps;
     }
 
     public void setSize(int width, int height) {
@@ -150,9 +145,7 @@ public class GLCanvasImpl implements GLCanvas {
         mBoxCoords = name[0];
 
         gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, mBoxCoords);
-        gl.glBufferData(GL11.GL_ARRAY_BUFFER,
-                xyBuffer.capacity() * (Float.SIZE / Byte.SIZE),
-                xyBuffer, GL11.GL_STATIC_DRAW);
+        gl.glBufferData(GL11.GL_ARRAY_BUFFER, xyBuffer.capacity() * (Float.SIZE / Byte.SIZE), xyBuffer, GL11.GL_STATIC_DRAW);
 
         gl.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
         gl.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
@@ -253,13 +246,11 @@ public class GLCanvasImpl implements GLCanvas {
         mCountTextureRect++;
     }
 
-    public void drawMesh(BasicTexture tex, int x, int y, int xyBuffer,
-                         int uvBuffer, int indexBuffer, int indexCount) {
+    public void drawMesh(BasicTexture tex, int x, int y, int xyBuffer, int uvBuffer, int indexBuffer, int indexCount) {
         float alpha = mAlpha;
         if (!bindTexture(tex)) return;
 
-        mGLState.setBlendEnabled(mBlendEnabled
-                && (!tex.isOpaque() || alpha < OPAQUE_ALPHA));
+        mGLState.setBlendEnabled(mBlendEnabled && (!tex.isOpaque() || alpha < OPAQUE_ALPHA));
         mGLState.setTextureAlpha(alpha);
 
         // Reset the texture matrix. We will set our own texture coordinates
@@ -278,8 +269,7 @@ public class GLCanvasImpl implements GLCanvas {
         mGL.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
 
         mGL.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-        mGL.glDrawElements(GL11.GL_TRIANGLE_STRIP,
-                indexCount, GL11.GL_UNSIGNED_BYTE, 0);
+        mGL.glDrawElements(GL11.GL_TRIANGLE_STRIP, indexCount, GL11.GL_UNSIGNED_BYTE, 0);
 
         mGL.glBindBuffer(GL11.GL_ARRAY_BUFFER, mBoxCoords);
         mGL.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
@@ -340,27 +330,19 @@ public class GLCanvasImpl implements GLCanvas {
         return intersect;
     }
 
-    private void drawBoundTexture(
-            BasicTexture texture, int x, int y, int width, int height) {
+    private void drawBoundTexture(BasicTexture texture, int x, int y, int width, int height) {
         // Test whether it has been rotated or flipped, if so, glDrawTexiOES
         // won't work
         if (isMatrixRotatedOrFlipped(mMatrixValues)) {
             if (texture.hasBorder()) {
-                setTextureCoords(
-                        1.0f / texture.getTextureWidth(),
-                        1.0f / texture.getTextureHeight(),
-                        (texture.getWidth() - 1.0f) / texture.getTextureWidth(),
-                        (texture.getHeight() - 1.0f) / texture.getTextureHeight());
+                setTextureCoords(1.0f / texture.getTextureWidth(), 1.0f / texture.getTextureHeight(), (texture.getWidth() - 1.0f) / texture.getTextureWidth(), (texture.getHeight() - 1.0f) / texture.getTextureHeight());
             } else {
-                setTextureCoords(0, 0,
-                        (float) texture.getWidth() / texture.getTextureWidth(),
-                        (float) texture.getHeight() / texture.getTextureHeight());
+                setTextureCoords(0, 0, (float) texture.getWidth() / texture.getTextureWidth(), (float) texture.getHeight() / texture.getTextureHeight());
             }
             textureRect(x, y, width, height);
         } else {
             // draw the rect from bottom-left to top-right
-            float[] points = mapPoints(
-                    mMatrixValues, x, y + height, x + width, y);
+            float[] points = mapPoints(mMatrixValues, x, y + height, x + width, y);
             x = Math.round(points[0]);
             y = Math.round(points[1]);
             width = Math.round(points[2]) - x;
@@ -372,8 +354,7 @@ public class GLCanvasImpl implements GLCanvas {
         }
     }
 
-    public void drawTexture(
-            BasicTexture texture, int x, int y, int width, int height) {
+    public void drawTexture(BasicTexture texture, int x, int y, int width, int height) {
         drawTexture(texture, x, y, width, height, mAlpha);
     }
 
@@ -381,12 +362,10 @@ public class GLCanvasImpl implements GLCanvas {
         mBlendEnabled = enabled;
     }
 
-    public void drawTexture(BasicTexture texture,
-                            int x, int y, int width, int height, float alpha) {
+    public void drawTexture(BasicTexture texture, int x, int y, int width, int height, float alpha) {
         if (width <= 0 || height <= 0) return;
 
-        mGLState.setBlendEnabled(mBlendEnabled
-                && (!texture.isOpaque() || alpha < OPAQUE_ALPHA));
+        mGLState.setBlendEnabled(mBlendEnabled && (!texture.isOpaque() || alpha < OPAQUE_ALPHA));
         if (!bindTexture(texture)) return;
         mGLState.setTextureAlpha(alpha);
         drawBoundTexture(texture, x, y, width, height);
@@ -401,8 +380,7 @@ public class GLCanvasImpl implements GLCanvas {
         source = mDrawTextureSourceRect;
         target = mDrawTextureTargetRect;
 
-        mGLState.setBlendEnabled(mBlendEnabled
-                && (!texture.isOpaque() || mAlpha < OPAQUE_ALPHA));
+        mGLState.setBlendEnabled(mBlendEnabled && (!texture.isOpaque() || mAlpha < OPAQUE_ALPHA));
         if (!bindTexture(texture)) return;
         convertCoordinate(source, target, texture);
         setTextureCoords(source);
@@ -413,8 +391,7 @@ public class GLCanvasImpl implements GLCanvas {
     // This function changes the source coordinate to the texture coordinates.
     // It also clips the source and target coordinates if it is beyond the
     // bound of the texture.
-    private void convertCoordinate(RectF source, RectF target,
-                                   BasicTexture texture) {
+    private void convertCoordinate(RectF source, RectF target, BasicTexture texture) {
 
         int width = texture.getWidth();
         int height = texture.getHeight();
@@ -429,25 +406,21 @@ public class GLCanvasImpl implements GLCanvas {
         // Clip if the rendering range is beyond the bound of the texture.
         float xBound = (float) width / texWidth;
         if (source.right > xBound) {
-            target.right = target.left + target.width() *
-                    (xBound - source.left) / source.width();
+            target.right = target.left + target.width() * (xBound - source.left) / source.width();
             source.right = xBound;
         }
         float yBound = (float) height / texHeight;
         if (source.bottom > yBound) {
-            target.bottom = target.top + target.height() *
-                    (yBound - source.top) / source.height();
+            target.bottom = target.top + target.height() * (yBound - source.top) / source.height();
             source.bottom = yBound;
         }
     }
 
-    public void drawMixed(BasicTexture from,
-                          int toColor, float ratio, int x, int y, int w, int h) {
+    public void drawMixed(BasicTexture from, int toColor, float ratio, int x, int y, int w, int h) {
         drawMixed(from, toColor, ratio, x, y, w, h, mAlpha);
     }
 
-    public void drawMixed(BasicTexture from, BasicTexture to,
-                          float ratio, int x, int y, int w, int h) {
+    public void drawMixed(BasicTexture from, BasicTexture to, float ratio, int x, int y, int w, int h) {
         drawMixed(from, to, ratio, x, y, w, h, mAlpha);
     }
 
@@ -466,8 +439,7 @@ public class GLCanvasImpl implements GLCanvas {
         color[3] = alpha;
     }
 
-    private void drawMixed(BasicTexture from, int toColor,
-                           float ratio, int x, int y, int width, int height, float alpha) {
+    private void drawMixed(BasicTexture from, int toColor, float ratio, int x, int y, int width, int height, float alpha) {
 
         if (ratio <= 0) {
             drawTexture(from, x, y, width, height, alpha);
@@ -477,8 +449,7 @@ public class GLCanvasImpl implements GLCanvas {
             return;
         }
 
-        mGLState.setBlendEnabled(mBlendEnabled && (!from.isOpaque()
-                || !Utils.isOpaque(toColor) || alpha < OPAQUE_ALPHA));
+        mGLState.setBlendEnabled(mBlendEnabled && (!from.isOpaque() || !Utils.isOpaque(toColor) || alpha < OPAQUE_ALPHA));
 
         final GL11 gl = mGL;
         if (!bindTexture(from)) return;
@@ -507,9 +478,7 @@ public class GLCanvasImpl implements GLCanvas {
         // GL_TEXTURE_ENV_COLORs.
         // RGB component are get from toColor and will used as SRC1
         float colorAlpha = (float) (toColor >>> 24) / (0xff * 0xff);
-        setTextureColor(((toColor >>> 16) & 0xff) * colorAlpha,
-                ((toColor >>> 8) & 0xff) * colorAlpha,
-                (toColor & 0xff) * colorAlpha, comboRatio);
+        setTextureColor(((toColor >>> 16) & 0xff) * colorAlpha, ((toColor >>> 8) & 0xff) * colorAlpha, (toColor & 0xff) * colorAlpha, comboRatio);
         gl.glTexEnvfv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, mTextureColor, 0);
 
         gl.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_COMBINE_RGB, GL11.GL_INTERPOLATE);
@@ -531,8 +500,7 @@ public class GLCanvasImpl implements GLCanvas {
         mGLState.setTexEnvMode(GL11.GL_REPLACE);
     }
 
-    private void drawMixed(BasicTexture from, BasicTexture to,
-                           float ratio, int x, int y, int width, int height, float alpha) {
+    private void drawMixed(BasicTexture from, BasicTexture to, float ratio, int x, int y, int width, int height, float alpha) {
 
         if (ratio <= 0) {
             drawTexture(from, x, y, width, height, alpha);
@@ -544,11 +512,9 @@ public class GLCanvasImpl implements GLCanvas {
 
         // In the current implementation the two textures must have the
         // same size.
-        Utils.assertTrue(from.getWidth() == to.getWidth()
-                && from.getHeight() == to.getHeight());
+        Utils.assertTrue(from.getWidth() == to.getWidth() && from.getHeight() == to.getHeight());
 
-        mGLState.setBlendEnabled(mBlendEnabled && (!from.isOpaque()
-                || !to.isOpaque() || alpha < OPAQUE_ALPHA));
+        mGLState.setBlendEnabled(mBlendEnabled && (!from.isOpaque() || !to.isOpaque() || alpha < OPAQUE_ALPHA));
 
         final GL11 gl = mGL;
         if (!bindTexture(from)) return;
@@ -627,19 +593,12 @@ public class GLCanvasImpl implements GLCanvas {
         texture.setSize(width, height);
 
         int[] cropRect = {0, 0, width, height};
-        gl.glTexParameteriv(GL11.GL_TEXTURE_2D,
-                GL11Ext.GL_TEXTURE_CROP_RECT_OES, cropRect, 0);
-        gl.glTexParameteri(GL11.GL_TEXTURE_2D,
-                GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
-        gl.glTexParameteri(GL11.GL_TEXTURE_2D,
-                GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
-        gl.glTexParameterf(GL11.GL_TEXTURE_2D,
-                GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-        gl.glTexParameterf(GL11.GL_TEXTURE_2D,
-                GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-        gl.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0,
-                GL11.GL_RGB, x, y, texture.getTextureWidth(),
-                texture.getTextureHeight(), 0);
+        gl.glTexParameteriv(GL11.GL_TEXTURE_2D, GL11Ext.GL_TEXTURE_CROP_RECT_OES, cropRect, 0);
+        gl.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
+        gl.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
+        gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        gl.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, x, y, texture.getTextureWidth(), texture.getTextureHeight(), 0);
 
         return texture;
     }
@@ -661,8 +620,7 @@ public class GLCanvasImpl implements GLCanvas {
         setTextureCoords(source.left, source.top, source.right, source.bottom);
     }
 
-    private void setTextureCoords(float left, float top,
-                                  float right, float bottom) {
+    private void setTextureCoords(float left, float top, float right, float bottom) {
         mGL.glMatrixMode(GL11.GL_TEXTURE);
         mTextureMatrixValues[0] = right - left;
         mTextureMatrixValues[5] = bottom - top;
@@ -757,10 +715,7 @@ public class GLCanvasImpl implements GLCanvas {
     }
 
     public void dumpStatisticsAndClear() {
-        String line = String.format(
-                "MESH:%d, TEX_OES:%d, TEX_RECT:%d, FILL_RECT:%d, LINE:%d",
-                mCountDrawMesh, mCountTextureRect, mCountTextureOES,
-                mCountFillRect, mCountDrawLine);
+        String line = String.format("MESH:%d, TEX_OES:%d, TEX_RECT:%d, FILL_RECT:%d, LINE:%d", mCountDrawMesh, mCountTextureRect, mCountTextureOES, mCountFillRect, mCountDrawLine);
         mCountDrawMesh = 0;
         mCountTextureRect = 0;
         mCountTextureOES = 0;
@@ -802,8 +757,7 @@ public class GLCanvasImpl implements GLCanvas {
             gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
             gl.glEnable(GL11.GL_TEXTURE_2D);
 
-            gl.glTexEnvf(GL11.GL_TEXTURE_ENV,
-                    GL11.GL_TEXTURE_ENV_MODE, GL11.GL_REPLACE);
+            gl.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_REPLACE);
 
             // Set the background color
             gl.glClearColor(0f, 0f, 0f, 0f);
@@ -861,11 +815,7 @@ public class GLCanvasImpl implements GLCanvas {
             setTexture2DEnabled(false);
 
             float prealpha = (color >>> 24) * alpha * 65535f / 255f / 255f;
-            mGL.glColor4x(
-                    Math.round(((color >> 16) & 0xFF) * prealpha),
-                    Math.round(((color >> 8) & 0xFF) * prealpha),
-                    Math.round((color & 0xFF) * prealpha),
-                    Math.round(255 * prealpha));
+            mGL.glColor4x(Math.round(((color >> 16) & 0xFF) * prealpha), Math.round(((color >> 8) & 0xFF) * prealpha), Math.round((color & 0xFF) * prealpha), Math.round(255 * prealpha));
         }
 
         public void setTexture2DEnabled(boolean enabled) {
@@ -900,8 +850,7 @@ public class GLCanvasImpl implements GLCanvas {
             if (mRect.left != Integer.MAX_VALUE) {
                 Rect rect = mRect;
                 canvas.mClipRect.set(rect);
-                canvas.mGL.glScissor(
-                        rect.left, rect.top, rect.width(), rect.height());
+                canvas.mGL.glScissor(rect.left, rect.top, rect.width(), rect.height());
             }
             if (mMatrix[0] != Float.NEGATIVE_INFINITY) {
                 System.arraycopy(mMatrix, 0, canvas.mMatrixValues, 0, 16);

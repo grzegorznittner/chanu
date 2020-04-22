@@ -75,8 +75,7 @@ public class GalleryUtils {
         sContext = context;
         if (sPixelDensity < 0) {
             DisplayMetrics metrics = new DisplayMetrics();
-            WindowManager wm = (WindowManager)
-                    context.getSystemService(Context.WINDOW_SERVICE);
+            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             wm.getDefaultDisplay().getMetrics(metrics);
             sPixelDensity = metrics.density;
         }
@@ -121,10 +120,8 @@ public class GalleryUtils {
         }
     }
 
-    public static double fastDistanceMeters(double latRad1, double lngRad1,
-                                            double latRad2, double lngRad2) {
-        if ((Math.abs(latRad1 - latRad2) > RAD_PER_DEG)
-                || (Math.abs(lngRad1 - lngRad2) > RAD_PER_DEG)) {
+    public static double fastDistanceMeters(double latRad1, double lngRad1, double latRad2, double lngRad2) {
+        if ((Math.abs(latRad1 - latRad2) > RAD_PER_DEG) || (Math.abs(lngRad1 - lngRad2) > RAD_PER_DEG)) {
             return accurateDistanceMeters(latRad1, lngRad1, latRad2, lngRad2);
         }
         // Approximate sin(x) = x.
@@ -144,13 +141,11 @@ public class GalleryUtils {
         return EARTH_RADIUS_METERS * trigTerm;
     }
 
-    public static double accurateDistanceMeters(double lat1, double lng1,
-                                                double lat2, double lng2) {
+    public static double accurateDistanceMeters(double lat1, double lng1, double lat2, double lng2) {
         double dlat = Math.sin(0.5 * (lat2 - lat1));
         double dlng = Math.sin(0.5 * (lng2 - lng1));
         double x = dlat * dlat + dlng * dlng * Math.cos(lat1) * Math.cos(lat2);
-        return (2 * Math.atan2(Math.sqrt(x), Math.sqrt(Math.max(0.0,
-                1.0 - x)))) * EARTH_RADIUS_METERS;
+        return (2 * Math.atan2(Math.sqrt(x), Math.sqrt(Math.max(0.0, 1.0 - x)))) * EARTH_RADIUS_METERS;
     }
 
 
@@ -179,11 +174,8 @@ public class GalleryUtils {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getInt(updateKey, 0) != version) {
             PackageManager packageManager = context.getPackageManager();
-            List<ResolveInfo> infos = packageManager.queryIntentActivities(
-                    new Intent(Intent.ACTION_EDIT).setType(mimeType), 0);
-            prefs.edit().putInt(updateKey, version)
-                    .putBoolean(hasKey, !infos.isEmpty())
-                    .commit();
+            List<ResolveInfo> infos = packageManager.queryIntentActivities(new Intent(Intent.ACTION_EDIT).setType(mimeType), 0);
+            prefs.edit().putInt(updateKey, version).putBoolean(hasKey, !infos.isEmpty()).commit();
         }
 
         return prefs.getBoolean(hasKey, true);
@@ -194,11 +186,8 @@ public class GalleryUtils {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getInt(KEY_CAMERA_UPDATE, 0) != version) {
             PackageManager packageManager = context.getPackageManager();
-            List<ResolveInfo> infos = packageManager.queryIntentActivities(
-                    new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA), 0);
-            prefs.edit().putInt(KEY_CAMERA_UPDATE, version)
-                    .putBoolean(KEY_HAS_CAMERA, !infos.isEmpty())
-                    .commit();
+            List<ResolveInfo> infos = packageManager.queryIntentActivities(new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA), 0);
+            prefs.edit().putInt(KEY_CAMERA_UPDATE, version).putBoolean(KEY_HAS_CAMERA, !infos.isEmpty()).commit();
         }
         return prefs.getBoolean(KEY_HAS_CAMERA, true);
     }
@@ -208,8 +197,7 @@ public class GalleryUtils {
         return (latitude != MediaItem.INVALID_LATLNG || longitude != MediaItem.INVALID_LATLNG);
     }
 
-    public static String formatLatitudeLongitude(String format, double latitude,
-                                                 double longitude) {
+    public static String formatLatitudeLongitude(String format, double latitude, double longitude) {
         // We need to specify the locale otherwise it may go wrong in some language
         // (e.g. Locale.FRENCH)
         return String.format(Locale.ENGLISH, format, latitude, longitude);
@@ -221,13 +209,9 @@ public class GalleryUtils {
             // the MapView to the specified location, but we need a marker
             // for further operations (routing to/from).
             // The q=(lat, lng) syntax is suggested by geo-team.
-            String uri = formatLatitudeLongitude(
-                    URLFormatComponent.getUrl(context, URLFormatComponent.GOOGLE_MAPS_URL_FORMAT),
-                    latitude, longitude);
-            ComponentName compName = new ComponentName(MAPS_PACKAGE_NAME,
-                    MAPS_CLASS_NAME);
-            Intent mapsIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(uri)).setComponent(compName);
+            String uri = formatLatitudeLongitude(URLFormatComponent.getUrl(context, URLFormatComponent.GOOGLE_MAPS_URL_FORMAT), latitude, longitude);
+            ComponentName compName = new ComponentName(MAPS_PACKAGE_NAME, MAPS_CLASS_NAME);
+            Intent mapsIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri)).setComponent(compName);
             context.startActivity(mapsIntent);
         } catch (ActivityNotFoundException e) {
             // Use the "geo intent" if no GMM is installed
@@ -238,8 +222,7 @@ public class GalleryUtils {
         }
     }
 
-    public static void setViewPointMatrix(
-            float[] matrix, float x, float y, float z) {
+    public static void setViewPointMatrix(float[] matrix, float x, float y, float z) {
         // The matrix is
         // -z,  0,  x,  0
         //  0, -z,  y,  0
@@ -270,8 +253,7 @@ public class GalleryUtils {
         return durationValue;
     }
 
-    public static void setSpinnerVisibility(final Activity activity,
-                                            final boolean visible) {
+    public static void setSpinnerVisibility(final Activity activity, final boolean visible) {
         SpinnerVisibilitySetter.getInstance(activity).setSpinnerVisibility(visible);
     }
 
@@ -281,11 +263,9 @@ public class GalleryUtils {
 
         if (MIME_TYPE_ALL.equals(type)) {
             typeBits = DataManager.INCLUDE_ALL;
-        } else if (MIME_TYPE_IMAGE.equals(type) ||
-                DIR_TYPE_IMAGE.equals(type)) {
+        } else if (MIME_TYPE_IMAGE.equals(type) || DIR_TYPE_IMAGE.equals(type)) {
             typeBits = DataManager.INCLUDE_IMAGE;
-        } else if (MIME_TYPE_VIDEO.equals(type) ||
-                DIR_TYPE_VIDEO.equals(type)) {
+        } else if (MIME_TYPE_VIDEO.equals(type) || DIR_TYPE_VIDEO.equals(type)) {
             typeBits = DataManager.INCLUDE_VIDEO;
         } else {
             typeBits = DataManager.INCLUDE_ALL;
@@ -300,9 +280,7 @@ public class GalleryUtils {
 
     public static int getSelectionModePrompt(int typeBits) {
         if ((typeBits & DataManager.INCLUDE_VIDEO) != 0) {
-            return (typeBits & DataManager.INCLUDE_IMAGE) == 0
-                    ? R.string.select_video
-                    : R.string.select_item;
+            return (typeBits & DataManager.INCLUDE_IMAGE) == 0 ? R.string.select_video : R.string.select_item;
         }
         return R.string.select_image;
     }
@@ -319,8 +297,7 @@ public class GalleryUtils {
             long availableSize;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 availableSize = deprecatedAvailableSize(stat);
-            else
-                availableSize = availableSize(stat);
+            else availableSize = availableSize(stat);
             return availableSize > size;
         } catch (Exception e) {
             Log.i(TAG, "Fail to access external storage", e);
