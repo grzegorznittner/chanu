@@ -1,7 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.chanapps.four.activity"
-        android:versionCode="96"
-        android:versionName="2.0.26">
+        package="com.chanapps.four.activity">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -20,8 +18,6 @@
             android:largeScreens="true"
             android:normalScreens="true"
             android:smallScreens="false" />
-
-
 
 
     <application
@@ -386,11 +382,11 @@
         <!-- Gallery activities -->
 
         <activity
-            android:name="com.android.gallery3d.app.Wallpaper"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="false"
-            android:launchMode="standard"
-            android:theme="@style/android:Theme.Translucent.NoTitleBar">
+                android:name="com.android.gallery3d.app.Wallpaper"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:exported="false"
+                android:launchMode="standard"
+                android:theme="@style/android:Theme.Translucent.NoTitleBar">
             <meta-data
                     android:name="android.wallpaper.preview"
                     android:resource="@xml/wallpaper_picker_preview" />

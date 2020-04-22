@@ -9,6 +9,11 @@ android {
         applicationId "com.chanapps.four.activity"
         minSdkVersion 15
         targetSdkVersion 25
+
+        versionCode 96
+        versionName "2.0.26"
+        multiDexEnabled true
+        archivesBaseName = "$applicationId-$versionName"
     }
 
     buildTypes {
