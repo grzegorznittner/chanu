@@ -31,6 +31,11 @@ android {
             shrinkResources true
             proguardFiles 'proguard.cfg'
         }
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
+        }
+
     }
 
     packagingOptions {
@@ -57,4 +62,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.3.1'
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    // debugImplementation because LeakCanary should only run in debug builds.
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="app_name" translatable="false">Chanu</string>
+
     <!-- titles -->
     <string name="thread_activity">Thread</string>
     <string name="board_activity">Board</string>

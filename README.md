@@ -31,3 +31,8 @@
 4.  Run 'app' to install Chanu onto your device
 5.  ....
 6.  Profit!
+
+#### App Icon
+
+I used the old one as a base, just added a solid color layer as a background, hope you'll like it, just for reference, the color i used is #00c853 [Green A700](https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=00C853), the original logo is trimmed with 75% resize in Android Studio image asset
+debug icon has same settings with #69F0AE [Green A200](https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=69F0AE) as background instead
