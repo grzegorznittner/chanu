@@ -1410,8 +1410,8 @@ We will remove anything that remotely breaks this rule.</p>
 
     <string name="pref_use_volume_scroll">Volume Key Scrolling</string>
 
-    <string name="refresh_favorites">Refreshing boards in the background...</string>
-    <string name="refresh_watchlist">Refreshing threads in the background...</string>
+    <string name="refresh_favorites">Refreshing boards in the background…</string>
+    <string name="refresh_watchlist">Refreshing threads in the background…</string>
     <string name="pref_use_abbrev_boards">Abbreviated Boards</string>
     <string name="pref_autoload_images_nothumbs">No thumbnails</string>
     <string name="pref_background_data">Background Data</string>

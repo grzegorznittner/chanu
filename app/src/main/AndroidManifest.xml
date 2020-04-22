@@ -8,7 +8,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE"/> -->
 
     <!-- check if app is in the foreground -->
     <uses-permission android:name="android.permission.GET_TASKS" />
@@ -322,39 +321,6 @@
                 android:exported="false"
                 android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <!-- Gallery Photo widget -->
-        <!-- 
-        <activity android:name="com.chanapps.four.widget.PhotoAppWidgetConfigure"
-                android:configChanges="keyboardHidden|orientation|screenSize"
-                android:theme="@style/android:Theme.Translucent.NoTitleBar">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
-        <receiver android:name="com.chanapps.four.widget.PhotoAppWidgetProvider"
-                android:label="@string/appwidget_title">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
-                    android:resource="@xml/widget_photoapp_info" />
-        </receiver>
-        <receiver android:name="com.android.gallery3d.app.PackagesMonitor">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED"/>
-                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
-                <data android:scheme="package"/>
-            </intent-filter>
-        </receiver>
-        <service android:name="com.android.gallery3d.gadget.WidgetService"
-                android:permission="android.permission.BIND_REMOTEVIEWS"
-                android:exported="false"/>
-        <provider android:name="com.android.gallery3d.provider.GalleryProvider"
-                android:syncable="false"
-                android:grantUriPermissions="true"
-                android:authorities="com.android.gallery3d.provider"
-                android:exported="false"/>
-        -->
         <activity
                 android:name="com.android.gallery3d.gadget.WidgetClickHandler"
                 android:exported="false" />
@@ -373,21 +339,6 @@
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:exported="false"
                 android:theme="@style/DialogPickerTheme" />
-
-        <!-- advertising -->
-        <!--
-        <activity android:name="com.google.ads.AdActivity"
-                  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
-
-        <activity android:name=".VideoViewActivity"
-                  android:launchMode="standard"
-                  android:configChanges="orientation|keyboardHidden|screenSize"
-                  android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-        -->
 
         <!-- Gallery activities -->
 
@@ -440,28 +391,6 @@
         <uses-library
                 android:name="com.google.android.media.effects"
                 android:required="false" />
-
-        <!--
-         <activity android:name="com.android.gallery3d.app.SlideshowDream"
-                   android:label="@string/slideshow_dream_name"
-                   android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
-                   android:hardwareAccelerated="true"
-                   android:exported="false"
-                   android:launchMode="standard"
-                 >
-             <intent-filter>
-                 <action android:name="android.intent.action.MAIN"/>
-                 <category android:name="android.intent.category.DEFAULT"/>
-                 <category android:name="android.intent.category.DREAM"/>
-             </intent-filter>
-         </activity>
-         -->
-
-        <!--
-        <meta-data android:name="com.mobclix.APPLICATION_ID" android:value="8149A3F7-CAF0-49D6-ABC3-11D3F97D2171"/>
-        <activity android:name="com.mobclix.android.sdk.MobclixBrowserActivity"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-        -->
 
     </application>
 
