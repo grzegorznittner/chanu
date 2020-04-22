@@ -22,7 +22,7 @@
                 android:title="@string/pref_about_application_version" />
 
     </PreferenceCategory>
-    
+
     <PreferenceCategory
             android:key="pref_about_data_category"
             android:persistent="true"

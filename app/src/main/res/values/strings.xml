@@ -444,8 +444,8 @@
     <string name="board_s4s">Shit 4chan Says</string>
     <string name="board_soc">Cams &amp; Meetups</string>
     <string name="board_aco">Adult Cartoons</string>
-    <string name="board_his">History &amp; Humanities</string>
-    <string name="board_qa">Questions &amp; Answers</string>
+    <string name="board_his">History And Humanities</string>
+    <string name="board_qa">Questions And Answers</string>
     <string name="board_news">Current News</string>
     <string name="board_trash">Off-Topic</string>
     <string name="board_wsr">Worksafe Requests</string>
@@ -1445,7 +1445,9 @@ We will remove anything that remotely breaks this rule.</p>
     <string name="pref_share_image_url_summ_on">Share URL instead of image file</string>
     <string name="pref_share_image_url_summ_off">Share image file instead of URL</string>
 
-    <string name="board_biz">Business &amp; Finance</string>
+    <string name="board_biz">Business And Finance</string>
     <string name="board_desc_biz">Get rich or die trying</string>
+    <string name="board_q">4chan-Feedback</string>
+    <string name="board_desc_q">Edit and functionality</string>
 
 </resources>
