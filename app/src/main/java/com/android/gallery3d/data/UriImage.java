@@ -23,6 +23,7 @@ import android.graphics.BitmapFactory.Options;
 import android.graphics.BitmapRegionDecoder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.android.gallery3d.app.GalleryApp;

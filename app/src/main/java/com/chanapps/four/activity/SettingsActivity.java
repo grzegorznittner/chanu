@@ -163,7 +163,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.settings_menu, menu);
+//        inflater.inflate(R.menu.settings_menu, menu);
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         return super.onCreateOptionsMenu(menu);

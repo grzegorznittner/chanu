@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Message;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;

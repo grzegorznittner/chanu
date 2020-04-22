@@ -19,16 +19,16 @@
         <Preference
                 android:key="dialog"
                 android:summary="Show a color picker dialog built upon the custom color picker view."
-                android:title="Show Dialog"></Preference>
+                android:title="Show Dialog"/>
         <Preference
                 android:key="activity"
                 android:summary="Show how the custom color picker can be used in a standard activity."
-                android:title="Show Activity"></Preference>
+                android:title="Show Activity"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Source Code">
         <Preference
                 android:key="source_code"
                 android:summary="http://code.google.com/p/color-picker-view/"
-                android:title="Get Source Code"></Preference>
+                android:title="Get Source Code"/>
     </PreferenceCategory>
 </PreferenceScreen>

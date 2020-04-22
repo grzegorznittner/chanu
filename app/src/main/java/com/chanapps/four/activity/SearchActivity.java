@@ -6,11 +6,11 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.service.NetworkProfileManager;
 
 /**

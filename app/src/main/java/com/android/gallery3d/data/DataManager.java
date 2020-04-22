@@ -19,6 +19,7 @@ package com.android.gallery3d.data;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.Utils;

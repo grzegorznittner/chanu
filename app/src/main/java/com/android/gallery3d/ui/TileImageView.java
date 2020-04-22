@@ -23,6 +23,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.android.gallery3d.app.GalleryContext;
 import com.android.gallery3d.common.Utils;

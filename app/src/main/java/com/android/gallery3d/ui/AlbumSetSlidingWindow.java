@@ -19,6 +19,7 @@ package com.android.gallery3d.ui;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Message;
+import android.util.Log;
 
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.common.Utils;

@@ -16,6 +16,7 @@
 package com.android.gallery3d.ui;
 
 import android.opengl.GLSurfaceView.EGLConfigChooser;
+import android.util.Log;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;

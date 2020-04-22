@@ -3,11 +3,12 @@
  */
 package com.chanapps.four.gallery;
 
+import android.util.Log;
+
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.Path;
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;

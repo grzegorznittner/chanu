@@ -16,6 +16,8 @@
 
 package com.android.gallery3d.data;
 
+import android.util.Log;
+
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.util.Future;
 

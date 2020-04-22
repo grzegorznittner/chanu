@@ -22,6 +22,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.android.gallery3d.common.Utils;
 

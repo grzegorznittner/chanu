@@ -23,6 +23,7 @@ import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;
+import android.util.Log;
 
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.Utils;

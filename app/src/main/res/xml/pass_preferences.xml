@@ -19,14 +19,6 @@
                 android:maxLength="6"
                 android:summary="@string/pref_pass_pin_summ"
                 android:title="@string/pref_pass_pin" />
-        <!--
-        <CheckBoxPreference
-                android:key="pref_pass_enabled"
-                android:title="@string/pref_pass_enabled"
-                android:summaryOn="@string/pref_pass_enabled_summ_on"
-                android:summaryOff="@string/pref_pass_enabled_summ_off"
-                android:defaultValue="false" />
-        -->
         <Preference
                 android:key="pref_pass_auth_button"
                 android:title="@string/dialog_authorize" />

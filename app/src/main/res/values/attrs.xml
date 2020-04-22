@@ -16,9 +16,9 @@
 
     </declare-styleable>
 
-    <declare-styleable name="StretchyImageView"></declare-styleable>
+    <declare-styleable name="StretchyImageView" />
 
-    <declare-styleable name="LetterSpacingTextView"></declare-styleable>
+    <declare-styleable name="LetterSpacingTextView" />
 
     <declare-styleable name="IconPreferenceScreen">
         <attr name="icon" format="reference" />

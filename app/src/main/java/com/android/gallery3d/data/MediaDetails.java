@@ -17,6 +17,7 @@
 package com.android.gallery3d.data;
 
 import android.media.ExifInterface;
+import android.util.Log;
 
 import com.chanapps.four.gallery3d.R;
 

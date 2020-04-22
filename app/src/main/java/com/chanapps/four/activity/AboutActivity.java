@@ -6,13 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.StringResourceDialog;
 import com.chanapps.four.component.ThemeSelector;

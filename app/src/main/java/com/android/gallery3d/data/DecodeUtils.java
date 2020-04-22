@@ -25,6 +25,7 @@ import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;

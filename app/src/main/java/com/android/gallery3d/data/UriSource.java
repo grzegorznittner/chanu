@@ -17,6 +17,7 @@
 package com.android.gallery3d.data;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.android.gallery3d.app.GalleryApp;
 

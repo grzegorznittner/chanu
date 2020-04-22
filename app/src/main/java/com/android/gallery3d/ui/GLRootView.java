@@ -27,6 +27,7 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.android.gallery3d.anim.CanvasAnimation;

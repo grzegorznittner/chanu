@@ -15,11 +15,6 @@
     <color name="PaletteThreadHeadText">#bbb</color>
     <color name="PaletteImagePlaceholder">#ccc</color>
     <color name="PaletteDrawerText">#f2f2f2</color>
-    <!--
-    <color name="PaletteDrawerBg">#3f4541</color>
-    <color name="PaletteDrawerUncheckedBg">#883f4541</color>
-    <color name="PaletteDrawerUncheckedFg">#883f4541</color>
-    -->
     <color name="PaletteDrawerBg">@color/DarkPaletteDrawerBg</color>
     <color name="PaletteDrawerUncheckedBg">@color/DarkPaletteDrawerUncheckedBg</color>
     <color name="PaletteDrawerUncheckedFg">@color/DarkPaletteDrawerUncheckedBg</color>
@@ -27,16 +22,8 @@
     <color name="PaletteDrawerDivider">#44ffffff</color>
     <color name="PaletteThreadDividerText">@color/PaletteMedGray</color>
     <color name="PaletteThreadDivider">@color/PaletteLightGray</color>
-    <!--
-    <color name="PaletteSelector">#449def</color>
-    <color name="PaletteSelectorHalf">#88449def</color>
-    <color name="PaletteSelector">@android:color/holo_blue_light</color>
-    <color name="PaletteSelectorHalf">@android:color/holo_blue_light</color>
-    -->
     <color name="PaletteSelector">#8833b5e5</color>
     <color name="PaletteSelectorHalf">#8833b5e5</color>
-    <!-- <color name="PaletteSelectorHalf">#8833b5e5</color> -->
-    <!--<color name="PaletteThreadListBarOverlayBg">#88f4f4f4</color>-->
     <color name="PaletteThreadListBarOverlayFg">#88000000</color>
     <color name="PaletteThreadTitleSecondaryText">@color/PaletteLightGray</color>
     <color name="PaletteBoardGridBoardCodeBg">@color/PaletteLightGray</color>
@@ -49,7 +36,6 @@
     <color name="PaletteYellowWhite">#ecebe7</color>
     <color name="PaletteDarkYellowWhite">#2c2b27</color>
     <color name="PaletteCardBg">#ffffff</color>
-    <!-- <color name="PaletteDarkCardBg">#000000</color> -->
     <color name="PaletteDarkCardBg">#252525</color>
     <color name="PaletteWhite">#f7f7f7</color>
     <color name="PaletteOffWhite">#e4e4e4</color>
@@ -58,7 +44,6 @@
     <color name="PaletteMedGray">#666</color>
     <color name="PaletteDarkGray">#313b4b</color>
     <color name="PaletteBlack">#ff272727</color>
-    <!-- <color name="PalettePureBlack">#ff000000</color> -->
     <color name="PalettePureBlack">#ff252525</color>
     <color name="PaletteBlackHalfOpacity">#802d2d2d</color>
     <color name="PaletteBlack34Opacity">#d02d2d2d</color>
@@ -75,15 +60,11 @@
     <!-- dark theme -->
 
     <color name="DarkPaletteBoardTitleTextColor">#eeeeee</color>
-    <!-- <color name="DarkPaletteCardListBg">#484848</color> -->
     <color name="DarkPaletteCardListBg">#1d1d1d</color>
     <color name="DarkPaletteCardListBarBg">#2f2f2f</color>
     <color name="DarkPaletteImagePlaceholder">#2f2f2f</color>
     <color name="DarkPaletteDrawerBg">#202220</color>
     <color name="DarkPaletteDrawerUncheckedBg">#88202220</color>
-    <!--
-    <color name="DarkPaletteDrawerUncheckedBg">#88303230</color>
-    -->
     <color name="DarkPaletteThreadLine">#44bdbdbd</color>
     <color name="DarkPaletteThreadListBarOverlayFg">#88ffffff</color>
     <color name="DarkPaletteThreadHeaderImageBg">#222</color>

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -13,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;

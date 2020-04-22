@@ -18,6 +18,7 @@ package com.android.gallery3d.ui;
 
 import android.graphics.Rect;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.android.gallery3d.anim.CanvasAnimation;

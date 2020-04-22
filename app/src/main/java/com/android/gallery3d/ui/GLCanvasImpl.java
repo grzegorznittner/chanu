@@ -20,6 +20,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.opengl.GLU;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.util.IntArray;

@@ -1,11 +1,11 @@
 package com.chanapps.four.component;
 
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.service.NetworkProfileManager;

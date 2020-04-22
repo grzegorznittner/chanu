@@ -16,6 +16,8 @@
 
 package com.android.gallery3d.util;
 
+import android.util.Log;
+
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;

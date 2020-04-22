@@ -46,7 +46,7 @@ android {
     }
 }
 
-def getDate() {
+static def getDate() {
     return new Date().format('yyyy.MM.dd.HH.mm.ss')
 }
 

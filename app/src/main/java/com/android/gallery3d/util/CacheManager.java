@@ -19,6 +19,7 @@ package com.android.gallery3d.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.android.gallery3d.common.BlobCache;
 

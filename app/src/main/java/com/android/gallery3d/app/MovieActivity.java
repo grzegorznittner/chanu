@@ -25,6 +25,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video.VideoColumns;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;

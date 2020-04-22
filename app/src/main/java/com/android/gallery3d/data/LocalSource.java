@@ -21,6 +21,7 @@ import android.content.ContentUris;
 import android.content.UriMatcher;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.android.gallery3d.app.Gallery;
 import com.android.gallery3d.app.GalleryApp;

@@ -1,8 +1,8 @@
 package com.nostra13.universalimageloader.core.download;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
