@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.WebView;
 
-import com.chanapps.four.service.ImageDownloadService;
+//import com.chanapps.four.service.ImageDownloadService;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -55,7 +55,7 @@ public class VideoViewActivity extends Activity {
             myWebView.setBackgroundColor(0xffffff);
             myWebView.getSettings().setJavaScriptEnabled(false);
             myWebView.getSettings().setBuiltInZoomControls(false);
-            String html = "<html><body bgcolor=\"black\"><center><img src=\"" + getIntent().getStringExtra(ImageDownloadService.IMAGE_URL) + "\"></img></body></html>";
+            String html = "<html><body bgcolor=\"black\"><center><img src=\"" + getIntent().getStringExtra("imageUrl") + "\"></img></body></html>";
             myWebView.loadDataWithBaseURL("/", html, "text/html", "UTF-8", null);
         } catch (Throwable e) {
             Log.e(TAG, "Web view loading error", e);
