@@ -2,6 +2,7 @@ package com.chanapps.four.activity;
 
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -37,6 +39,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -157,6 +161,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     ThreadFragment.addToWatchlist(BoardActivity.this, handler, boardCode, threadNo);
                     return true;
                 case R.id.board_thread_watch_remove_menu:
+                case R.id.board_thread_remove_menu:
                     ThreadFragment.removeFromWatchlist(BoardActivity.this, handler, boardCode, threadNo);
                     return true;
                 case R.id.board_thread_goto_menu:
@@ -169,19 +174,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     return true;
                 case R.id.board_add_to_favorites_menu:
                     addToFavorites(BoardActivity.this, handler, boardCode);
-                    return true;
-                case R.id.board_thread_remove_menu:
-                    ThreadFragment.removeFromWatchlist(BoardActivity.this, handler, boardCode, threadNo);
-                    /*
-                    ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
-                    if (thread != null) {
-                        WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread);
-                        d.show(getSupportFragmentManager(), WatchlistDeleteDialogFragment.TAG);
-                    }
-                    else {
-                        Toast.makeText(BoardActivity.this, R.string.watch_thread_not_found, Toast.LENGTH_SHORT).show();
-                    }
-                    */
                     return true;
                 case R.id.favorites_remove_board_menu:
                     removeFromFavorites(BoardActivity.this, handler, boardCode);
@@ -767,7 +759,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void initGridViewOptions() {
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) setSmallGridEnabled(false);
         else if (ChanBoard.isVirtualBoard(boardCode)) setSmallGridEnabled(true);
-        else setSmallGridEnabled(getBoolPref(SettingsActivity.PREF_USE_CATALOG,true));
+        else setSmallGridEnabled(getBoolPref(SettingsActivity.PREF_USE_CATALOG, true));
 
         if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode) || ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
             setAbbrevBoardsEnabled(getBoolPref(SettingsActivity.PREF_USE_ABBREV_BOARDS));
@@ -1024,6 +1016,23 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
     protected void onStart() {
         super.onStart();
+
+        //we ask for storage permission here
+        if (ContextCompat.checkSelfPermission(BoardActivity.this, "android.permission.WRITE_EXTERNAL_STORAGE") != PackageManager.PERMISSION_GRANTED) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(BoardActivity.this);
+            dialog.setTitle("Storage Permission");
+            dialog.setMessage("This Application needs storage permission in order to download threads/images on your phone");
+            dialog.setCancelable(true);
+            dialog.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            ActivityCompat.requestPermissions(BoardActivity.this, new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 0);
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = dialog.create();
+            alert.show();
+        }
         if (handler == null) handler = new Handler();
         if (DEBUG)
             Log.i(TAG, "onStart /" + boardCode + "/ q=" + query + " actual class=" + this.getClass());
@@ -1812,7 +1821,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             @Override
             public void run() {
                 Menu menu = popup.getMenu();
-                if (menu == null) return;
                 if (menu == null) return;
                 MenuItem item;
                 if ((item = menu.findItem(R.id.board_add_to_favorites_menu)) != null)
