@@ -193,9 +193,7 @@ public class SelectionManager {
                     index += count;
                 }
             } else {
-                for (Path id : mClickedSet) {
-                    selected.add(id);
-                }
+                selected.addAll(mClickedSet);
             }
         }
         return selected;

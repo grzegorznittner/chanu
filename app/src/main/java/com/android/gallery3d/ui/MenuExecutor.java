@@ -123,7 +123,6 @@ public class MenuExecutor {
 //        boolean supportImport = (supported & MediaObject.SUPPORT_IMPORT) != 0;
 
         setMenuItemVisibility(menu, R.id.action_download, true);
-        setMenuItemVisibility(menu, R.id.action_delete, supportDelete);
         setMenuItemVisibility(menu, R.id.action_rotate_ccw, supportRotate);
         setMenuItemVisibility(menu, R.id.action_rotate_cw, supportRotate);
         setMenuItemVisibility(menu, R.id.action_crop, supportCrop);
@@ -208,8 +207,6 @@ public class MenuExecutor {
             Activity activity = (Activity) mActivity;
             activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.set_as)));
             return true;
-        } else if (action == R.id.action_confirm_delete) {
-            title = R.string.delete;
         } else if (action == R.id.action_rotate_cw) {
             title = R.string.rotate_right;
         } else if (action == R.id.action_rotate_ccw) {
@@ -243,9 +240,7 @@ public class MenuExecutor {
         Log.v(TAG, "Execute cmd: " + cmd + " for " + path);
         long startTime = System.currentTimeMillis();
 
-        if (cmd == R.id.action_confirm_delete) {
-            manager.delete(path);
-        } else if (cmd == R.id.action_rotate_cw) {
+        if (cmd == R.id.action_rotate_cw) {
             manager.rotate(path, 90);
         } else if (cmd == R.id.action_rotate_ccw) {
             manager.rotate(path, -90);

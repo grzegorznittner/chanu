@@ -66,6 +66,7 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     }
 
     public static ShareActionProvider initializeShareActionProvider(Menu menu) {
+        //todo fix also this share, like the others
         MenuItem item = menu.findItem(R.id.action_share);
         ShareActionProvider shareActionProvider = null;
         if (item != null) shareActionProvider = (ShareActionProvider) item.getActionProvider();

@@ -82,8 +82,6 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
     public static final String KEY_MEDIA_SET_PATH = "media-set-path";
     public static final String KEY_MEDIA_ITEM_PATH = "media-item-path";
     public static final String KEY_INDEX_HINT = "index-hint";
-    public static final String HTML_START = "<!DOCTYPE html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><meta http-equiv=\"cache-control\" content=\"no-cache\"/>" + "<meta name=\"viewport\" content=\"width=device-width, target-densitydpi=device-dpi, user-scalable=no\"/>" + "<style type=\"text/css\">" + "html, body {height: 100%;width: 100%;color: black;background: black;}" + "#image {position:fixed;top:0;left:0;text-align:center;}" + "</style></head><body><div id=\"image\"><img src=\"";
-    public static final String HTML_END = "\" unselectable=\"on\" alt=\"\" title=\"\"/></div></body></html>";
     private static final String TAG = "PhotoPage";
     private static final int MSG_HIDE_BARS = 1;
     private static final int HIDE_BARS_TIMEOUT = 3500;
@@ -98,7 +96,6 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
     private FilmStripView mFilmStripView;
     private DetailsHelper mDetailsHelper;
     private boolean mShowDetails;
-    private Path mPendingSharePath;
     // mMediaSet could be null if there is no KEY_MEDIA_SET_PATH supplied.
     // E.g., viewing a photo in gmail attachment
     private MediaSet mMediaSet;
@@ -111,17 +108,10 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
     private MyMenuVisibilityListener mMenuVisibilityListener;
     private boolean mIsMenuVisible;
     private boolean mIsInteracting;
-    protected MenuItem.OnMenuItemClickListener shareActionItemListener = new MenuItem.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            onUserInteractionBegin(); // don't let menu disappear
-            return false;
-        }
-    };
+
     private MediaItem mCurrentPhoto = null;
     private MenuExecutor mMenuExecutor;
     private boolean mIsActive;
-    private ShareActionProvider mShareActionProvider;
     private GLView mRootPane = new GLView() {
 
         @Override
@@ -372,6 +362,7 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
             supportedOperations &= ~MediaObject.SUPPORT_EDIT;
         }
         updateSlideshowMenu();
+        //todo this line here disable every not wanted item, like crop, rotate ecc.
         MenuExecutor.updateMenuOperation(mMenu, supportedOperations);
     }
 
@@ -552,7 +543,7 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
             mSelectionManager.toggle(path);
             Toast.makeText(mActivity.getAndroidContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
             return true;
-        } else if (action == R.id.action_setas || action == R.id.action_confirm_delete || action == R.id.action_rotate_ccw || action == R.id.action_rotate_cw || action == R.id.action_show_on_map || action == R.id.action_edit) {
+        } else if (action == R.id.action_setas  || action == R.id.action_rotate_ccw || action == R.id.action_rotate_cw || action == R.id.action_show_on_map || action == R.id.action_edit) {
             //TODO CHECK IF THOSE ACTIONS ARE STILL VALID
             mSelectionManager.toggle(path);
             mMenuExecutor.onMenuClicked(item, null);
@@ -772,28 +763,6 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
         }
         mActionBar.addOnMenuVisibilityListener(mMenuVisibilityListener);
         onUserInteraction();
-    }
-
-    private void setShareIntent(final Intent intent) {
-        Handler handler = null;
-        try {
-            handler = new Handler();
-        } catch (Exception e) {
-            Log.e(TAG, "Couldn't create handler", e);
-        }
-        if (ActivityDispatcher.onUIThread()) synchronized (this) {
-            if (mShareActionProvider != null && intent != null)
-                mShareActionProvider.setShareIntent(intent);
-        }
-        else if (handler != null) handler.post(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    if (mShareActionProvider != null && intent != null)
-                        mShareActionProvider.setShareIntent(intent);
-                }
-            }
-        });
     }
 
     private void imageSearch(String urlFormat) {

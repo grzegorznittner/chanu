@@ -115,8 +115,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable {
     protected long postNo; // for direct jumps from latest post / recent images
     protected String imageUrl;
     protected boolean shouldPlayThread = false;
-    protected ShareActionProvider shareActionProviderOP = null;
-    //protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
     protected ActionMode actionMode = null;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
