@@ -8,7 +8,6 @@
             android:title="@string/search_title" />
     <item
             android:id="@+id/thread_share_menu"
-            android:actionProviderClass="android.widget.ShareActionProvider"
             android:enabled="true"
             android:icon="@drawable/ic_menu_share_holo_light"
             android:title="@string/share_image" />

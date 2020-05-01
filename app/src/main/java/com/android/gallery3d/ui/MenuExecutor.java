@@ -228,6 +228,7 @@ public class MenuExecutor {
     }
 
     public void startAction(int action, int title, ProgressListener listener) {
+        //todo check if this statement is actually ever called
         ArrayList<Path> ids = mSelectionManager.getSelected(false);
         stopTaskAndDismissDialog();
 

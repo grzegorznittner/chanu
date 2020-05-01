@@ -74,7 +74,6 @@ import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -745,7 +744,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable {
 
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
-        setupShareActionProviderOPMenu(menu);
+//        setupShareActionProviderOPMenu(menu);
         selectCurrentThreadAsync();
         if (firstLoad) {
             firstLoad = false;
@@ -990,7 +989,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable {
         }
         setDeadStatusAsync();
         setWatchMenuAsync();
-        setupShareActionProviderOPMenu(menu);
+//        setupShareActionProviderOPMenu(menu);
         if (getActivity() != null) {
             ((ThreadActivity) getActivity()).createSearchView(menu);
         }
@@ -1042,15 +1041,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable {
         }).start();
     }
 
-    protected void setupShareActionProviderOPMenu(final Menu menu) {
-        updateSharedIntentOP(shareActionProviderOP);
-        if (menu == null) return;
-        MenuItem shareItem = menu.findItem(R.id.thread_share_menu);
-        shareActionProviderOP = shareItem == null ? null : (ShareActionProvider) shareItem.getActionProvider();
-        if (DEBUG)
-            Log.i(TAG, "setupShareActionProviderOP() shareActionProviderOP=" + shareActionProviderOP);
-    }
-
     protected boolean undead() {
         ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
         return !(thread != null && thread.isDead);
@@ -1087,6 +1077,14 @@ public class ThreadFragment extends Fragment implements ThreadViewable {
             case android.R.id.home:
                 navigateUp();
                 return true;
+            case R.id.thread_share_menu:
+                Intent intent2 = new Intent();
+                intent2.setAction(Intent.ACTION_SEND);
+                intent2.setType("text/plain");
+                intent2.putExtra(Intent.EXTRA_TEXT, ChanThread.threadUrl(getActivityContext(), boardCode, threadNo));
+                startActivity(Intent.createChooser(intent2, getResources().getString(R.string.share)));
+                return true;
+
             case R.id.refresh_menu:
                 manualRefresh();
                 return true;
@@ -1370,69 +1368,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable {
                 }
             }
         });
-    }
-
-    protected void updateSharedIntent(ShareActionProvider provider, SparseBooleanArray postPos) {
-        if (postPos == null) return;
-        if (DEBUG) Log.i(TAG, "updateSharedIntent() checked count=" + postPos.size());
-        if (postPos.size() < 1) return;
-        Cursor cursor = adapter.getCursor();
-        if (cursor == null) return;
-
-        // construct paths and add files
-        //ArrayList<String> paths = new ArrayList<String>();
-        //long firstPost = -1;
-        //ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
-        String url = null;
-        for (int i = 0; i < cursor.getCount(); i++) {
-            if (!postPos.get(i)) continue;
-            if (!cursor.moveToPosition(i)) continue;
-            //if (firstPost == -1)
-            //    firstPost = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            //File file = ThreadViewer.fullSizeImageFile(getActivityContext(), cursor); // try for full size first
-            //if (file == null) { // if can't find it, fall back to thumbnail
-            url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL)); // thumbnail
-            if (url != null && !url.isEmpty()) break;
-            //if (DEBUG) Log.i(TAG, "Couldn't find full image, falling back to thumbnail=" + url);
-            //file = (url == null || url.isEmpty()) ? null : imageLoader.getDiscCache().get(url);
-            //}
-            //if (file == null || !file.exists() || !file.canRead() || file.length() <= 0)
-            //    continue;
-            //paths.add(file.getAbsolutePath());
-        }
-        if (url == null || url.isEmpty()) return;
-
-        // set share text
-        //if (DEBUG) Log.i(TAG, "updateSharedIntent() found postNo=" + firstPost + " for threadNo=" + threadNo);
-        /*
-        String linkUrl = (firstPost > 0 && firstPost != threadNo)
-                ? ChanPost.postUrl(getActivityContext(), boardCode, threadNo, firstPost)
-                : ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
-        */
-        // create intent
-        Intent intent;
-        intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, url);
-        intent.setType("text/plain");
-        setShareIntent(provider, intent);
-    }
-
-    protected void updateSharedIntentOP(ShareActionProvider provider) {
-        String url = ChanThread.threadUrl(getActivityContext(), boardCode, threadNo);
-        Intent intent;
-        intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, url);
-        intent.setType("text/plain");
-        setShareIntent(provider, intent);
-    }
-
-    protected void asyncUpdateSharedIntent(ArrayList<String> pathList) {
-        String[] paths = new String[pathList.size()];
-        String[] types = new String[pathList.size()];
-        for (int i = 0; i < pathList.size(); i++) {
-            paths[i] = pathList.get(i);
-            types[i] = "image/jpeg";
-        }
     }
 
     public void onRefresh() {
