@@ -23,25 +23,22 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.util.Log;
 
 import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.DownloadCache;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaObject;
-//import com.android.gallery3d.data.MtpImage;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.picasasource.PicasaSource;
 import com.android.gallery3d.util.GalleryUtils;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
+
+//import com.android.gallery3d.data.MtpImage;
 
 public class GalleryProvider extends ContentProvider {
     public static final String AUTHORITY = "com.android.gallery3d.provider";

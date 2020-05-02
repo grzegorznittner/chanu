@@ -19,10 +19,11 @@ package com.android.gallery3d.util;
 import android.os.Environment;
 
 import com.android.gallery3d.data.MediaSet;
-//import com.android.gallery3d.data.MtpContext;
 import com.android.gallery3d.data.Path;
 
 import java.util.Comparator;
+
+//import com.android.gallery3d.data.MtpContext;
 
 //todo check if we really need this stuff too
 public class MediaSetUtils {

@@ -342,16 +342,6 @@
         <!-- Gallery activities -->
 
         <activity
-                android:name="com.android.gallery3d.app.Wallpaper"
-                android:configChanges="keyboardHidden|orientation|screenSize"
-                android:exported="false"
-                android:launchMode="standard"
-                android:theme="@style/android:Theme.Translucent.NoTitleBar">
-            <meta-data
-                    android:name="android.wallpaper.preview"
-                    android:resource="@xml/wallpaper_picker_preview" />
-        </activity>
-        <activity
                 android:name="com.android.gallery3d.app.CropImage"
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:exported="false"

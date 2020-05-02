@@ -1,13 +1,10 @@
 package com.chanapps.four.fragment;
 
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
-
 
 import com.chanapps.four.activity.BuildConfig;
 import com.chanapps.four.activity.R;
@@ -16,8 +13,6 @@ import com.chanapps.four.component.URLFormatComponent;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * Created with IntelliJ IDEA.

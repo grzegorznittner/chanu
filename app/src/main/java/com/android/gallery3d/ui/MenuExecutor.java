@@ -35,7 +35,6 @@ import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.util.Future;
-import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.chanapps.four.gallery3d.R;
@@ -110,28 +109,18 @@ public class MenuExecutor {
     }
 
     public static void updateMenuOperation(Menu menu, int supported) {
-        boolean supportDelete = (supported & MediaObject.SUPPORT_DELETE) != 0;
-        boolean supportRotate = (supported & MediaObject.SUPPORT_ROTATE) != 0;
         boolean supportCrop = (supported & MediaObject.SUPPORT_CROP) != 0;
         boolean supportShare = (supported & MediaObject.SUPPORT_SHARE) != 0;
-        //boolean supportShare = false; // doesn't work
         boolean supportSetAs = (supported & MediaObject.SUPPORT_SETAS) != 0;
-        boolean supportShowOnMap = (supported & MediaObject.SUPPORT_SHOW_ON_MAP) != 0;
-        boolean supportCache = (supported & MediaObject.SUPPORT_CACHE) != 0;
         boolean supportEdit = (supported & MediaObject.SUPPORT_EDIT) != 0;
         boolean supportInfo = (supported & MediaObject.SUPPORT_INFO) != 0;
-//        boolean supportImport = (supported & MediaObject.SUPPORT_IMPORT) != 0;
 
         setMenuItemVisibility(menu, R.id.action_download, true);
-        setMenuItemVisibility(menu, R.id.action_rotate_ccw, supportRotate);
-        setMenuItemVisibility(menu, R.id.action_rotate_cw, supportRotate);
         setMenuItemVisibility(menu, R.id.action_crop, supportCrop);
         setMenuItemVisibility(menu, R.id.action_share, supportShare);
         setMenuItemVisibility(menu, R.id.action_setas, supportSetAs);
-        setMenuItemVisibility(menu, R.id.action_show_on_map, supportShowOnMap);
         setMenuItemVisibility(menu, R.id.action_edit, supportEdit);
         setMenuItemVisibility(menu, R.id.action_details, supportInfo);
-//        setMenuItemVisibility(menu, R.id.action_import, supportImport);
     }
 
     public static String getMimeType(int type) {
@@ -174,7 +163,6 @@ public class MenuExecutor {
     }
 
     public boolean onMenuClicked(MenuItem menuItem, ProgressListener listener) {
-        int title;
         DataManager manager = mActivity.getDataManager();
         int action = menuItem.getItemId();
         if (action == R.id.action_select_all) {
@@ -207,25 +195,12 @@ public class MenuExecutor {
             Activity activity = (Activity) mActivity;
             activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.set_as)));
             return true;
-        } else if (action == R.id.action_rotate_cw) {
-            title = R.string.rotate_right;
-        } else if (action == R.id.action_rotate_ccw) {
-            title = R.string.rotate_left;
-        } else if (action == R.id.action_show_on_map) {
-            title = R.string.show_on_map;
-        } else if (action == R.id.action_edit) {
-            title = R.string.edit;
-//        } else if (action == R.id.action_import) {
-//            title = R.string.Import;
-        } else {
+        }  else {
             return false;
         }
-        startAction(action, title, listener);
-        return true;
     }
 
     public void startAction(int action, int title, ProgressListener listener) {
-        //todo check if this statement is actually ever called
         ArrayList<Path> ids = mSelectionManager.getSelected(false);
         stopTaskAndDismissDialog();
 
@@ -240,11 +215,7 @@ public class MenuExecutor {
         Log.v(TAG, "Execute cmd: " + cmd + " for " + path);
         long startTime = System.currentTimeMillis();
 
-        if (cmd == R.id.action_rotate_cw) {
-            manager.rotate(path, 90);
-        } else if (cmd == R.id.action_rotate_ccw) {
-            manager.rotate(path, -90);
-        } else if (cmd == R.id.action_toggle_full_caching) {
+        if (cmd == R.id.action_toggle_full_caching) {
             MediaObject obj = manager.getMediaObject(path);
             int cacheFlag = obj.getCacheFlag();
             if (cacheFlag == MediaObject.CACHE_FLAG_FULL) {
@@ -253,16 +224,6 @@ public class MenuExecutor {
                 cacheFlag = MediaObject.CACHE_FLAG_FULL;
             }
             obj.cache(cacheFlag);
-        } else if (cmd == R.id.action_show_on_map) {
-            MediaItem item = (MediaItem) manager.getMediaObject(path);
-            double[] latlng = new double[2];
-            item.getLatLong(latlng);
-            if (GalleryUtils.isValidLocation(latlng[0], latlng[1])) {
-                GalleryUtils.showOnMap((Context) mActivity, latlng[0], latlng[1]);
-            }
-//        } else if (cmd == R.id.action_import) {
-//            MediaObject obj = manager.getMediaObject(path);
-//            result = obj.Import();
         } else if (cmd == R.id.action_edit) {
             Activity activity = (Activity) mActivity;
             MediaItem item = (MediaItem) manager.getMediaObject(path);

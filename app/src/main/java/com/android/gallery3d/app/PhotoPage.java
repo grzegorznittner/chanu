@@ -37,7 +37,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import com.android.gallery3d.data.DataManager;
@@ -64,7 +63,6 @@ import com.android.gallery3d.util.GalleryUtils;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.gallery.ChanImage;
@@ -516,7 +514,7 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
                     intent2.setType("text/plain");
                     intent2.putExtra(Intent.EXTRA_TEXT, url);
                     mActivity.getAndroidContext().startActivity(Intent.createChooser(intent2, mActivity.getAndroidContext().getResources().getString(R.string.share)));
-                }else{
+                } else {
                     Toast.makeText(mActivity.getAndroidContext(), "No photo, not sharing", Toast.LENGTH_SHORT).show();
                     return true;
                 }
@@ -530,7 +528,7 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
                     intent2.setType(mimeType);
                     intent2.putExtra(Intent.EXTRA_STREAM, uri);
                     mActivity.getAndroidContext().startActivity(Intent.createChooser(intent2, mActivity.getAndroidContext().getResources().getString(R.string.share)));
-                }else{
+                } else {
                     Toast.makeText(mActivity.getAndroidContext(), "No photo, not sharing", Toast.LENGTH_SHORT).show();
                     return true;
                 }
@@ -543,7 +541,7 @@ public class PhotoPage extends ActivityState implements PhotoView.PhotoTapListen
             mSelectionManager.toggle(path);
             Toast.makeText(mActivity.getAndroidContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
             return true;
-        } else if (action == R.id.action_setas  || action == R.id.action_rotate_ccw || action == R.id.action_rotate_cw || action == R.id.action_show_on_map || action == R.id.action_edit) {
+        } else if (action == R.id.action_setas || action == R.id.action_edit) {
             //TODO CHECK IF THOSE ACTIONS ARE STILL VALID
             mSelectionManager.toggle(path);
             mMenuExecutor.onMenuClicked(item, null);

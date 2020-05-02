@@ -18,10 +18,7 @@ package com.android.gallery3d.ui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.PopupMenu.OnMenuItemClickListener;
+
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.DataManager;
@@ -98,9 +96,6 @@ public class ActionModeHandler implements ActionMode.Callback {
             }
         }
         ProgressListener listener = null;
-//        if (item.getItemId() == R.id.action_import) {
-//            listener = new ImportCompleteListener(mActivity);
-//        }
         result = mMenuExecutor.onMenuClicked(item, listener);
         if (item.getItemId() == R.id.action_select_all) {
             updateSupportedOperation();
