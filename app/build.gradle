@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
@@ -58,11 +57,11 @@ dependencies {
     api project(':gallery')
     api project(':actionBarPullToRefresh')
     implementation files('libs/jackson-all-1.8.2.jar')
-    implementation 'commons-io:commons-io:2.4'
+    implementation 'commons-io:commons-io:2.6'
     implementation 'org.apache.commons:commons-lang3:3.3.1'
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     // debugImplementation because LeakCanary should only run in debug builds.
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 }
