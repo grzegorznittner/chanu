@@ -16,8 +16,7 @@
 
 <resources>
 
-    <style name="Widget.Holo.ProgressBar.Horizontal.Center"
-           parent="android:Widget.Holo.ProgressBar.Horizontal">
+    <style name="Widget.Holo.ProgressBar.Horizontal.Center" parent="android:Widget.Holo.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_holo_center</item>
     </style>
 

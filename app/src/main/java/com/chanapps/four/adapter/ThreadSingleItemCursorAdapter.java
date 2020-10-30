@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.viewer.ThreadViewHolder;
@@ -32,16 +33,14 @@ public class ThreadSingleItemCursorAdapter extends ThreadCursorAdapter {
     protected View newView(ViewGroup parent, int tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
         int id = getItemViewLayout(tag);
-        ViewGroup v = (ViewGroup)mInflater.inflate(id, parent, false);
+        ViewGroup v = (ViewGroup) mInflater.inflate(id, parent, false);
         ThreadViewHolder viewHolder = new ThreadViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);
         View inner = v.getChildAt(0);
         if ((tag == TYPE_HEADER || tag == TYPE_IMAGE_ITEM || tag == TYPE_TEXT_ITEM) && inner != null) {
             if (DEBUG) Log.i(TAG, "setting background to null inner=" + inner);
-            int bg = ThemeSelector.instance(parent.getContext()).isDark()
-                    ? R.color.PaletteDarkCardBg
-                    : R.color.PaletteCardBg;
+            int bg = ThemeSelector.instance(parent.getContext()).isDark() ? R.color.PaletteDarkCardBg : R.color.PaletteCardBg;
             inner.setBackgroundResource(bg);
         }
         initWebView(viewHolder);

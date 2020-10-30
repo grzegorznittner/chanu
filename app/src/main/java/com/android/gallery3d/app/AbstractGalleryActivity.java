@@ -16,15 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import android.os.Handler;
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.data.DataManager;
-import com.android.gallery3d.data.ImageCacheService;
-import com.android.gallery3d.ui.GLRoot;
-import com.android.gallery3d.ui.GLRootView;
-import com.android.gallery3d.ui.PositionRepository;
-import com.android.gallery3d.util.ThreadPool;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,6 +28,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+
+import com.android.gallery3d.data.DataManager;
+import com.android.gallery3d.data.ImageCacheService;
+import com.android.gallery3d.ui.GLRoot;
+import com.android.gallery3d.ui.GLRootView;
+import com.android.gallery3d.ui.PositionRepository;
+import com.android.gallery3d.util.ThreadPool;
+import com.chanapps.four.gallery3d.R;
 
 public class AbstractGalleryActivity extends Activity implements GalleryActivity {
     @SuppressWarnings("unused")
@@ -57,15 +57,15 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-    	if (mGLRootView != null) {
-	        mGLRootView.lockRenderThread();
-	        try {
-	            super.onSaveInstanceState(outState);
-	            getStateManager().saveState(outState);
-	        } finally {
-	            mGLRootView.unlockRenderThread();
-	        }
-    	}
+        if (mGLRootView != null) {
+            mGLRootView.lockRenderThread();
+            try {
+                super.onSaveInstanceState(outState);
+                getStateManager().saveState(outState);
+            } finally {
+                mGLRootView.unlockRenderThread();
+            }
+        }
     }
 
     @Override
@@ -112,7 +112,7 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
     @Override
     public void setContentView(int resId) {
         super.setContentView(resId);
-        mGLRootView = (GLRootView) findViewById(R.id.gl_root_view);
+        mGLRootView = findViewById(R.id.gl_root_view);
     }
 
     public int getActionBarHeight() {
@@ -145,13 +145,7 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
                     dialog.cancel();
                 }
             };
-            mAlertDialog = new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("No Storage")
-                    .setMessage("No external storage available.")
-                    .setNegativeButton(android.R.string.cancel, onClick)
-                    .setOnCancelListener(onCancel)
-                    .show();
+            mAlertDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("No Storage").setMessage("No external storage available.").setNegativeButton(android.R.string.cancel, onClick).setOnCancelListener(onCancel).show();
             registerReceiver(mMountReceiver, mMountFilter);
         }
     }
@@ -171,14 +165,14 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
     protected void onResume() {
         super.onResume();
         if (mGLRootView != null) {
-	        mGLRootView.lockRenderThread();
-	        try {
-	            getStateManager().resume();
-	            getDataManager().resume();
-	        } finally {
-	            mGLRootView.unlockRenderThread();
-	        }
-	        mGLRootView.onResume();
+            mGLRootView.lockRenderThread();
+            try {
+                getStateManager().resume();
+                getDataManager().resume();
+            } finally {
+                mGLRootView.unlockRenderThread();
+            }
+            mGLRootView.onResume();
         }
     }
 
@@ -186,28 +180,27 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
     protected void onPause() {
         super.onPause();
         if (mGLRootView != null) {
-	        mGLRootView.onPause();
-	        mGLRootView.lockRenderThread();
-	        try {
-	            getStateManager().pause();
-	            getDataManager().pause();
-	        } finally {
-	            mGLRootView.unlockRenderThread();
-	        }
+            mGLRootView.onPause();
+            mGLRootView.lockRenderThread();
+            try {
+                getStateManager().pause();
+                getDataManager().pause();
+            } finally {
+                mGLRootView.unlockRenderThread();
+            }
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	if (mGLRootView != null) {
-	        mGLRootView.lockRenderThread();
-	        try {
-	            getStateManager().notifyActivityResult(
-	                    requestCode, resultCode, data);
-	        } finally {
-	            mGLRootView.unlockRenderThread();
-	        }
-    	}
+        if (mGLRootView != null) {
+            mGLRootView.lockRenderThread();
+            try {
+                getStateManager().notifyActivityResult(requestCode, resultCode, data);
+            } finally {
+                mGLRootView.unlockRenderThread();
+            }
+        }
     }
 
     @Override

@@ -16,15 +16,16 @@
 
 package com.android.gallery3d.data;
 
+import android.database.ContentObserver;
+import android.net.Uri;
+import android.os.Handler;
+import android.util.Log;
+
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaSet.ItemConsumer;
 import com.android.gallery3d.data.MediaSource.PathId;
 import com.android.gallery3d.picasasource.PicasaSource;
-
-import android.database.ContentObserver;
-import android.net.Uri;
-import android.os.Handler;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,53 +52,28 @@ public class DataManager {
     public static final int INCLUDE_VIDEO = 2;
     public static final int INCLUDE_ALL = INCLUDE_IMAGE | INCLUDE_VIDEO;
     public static final int INCLUDE_LOCAL_ONLY = 4;
-    public static final int INCLUDE_LOCAL_IMAGE_ONLY =
-            INCLUDE_LOCAL_ONLY | INCLUDE_IMAGE;
-    public static final int INCLUDE_LOCAL_VIDEO_ONLY =
-            INCLUDE_LOCAL_ONLY | INCLUDE_VIDEO;
-    public static final int INCLUDE_LOCAL_ALL_ONLY =
-            INCLUDE_LOCAL_ONLY | INCLUDE_IMAGE | INCLUDE_VIDEO;
+    public static final int INCLUDE_LOCAL_IMAGE_ONLY = INCLUDE_LOCAL_ONLY | INCLUDE_IMAGE;
+    public static final int INCLUDE_LOCAL_VIDEO_ONLY = INCLUDE_LOCAL_ONLY | INCLUDE_VIDEO;
+    public static final int INCLUDE_LOCAL_ALL_ONLY = INCLUDE_LOCAL_ONLY | INCLUDE_IMAGE | INCLUDE_VIDEO;
 
     // Any one who would like to access data should require this lock
     // to prevent concurrency issue.
     public static final Object LOCK = new Object();
-
+    public static final Comparator<MediaItem> sDateTakenComparator = new DateTakenComparator();
     private static final String TAG = "DataManager";
-
     // This is the path for the media set seen by the user at top level.
-    private static final String TOP_SET_PATH =
-            "/combo/{/mtp,/local/all,/picasa/all}";
-    private static final String TOP_IMAGE_SET_PATH =
-            "/combo/{/mtp,/local/image,/picasa/image}";
-    private static final String TOP_VIDEO_SET_PATH =
-            "/combo/{/local/video,/picasa/video}";
-    private static final String TOP_LOCAL_SET_PATH =
-            "/local/all";
-    private static final String TOP_LOCAL_IMAGE_SET_PATH =
-            "/local/image";
-    private static final String TOP_LOCAL_VIDEO_SET_PATH =
-            "/local/video";
-
-    public static final Comparator<MediaItem> sDateTakenComparator =
-            new DateTakenComparator();
-
-    private static class DateTakenComparator implements Comparator<MediaItem> {
-        public int compare(MediaItem item1, MediaItem item2) {
-            return -Utils.compare(item1.getDateInMs(), item2.getDateInMs());
-        }
-    }
-
+    private static final String TOP_SET_PATH = "/combo/{/mtp,/local/all,/picasa/all}";
+    private static final String TOP_IMAGE_SET_PATH = "/combo/{/mtp,/local/image,/picasa/image}";
+    private static final String TOP_VIDEO_SET_PATH = "/combo/{/local/video,/picasa/video}";
+    private static final String TOP_LOCAL_SET_PATH = "/local/all";
+    private static final String TOP_LOCAL_IMAGE_SET_PATH = "/local/image";
+    private static final String TOP_LOCAL_VIDEO_SET_PATH = "/local/video";
     private final Handler mDefaultMainHandler;
-
     private GalleryApp mApplication;
     private int mActiveCount = 0;
+    private HashMap<Uri, NotifyBroker> mNotifierMap = new HashMap<Uri, NotifyBroker>();
+    private HashMap<String, MediaSource> mSourceMap = new LinkedHashMap<String, MediaSource>();
 
-    private HashMap<Uri, NotifyBroker> mNotifierMap =
-            new HashMap<Uri, NotifyBroker>();
-
-
-    private HashMap<String, MediaSource> mSourceMap =
-            new LinkedHashMap<String, MediaSource>();
 
     public DataManager(GalleryApp application) {
         mApplication = application;
@@ -110,7 +86,7 @@ public class DataManager {
         // the order matters, the UriSource must come last
         addSource(new LocalSource(mApplication));
         addSource(new PicasaSource(mApplication));
-        addSource(new MtpSource(mApplication));
+//        addSource(new MtpSource(mApplication));
         addSource(new ComboSource(mApplication));
         addSource(new ClusterSource(mApplication));
         addSource(new FilterSource(mApplication));
@@ -126,13 +102,20 @@ public class DataManager {
     public String getTopSetPath(int typeBits) {
 
         switch (typeBits) {
-            case INCLUDE_IMAGE: return TOP_IMAGE_SET_PATH;
-            case INCLUDE_VIDEO: return TOP_VIDEO_SET_PATH;
-            case INCLUDE_ALL: return TOP_SET_PATH;
-            case INCLUDE_LOCAL_IMAGE_ONLY: return TOP_LOCAL_IMAGE_SET_PATH;
-            case INCLUDE_LOCAL_VIDEO_ONLY: return TOP_LOCAL_VIDEO_SET_PATH;
-            case INCLUDE_LOCAL_ALL_ONLY: return TOP_LOCAL_SET_PATH;
-            default: throw new IllegalArgumentException();
+            case INCLUDE_IMAGE:
+                return TOP_IMAGE_SET_PATH;
+            case INCLUDE_VIDEO:
+                return TOP_VIDEO_SET_PATH;
+            case INCLUDE_ALL:
+                return TOP_SET_PATH;
+            case INCLUDE_LOCAL_IMAGE_ONLY:
+                return TOP_LOCAL_IMAGE_SET_PATH;
+            case INCLUDE_LOCAL_VIDEO_ONLY:
+                return TOP_LOCAL_VIDEO_SET_PATH;
+            case INCLUDE_LOCAL_ALL_ONLY:
+                return TOP_LOCAL_SET_PATH;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
@@ -193,10 +176,8 @@ public class DataManager {
     // An index number is also passed to consumer.consume() to identify
     // the original position in the input list of the corresponding Path (plus
     // startIndex).
-    public void mapMediaItems(ArrayList<Path> list, ItemConsumer consumer,
-            int startIndex) {
-        HashMap<String, ArrayList<PathId>> map =
-                new HashMap<String, ArrayList<PathId>>();
+    public void mapMediaItems(ArrayList<Path> list, ItemConsumer consumer, int startIndex) {
+        HashMap<String, ArrayList<PathId>> map = new HashMap<String, ArrayList<PathId>>();
 
         // Group the path by the prefix.
         int n = list.size();
@@ -287,8 +268,7 @@ public class DataManager {
             broker = mNotifierMap.get(uri);
             if (broker == null) {
                 broker = new NotifyBroker(mDefaultMainHandler);
-                mApplication.getContentResolver()
-                        .registerContentObserver(uri, true, broker);
+                mApplication.getContentResolver().registerContentObserver(uri, true, broker);
                 mNotifierMap.put(uri, broker);
             }
         }
@@ -311,9 +291,14 @@ public class DataManager {
         }
     }
 
+    private static class DateTakenComparator implements Comparator<MediaItem> {
+        public int compare(MediaItem item1, MediaItem item2) {
+            return -Utils.compare(item1.getDateInMs(), item2.getDateInMs());
+        }
+    }
+
     private static class NotifyBroker extends ContentObserver {
-        private WeakHashMap<ChangeNotifier, Object> mNotifiers =
-                new WeakHashMap<ChangeNotifier, Object>();
+        private WeakHashMap<ChangeNotifier, Object> mNotifiers = new WeakHashMap<ChangeNotifier, Object>();
 
         public NotifyBroker(Handler handler) {
             super(handler);
@@ -325,7 +310,7 @@ public class DataManager {
 
         @Override
         public synchronized void onChange(boolean selfChange) {
-            for(ChangeNotifier notifier : mNotifiers.keySet()) {
+            for (ChangeNotifier notifier : mNotifiers.keySet()) {
                 notifier.onChange(selfChange);
             }
         }

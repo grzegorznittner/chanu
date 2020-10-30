@@ -1,9 +1,12 @@
 package com.chanapps.four.data;
 
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.map.deser.*;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.deser.StdDeserializer;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -16,121 +19,114 @@ import java.util.Date;
  */
 public class JacksonNonBlockingObjectMapperFactory {
 
-    public JacksonNonBlockingObjectMapperFactory() {}
+    public JacksonNonBlockingObjectMapperFactory() {
+    }
+
+    public ObjectMapper createObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper;
+    }
 
     public static class NonBlockingIntegerDeserializer extends JsonDeserializer<Integer> {
         private JsonDeserializer<?> delegate;
+
         public NonBlockingIntegerDeserializer() {
             this.delegate = new StdDeserializer.IntegerDeserializer(Integer.class, 0);
         }
+
         @Override
-        public Integer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public Integer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
-            }
-            catch (JsonMappingException e) {
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
+            } catch (JsonMappingException e) {
                 try {
                     boolean b = jp.getBooleanValue();
                     o = b ? 1 : 0;
+                } catch (Exception e2) {
+                    if (delegate != null) o = delegate.getNullValue();
                 }
-                catch (Exception e2) {
-                    if (delegate != null)
-                        o = delegate.getNullValue();
-                }
+            } catch (Exception e) {
+                if (delegate != null) o = delegate.getNullValue();
             }
-            catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
-            }
-            return (Integer)o;
+            return (Integer) o;
         }
     }
 
     public static class NonBlockingLongDeserializer extends JsonDeserializer<Long> {
         private JsonDeserializer<?> delegate;
+
         public NonBlockingLongDeserializer() {
             this.delegate = new StdDeserializer.LongDeserializer(Long.class, 0L);
         }
+
         @Override
-        public Long deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public Long deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
+            } catch (Exception e) {
+                if (delegate != null) o = delegate.getNullValue();
             }
-            catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
-            }
-            return (Long)o;
+            return (Long) o;
         }
     }
 
     public static class NonBlockingBooleanDeserializer extends JsonDeserializer<Boolean> {
         private JsonDeserializer<?> delegate;
+
         public NonBlockingBooleanDeserializer() {
             this.delegate = new StdDeserializer.BooleanDeserializer(Boolean.class, false);
         }
+
         @Override
-        public Boolean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public Boolean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
+            } catch (Exception e) {
+                if (delegate != null) o = delegate.getNullValue();
             }
-            catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
-            }
-            return (Boolean)o;
+            return (Boolean) o;
         }
     }
 
     public static class NonBlockingStringDeserializer extends JsonDeserializer<String> {
         private JsonDeserializer<?> delegate;
+
         public NonBlockingStringDeserializer() {
             this.delegate = new StdDeserializer.StringDeserializer();
         }
+
         @Override
-        public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
+            } catch (Exception e) {
+                if (delegate != null) o = delegate.getNullValue();
             }
-            catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
-            }
-            return (String)o;
+            return (String) o;
         }
     }
 
     public static class NonBlockingDateDeserializer extends JsonDeserializer<Date> {
         private JsonDeserializer<?> delegate;
+
         public NonBlockingDateDeserializer() {
             this.delegate = new StdDeserializer.CalendarDeserializer();
         }
+
         @Override
-        public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             Object o = null;
             try {
-                if (delegate != null)
-                    o = delegate.deserialize(jp, ctxt);
-            }
-            catch (Exception e) {
-                if (delegate != null)
-                    o = delegate.getNullValue();
+                if (delegate != null) o = delegate.deserialize(jp, ctxt);
+            } catch (Exception e) {
+                if (delegate != null) o = delegate.getNullValue();
             }
             return null;
         }
-    }
-
-    public ObjectMapper createObjectMapper(){
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper;
     }
 
 }

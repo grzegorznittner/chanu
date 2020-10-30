@@ -6,10 +6,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import androidx.fragment.app.FragmentActivity;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
@@ -87,14 +96,13 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
     }
 
     protected ArrayAdapter<String> createSpinnerAdapter() {
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, android.R.id.text1, spinnerArray());
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, android.R.id.text1, spinnerArray());
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         return spinnerAdapter;
     }
 
     protected void setupSpinner() {
-        Spinner spinner = (Spinner) findViewById(R.id.board_spinner);
+        Spinner spinner = findViewById(R.id.board_spinner);
         ArrayAdapter<String> spinnerAdapter = createSpinnerAdapter();
         spinner.setAdapter(spinnerAdapter);
         int position = 0;
@@ -102,32 +110,23 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
             position = 0;
         } else {
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
-                String boardText = (String) spinnerAdapter.getItem(i);
-                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)
-                        && boardText.matches(getString(R.string.board_watch))) {
+                String boardText = spinnerAdapter.getItem(i);
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode) && ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode) && boardText.matches(getString(R.string.board_watch))) {
                     position = i;
                     break;
                 }
-                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && ChanBoard.POPULAR_BOARD_CODE.equals(widgetConf.boardCode)
-                        && boardText.matches(getString(R.string.board_popular))) {
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode) && ChanBoard.POPULAR_BOARD_CODE.equals(widgetConf.boardCode) && boardText.matches(getString(R.string.board_popular))) {
                     position = i;
                     break;
                 }
-                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && ChanBoard.LATEST_BOARD_CODE.equals(widgetConf.boardCode)
-                        && boardText.matches(getString(R.string.board_latest))) {
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode) && ChanBoard.LATEST_BOARD_CODE.equals(widgetConf.boardCode) && boardText.matches(getString(R.string.board_latest))) {
                     position = i;
                     break;
                 }
-                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(widgetConf.boardCode)
-                        && boardText.matches(getString(R.string.board_latest_images))) {
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode) && ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(widgetConf.boardCode) && boardText.matches(getString(R.string.board_latest_images))) {
                     position = i;
                     break;
-                } else if (!ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && boardText.matches("/" + widgetConf.boardCode + "/.*")) {
+                } else if (!ChanBoard.isVirtualBoard(widgetConf.boardCode) && boardText.matches("/" + widgetConf.boardCode + "/.*")) {
                     position = i;
                     break;
                 }
@@ -147,10 +146,12 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
                     if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
                         freshFetch = false;
                     } else if (ChanBoard.isPopularBoard(widgetConf.boardCode)) {
-                        if (DEBUG) Log.i(TAG, "scheduling popular fetch for board=" + widgetConf.boardCode);
+                        if (DEBUG)
+                            Log.i(TAG, "scheduling popular fetch for board=" + widgetConf.boardCode);
                         freshFetch = FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
                     } else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
-                        if (DEBUG) Log.i(TAG, "skipping fetch for non-popular virtual board=" + widgetConf.boardCode);
+                        if (DEBUG)
+                            Log.i(TAG, "skipping fetch for non-popular virtual board=" + widgetConf.boardCode);
                         freshFetch = false;
                     } else {
                         if (DEBUG) Log.i(TAG, "scheduling fetch for board=" + widgetConf.boardCode);
@@ -176,10 +177,10 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void setupCheckboxes() {
-        CheckBox roundedCorners = (CheckBox) findViewById(R.id.rounded_corners);
-        CheckBox showBoardButton = (CheckBox) findViewById(R.id.show_board);
-        CheckBox showRefreshButton = (CheckBox) findViewById(R.id.show_refresh);
-        CheckBox showConfigureButton = (CheckBox) findViewById(R.id.show_configure);
+        CheckBox roundedCorners = findViewById(R.id.rounded_corners);
+        CheckBox showBoardButton = findViewById(R.id.show_board);
+        CheckBox showRefreshButton = findViewById(R.id.show_refresh);
+        CheckBox showConfigureButton = findViewById(R.id.show_configure);
         roundedCorners.setChecked(widgetConf.roundedCorners);
         showBoardButton.setChecked(widgetConf.showBoardTitle);
         showRefreshButton.setChecked(widgetConf.showRefreshButton);
@@ -215,39 +216,32 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void addColorClickHandler() {
-        EditText backgroundColorButton = (EditText) findViewById(R.id.board_title_color);
-        if (backgroundColorButton == null)
-            return;
+        EditText backgroundColorButton = findViewById(R.id.board_title_color);
+        if (backgroundColorButton == null) return;
         backgroundColorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ColorPickerDialog d = new ColorPickerDialog(AbstractWidgetConfigureActivity.this,
-                        widgetConf.boardTitleColor);
+                final ColorPickerDialog d = new ColorPickerDialog(AbstractWidgetConfigureActivity.this, widgetConf.boardTitleColor);
                 d.setAlphaSliderVisible(true);
-                d.setButton(DialogInterface.BUTTON_POSITIVE,
-                        getString(R.string.thread_context_select),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                widgetConf.boardTitleColor = d.getColor();
-                                updateBoardTitleState();
-                            }
-                        });
-                d.setButton(DialogInterface.BUTTON_NEGATIVE,
-                        getString(R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
+                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.thread_context_select), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        widgetConf.boardTitleColor = d.getColor();
+                        updateBoardTitleState();
+                    }
+                });
+                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
                 d.show();
             }
         });
     }
 
     protected void updateWidgetConfWithSelectedBoard(String boardSpinnerLine) {
-        if (boardSpinnerLine == null || boardSpinnerLine.isEmpty())
-            boardSpinnerLine = "";
+        if (boardSpinnerLine == null || boardSpinnerLine.isEmpty()) boardSpinnerLine = "";
         String boardCode;
         if (getString(R.string.board_watch).equals(boardSpinnerLine)) {
             boardCode = ChanBoard.WATCHLIST_BOARD_CODE;
@@ -260,10 +254,8 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
         } else {
             Pattern p = Pattern.compile("/([^/]*)/.*");
             Matcher m = p.matcher(boardSpinnerLine);
-            if (m.matches())
-                boardCode = m.group(1);
-            else
-                boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+            if (m.matches()) boardCode = m.group(1);
+            else boardCode = ChanBoard.DEFAULT_BOARD_CODE;
         }
         widgetConf.boardCode = boardCode;
         updateBoardTitleState();
@@ -288,18 +280,15 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
 
     protected void updateBoardTitleState() {
         ChanBoard board = ChanBoard.getBoardByCode(this, widgetConf.boardCode);
-        if (board == null)
-            board = ChanBoard.getBoardByCode(this, ChanBoard.DEFAULT_BOARD_CODE);
+        if (board == null) board = ChanBoard.getBoardByCode(this, ChanBoard.DEFAULT_BOARD_CODE);
         String boardTitle;
         if (WidgetConstants.WIDGET_TYPE_ONE_IMAGE.equals(widgetConf.widgetType))
             boardTitle = "/" + board.link + "/";
-        else if (ChanBoard.isVirtualBoard(board.link))
-            boardTitle = board.getName(this);
-        else
-            boardTitle = board.getName(this) + " /" + board.link + "/";
+        else if (ChanBoard.isVirtualBoard(board.link)) boardTitle = board.getName(this);
+        else boardTitle = board.getName(this) + " /" + board.link + "/";
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
-        TextView tv = (TextView) findViewById(R.id.board_title);
+        TextView tv = findViewById(R.id.board_title);
         tv.setText(boardTitle);
         tv.setTextColor(boardTitleColor);
         tv.setVisibility(boardTitleVisibility);
@@ -307,13 +296,13 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
 
     protected void updateRefreshButtonState() {
         int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
-        ImageView refresh = (ImageView) findViewById(R.id.refresh_board);
+        ImageView refresh = findViewById(R.id.refresh_board);
         refresh.setImageResource(refreshDrawable);
     }
 
     protected void updateConfigButtonState() {
         int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
-        ImageView configure = (ImageView) findViewById(R.id.configure);
+        ImageView configure = findViewById(R.id.configure);
         configure.setImageResource(configureDrawable);
     }
 

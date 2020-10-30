@@ -1,9 +1,11 @@
 package com.chanapps.four.component;
 
 import android.os.Handler;
-import android.support.v4.app.FragmentManager;
 import android.widget.AbsListView;
 import android.widget.ResourceCursorAdapter;
+
+import androidx.fragment.app.FragmentManager;
+
 import com.chanapps.four.fragment.ThreadPopupDialogFragment;
 
 /**

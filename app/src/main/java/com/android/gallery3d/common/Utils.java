@@ -28,6 +28,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.text.TextUtils;
 import android.util.Log;
+
 import java.io.Closeable;
 import java.io.InterruptedIOException;
 import java.util.Random;
@@ -38,13 +39,21 @@ public class Utils {
 
     private static final long POLY64REV = 0x95AC9329AC4BC9B5L;
     private static final long INITIALCRC = 0xFFFFFFFFFFFFFFFFL;
-
+    private static final boolean IS_DEBUG_BUILD = Build.TYPE.equals("eng") || Build.TYPE.equals("userdebug");
+    private static final String MASK_STRING = "********************************";
     private static long[] sCrcTable = new long[256];
 
-    private static final boolean IS_DEBUG_BUILD =
-            Build.TYPE.equals("eng") || Build.TYPE.equals("userdebug");
-
-    private static final String MASK_STRING = "********************************";
+    static {
+        long part;
+        for (int i = 0; i < 256; i++) {
+            part = i;
+            for (int j = 0; j < 8; j++) {
+                long x = ((int) part & 1) != 0 ? POLY64REV : 0;
+                part = (part >> 1) ^ x;
+            }
+            sCrcTable[i] = part;
+        }
+    }
 
     // Throws AssertionError if the input is false.
     public static void assertTrue(boolean cond) {
@@ -54,10 +63,9 @@ public class Utils {
     }
 
     // Throws AssertionError if the input is false.
-    public static void assertTrue(boolean cond, String message, Object ... args) {
+    public static void assertTrue(boolean cond, String message, Object... args) {
         if (!cond) {
-            throw new AssertionError(
-                    args.length == 0 ? message : String.format(message, args));
+            throw new AssertionError(args.length == 0 ? message : String.format(message, args));
         }
     }
 
@@ -70,7 +78,7 @@ public class Utils {
     // Returns true if two input Object are both null or equal
     // to each other.
     public static boolean equals(Object a, Object b) {
-        return (a == b) || (a == null ? false : a.equals(b));
+        return (a == b) || (a != null && a.equals(b));
     }
 
     // Returns true if the input is power of 2.
@@ -160,18 +168,6 @@ public class Utils {
         return crc64Long(getBytes(in));
     }
 
-    static {
-        long part;
-        for (int i = 0; i < 256; i++) {
-            part = i;
-            for (int j = 0; j < 8; j++) {
-                long x = ((int) part & 1) != 0 ? POLY64REV : 0;
-                part = (part >> 1) ^ x;
-            }
-            sCrcTable[i] = part;
-        }
-    }
-
     public static final long crc64Long(byte[] buffer) {
         long crc = INITIALCRC;
         for (int k = 0, n = buffer.length; k < n; ++k) {
@@ -235,8 +231,7 @@ public class Utils {
         }
     }
 
-    public static float interpolateAngle(
-            float source, float target, float progress) {
+    public static float interpolateAngle(float source, float target, float progress) {
         // interpolate the angle from source to target
         // We make the difference in the range of [-179, 180], this is the
         // shortest path to change source to target.
@@ -248,8 +243,7 @@ public class Utils {
         return result < 0 ? result + 360f : result;
     }
 
-    public static float interpolateScale(
-            float source, float target, float progress) {
+    public static float interpolateScale(float source, float target, float progress) {
         return source + progress * (target - source);
     }
 
@@ -258,7 +252,7 @@ public class Utils {
     }
 
     // Used for debugging. Should be removed before submitting.
-    public static void debug(String format, Object ... args) {
+    public static void debug(String format, Object... args) {
         if (args.length == 0) {
             Log.d(DEBUG_TAG, format);
         } else {
@@ -300,8 +294,7 @@ public class Utils {
             long availableSize;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 availableSize = deprecatedAvailableSize(stat);
-            else
-                availableSize = availableSize(stat);
+            else availableSize = availableSize(stat);
             return availableSize > size;
         } catch (Exception e) {
             Log.i(TAG, "Fail to access external storage", e);
@@ -326,7 +319,7 @@ public class Utils {
         }
     }
 
-    public static void shuffle(int array[], Random random) {
+    public static void shuffle(int[] array, Random random) {
         for (int i = array.length; i > 0; --i) {
             int t = random.nextInt(i);
             if (t == i - 1) continue;
@@ -339,8 +332,7 @@ public class Utils {
     public static boolean handleInterrruptedException(Throwable e) {
         // A helper to deal with the interrupt exception
         // If an interrupt detected, we will setup the bit again.
-        if (e instanceof InterruptedIOException
-                || e instanceof InterruptedException) {
+        if (e instanceof InterruptedIOException || e instanceof InterruptedException) {
             Thread.currentThread().interrupt();
             return true;
         }
@@ -355,12 +347,23 @@ public class Utils {
         for (int i = 0, len = s.length(); i < len; ++i) {
             char c = s.charAt(i);
             switch (c) {
-                case '<':  sb.append("&lt;"); break;
-                case '>':  sb.append("&gt;"); break;
-                case '\"': sb.append("&quot;"); break;
-                case '\'': sb.append("&#039;"); break;
-                case '&':  sb.append("&amp;"); break;
-                default: sb.append(c);
+                case '<':
+                    sb.append("&lt;");
+                    break;
+                case '>':
+                    sb.append("&gt;");
+                    break;
+                case '\"':
+                    sb.append("&quot;");
+                    break;
+                case '\'':
+                    sb.append("&#039;");
+                    break;
+                case '&':
+                    sb.append("&amp;");
+                    break;
+                default:
+                    sb.append(c);
             }
         }
         return sb.toString();
@@ -373,16 +376,7 @@ public class Utils {
         } catch (NameNotFoundException e) {
             throw new IllegalStateException("getPackageInfo failed");
         }
-        return String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s",
-                packageInfo.packageName,
-                packageInfo.versionName,
-                Build.BRAND,
-                Build.DEVICE,
-                Build.MODEL,
-                Build.ID,
-                Build.VERSION.SDK_INT,
-                Build.VERSION.RELEASE,
-                Build.VERSION.INCREMENTAL);
+        return String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s", packageInfo.packageName, packageInfo.versionName, Build.BRAND, Build.DEVICE, Build.MODEL, Build.ID, Build.VERSION.SDK_INT, Build.VERSION.RELEASE, Build.VERSION.INCREMENTAL);
     }
 
     public static String[] copyOf(String[] source, int newSize) {

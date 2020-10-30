@@ -16,12 +16,12 @@
 
 package com.android.gallery3d.ui;
 
+import android.content.Context;
 import android.os.Build;
+import android.os.StatFs;
+
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.util.ThreadPool.JobContext;
-
-import android.content.Context;
-import android.os.StatFs;
 
 import java.io.File;
 
@@ -63,8 +63,7 @@ public class CacheStorageUsageInfo {
         StatFs stat = new StatFs(path);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             deprecatedSetTotalUsedBytes(stat);
-        else
-            setTotalUsedBytes(stat);
+        else setTotalUsedBytes(stat);
 
         mUsedCacheBytes = mActivity.getDataManager().getTotalUsedCacheSize();
         mTargetCacheBytes = mActivity.getDataManager().getTotalTargetCacheSize();

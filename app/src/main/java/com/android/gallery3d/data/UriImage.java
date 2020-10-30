@@ -16,13 +16,6 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.common.BitmapUtils;
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.util.ThreadPool.CancelListener;
-import com.android.gallery3d.util.ThreadPool.Job;
-import com.android.gallery3d.util.ThreadPool.JobContext;
-
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -30,7 +23,15 @@ import android.graphics.BitmapFactory.Options;
 import android.graphics.BitmapRegionDecoder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
+
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.common.BitmapUtils;
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.util.ThreadPool.CancelListener;
+import com.android.gallery3d.util.ThreadPool.Job;
+import com.android.gallery3d.util.ThreadPool.JobContext;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -64,10 +65,8 @@ public class UriImage extends MediaItem {
 
     private String getMimeType(Uri uri) {
         if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
-            String extension =
-                    MimeTypeMap.getFileExtensionFromUrl(uri.toString());
-            String type = MimeTypeMap.getSingleton()
-                    .getMimeTypeFromExtension(extension);
+            String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+            String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
             if (type != null) return type;
         }
         return mApplication.getContentResolver().getType(uri);
@@ -99,12 +98,9 @@ public class UriImage extends MediaItem {
 
     private int openOrDownloadInner(JobContext jc) {
         String scheme = mUri.getScheme();
-        if (ContentResolver.SCHEME_CONTENT.equals(scheme)
-                || ContentResolver.SCHEME_ANDROID_RESOURCE.equals(scheme)
-                || ContentResolver.SCHEME_FILE.equals(scheme)) {
+        if (ContentResolver.SCHEME_CONTENT.equals(scheme) || ContentResolver.SCHEME_ANDROID_RESOURCE.equals(scheme) || ContentResolver.SCHEME_FILE.equals(scheme)) {
             try {
-                mFileDescriptor = mApplication.getContentResolver()
-                        .openFileDescriptor(mUri, "r");
+                mFileDescriptor = mApplication.getContentResolver().openFileDescriptor(mUri, "r");
                 if (jc.isCancelled()) return STATE_INIT;
                 return STATE_DOWNLOADED;
             } catch (FileNotFoundException e) {
@@ -120,8 +116,7 @@ public class UriImage extends MediaItem {
                     Log.w(TAG, "download failed " + url);
                     return STATE_ERROR;
                 }
-                mFileDescriptor = ParcelFileDescriptor.open(
-                        mCacheEntry.cacheFile, ParcelFileDescriptor.MODE_READ_ONLY);
+                mFileDescriptor = ParcelFileDescriptor.open(mCacheEntry.cacheFile, ParcelFileDescriptor.MODE_READ_ONLY);
                 return STATE_DOWNLOADED;
             } catch (Throwable t) {
                 Log.w(TAG, "download error", t);
@@ -160,47 +155,6 @@ public class UriImage extends MediaItem {
             }
             // This is only reached for STATE_INIT->STATE_DOWNLOADING
             openFileOrDownloadTempFile(jc);
-        }
-    }
-
-    private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
-        public BitmapRegionDecoder run(JobContext jc) {
-            if (!prepareInputFile(jc)) return null;
-            BitmapRegionDecoder decoder = DecodeUtils.requestCreateBitmapRegionDecoder(
-                    jc, mFileDescriptor.getFileDescriptor(), false);
-            mWidth = decoder.getWidth();
-            mHeight = decoder.getHeight();
-            return decoder;
-        }
-    }
-
-    private class BitmapJob implements Job<Bitmap> {
-        private int mType;
-
-        protected BitmapJob(int type) {
-            mType = type;
-        }
-
-        public Bitmap run(JobContext jc) {
-            if (!prepareInputFile(jc)) return null;
-            int targetSize = LocalImage.getTargetSize(mType);
-            Options options = new Options();
-            options.inPreferredConfig = Config.ARGB_8888;
-            Bitmap bitmap = DecodeUtils.requestDecode(jc,
-                    mFileDescriptor.getFileDescriptor(), options, targetSize);
-            if (jc.isCancelled() || bitmap == null) {
-                return null;
-            }
-
-            if (mType == MediaItem.TYPE_MICROTHUMBNAIL) {
-                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap,
-                        targetSize, true);
-            } else {
-                bitmap = BitmapUtils.resizeDownBySideLength(bitmap,
-                        targetSize, true);
-            }
-
-            return bitmap;
         }
     }
 
@@ -272,5 +226,42 @@ public class UriImage extends MediaItem {
     @Override
     public int getHeight() {
         return 0;
+    }
+
+    private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
+        public BitmapRegionDecoder run(JobContext jc) {
+            if (!prepareInputFile(jc)) return null;
+            BitmapRegionDecoder decoder = DecodeUtils.requestCreateBitmapRegionDecoder(jc, mFileDescriptor.getFileDescriptor(), false);
+            mWidth = decoder.getWidth();
+            mHeight = decoder.getHeight();
+            return decoder;
+        }
+    }
+
+    private class BitmapJob implements Job<Bitmap> {
+        private int mType;
+
+        protected BitmapJob(int type) {
+            mType = type;
+        }
+
+        public Bitmap run(JobContext jc) {
+            if (!prepareInputFile(jc)) return null;
+            int targetSize = LocalImage.getTargetSize(mType);
+            Options options = new Options();
+            options.inPreferredConfig = Config.ARGB_8888;
+            Bitmap bitmap = DecodeUtils.requestDecode(jc, mFileDescriptor.getFileDescriptor(), options, targetSize);
+            if (jc.isCancelled() || bitmap == null) {
+                return null;
+            }
+
+            if (mType == MediaItem.TYPE_MICROTHUMBNAIL) {
+                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap, targetSize, true);
+            } else {
+                bitmap = BitmapUtils.resizeDownBySideLength(bitmap, targetSize, true);
+            }
+
+            return bitmap;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
+
 import com.chanapps.four.component.URLFormatComponent;
 
 import java.util.regex.Matcher;
@@ -12,11 +13,10 @@ import java.util.regex.Pattern;
  */
 public class Captcha {
 
-    private String challenge;
-    private String imageUrl;
-
     private static final Pattern IMG_REG = Pattern.compile("(<img .*src\\=\")([^\"]*)");
     private static final Pattern CHAL_REG = Pattern.compile("(name=\"c\" value=\")([^\"]*)");
+    private String challenge;
+    private String imageUrl;
 
     public Captcha() {
 
@@ -38,12 +38,12 @@ public class Captcha {
         return challenge;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
     public void setChallenge(String challenge) {
         this.challenge = challenge;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {

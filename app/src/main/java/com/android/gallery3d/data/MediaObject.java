@@ -19,10 +19,7 @@ package com.android.gallery3d.data;
 import android.net.Uri;
 
 public abstract class MediaObject {
-    @SuppressWarnings("unused")
-    private static final String TAG = "MediaObject";
     public static final long INVALID_DATA_VERSION = -1;
-
     // These are the bits returned from getSupportedOperations():
     public static final int SUPPORT_DELETE = 1 << 0;
     public static final int SUPPORT_ROTATE = 1 << 1;
@@ -38,34 +35,34 @@ public abstract class MediaObject {
     public static final int SUPPORT_IMPORT = 1 << 11;
     public static final int SUPPORT_ANIMATED_GIF = 1 << 12;
     public static final int SUPPORT_ALL = 0xffffffff;
-
     // These are the bits returned from getMediaType():
     public static final int MEDIA_TYPE_UNKNOWN = 1;
     public static final int MEDIA_TYPE_IMAGE = 2;
     public static final int MEDIA_TYPE_VIDEO = 4;
     public static final int MEDIA_TYPE_ALL = MEDIA_TYPE_IMAGE | MEDIA_TYPE_VIDEO;
-
     // These are flags for cache() and return values for getCacheFlag():
     public static final int CACHE_FLAG_NO = 0;
     public static final int CACHE_FLAG_SCREENNAIL = 1;
     public static final int CACHE_FLAG_FULL = 2;
-
     // These are return values for getCacheStatus():
     public static final int CACHE_STATUS_NOT_CACHED = 0;
     public static final int CACHE_STATUS_CACHING = 1;
     public static final int CACHE_STATUS_CACHED_SCREENNAIL = 2;
     public static final int CACHE_STATUS_CACHED_FULL = 3;
-
+    @SuppressWarnings("unused")
+    private static final String TAG = "MediaObject";
     private static long sVersionSerial = 0;
-
-    protected long mDataVersion;
-
     protected final Path mPath;
+    protected long mDataVersion;
 
     public MediaObject(Path path, long version) {
         path.setObject(this);
         mPath = path;
         mDataVersion = version;
+    }
+
+    public static synchronized long nextVersionNumber() {
+        return ++MediaObject.sVersionSerial;
     }
 
     public Path getPath() {
@@ -123,9 +120,5 @@ public abstract class MediaObject {
 
     public void cache(int flag) {
         throw new UnsupportedOperationException();
-    }
-
-    public static synchronized long nextVersionNumber() {
-        return ++MediaObject.sVersionSerial;
     }
 }

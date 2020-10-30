@@ -16,8 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import com.android.gallery3d.ui.GLView;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -27,6 +25,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.android.gallery3d.ui.GLView;
 
 abstract public class ActivityState {
     public static final int FLAG_HIDE_ACTION_BAR = 1;
@@ -38,14 +38,6 @@ abstract public class ActivityState {
 
     protected ResultEntry mReceivedResults;
     protected ResultEntry mResult;
-
-    protected static class ResultEntry {
-        public int requestCode;
-        public int resultCode = Activity.RESULT_CANCELED;
-        public Intent resultData;
-        ResultEntry next;
-    }
-
     private boolean mDestroyed = false;
 
     protected ActivityState() {
@@ -100,9 +92,7 @@ abstract public class ActivityState {
                 actionBar.show();
             }
             int stateCount = mActivity.getStateManager().getStateCount();
-            actionBar.setDisplayOptions(
-                    stateCount == 1 ? 0 : ActionBar.DISPLAY_HOME_AS_UP,
-                    ActionBar.DISPLAY_HOME_AS_UP);
+            actionBar.setDisplayOptions(stateCount == 1 ? 0 : ActionBar.DISPLAY_HOME_AS_UP, ActionBar.DISPLAY_HOME_AS_UP);
             actionBar.setHomeButtonEnabled(true);
         }
 
@@ -149,5 +139,12 @@ abstract public class ActivityState {
 
     boolean isDestroyed() {
         return mDestroyed;
+    }
+
+    protected static class ResultEntry {
+        public int requestCode;
+        public int resultCode = Activity.RESULT_CANCELED;
+        public Intent resultData;
+        ResultEntry next;
     }
 }

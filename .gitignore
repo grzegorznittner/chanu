@@ -1,32 +1,48 @@
-# built application files
+### Android ###
+# Built application files
 *.apk
 *.ap_
-
-# files for the dex VM
-*.dex
-
-# Java class files
-*.class
-
-# generated files
-bin/
-gen/
-out/
-target/
-build/
-.classpath
-.project
-.settings
+*.aab
 
 # Local configuration file (sdk path, etc)
 local.properties
 
-*.ipr
-*.iws
+# IntelliJ
 *.iml
 .idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+# Gradle files
 .gradle/
+build/
+# Android Studio captures folder
+captures/
 
-#OS related file
-.directory
+# Google Services (e.g. APIs or Firebase)
+google-services.json
+
+# Android Studio
+/*/build/
+/*/local.properties
+/*/out
+/*/*/build
+/*/*/production
+*.ipr
+*~
+*.swp
+
+# OS-specific files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+app/release/*

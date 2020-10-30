@@ -1,30 +1,5 @@
 package com.chanapps.four.activity;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,7 +8,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
@@ -44,7 +18,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.util.Log;
 import android.util.Pair;
@@ -55,10 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.JavascriptInterface;
 import android.webkit.MimeTypeMap;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -68,12 +38,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentActivity;
+
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.CaptchaView;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.URLFormatComponent;
-import com.chanapps.four.component.CaptchaView.CaptchaCallback;
 import com.chanapps.four.data.Captcha;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
@@ -103,11 +74,32 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
 public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
-
     public static final String BOARD_CODE = "postReplyBoardCode";
     public static final String THREAD_NO = "postReplyThreadNo";
     public static final String POST_NO = "postReplyPostNo";
@@ -122,35 +114,31 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     public static final String IMAGE_PATH = "postReplyImagePath";
     public static final String CONTENT_TYPE = "postReplyContentType";
     public static final String ORIENTATION = "postReplyOrientation";
-
-    protected static final String[] PREFS = {
-            BOARD_CODE,
-            THREAD_NO,
-            POST_NO,
-            SUBJECT,
-            POST_REPLY_TEXT,
-            SPOILER,
-            POST_REPLY_IMAGE_URL,
-            IMAGE_PATH,
-            CONTENT_TYPE,
-            ORIENTATION,
-            POST_REPLY_QUOTE_TEXT
-    };
-
     public static final int POST_FINISHED = 0x01;
-
     public static final int PASSWORD_MAX = 100000000;
+    protected static final String[] PREFS = {BOARD_CODE, THREAD_NO, POST_NO, SUBJECT, POST_REPLY_TEXT, SPOILER, POST_REPLY_IMAGE_URL, IMAGE_PATH, CONTENT_TYPE, ORIENTATION, POST_REPLY_QUOTE_TEXT};
+    private static final boolean DEBUG = false;
     private static final Random randomGenerator = new Random();
     private static final DecimalFormat eightDigits = new DecimalFormat("00000000");
-
-    protected boolean exitingOnSuccess = false;
-
     private static final int IMAGE_GALLERY = 0x11;
+    protected boolean exitingOnSuccess = false;
     // private static final String ANDROID_IMAGE_CAPTURE =
     // "android.media.action.IMAGE_CAPTURE";
-
+    protected Uri imageUri;
+    protected String boardCode = null;
+    protected long threadNo = 0;
+    protected long postNo = 0;
+    protected String imagePath = null;
+    protected String contentType = null;
+    protected String orientation = null;
+    protected int themeId;
+    protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
+    // private Button doneButton;
+    protected boolean showPassEnable = true;
+    protected boolean showPassDisable = false;
+    protected String replyText = "";
+    protected String quoteText = "";
     private LinearLayout wrapperLayout;
-
     /*
      * private ImageView cameraButton; private ImageView pictureButton; private
      * ImageView webButton; private ImageView passEnableButton; private
@@ -162,12 +150,21 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private View webImageButtonBg;
     private View sageButton;
     private Handler handler;
-
     private CaptchaView recaptchaView;
     private View infoButton;
-    // private Button doneButton;
-
     private EditText messageText;
+    protected PopupMenu.OnMenuItemClickListener popupListener = new PopupMenu.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.post_reply_quote_menu:
+                    insertQuote();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
     private TextView passStatusText;
     private EditText nameText;
     private EditText emailText;
@@ -179,25 +176,37 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private ProgressBar previewProgress;
     private TextView.OnEditorActionListener fastSend;
     private View imageClickTarget;
+    protected ImageLoadingListener previewListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+            imageClickTarget.setVisibility(View.GONE);
+            previewProgress.setVisibility(View.VISIBLE);
+        }
 
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            previewProgress.setVisibility(View.GONE);
+            imageClickTarget.setVisibility(View.VISIBLE);
+            deleteImage();
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            imagePreview.setVisibility(View.VISIBLE);
+            deleteButtonBg.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
+            previewProgress.setVisibility(View.GONE);
+            imageClickTarget.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            previewProgress.setVisibility(View.GONE);
+            imageClickTarget.setVisibility(View.VISIBLE);
+            deleteImage();
+        }
+    };
     private Captcha captcha = new Captcha();
-
-    protected Uri imageUri;
-    protected String boardCode = null;
-    protected long threadNo = 0;
-    protected long postNo = 0;
-    protected String imagePath = null;
-    protected String contentType = null;
-    protected String orientation = null;
-
-    protected int themeId;
-    protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
-
-    protected boolean showPassEnable = true;
-    protected boolean showPassDisable = false;
-
-    protected String replyText = "";
-    protected String quoteText = "";
 
     public static void startActivity(Context from, ChanActivityId aid) {
         startActivity(from, aid.boardCode, aid.threadNo, aid.postNo, aid.text, aid.quoteText);
@@ -244,10 +253,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     protected void createViews() {
-        wrapperLayout = (LinearLayout) findViewById(R.id.post_reply_wrapper);
-        previewFrame = (ViewGroup) findViewById(R.id.post_reply_preview_frame);
-        imagePreview = (ImageView) findViewById(R.id.post_reply_preview_image);
-        previewProgress = (ProgressBar) findViewById(R.id.post_reply_preview_progress_bar);
+        wrapperLayout = findViewById(R.id.post_reply_wrapper);
+        previewFrame = findViewById(R.id.post_reply_preview_frame);
+        imagePreview = findViewById(R.id.post_reply_preview_image);
+        previewProgress = findViewById(R.id.post_reply_preview_progress_bar);
         /*
          * cameraButton =
          * (ImageView)findViewById(R.id.post_reply_camera_button); pictureButton
@@ -262,21 +271,21 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         infoButton = findViewById(R.id.password_help_icon);
         // doneButton = (Button)findViewById(R.id.done);
         deleteButtonBg = findViewById(R.id.post_reply_delete_button_bg);
-        deleteButton = (ImageView) findViewById(R.id.post_reply_delete_button);
+        deleteButton = findViewById(R.id.post_reply_delete_button);
         webImageButtonBg = findViewById(R.id.post_reply_web_image_button_bg);
-        webImageButton = (ImageView) findViewById(R.id.post_reply_web_image_button);
+        webImageButton = findViewById(R.id.post_reply_web_image_button);
         sageButton = findViewById(R.id.post_reply_sage);
-        messageText = (EditText) findViewById(R.id.post_reply_text);
-        passStatusText = (TextView) findViewById(R.id.post_reply_pass_status);
-        nameText = (EditText) findViewById(R.id.post_reply_name);
-        emailText = (EditText) findViewById(R.id.post_reply_email);
-        subjectText = (EditText) findViewById(R.id.post_reply_subject);
-        passwordText = (EditText) findViewById(R.id.post_reply_password);
+        messageText = findViewById(R.id.post_reply_text);
+        passStatusText = findViewById(R.id.post_reply_pass_status);
+        nameText = findViewById(R.id.post_reply_name);
+        emailText = findViewById(R.id.post_reply_email);
+        subjectText = findViewById(R.id.post_reply_subject);
+        passwordText = findViewById(R.id.post_reply_password);
         passwordText.setText(generatePassword()); // always default random
-                                                  // generate, then we store for
-                                                  // later use
-        spoilerCheckbox = (CheckBox) findViewById(R.id.post_reply_spoiler_checkbox);
-        recaptchaView = (CaptchaView) findViewById(R.id.post_reply_recaptcha_webview);
+        // generate, then we store for
+        // later use
+        spoilerCheckbox = findViewById(R.id.post_reply_spoiler_checkbox);
+        recaptchaView = findViewById(R.id.post_reply_recaptcha_webview);
 
         fastSend = new TextView.OnEditorActionListener() {
             @Override
@@ -289,7 +298,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
         /*
          * doneButton.setOnClickListener(new View.OnClickListener() {
-         * 
+         *
          * @Override public void onClick(View v) { validateAndSendReply(); } });
          */
         infoButton.setOnClickListener(new View.OnClickListener() {
@@ -362,13 +371,15 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (intent.hasExtra(TEXT)) setMessage(intent.getStringExtra(TEXT));
         if (intent.hasExtra(REPLY_TEXT)) replyText = intent.getStringExtra(REPLY_TEXT);
         if (intent.hasExtra(QUOTE_TEXT)) quoteText = intent.getStringExtra(QUOTE_TEXT);
-        if (intent.hasExtra(SPOILER)) spoilerCheckbox.setChecked(intent.getBooleanExtra(SPOILER, false));
+        if (intent.hasExtra(SPOILER))
+            spoilerCheckbox.setChecked(intent.getBooleanExtra(SPOILER, false));
         // these are just reset
         imageUri = intent.hasExtra(POST_REPLY_IMAGE_URL) ? Uri.parse(intent.getStringExtra(POST_REPLY_IMAGE_URL)) : null;
         imagePath = null;
         contentType = null;
         orientation = null;
-        if (DEBUG) Log.i(TAG, "setIntent() intent has /" + boardCode + "/" + threadNo + ":" + postNo + " imageUri=" + imageUri + " combinedSubCom=" + intent.getStringExtra(SUBJECT) + " text=" + intent.getStringExtra(TEXT) + " replyText=" + intent.getStringExtra(REPLY_TEXT) + " quoteText=" + intent.getStringExtra(QUOTE_TEXT));
+        if (DEBUG)
+            Log.i(TAG, "setIntent() intent has /" + boardCode + "/" + threadNo + ":" + postNo + " imageUri=" + imageUri + " combinedSubCom=" + intent.getStringExtra(SUBJECT) + " text=" + intent.getStringExtra(TEXT) + " replyText=" + intent.getStringExtra(REPLY_TEXT) + " quoteText=" + intent.getStringExtra(QUOTE_TEXT));
         Bundle bundle = loadBundleFromPrefs();
         if (bundle != null && boardCode != null && boardCode.equals(bundle.getString(ChanBoard.BOARD_CODE)) && threadNo == bundle.getLong(ChanThread.THREAD_NO)) {
             if (DEBUG) Log.i(TAG, "setIntent() found saved bundle for same thread, restoring");
@@ -378,7 +389,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             onRestoreInstanceState(bundle);
             Editable msg = messageText.getText();
             String s = msg.toString();
-            if (!s.contains(savedReplyText)) msg.append((s.trim().isEmpty() ? "" : "\n\n") + savedReplyText);
+            if (!s.contains(savedReplyText))
+                msg.append((s.trim().isEmpty() ? "" : "\n\n") + savedReplyText);
             replyText = savedReplyText;
             quoteText = savedQuoteText;
             postNo = savedPostNo;
@@ -396,8 +408,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (bundle.containsKey(TEXT)) setMessage(bundle.getString(TEXT));
         if (bundle.containsKey(REPLY_TEXT)) replyText = bundle.getString(REPLY_TEXT);
         if (bundle.containsKey(QUOTE_TEXT)) quoteText = bundle.getString(QUOTE_TEXT);
-        if (bundle.containsKey(SPOILER)) spoilerCheckbox.setChecked(bundle.getBoolean(SPOILER, false));
-        if (bundle.containsKey(POST_REPLY_IMAGE_URL)) imageUri = bundle.getString(POST_REPLY_IMAGE_URL) != null ? Uri.parse(bundle.getString(POST_REPLY_IMAGE_URL)) : null;
+        if (bundle.containsKey(SPOILER))
+            spoilerCheckbox.setChecked(bundle.getBoolean(SPOILER, false));
+        if (bundle.containsKey(POST_REPLY_IMAGE_URL))
+            imageUri = bundle.getString(POST_REPLY_IMAGE_URL) != null ? Uri.parse(bundle.getString(POST_REPLY_IMAGE_URL)) : null;
         imagePath = bundle.getString(IMAGE_PATH);
         contentType = bundle.getString(CONTENT_TYPE);
         orientation = bundle.getString(ORIENTATION);
@@ -482,7 +496,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 wrapperLayout.setVisibility(View.VISIBLE);
                 boolean passEnabled = isPassEnabled();
                 updatePassRecaptchaViews(passEnabled);
-                if (passEnabled) Toast.makeText(PostReplyActivity.this, R.string.post_reply_pass_enabled_text, Toast.LENGTH_SHORT).show();
+                if (passEnabled)
+                    Toast.makeText(PostReplyActivity.this, R.string.post_reply_pass_enabled_text, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -510,12 +525,12 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private boolean isPassAvailable() {
         switch (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
-        case WIFI:
-        case MOBILE:
-            return true;
-        case NO_CONNECTION:
-        default:
-            return false;
+            case WIFI:
+            case MOBILE:
+                return true;
+            case NO_CONNECTION:
+            default:
+                return false;
         }
     }
 
@@ -537,24 +552,24 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private void updatePassRecaptchaViews(boolean passEnabled) {
         switch (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
-        case WIFI:
-        case MOBILE:
-            if (passEnabled) {
-                passStatusText.setText(R.string.post_reply_pass_enabled_text);
-                setPassEnabled();
+            case WIFI:
+            case MOBILE:
+                if (passEnabled) {
+                    passStatusText.setText(R.string.post_reply_pass_enabled_text);
+                    setPassEnabled();
+                    setRecaptchaDisabled();
+                } else {
+                    passStatusText.setText(R.string.post_reply_pass_enable_text);
+                    setPassDisabled();
+                    setRecaptchaEnabled();
+                }
+                break;
+            case NO_CONNECTION:
+            default:
+                passStatusText.setText(R.string.post_reply_pass_no_connection_text);
+                setPassUnavailable();
                 setRecaptchaDisabled();
-            } else {
-                passStatusText.setText(R.string.post_reply_pass_enable_text);
-                setPassDisabled();
-                setRecaptchaEnabled();
-            }
-            break;
-        case NO_CONNECTION:
-        default:
-            passStatusText.setText(R.string.post_reply_pass_no_connection_text);
-            setPassUnavailable();
-            setRecaptchaDisabled();
-            break;
+                break;
         }
     }
 
@@ -700,7 +715,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     protected void adjustFieldVisibility() {
         if (threadNo == 0) // new thread
-        sageButton.setVisibility(View.GONE);
+            sageButton.setVisibility(View.GONE);
 
         if (ChanBoard.hasName(boardCode)) nameText.setVisibility(View.VISIBLE);
         else nameText.setVisibility(View.GONE);
@@ -736,7 +751,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             super.onActivityResult(requestCode, resultCode, intent);
             return;
         }
-        if (DEBUG) Log.i(TAG, "onActivityResult for requestCode=" + requestCode + " intent=" + intent + " intent.getData()=" + (intent == null ? "null" : intent.getData()));
+        if (DEBUG)
+            Log.i(TAG, "onActivityResult for requestCode=" + requestCode + " intent=" + intent + " intent.getData()=" + (intent == null ? "null" : intent.getData()));
         if (resultCode != RESULT_OK) {
             Log.e(TAG, "onActivityResult error resultCode=" + resultCode + " intent=" + intent);
             int errId = R.string.post_reply_no_load_gallery_image;
@@ -744,23 +760,19 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             return;
         }
         switch (requestCode) {
-        case IMAGE_GALLERY:
-            if (DEBUG) Log.i(TAG, "Got gallery result for activity imageUri=" + imageUri);
-            if (intent == null || intent.getData() == null) {
-                Log.e(TAG, "null image uri for gallery image");
-                Toast.makeText(this, R.string.post_reply_no_load_gallery_image, Toast.LENGTH_SHORT).show();
-            }
-            imageUri = intent.getData();
-            imageClickTarget.setVisibility(View.GONE);
-            break;
-        default:
-            Log.e(TAG, "invalid request code for image");
-            Toast.makeText(this, R.string.post_reply_no_image, Toast.LENGTH_SHORT).show();
+            case IMAGE_GALLERY:
+                if (DEBUG) Log.i(TAG, "Got gallery result for activity imageUri=" + imageUri);
+                if (intent == null || intent.getData() == null) {
+                    Log.e(TAG, "null image uri for gallery image");
+                    Toast.makeText(this, R.string.post_reply_no_load_gallery_image, Toast.LENGTH_SHORT).show();
+                }
+                imageUri = intent.getData();
+                imageClickTarget.setVisibility(View.GONE);
+                break;
+            default:
+                Log.e(TAG, "invalid request code for image");
+                Toast.makeText(this, R.string.post_reply_no_image, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private enum MaxAxis {
-        WIDTH, HEIGHT
     }
 
     private Bitmap getImagePreviewBitmap() throws Exception {
@@ -773,11 +785,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         contentType = null;
         orientation = null;
         try {
-            String[] filePathColumn = {
-                    MediaStore.Images.ImageColumns.DATA,
-                    MediaStore.Images.ImageColumns.MIME_TYPE,
-                    MediaStore.Images.ImageColumns.ORIENTATION
-            };
+            String[] filePathColumn = {MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.MIME_TYPE, MediaStore.Images.ImageColumns.ORIENTATION};
             // query so image shows up
             Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null);
             if (cursor != null) {
@@ -803,21 +811,19 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(in, null, options); // this just sets
-                                                       // options, returns null
+        // options, returns null
         MaxAxis axis = (options.outWidth >= options.outHeight) ? MaxAxis.WIDTH : MaxAxis.HEIGHT;
         if (DEBUG) Log.i(TAG, "Initial size: " + options.outWidth + "x" + options.outHeight);
         int scale = 1;
         int maxPx = ChanGridSizer.dpToPx(getWindowManager().getDefaultDisplay(), 250); // limit to match thread preview size
         if (DEBUG) Log.i(TAG, "Max px:" + maxPx);
         switch (axis) {
-        case WIDTH:
-            while (options.outWidth / scale > maxPx)
-                scale *= 2;
-            break;
-        case HEIGHT:
-            while (options.outHeight / scale > maxPx)
-                scale *= 2;
-            break;
+            case WIDTH:
+                while (options.outWidth / scale > maxPx) scale *= 2;
+                break;
+            case HEIGHT:
+                while (options.outHeight / scale > maxPx) scale *= 2;
+                break;
         }
 
         // second pass actually scale the preview image
@@ -844,37 +850,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             Log.e(TAG, "setImagePreview exception while loading bitmap", e);
         }
     }
-
-    protected ImageLoadingListener previewListener = new ImageLoadingListener() {
-        @Override
-        public void onLoadingStarted(String imageUri, View view) {
-            imageClickTarget.setVisibility(View.GONE);
-            previewProgress.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            previewProgress.setVisibility(View.GONE);
-            imageClickTarget.setVisibility(View.VISIBLE);
-            deleteImage();
-        }
-
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            imagePreview.setVisibility(View.VISIBLE);
-            deleteButtonBg.setVisibility(View.VISIBLE);
-            deleteButton.setVisibility(View.VISIBLE);
-            previewProgress.setVisibility(View.GONE);
-            imageClickTarget.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onLoadingCancelled(String imageUri, View view) {
-            previewProgress.setVisibility(View.GONE);
-            imageClickTarget.setVisibility(View.VISIBLE);
-            deleteImage();
-        }
-    };
 
     private void deleteImage() {
         imagePreview.setVisibility(View.GONE);
@@ -932,7 +907,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         MenuItem item = menu.findItem(R.id.post_reply_send_menu);
         if (item != null) {
             boolean hasConnection = NetworkProfileManager.instance().getCurrentProfile().getConnectionType() != NetworkProfile.Type.NO_CONNECTION;
-            if (!hasConnection) Toast.makeText(this, R.string.post_reply_pass_no_connection_text, Toast.LENGTH_SHORT).show();
+            if (!hasConnection)
+                Toast.makeText(this, R.string.post_reply_pass_no_connection_text, Toast.LENGTH_SHORT).show();
             item.setVisible(hasConnection);
         }
         item = menu.findItem(R.id.post_reply_quote_menu);
@@ -946,20 +922,20 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            navigateUp();
-            return true;
-        case R.id.post_reply_quote_menu:
-            insertQuote();
-            return true;
+            case android.R.id.home:
+                navigateUp();
+                return true;
+            case R.id.post_reply_quote_menu:
+                insertQuote();
+                return true;
             /*
              * case R.id.post_reply_exit_menu: finish(); return true;
              */
-        case R.id.post_reply_send_menu:
-            validateAndSendReply();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+            case R.id.post_reply_send_menu:
+                validateAndSendReply();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -1014,8 +990,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         boolean hasImage = image != null && !image.trim().isEmpty();
 
         if (threadNo == 0) {
-            if (ChanBoard.requiresThreadImage(boardCode) && !hasImage) return getString(R.string.post_reply_add_image);
-            if (ChanBoard.requiresThreadSubject(boardCode) && !hasSubject) return getString(R.string.post_reply_board_requires_subject);
+            if (ChanBoard.requiresThreadImage(boardCode) && !hasImage)
+                return getString(R.string.post_reply_add_image);
+            if (ChanBoard.requiresThreadSubject(boardCode) && !hasSubject)
+                return getString(R.string.post_reply_board_requires_subject);
         }
         if (!hasImage && !hasMessage) return getString(R.string.post_reply_add_text_or_image);
 
@@ -1035,15 +1013,18 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         int numTasks = p.first;
         ActivityManager.RunningTaskInfo task = p.second;
         if (task != null) {
-            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (DEBUG)
+                Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null && !this.getClass().getName().equals(task.baseActivity.getClassName())) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me=" + this.getClass().getName() + " base=" + task.baseActivity.getClassName());
+                if (DEBUG)
+                    Log.i(TAG, "navigateUp() using finish instead of intents with me=" + this.getClass().getName() + " base=" + task.baseActivity.getClassName());
                 finish();
                 return;
             }
         }
 
-        if (DEBUG) Log.i(TAG, "navigateUp() launching intent /" + boardCode + "/" + threadNo + "#p" + postNo);
+        if (DEBUG)
+            Log.i(TAG, "navigateUp() launching intent /" + boardCode + "/" + threadNo + "#p" + postNo);
         Intent intent = ThreadActivity.createIntent(this, boardCode, threadNo, postNo, "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
@@ -1077,6 +1058,48 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         return null;
     }
 
+    @Override
+    public void closeSearch() {
+    }
+
+    @Override
+    public void setProgress(boolean on) {
+    }
+
+    protected void insertQuote() {
+        if (messageText == null) return;
+        Editable t = messageText.getText();
+        if (t == null) return;
+        String s = t.subSequence(0, t.length()).toString();
+        if (DEBUG)
+            Log.i(TAG, "insertQuote text=" + s + " replyText=" + replyText + " quoteText=" + quoteText);
+        int st;
+        if (quoteText != null && !quoteText.isEmpty() && (st = s.indexOf(quoteText)) >= 0) {
+            // quote is already there, so remove
+            t.replace(st, st + replyText.length(), "");
+        } else if (replyText != null && !replyText.isEmpty() && (st = s.indexOf(replyText)) >= 0) {
+            t.replace(st, st + replyText.length(), quoteText);
+        } else {
+            t.insert(0, quoteText);
+        }
+    }
+
+    @Override
+    public void switchBoard(String boardCode, String query) {
+    }
+
+    public String getRecaptchaResponse() {
+        return recaptchaView.getCaptchaResponse();
+    }
+
+    public void setRecaptchaResponse(String gRecaptchaResponse) {
+        recaptchaView.setCaptchaResponse(gRecaptchaResponse);
+    }
+
+    private enum MaxAxis {
+        WIDTH, HEIGHT
+    }
+
     public class PostReplyHandler extends Handler {
 
         public PostReplyHandler() {
@@ -1087,9 +1110,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             try {
                 super.handleMessage(msg);
                 switch (msg.what) {
-                case POST_FINISHED:
-                default:
-                    navigateUp();
+                    case POST_FINISHED:
+                    default:
+                        navigateUp();
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Couldn't handle message " + msg, e);
@@ -1097,18 +1120,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         }
     }
 
-    @Override
-    public void closeSearch() {
-    }
-
-    @Override
-    public void setProgress(boolean on) {
-    }
-
     public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, Integer> {
 
         public static final String MAX_FILE_SIZE = "3145728";
-
+        protected String errorMessage = null;
         // private PostReplyActivity activity = null;
         private boolean usePass = false;
         private String password = null;
@@ -1124,9 +1139,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
         @Override
         protected Integer doInBackground(PostingReplyDialogFragment... params) { // dialog
-                                                                                 // is
-                                                                                 // for
-                                                                                 // callback
+            // is
+            // for
+            // callback
             dialogFragment = params[0];
             try {
                 password = getPassword(); // save for later use
@@ -1200,7 +1215,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 partsList.add(new StringPart("textonly", "on", charset));
             }
             if (imageUrl != null) {
-                if (DEBUG) Log.i(TAG, "Trying to load image for imageUrl=" + imageUrl + " imagePath=" + imagePath + " contentType=" + contentType);
+                if (DEBUG)
+                    Log.i(TAG, "Trying to load image for imageUrl=" + imageUrl + " imagePath=" + imagePath + " contentType=" + contentType);
                 File file = null;
                 if (imagePath == null || imagePath.startsWith("http")) { // non-local path, load to tmp
                     InputStream in = null;
@@ -1230,7 +1246,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
                 try {
                     ExifInterface exif = new ExifInterface(file.getAbsolutePath());
-                    if (DEBUG) Log.i(TAG, "Found exif orientation: " + exif.getAttribute(ExifInterface.TAG_ORIENTATION));
+                    if (DEBUG)
+                        Log.i(TAG, "Found exif orientation: " + exif.getAttribute(ExifInterface.TAG_ORIENTATION));
                 } catch (Exception e) {
                     Log.e(TAG, "Couldn't read exif interface for file:" + file.getAbsolutePath(), e);
                 }
@@ -1252,7 +1269,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             String url = String.format(URLFormatComponent.getUrl(context, URLFormatComponent.CHAN_POST_URL_FORMAT), boardCode);
             AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
             HttpParams params = client.getParams();
-            if (params != null) HttpClientParams.setRedirecting(params, true); // handle 302s from 4chan
+            if (params != null)
+                HttpClientParams.setRedirecting(params, true); // handle 302s from 4chan
             try {
                 // setup post
                 HttpPost request = new HttpPost(url);
@@ -1274,8 +1292,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                     if (DEBUG) Log.i(TAG, "Not using 4chan pass, executing with captcha");
                     httpResponse = client.execute(request);
                 }
-                if (DEBUG) Log.i(TAG, "Response Headers: " + (httpResponse == null ? "null" : Arrays.toString(httpResponse.getAllHeaders())));
-                if (DEBUG) Log.i(TAG, "Response Body: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
+                if (DEBUG)
+                    Log.i(TAG, "Response Headers: " + (httpResponse == null ? "null" : Arrays.toString(httpResponse.getAllHeaders())));
+                if (DEBUG)
+                    Log.i(TAG, "Response Body: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
                 // check if response
                 if (httpResponse == null) {
                     Log.e(TAG, context.getString(R.string.post_reply_no_response));
@@ -1308,14 +1328,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             try {
                 BufferedReader r = new BufferedReader(new InputStreamReader(is));
                 String l;
-                while ((l = r.readLine()) != null)
-                    if (DEBUG) Log.i(TAG, l);
+                while ((l = r.readLine()) != null) if (DEBUG) Log.i(TAG, l);
             } catch (IOException e) {
                 if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
             }
         }
-
-        protected String errorMessage = null;
 
         protected boolean postSuccessful(ChanPostResponse chanPostResponse) {
             errorMessage = chanPostResponse.getError(getApplicationContext());
@@ -1352,24 +1369,25 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             }
 
             // auto-add to watchlist
-            if (PreferenceManager.getDefaultSharedPreferences(PostReplyActivity.this).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true)) new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ChanThread thread = new ChanThread();
-                    thread.no = newThreadNo;
-                    thread.board = boardCode;
-                    thread.tn_w = 250;
-                    thread.tn_h = 250;
-                    thread.sub = getSubject().trim();
-                    thread.com = getMessage().trim();
-                    try {
-                        ChanFileStorage.addWatchedThread(context, thread);
-                        BoardActivity.refreshWatchlist(context);
-                    } catch (IOException e) {
-                        Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);
+            if (PreferenceManager.getDefaultSharedPreferences(PostReplyActivity.this).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ChanThread thread = new ChanThread();
+                        thread.no = newThreadNo;
+                        thread.board = boardCode;
+                        thread.tn_w = 250;
+                        thread.tn_h = 250;
+                        thread.sub = getSubject().trim();
+                        thread.com = getMessage().trim();
+                        try {
+                            ChanFileStorage.addWatchedThread(context, thread);
+                            BoardActivity.refreshWatchlist(context);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);
+                        }
                     }
-                }
-            }).start();
+                }).start();
 
             imageUri = null; // now we've processed so don't use it again
             return 0;
@@ -1408,48 +1426,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 Log.e(TAG, "Exception while dismissing dialog", e);
             }
         }
-    }
-
-    protected PopupMenu.OnMenuItemClickListener popupListener = new PopupMenu.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            switch (item.getItemId()) {
-            case R.id.post_reply_quote_menu:
-                insertQuote();
-                return true;
-            default:
-                return false;
-            }
-        }
-    };
-
-    protected void insertQuote() {
-        if (messageText == null) return;
-        Editable t = messageText.getText();
-        if (t == null) return;
-        String s = t.subSequence(0, t.length()).toString();
-        if (DEBUG) Log.i(TAG, "insertQuote text=" + s + " replyText=" + replyText + " quoteText=" + quoteText);
-        int st;
-        if (quoteText != null && !quoteText.isEmpty() && (st = s.indexOf(quoteText)) >= 0) {
-            // quote is already there, so remove
-            t.replace(st, st + replyText.length(), "");
-        } else if (replyText != null && !replyText.isEmpty() && (st = s.indexOf(replyText)) >= 0) {
-            t.replace(st, st + replyText.length(), quoteText);
-        } else {
-            t.insert(0, quoteText);
-        }
-    }
-
-    @Override
-    public void switchBoard(String boardCode, String query) {
-    }
-
-    public String getRecaptchaResponse() {
-        return recaptchaView.getCaptchaResponse();
-    }
-
-    public void setRecaptchaResponse(String gRecaptchaResponse) {
-        recaptchaView.setCaptchaResponse(gRecaptchaResponse);
     }
 
 }

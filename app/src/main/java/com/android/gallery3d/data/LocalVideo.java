@@ -16,13 +16,6 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.common.BitmapUtils;
-import com.android.gallery3d.util.UpdateHelper;
-import com.android.gallery3d.util.GalleryUtils;
-import com.android.gallery3d.util.ThreadPool.Job;
-import com.android.gallery3d.util.ThreadPool.JobContext;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -31,13 +24,20 @@ import android.net.Uri;
 import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;
 
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.common.BitmapUtils;
+import com.android.gallery3d.util.GalleryUtils;
+import com.android.gallery3d.util.ThreadPool.Job;
+import com.android.gallery3d.util.ThreadPool.JobContext;
+import com.android.gallery3d.util.UpdateHelper;
+
 import java.io.File;
 
 // LocalVideo represents a video in the local storage.
 public class LocalVideo extends LocalMediaItem {
 
     static final Path ITEM_PATH = Path.fromString("/local/video/item");
-
+    static final String[] PROJECTION = new String[]{VideoColumns._ID, VideoColumns.TITLE, VideoColumns.MIME_TYPE, VideoColumns.LATITUDE, VideoColumns.LONGITUDE, VideoColumns.DATE_TAKEN, VideoColumns.DATE_ADDED, VideoColumns.DATE_MODIFIED, VideoColumns.DATA, VideoColumns.DURATION, VideoColumns.BUCKET_ID, VideoColumns.SIZE};
     // Must preserve order between these indices and the order of the terms in
     // the following PROJECTION array.
     private static final int INDEX_ID = 0;
@@ -52,25 +52,8 @@ public class LocalVideo extends LocalMediaItem {
     private static final int INDEX_DURATION = 9;
     private static final int INDEX_BUCKET_ID = 10;
     private static final int INDEX_SIZE_ID = 11;
-
-    static final String[] PROJECTION = new String[] {
-            VideoColumns._ID,
-            VideoColumns.TITLE,
-            VideoColumns.MIME_TYPE,
-            VideoColumns.LATITUDE,
-            VideoColumns.LONGITUDE,
-            VideoColumns.DATE_TAKEN,
-            VideoColumns.DATE_ADDED,
-            VideoColumns.DATE_MODIFIED,
-            VideoColumns.DATA,
-            VideoColumns.DURATION,
-            VideoColumns.BUCKET_ID,
-            VideoColumns.SIZE
-    };
-
-    private final GalleryApp mApplication;
     private static Bitmap sOverlay;
-
+    private final GalleryApp mApplication;
     public int durationInSec;
 
     public LocalVideo(Path path, GalleryApp application, Cursor cursor) {
@@ -120,15 +103,11 @@ public class LocalVideo extends LocalMediaItem {
         mimeType = uh.update(mimeType, cursor.getString(INDEX_MIME_TYPE));
         latitude = uh.update(latitude, cursor.getDouble(INDEX_LATITUDE));
         longitude = uh.update(longitude, cursor.getDouble(INDEX_LONGITUDE));
-        dateTakenInMs = uh.update(
-                dateTakenInMs, cursor.getLong(INDEX_DATE_TAKEN));
-        dateAddedInSec = uh.update(
-                dateAddedInSec, cursor.getLong(INDEX_DATE_ADDED));
-        dateModifiedInSec = uh.update(
-                dateModifiedInSec, cursor.getLong(INDEX_DATE_MODIFIED));
+        dateTakenInMs = uh.update(dateTakenInMs, cursor.getLong(INDEX_DATE_TAKEN));
+        dateAddedInSec = uh.update(dateAddedInSec, cursor.getLong(INDEX_DATE_ADDED));
+        dateModifiedInSec = uh.update(dateModifiedInSec, cursor.getLong(INDEX_DATE_MODIFIED));
         filePath = uh.update(filePath, cursor.getString(INDEX_DATA));
-        durationInSec = uh.update(
-                durationInSec, cursor.getInt(INDEX_DURATION) / 1000);
+        durationInSec = uh.update(durationInSec, cursor.getInt(INDEX_DURATION) / 1000);
         bucketId = uh.update(bucketId, cursor.getInt(INDEX_BUCKET_ID));
         fileSize = uh.update(fileSize, cursor.getLong(INDEX_SIZE_ID));
         return uh.isUpdated();
@@ -139,27 +118,9 @@ public class LocalVideo extends LocalMediaItem {
         return new LocalVideoRequest(mApplication, getPath(), type, filePath);
     }
 
-    public static class LocalVideoRequest extends ImageCacheRequest {
-        private String mLocalFilePath;
-
-        LocalVideoRequest(GalleryApp application, Path path, int type,
-                String localFilePath) {
-            super(application, path, type, LocalImage.getTargetSize(type));
-            mLocalFilePath = localFilePath;
-        }
-
-        @Override
-        public Bitmap onDecodeOriginal(JobContext jc, int type) {
-            Bitmap bitmap = BitmapUtils.createVideoThumbnail(mLocalFilePath);
-            if (bitmap == null || jc.isCancelled()) return null;
-            return bitmap;
-        }
-    }
-
     @Override
     public Job<BitmapRegionDecoder> requestLargeImage() {
-        throw new UnsupportedOperationException("Cannot regquest a large image"
-                + " to a local video!");
+        throw new UnsupportedOperationException("Cannot regquest a large image" + " to a local video!");
     }
 
     @Override
@@ -171,8 +132,7 @@ public class LocalVideo extends LocalMediaItem {
     public void delete() {
         GalleryUtils.assertNotInRenderThread();
         Uri baseUri = Video.Media.EXTERNAL_CONTENT_URI;
-        mApplication.getContentResolver().delete(baseUri, "_id=?",
-                new String[]{String.valueOf(id)});
+        mApplication.getContentResolver().delete(baseUri, "_id=?", new String[]{String.valueOf(id)});
     }
 
     @Override
@@ -188,6 +148,8 @@ public class LocalVideo extends LocalMediaItem {
 
     @Override
     public Uri getPlayUri() {
+        //if there are problems consider adding
+        //  FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", new File(filePath));
         return Uri.fromFile(new File(filePath));
     }
 
@@ -201,8 +163,7 @@ public class LocalVideo extends LocalMediaItem {
         MediaDetails details = super.getDetails();
         int s = durationInSec;
         if (s > 0) {
-            details.addDetail(MediaDetails.INDEX_DURATION, GalleryUtils.formatDuration(
-                    mApplication.getAndroidContext(), durationInSec));
+            details.addDetail(MediaDetails.INDEX_DURATION, GalleryUtils.formatDuration(mApplication.getAndroidContext(), durationInSec));
         }
         return details;
     }
@@ -215,5 +176,21 @@ public class LocalVideo extends LocalMediaItem {
     @Override
     public int getHeight() {
         return 0;
+    }
+
+    public static class LocalVideoRequest extends ImageCacheRequest {
+        private String mLocalFilePath;
+
+        LocalVideoRequest(GalleryApp application, Path path, int type, String localFilePath) {
+            super(application, path, type, LocalImage.getTargetSize(type));
+            mLocalFilePath = localFilePath;
+        }
+
+        @Override
+        public Bitmap onDecodeOriginal(JobContext jc, int type) {
+            Bitmap bitmap = BitmapUtils.createVideoThumbnail(mLocalFilePath);
+            if (bitmap == null || jc.isCancelled()) return null;
+            return bitmap;
+        }
     }
 }

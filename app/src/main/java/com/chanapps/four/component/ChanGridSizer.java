@@ -21,9 +21,10 @@ public class ChanGridSizer {
         d.getMetrics(displayMetrics);
         return dpToPx(displayMetrics, dp);
     }
+
     static public int dpToPx(DisplayMetrics displayMetrics, int dp) {
         float dpf = dp;
-        int pixels = (int)(displayMetrics.density * dpf + 0.5f);
+        int pixels = (int) (displayMetrics.density * dpf + 0.5f);
         return pixels;
     }
 
@@ -34,9 +35,8 @@ public class ChanGridSizer {
     static public int getCalculatedWidth(int widthPixels, int numColumns, int requestedHorizontalSpacing) {
         int availableSpace = widthPixels - requestedHorizontalSpacing * (numColumns + 1);
         int columnWidth = availableSpace / numColumns;
-        if (DEBUG) Log.i(TAG, "sizeGridToDisplay availableSpace=" + availableSpace
-                + " numColumns=" + numColumns
-                + " columnWidth=" + columnWidth);
+        if (DEBUG)
+            Log.i(TAG, "sizeGridToDisplay availableSpace=" + availableSpace + " numColumns=" + numColumns + " columnWidth=" + columnWidth);
         return columnWidth;
     }
 

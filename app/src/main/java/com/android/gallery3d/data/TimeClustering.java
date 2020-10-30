@@ -16,12 +16,12 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.content.Context;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
+
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.util.GalleryUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,46 +52,45 @@ public class TimeClustering extends Clustering {
     // The max cluster size can range from 20 to 50.
     private static final int MIN_MAX_CLUSTER_SIZE = 20;
     private static final int MAX_MAX_CLUSTER_SIZE = 50;
-
-    // Initially put 2 items in the same cluster as long as they are within
-    // 3 cluster frequencies of each other.
-    private static int CLUSTER_SPLIT_MULTIPLIER = 3;
-
     // The minimum change factor in the time between items to consider a
     // partition.
     // Example: (Item 3 - Item 2) / (Item 2 - Item 1).
     private static final int MIN_PARTITION_CHANGE_FACTOR = 2;
-
     // Make the cluster split time of a large cluster half that of a regular
     // cluster.
     private static final int PARTITION_CLUSTER_SPLIT_TIME_FACTOR = 2;
-
+    private static final Comparator<SmallItem> sDateComparator = new DateComparator();
+    // Initially put 2 items in the same cluster as long as they are within
+    // 3 cluster frequencies of each other.
+    private static int CLUSTER_SPLIT_MULTIPLIER = 3;
     private Context mContext;
     private ArrayList<Cluster> mClusters;
     private String[] mNames;
     private Cluster mCurrCluster;
-
-    private long mClusterSplitTime =
-            (MIN_CLUSTER_SPLIT_TIME_IN_MS + MAX_CLUSTER_SPLIT_TIME_IN_MS) / 2;
-    private long mLargeClusterSplitTime =
-            mClusterSplitTime / PARTITION_CLUSTER_SPLIT_TIME_FACTOR;
+    private long mClusterSplitTime = (MIN_CLUSTER_SPLIT_TIME_IN_MS + MAX_CLUSTER_SPLIT_TIME_IN_MS) / 2;
+    private long mLargeClusterSplitTime = mClusterSplitTime / PARTITION_CLUSTER_SPLIT_TIME_FACTOR;
     private int mMinClusterSize = (MIN_MIN_CLUSTER_SIZE + MAX_MIN_CLUSTER_SIZE) / 2;
     private int mMaxClusterSize = (MIN_MAX_CLUSTER_SIZE + MAX_MAX_CLUSTER_SIZE) / 2;
-
-
-    private static final Comparator<SmallItem> sDateComparator =
-            new DateComparator();
-
-    private static class DateComparator implements Comparator<SmallItem> {
-        public int compare(SmallItem item1, SmallItem item2) {
-            return -Utils.compare(item1.dateInMs, item2.dateInMs);
-        }
-    }
 
     public TimeClustering(Context context) {
         mContext = context;
         mClusters = new ArrayList<Cluster>();
         mCurrCluster = new Cluster();
+    }
+
+    // Returns true if a, b are sufficiently geographically separated.
+    private static boolean isGeographicallySeparated(SmallItem itemA, SmallItem itemB) {
+        if (!GalleryUtils.isValidLocation(itemA.lat, itemA.lng) || !GalleryUtils.isValidLocation(itemB.lat, itemB.lng)) {
+            return false;
+        }
+
+        double distance = GalleryUtils.fastDistanceMeters(Math.toRadians(itemA.lat), Math.toRadians(itemA.lng), Math.toRadians(itemB.lat), Math.toRadians(itemB.lng));
+        return (GalleryUtils.toMile(distance) > GEOGRAPHIC_DISTANCE_CUTOFF_IN_MILES);
+    }
+
+    // Returns the time interval between the two items in milliseconds.
+    private static long timeDistance(SmallItem a, SmallItem b) {
+        return Math.abs(a.dateInMs - b.dateInMs);
     }
 
     @Override
@@ -207,8 +206,7 @@ public class TimeClustering extends Clustering {
                 } else if (timeDistance(prevItem, currentItem) < mClusterSplitTime) {
                     mCurrCluster.addItem(currentItem);
                     itemAddedToCurrentCluster = true;
-                } else if (numClusters > 0 && numCurrClusterItems < mMinClusterSize
-                        && !mCurrCluster.mGeographicallySeparatedFromPrevCluster) {
+                } else if (numClusters > 0 && numCurrClusterItems < mMinClusterSize && !mCurrCluster.mGeographicallySeparatedFromPrevCluster) {
                     mergeAndAddCurrentCluster();
                 } else {
                     mClusters.add(mCurrCluster);
@@ -231,8 +229,7 @@ public class TimeClustering extends Clustering {
                 // The last cluster may potentially be too big or too small.
                 if (numCurrClusterItems > mMaxClusterSize) {
                     splitAndAddCurrentCluster();
-                } else if (numClusters > 0 && numCurrClusterItems < mMinClusterSize
-                        && !mCurrCluster.mGeographicallySeparatedFromPrevCluster) {
+                } else if (numClusters > 0 && numCurrClusterItems < mMinClusterSize && !mCurrCluster.mGeographicallySeparatedFromPrevCluster) {
                     mergeAndAddCurrentCluster();
                 } else {
                     mClusters.add(mCurrCluster);
@@ -315,24 +312,10 @@ public class TimeClustering extends Clustering {
         }
     }
 
-    // Returns true if a, b are sufficiently geographically separated.
-    private static boolean isGeographicallySeparated(SmallItem itemA, SmallItem itemB) {
-        if (!GalleryUtils.isValidLocation(itemA.lat, itemA.lng)
-                || !GalleryUtils.isValidLocation(itemB.lat, itemB.lng)) {
-            return false;
+    private static class DateComparator implements Comparator<SmallItem> {
+        public int compare(SmallItem item1, SmallItem item2) {
+            return -Utils.compare(item1.dateInMs, item2.dateInMs);
         }
-
-        double distance = GalleryUtils.fastDistanceMeters(
-            Math.toRadians(itemA.lat),
-            Math.toRadians(itemA.lng),
-            Math.toRadians(itemB.lat),
-            Math.toRadians(itemB.lng));
-        return (GalleryUtils.toMile(distance) > GEOGRAPHIC_DISTANCE_CUTOFF_IN_MILES);
-    }
-
-    // Returns the time interval between the two items in milliseconds.
-    private static long timeDistance(SmallItem a, SmallItem b) {
-        return Math.abs(a.dateInMs - b.dateInMs);
     }
 }
 
@@ -390,16 +373,13 @@ class Cluster {
         if (minTimestamp == 0) return "";
 
         String caption;
-        String minDay = DateFormat.format(MMDDYY_FORMAT, minTimestamp)
-                .toString();
-        String maxDay = DateFormat.format(MMDDYY_FORMAT, maxTimestamp)
-                .toString();
+        String minDay = DateFormat.format(MMDDYY_FORMAT, minTimestamp).toString();
+        String maxDay = DateFormat.format(MMDDYY_FORMAT, maxTimestamp).toString();
 
         if (minDay.substring(4).equals(maxDay.substring(4))) {
             // The items are from the same year - show at least as
             // much granularity as abbrev_all allows.
-            caption = DateUtils.formatDateRange(context, minTimestamp,
-                    maxTimestamp, DateUtils.FORMAT_ABBREV_ALL);
+            caption = DateUtils.formatDateRange(context, minTimestamp, maxTimestamp, DateUtils.FORMAT_ABBREV_ALL);
 
             // Get a more granular date range string if the min and
             // max timestamp are on the same day and from the
@@ -408,27 +388,22 @@ class Cluster {
                 int flags = DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE;
                 // Contains the year only if the date does not
                 // correspond to the current year.
-                String dateRangeWithOptionalYear = DateUtils.formatDateTime(
-                        context, minTimestamp, flags);
-                String dateRangeWithYear = DateUtils.formatDateTime(
-                        context, minTimestamp, flags | DateUtils.FORMAT_SHOW_YEAR);
+                String dateRangeWithOptionalYear = DateUtils.formatDateTime(context, minTimestamp, flags);
+                String dateRangeWithYear = DateUtils.formatDateTime(context, minTimestamp, flags | DateUtils.FORMAT_SHOW_YEAR);
                 if (!dateRangeWithOptionalYear.equals(dateRangeWithYear)) {
                     // This means both dates are from the same year
                     // - show the time.
                     // Not enough room to display the time range.
                     // Pick the mid-point.
                     long midTimestamp = (minTimestamp + maxTimestamp) / 2;
-                    caption = DateUtils.formatDateRange(context, midTimestamp,
-                            midTimestamp, DateUtils.FORMAT_SHOW_TIME | flags);
+                    caption = DateUtils.formatDateRange(context, midTimestamp, midTimestamp, DateUtils.FORMAT_SHOW_TIME | flags);
                 }
             }
         } else {
             // The items are not from the same year - only show
             // month and year.
-            int flags = DateUtils.FORMAT_NO_MONTH_DAY
-                    | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE;
-            caption = DateUtils.formatDateRange(context, minTimestamp,
-                    maxTimestamp, flags);
+            int flags = DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE;
+            caption = DateUtils.formatDateRange(context, minTimestamp, maxTimestamp, flags);
         }
 
         return caption;

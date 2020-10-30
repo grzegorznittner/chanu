@@ -3,18 +3,19 @@ package com.chanapps.four.component;
 import android.app.Activity;
 import android.database.Cursor;
 import android.view.View;
+
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.service.NetworkProfileManager;
 
 /**
-* Created with IntelliJ IDEA.
-* User: johnarleyburns
-* Date: 4/9/13
-* Time: 10:59 AM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: johnarleyburns
+ * Date: 4/9/13
+ * Time: 10:59 AM
+ * To change this template use File | Settings | File Templates.
+ */
 public class ThreadImageOnClickListener implements View.OnClickListener {
 
     long postId = 0;
@@ -39,7 +40,7 @@ public class ThreadImageOnClickListener implements View.OnClickListener {
     public void onClick(View v) {
         ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         if (activity != null && activity instanceof Activity) {
-            GalleryViewActivity.startActivity((Activity)activity, boardCode, threadNo, postId);
+            GalleryViewActivity.startActivity((Activity) activity, boardCode, threadNo, postId);
         }
     }
 

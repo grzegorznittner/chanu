@@ -16,11 +16,11 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.data.Path;
-
 import android.content.Context;
 import android.graphics.Rect;
+
+import com.android.gallery3d.data.Path;
+import com.chanapps.four.gallery3d.R;
 
 public class StripDrawer extends SelectionDrawer {
     private NinePatchTexture mFramePressed;
@@ -47,10 +47,7 @@ public class StripDrawer extends SelectionDrawer {
     }
 
     @Override
-    public void draw(GLCanvas canvas, Texture content,
-            int width, int height, int rotation, Path path,
-            int dataSourceType, int mediaType, boolean isPanorama,
-            int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
+    public void draw(GLCanvas canvas, Texture content, int width, int height, int rotation, Path path, int dataSourceType, int mediaType, boolean isPanorama, int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
 
         int x = -width / 2;
         int y = -height / 2;
@@ -67,7 +64,6 @@ public class StripDrawer extends SelectionDrawer {
         int x = -width / 2;
         int y = -height / 2;
         Rect p = mFocusBoxPadding;
-        mFocusBox.draw(canvas, x - p.left, y - p.top,
-                width + p.left + p.right, height + p.top + p.bottom);
+        mFocusBox.draw(canvas, x - p.left, y - p.top, width + p.left + p.right, height + p.top + p.bottom);
     }
 }

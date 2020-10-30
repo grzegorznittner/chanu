@@ -25,6 +25,10 @@ public class LinkedNode {
         mPrev = mNext = this;
     }
 
+    public static <T extends LinkedNode> List<T> newList() {
+        return new List<T>();
+    }
+
     public void insert(LinkedNode node) {
         node.mNext = mNext;
         mNext.mPrev = node;
@@ -67,9 +71,5 @@ public class LinkedNode {
             return (T) (node.mPrev == mHead ? null : node.mPrev);
         }
 
-    }
-
-    public static <T extends LinkedNode> List<T> newList() {
-        return new List<T>();
     }
 }

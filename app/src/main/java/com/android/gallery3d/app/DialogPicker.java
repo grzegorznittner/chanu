@@ -16,10 +16,10 @@
 
 package com.android.gallery3d.app;
 
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.android.gallery3d.util.GalleryUtils;
 
 public class DialogPicker extends PickerActivity {
 
@@ -34,8 +34,7 @@ public class DialogPicker extends PickerActivity {
         Bundle data = extras == null ? new Bundle() : new Bundle(extras);
 
         data.putBoolean(Gallery.KEY_GET_CONTENT, true);
-        data.putString(AlbumSetPage.KEY_MEDIA_PATH,
-                getDataManager().getTopSetPath(typeBits));
+        data.putString(AlbumSetPage.KEY_MEDIA_PATH, getDataManager().getTopSetPath(typeBits));
         getStateManager().startState(AlbumSetPage.class, data);
     }
 }

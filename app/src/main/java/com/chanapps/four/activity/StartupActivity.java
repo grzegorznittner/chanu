@@ -1,7 +1,5 @@
 package com.chanapps.four.activity;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -9,8 +7,11 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
+
+import java.util.List;
 
 public class StartupActivity extends Activity {
 
@@ -20,8 +21,7 @@ public class StartupActivity extends Activity {
         Uri data = getIntent() != null ? getIntent().getData() : null;
         if (data != null) {
             dispatchUri(data);
-        }
-        else if (needStartApp()) {
+        } else if (needStartApp()) {
             NetworkProfileManager.instance().startLastActivity(this);
         }
 
@@ -37,6 +37,7 @@ public class StartupActivity extends Activity {
     }
 
     private boolean needStartApp() {
+        //todo getRunningTasks is deprecated, ew may need a fix here
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final List<RunningTaskInfo> tasksInfo = am.getRunningTasks(1024);
 
@@ -66,18 +67,11 @@ public class StartupActivity extends Activity {
         List<String> params = data.getPathSegments();
         if (params == null || params.size() == 0 || params.get(0) == null || params.get(0).trim().isEmpty()) {
             dispatchBoardSelector();
-        }
-        else if (params.size() == 1 && params.get(0).trim().matches("[a-z0-9]+")) {
+        } else if (params.size() == 1 && params.get(0).trim().matches("[a-z0-9]+")) {
             dispatchBoard(params.get(0).trim());
-        }
-        else if (params.size() == 3
-                && params.get(0).trim().matches("[a-z0-9]+")
-                && params.get(1).trim().matches("res")
-                && params.get(2).trim().matches("[0-9]+.*")
-                ) {
+        } else if (params.size() == 3 && params.get(0).trim().matches("[a-z0-9]+") && params.get(1).trim().matches("res") && params.get(2).trim().matches("[0-9]+.*")) {
             dispatchThread(params.get(0).trim(), params.get(2).trim());
-        }
-        else {
+        } else {
             dispatchBoardSelector();
         }
     }

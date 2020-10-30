@@ -16,10 +16,10 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.app.GalleryApp;
-
 import android.content.Context;
 import android.net.Uri;
+
+import com.android.gallery3d.app.GalleryApp;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,8 +32,7 @@ public class ClusterAlbumSet extends MediaSet implements ContentListener {
     private ArrayList<ClusterAlbum> mAlbums = new ArrayList<ClusterAlbum>();
     private boolean mFirstReloadDone;
 
-    public ClusterAlbumSet(Path path, GalleryApp application,
-            MediaSet baseSet, int kind) {
+    public ClusterAlbumSet(Path path, GalleryApp application, MediaSet baseSet, int kind) {
         super(path, INVALID_DATA_VERSION);
         mApplication = application;
         mBaseSet = baseSet;
@@ -110,8 +109,7 @@ public class ClusterAlbumSet extends MediaSet implements ContentListener {
             } else {
                 childPath = mPath.getChild(i);
             }
-            ClusterAlbum album = (ClusterAlbum) dataManager.peekMediaObject(
-                        childPath);
+            ClusterAlbum album = (ClusterAlbum) dataManager.peekMediaObject(childPath);
             if (album == null) {
                 album = new ClusterAlbum(childPath, dataManager, this);
             }

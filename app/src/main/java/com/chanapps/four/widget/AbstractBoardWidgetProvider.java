@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 
@@ -47,8 +48,7 @@ public abstract class AbstractBoardWidgetProvider extends AppWidgetProvider {
         for (String widgetBoard : widgetBoards) {
             String[] components = widgetBoard.split(WidgetConf.DELIM);
             int widgetId = Integer.valueOf(components[0]);
-            if (!widgetsToDelete.contains(widgetId))
-                newWidgetBoards.add(widgetBoard);
+            if (!widgetsToDelete.contains(widgetId)) newWidgetBoards.add(widgetBoard);
         }
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, newWidgetBoards);

@@ -34,12 +34,16 @@ public class GLPaint {
         mFlags = flags;
     }
 
+    public int getColor() {
+        return mColor;
+    }
+
     public void setColor(int color) {
         mColor = color;
     }
 
-    public int getColor() {
-        return mColor;
+    public float getLineWidth() {
+        return mLineWidth;
     }
 
     public void setLineWidth(float width) {
@@ -47,8 +51,8 @@ public class GLPaint {
         mLineWidth = width;
     }
 
-    public float getLineWidth() {
-        return mLineWidth;
+    public boolean getAntiAlias() {
+        return (mFlags & FLAG_ANTI_ALIAS) != 0;
     }
 
     public void setAntiAlias(boolean enabled) {
@@ -57,9 +61,5 @@ public class GLPaint {
         } else {
             mFlags &= ~FLAG_ANTI_ALIAS;
         }
-    }
-
-    public boolean getAntiAlias(){
-        return (mFlags & FLAG_ANTI_ALIAS) != 0;
     }
 }

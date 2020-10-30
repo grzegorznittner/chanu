@@ -16,7 +16,21 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.format.Formatter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
@@ -36,27 +50,11 @@ import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.text.format.Formatter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 
-public class ManageCachePage extends ActivityState implements
-        SelectionManager.SelectionListener, MenuExecutor.ProgressListener,
-        EyePosition.EyePositionListener, OnClickListener {
+public class ManageCachePage extends ActivityState implements SelectionManager.SelectionListener, MenuExecutor.ProgressListener, EyePosition.EyePositionListener, OnClickListener {
     public static final String KEY_MEDIA_PATH = "media-path";
 
     private static final String TAG = "ManageCachePage";
@@ -66,14 +64,11 @@ public class ManageCachePage extends ActivityState implements
     private static final int MSG_REFRESH_STORAGE_INFO = 1;
     private static final int MSG_REQUEST_LAYOUT = 2;
     private static final int PROGRESS_BAR_MAX = 10000;
-
-    private StaticBackground mStaticBackground;
-    private AlbumSetView mAlbumSetView;
-
-    private MediaSet mMediaSet;
-
     protected SelectionManager mSelectionManager;
     protected SelectionDrawer mSelectionDrawer;
+    private StaticBackground mStaticBackground;
+    private AlbumSetView mAlbumSetView;
+    private MediaSet mMediaSet;
     private AlbumSetDataAdapter mAlbumSetDataAdapter;
     private float mUserDistance; // in pixel
 
@@ -93,11 +88,10 @@ public class ManageCachePage extends ActivityState implements
     private boolean mLayoutReady = false;
 
     private GLView mRootPane = new GLView() {
-        private float mMatrix[] = new float[16];
+        private float[] mMatrix = new float[16];
 
         @Override
-        protected void onLayout(
-                boolean changed, int left, int top, int right, int bottom) {
+        protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
             // Hack: our layout depends on other components on the screen.
             // We assume the other components will complete before we get a change
             // to run a message in main thread.
@@ -115,7 +109,7 @@ public class ManageCachePage extends ActivityState implements
 
             View footer = activity.findViewById(R.id.footer);
             if (footer != null) {
-                int location[] = {0, 0};
+                int[] location = {0, 0};
                 footer.getLocationOnScreen(location);
                 slotViewBottom = location[1];
             }
@@ -126,11 +120,20 @@ public class ManageCachePage extends ActivityState implements
         @Override
         protected void render(GLCanvas canvas) {
             canvas.save(GLCanvas.SAVE_FLAG_MATRIX);
-            GalleryUtils.setViewPointMatrix(mMatrix,
-                        getWidth() / 2 + mX, getHeight() / 2 + mY, mZ);
+            GalleryUtils.setViewPointMatrix(mMatrix, getWidth() / 2 + mX, getHeight() / 2 + mY, mZ);
             canvas.multiplyMatrix(mMatrix, 0);
             super.render(canvas);
             canvas.restore();
+        }
+    };
+    private Job<Void> mUpdateStorageInfoJob = new Job<Void>() {
+        @Override
+        public Void run(JobContext jc) {
+            mCacheStorageInfo.loadStorageInfo(jc);
+            if (!jc.isCancelled()) {
+                mHandler.sendEmptyMessage(MSG_REFRESH_STORAGE_INFO);
+            }
+            return null;
         }
     };
 
@@ -161,15 +164,13 @@ public class ManageCachePage extends ActivityState implements
 
         // ignore selection action if the target set does not support cache
         // operation (like a local album).
-        if ((targetSet.getSupportedOperations()
-                & MediaSet.SUPPORT_CACHE) == 0) {
+        if ((targetSet.getSupportedOperations() & MediaSet.SUPPORT_CACHE) == 0) {
             showToastForLocalAlbum();
             return;
         }
 
         Path path = targetSet.getPath();
-        boolean isFullyCached =
-                (targetSet.getCacheFlag() == MediaObject.CACHE_FLAG_FULL);
+        boolean isFullyCached = (targetSet.getCacheFlag() == MediaObject.CACHE_FLAG_FULL);
         boolean isSelected = mSelectionManager.isItemSelected(path);
 
         if (!isFullyCached) {
@@ -183,8 +184,7 @@ public class ManageCachePage extends ActivityState implements
         }
 
         long sizeOfTarget = targetSet.getCacheSize();
-        mCacheStorageInfo.increaseTargetCacheSize(
-                (isFullyCached ^ isSelected) ? -sizeOfTarget : sizeOfTarget);
+        mCacheStorageInfo.increaseTargetCacheSize((isFullyCached ^ isSelected) ? -sizeOfTarget : sizeOfTarget);
         refreshCacheStorageInfo();
 
         mSelectionManager.toggle(path);
@@ -219,7 +219,7 @@ public class ManageCachePage extends ActivityState implements
     public void onConfigurationChanged(Configuration config) {
         // We use different layout resources for different configs
         initializeFooterViews();
-        FrameLayout layout = (FrameLayout) ((Activity) mActivity).findViewById(R.id.footer);
+        FrameLayout layout = ((Activity) mActivity).findViewById(R.id.footer);
         if (layout.getVisibility() == View.VISIBLE) {
             layout.removeAllViews();
             layout.addView(mFooterContent);
@@ -239,21 +239,10 @@ public class ManageCachePage extends ActivityState implements
         }
         mHandler.removeMessages(MSG_REFRESH_STORAGE_INFO);
 
-        FrameLayout layout = (FrameLayout) ((Activity) mActivity).findViewById(R.id.footer);
+        FrameLayout layout = ((Activity) mActivity).findViewById(R.id.footer);
         layout.removeAllViews();
         layout.setVisibility(View.INVISIBLE);
     }
-
-    private Job<Void> mUpdateStorageInfoJob = new Job<Void>() {
-        @Override
-        public Void run(JobContext jc) {
-            mCacheStorageInfo.loadStorageInfo(jc);
-            if (!jc.isCancelled()) {
-                mHandler.sendEmptyMessage(MSG_REFRESH_STORAGE_INFO);
-            }
-            return null;
-        }
-    };
 
     @Override
     public void onResume() {
@@ -263,7 +252,7 @@ public class ManageCachePage extends ActivityState implements
         mAlbumSetView.resume();
         mEyePosition.resume();
         mUpdateStorageInfo = mActivity.getThreadPool().submit(mUpdateStorageInfoJob);
-        FrameLayout layout = (FrameLayout) ((Activity) mActivity).findViewById(R.id.footer);
+        FrameLayout layout = ((Activity) mActivity).findViewById(R.id.footer);
         layout.addView(mFooterContent);
         layout.setVisibility(View.VISIBLE);
     }
@@ -278,8 +267,7 @@ public class ManageCachePage extends ActivityState implements
         mSelectionManager.setAutoLeaveSelectionMode(false);
         mSelectionManager.enterSelectionMode();
 
-        mAlbumSetDataAdapter = new AlbumSetDataAdapter(
-                mActivity, mMediaSet, DATA_CACHE_SIZE);
+        mAlbumSetDataAdapter = new AlbumSetDataAdapter(mActivity, mMediaSet, DATA_CACHE_SIZE);
         mAlbumSetView.setModel(mAlbumSetDataAdapter);
     }
 
@@ -292,10 +280,8 @@ public class ManageCachePage extends ActivityState implements
         mRootPane.addComponent(mStaticBackground);
 
         Config.ManageCachePage config = Config.ManageCachePage.get(activity);
-        mSelectionDrawer = new ManageCacheDrawer((Context) mActivity,
-                mSelectionManager, config.cachePinSize, config.cachePinMargin);
-        mAlbumSetView = new AlbumSetView(mActivity, mSelectionDrawer,
-                config.slotViewSpec, config.labelSpec);
+        mSelectionDrawer = new ManageCacheDrawer((Context) mActivity, mSelectionManager, config.cachePinSize, config.cachePinMargin);
+        mAlbumSetView = new AlbumSetView(mActivity, mSelectionDrawer, config.slotViewSpec, config.labelSpec);
         mAlbumSetView.setListener(new SlotView.SimpleListener() {
             @Override
             public void onDown(int index) {
@@ -319,7 +305,7 @@ public class ManageCachePage extends ActivityState implements
     private void initializeFooterViews() {
         Activity activity = (Activity) mActivity;
 
-        FrameLayout footer = (FrameLayout) activity.findViewById(R.id.footer);
+        FrameLayout footer = activity.findViewById(R.id.footer);
         LayoutInflater inflater = activity.getLayoutInflater();
         mFooterContent = inflater.inflate(R.layout.manage_offline_bar, null);
 
@@ -340,30 +326,24 @@ public class ManageCachePage extends ActivityState implements
         showToast();
 
         MenuExecutor menuExecutor = new MenuExecutor(mActivity, mSelectionManager);
-        menuExecutor.startAction(R.id.action_toggle_full_caching,
-                R.string.process_caching_requests, this);
+        menuExecutor.startAction(R.id.action_toggle_full_caching, R.string.process_caching_requests, this);
     }
 
     private void showToast() {
         if (mAlbumCountToMakeAvailableOffline > 0) {
             Activity activity = (Activity) mActivity;
-            Toast.makeText(activity, activity.getResources().getQuantityString(
-                    R.string.make_available_offline,
-                    mAlbumCountToMakeAvailableOffline),
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getResources().getQuantityString(R.string.make_available_offline, mAlbumCountToMakeAvailableOffline), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void showToastForLocalAlbum() {
         Activity activity = (Activity) mActivity;
-        Toast.makeText(activity, activity.getResources().getString(
-            R.string.try_to_set_local_album_available_offline),
-            Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, activity.getResources().getString(R.string.try_to_set_local_album_available_offline), Toast.LENGTH_SHORT).show();
     }
 
     private void refreshCacheStorageInfo() {
-        ProgressBar progressBar = (ProgressBar) mFooterContent.findViewById(R.id.progress);
-        TextView status = (TextView) mFooterContent.findViewById(R.id.status);
+        ProgressBar progressBar = mFooterContent.findViewById(R.id.progress);
+        TextView status = mFooterContent.findViewById(R.id.status);
         progressBar.setMax(PROGRESS_BAR_MAX);
         long totalBytes = mCacheStorageInfo.getTotalBytes();
         long usedBytes = mCacheStorageInfo.getUsedBytes();
@@ -380,10 +360,8 @@ public class ManageCachePage extends ActivityState implements
             status.setText(label);
         } else {
             progressBar.setProgress((int) (usedBytes * PROGRESS_BAR_MAX / totalBytes));
-            progressBar.setSecondaryProgress(
-                    (int) (expectedBytes * PROGRESS_BAR_MAX / totalBytes));
-            String label = activity.getString(R.string.free_space_format,
-                    Formatter.formatFileSize(activity, freeBytes));
+            progressBar.setSecondaryProgress((int) (expectedBytes * PROGRESS_BAR_MAX / totalBytes));
+            String label = activity.getString(R.string.free_space_format, Formatter.formatFileSize(activity, freeBytes));
             status.setText(label);
         }
     }

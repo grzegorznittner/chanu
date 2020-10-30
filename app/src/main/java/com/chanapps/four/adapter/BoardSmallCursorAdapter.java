@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.viewer.BoardViewHolder;
 

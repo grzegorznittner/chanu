@@ -16,23 +16,18 @@
 
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
-
 import android.media.ExifInterface;
+import android.util.Log;
+
+import com.chanapps.four.gallery3d.R;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class MediaDetails implements Iterable<Entry<Integer, Object>> {
-    @SuppressWarnings("unused")
-    private static final String TAG = "MediaDetails";
-
-    private TreeMap<Integer, Object> mDetails = new TreeMap<Integer, Object>();
-    private HashMap<Integer, Integer> mUnits = new HashMap<Integer, Integer>();
-
     public static final int INDEX_TITLE = 1;
     public static final int INDEX_DESCRIPTION = 2;
     public static final int INDEX_DATETIME = 3;
@@ -43,7 +38,6 @@ public class MediaDetails implements Iterable<Entry<Integer, Object>> {
     public static final int INDEX_DURATION = 8;
     public static final int INDEX_MIMETYPE = 9;
     public static final int INDEX_SIZE = 10;
-
     // for EXIF
     public static final int INDEX_MAKE = 100;
     public static final int INDEX_MODEL = 101;
@@ -54,40 +48,46 @@ public class MediaDetails implements Iterable<Entry<Integer, Object>> {
     public static final int INDEX_SHUTTER_SPEED = 106;
     public static final int INDEX_EXPOSURE_TIME = 107;
     public static final int INDEX_ISO = 108;
-
     // Put this last because it may be long.
     public static final int INDEX_PATH = 200;
+    @SuppressWarnings("unused")
+    private static final String TAG = "MediaDetails";
+    private TreeMap<Integer, Object> mDetails = new TreeMap<Integer, Object>();
+    private HashMap<Integer, Integer> mUnits = new HashMap<Integer, Integer>();
 
-    public static class FlashState {
-        private static int FLASH_FIRED_MASK = 1;
-        private static int FLASH_RETURN_MASK = 2 | 4;
-        private static int FLASH_MODE_MASK = 8 | 16;
-        private static int FLASH_FUNCTION_MASK = 32;
-        private static int FLASH_RED_EYE_MASK = 64;
-        private int mState;
-
-        public FlashState(int state) {
-            mState = state;
+    private static void setExifData(MediaDetails details, ExifInterface exif, String tag, int key) {
+        String value = exif.getAttribute(tag);
+        if (value != null) {
+            if (key == MediaDetails.INDEX_FLASH) {
+                MediaDetails.FlashState state = new MediaDetails.FlashState(Integer.valueOf(value));
+                details.addDetail(key, state);
+            } else {
+                details.addDetail(key, value);
+            }
         }
+    }
 
-        public boolean isFlashFired() {
-            return (mState & FLASH_FIRED_MASK) != 0;
-        }
+    public static void extractExifInfo(MediaDetails details, String filePath) {
+        try {
+            ExifInterface exif = new ExifInterface(filePath);
+            setExifData(details, exif, ExifInterface.TAG_FLASH, MediaDetails.INDEX_FLASH);
+            setExifData(details, exif, ExifInterface.TAG_IMAGE_WIDTH, MediaDetails.INDEX_WIDTH);
+            setExifData(details, exif, ExifInterface.TAG_IMAGE_LENGTH, MediaDetails.INDEX_HEIGHT);
+            setExifData(details, exif, ExifInterface.TAG_MAKE, MediaDetails.INDEX_MAKE);
+            setExifData(details, exif, ExifInterface.TAG_MODEL, MediaDetails.INDEX_MODEL);
+            setExifData(details, exif, ExifInterface.TAG_APERTURE, MediaDetails.INDEX_APERTURE);
+            setExifData(details, exif, ExifInterface.TAG_ISO, MediaDetails.INDEX_ISO);
+            setExifData(details, exif, ExifInterface.TAG_WHITE_BALANCE, MediaDetails.INDEX_WHITE_BALANCE);
+            setExifData(details, exif, ExifInterface.TAG_EXPOSURE_TIME, MediaDetails.INDEX_EXPOSURE_TIME);
 
-        public int getFlashReturn() {
-            return (mState & FLASH_RETURN_MASK) >> 1;
-        }
-
-        public int getFlashMode() {
-            return (mState & FLASH_MODE_MASK) >> 3;
-        }
-
-        public boolean isFlashPresent() {
-            return (mState & FLASH_FUNCTION_MASK) != 0;
-        }
-
-        public boolean isRedEyeModePresent() {
-            return (mState & FLASH_RED_EYE_MASK) != 0;
+            double data = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0);
+            if (data != 0f) {
+                details.addDetail(MediaDetails.INDEX_FOCAL_LENGTH, data);
+                details.setUnit(MediaDetails.INDEX_FOCAL_LENGTH, R.string.unit_mm);
+            }
+        } catch (IOException ex) {
+            // ignore it.
+            Log.w(TAG, "", ex);
         }
     }
 
@@ -119,44 +119,36 @@ public class MediaDetails implements Iterable<Entry<Integer, Object>> {
         return mUnits.get(index);
     }
 
-    private static void setExifData(MediaDetails details, ExifInterface exif, String tag,
-            int key) {
-        String value = exif.getAttribute(tag);
-        if (value != null) {
-            if (key == MediaDetails.INDEX_FLASH) {
-                MediaDetails.FlashState state = new MediaDetails.FlashState(
-                        Integer.valueOf(value.toString()));
-                details.addDetail(key, state);
-            } else {
-                details.addDetail(key, value);
-            }
+    public static class FlashState {
+        private static int FLASH_FIRED_MASK = 1;
+        private static int FLASH_RETURN_MASK = 2 | 4;
+        private static int FLASH_MODE_MASK = 8 | 16;
+        private static int FLASH_FUNCTION_MASK = 32;
+        private static int FLASH_RED_EYE_MASK = 64;
+        private int mState;
+
+        public FlashState(int state) {
+            mState = state;
         }
-    }
 
-    public static void extractExifInfo(MediaDetails details, String filePath) {
-        try {
-            ExifInterface exif = new ExifInterface(filePath);
-            setExifData(details, exif, ExifInterface.TAG_FLASH, MediaDetails.INDEX_FLASH);
-            setExifData(details, exif, ExifInterface.TAG_IMAGE_WIDTH, MediaDetails.INDEX_WIDTH);
-            setExifData(details, exif, ExifInterface.TAG_IMAGE_LENGTH,
-                    MediaDetails.INDEX_HEIGHT);
-            setExifData(details, exif, ExifInterface.TAG_MAKE, MediaDetails.INDEX_MAKE);
-            setExifData(details, exif, ExifInterface.TAG_MODEL, MediaDetails.INDEX_MODEL);
-            setExifData(details, exif, ExifInterface.TAG_APERTURE, MediaDetails.INDEX_APERTURE);
-            setExifData(details, exif, ExifInterface.TAG_ISO, MediaDetails.INDEX_ISO);
-            setExifData(details, exif, ExifInterface.TAG_WHITE_BALANCE,
-                    MediaDetails.INDEX_WHITE_BALANCE);
-            setExifData(details, exif, ExifInterface.TAG_EXPOSURE_TIME,
-                    MediaDetails.INDEX_EXPOSURE_TIME);
+        public boolean isFlashFired() {
+            return (mState & FLASH_FIRED_MASK) != 0;
+        }
 
-            double data = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, 0);
-            if (data != 0f) {
-                details.addDetail(MediaDetails.INDEX_FOCAL_LENGTH, data);
-                details.setUnit(MediaDetails.INDEX_FOCAL_LENGTH, R.string.unit_mm);
-            }
-        } catch (IOException ex) {
-            // ignore it.
-            Log.w(TAG, "", ex);
+        public int getFlashReturn() {
+            return (mState & FLASH_RETURN_MASK) >> 1;
+        }
+
+        public int getFlashMode() {
+            return (mState & FLASH_MODE_MASK) >> 3;
+        }
+
+        public boolean isFlashPresent() {
+            return (mState & FLASH_FUNCTION_MASK) != 0;
+        }
+
+        public boolean isRedEyeModePresent() {
+            return (mState & FLASH_RED_EYE_MASK) != 0;
         }
     }
 }

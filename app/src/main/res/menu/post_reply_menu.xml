@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/post_reply_quote_menu"
-          android:title="@string/post_reply_all_quote_menu"
-          android:icon="@drawable/social_chat"
-          android:showAsAction="ifRoom"
-            />
+    <item
+            android:id="@+id/post_reply_quote_menu"
+            android:icon="@drawable/social_chat"
+            android:showAsAction="ifRoom"
+            android:title="@string/post_reply_all_quote_menu" />
 
     <!--
     <item android:id="@+id/post_reply_exit_menu"
@@ -14,9 +14,9 @@
           android:showAsAction="ifRoom"
             />
     -->
-    <item android:id="@+id/post_reply_send_menu"
-          android:title="@string/post_reply_send"
-          android:icon="@drawable/social_send_now"
-          android:showAsAction="ifRoom"
-            />
+    <item
+            android:id="@+id/post_reply_send_menu"
+            android:icon="@drawable/social_send_now"
+            android:showAsAction="ifRoom"
+            android:title="@string/post_reply_send" />
 </menu>

@@ -50,7 +50,8 @@
         <item name="themedDeadIcon">@drawable/skull</item>
         <item name="themedClosedIcon">@drawable/lock</item>
         <item name="themedStickyIcon">@drawable/thumbtack</item>
-        <item name="yesNoPreferenceStyle">@style/Preference.Holo.DialogPreference.YesNoPreference</item>
+        <item name="yesNoPreferenceStyle">@style/Preference.Holo.DialogPreference.YesNoPreference
+        </item>
         <item name="themedBoardGridTabletBackground">@color/PaletteDarkYellowWhite</item>
         <item name="themedNumRepliesIcon">@drawable/social_chat</item>
         <item name="themedNumImagesIcon">@drawable/content_picture_light</item>

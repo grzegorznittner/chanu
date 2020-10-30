@@ -18,6 +18,11 @@ package com.android.gallery3d.ui;
 
 public abstract class DisplayItem {
 
+    // Return values of render():
+    // RENDER_MORE_PASS: more pass is needed for this item
+    // RENDER_MORE_FRAME: need to render next frame (used for animation)
+    public static final int RENDER_MORE_PASS = 1;
+    public static final int RENDER_MORE_FRAME = 2;
     protected int mBoxWidth;
     protected int mBoxHeight;
 
@@ -28,12 +33,6 @@ public abstract class DisplayItem {
         mBoxWidth = width;
         mBoxHeight = height;
     }
-
-    // Return values of render():
-    // RENDER_MORE_PASS: more pass is needed for this item
-    // RENDER_MORE_FRAME: need to render next frame (used for animation)
-    public static final int RENDER_MORE_PASS = 1;
-    public static final int RENDER_MORE_FRAME = 2;
 
     public abstract int render(GLCanvas canvas, int pass);
 

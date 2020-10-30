@@ -16,11 +16,11 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.common.BitmapUtils;
-
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+
+import com.android.gallery3d.common.BitmapUtils;
 
 import java.util.ArrayList;
 
@@ -38,8 +38,7 @@ public class BitmapTileProvider implements TileImageView.Model {
         mImageHeight = bitmap.getHeight();
         ArrayList<Bitmap> list = new ArrayList<Bitmap>();
         list.add(bitmap);
-        while (bitmap.getWidth() > maxBackupSize
-                || bitmap.getHeight() > maxBackupSize) {
+        while (bitmap.getWidth() > maxBackupSize || bitmap.getHeight() > maxBackupSize) {
             bitmap = BitmapUtils.resizeBitmapByScale(bitmap, 0.5f, false);
             list.add(bitmap);
         }

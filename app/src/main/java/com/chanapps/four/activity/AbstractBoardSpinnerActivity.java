@@ -1,13 +1,15 @@
 package com.chanapps.four.activity;
 
 import android.app.ActionBar;
-import android.content.*;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+
+import androidx.fragment.app.FragmentActivity;
+
 import com.chanapps.four.component.SendFeedback;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
@@ -19,12 +21,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-abstract public class
-        AbstractBoardSpinnerActivity
-        extends FragmentActivity
-        implements ChanIdentifiedActivity,
-        ThemeSelector.ThemeActivity
-{
+abstract public class AbstractBoardSpinnerActivity extends FragmentActivity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
     protected static final boolean DEBUG = false;
     protected static final boolean DEVELOPER_MODE = false;
@@ -45,6 +42,25 @@ abstract public class
     protected ActionBar actionBar;
     protected String[] mSpinnerArray;
     protected ArrayAdapter<String> mSpinnerAdapter;
+    private ActionBar.OnNavigationListener spinnerNavigationListener = new ActionBar.OnNavigationListener() {
+        @Override
+        public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+            if (mIgnoreMode) {
+                mIgnoreMode = false;
+                return true;
+            }
+            String item = mSpinnerAdapter.getItem(itemPosition);
+            if (DEBUG)
+                Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] this=" + this + " calling handleSelectItem");
+            boolean handle = handleSelectItem(item);
+            if (handle) {
+                closeDrawer();
+            }
+            if (DEBUG)
+                Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] returned handleSelectItem=" + handle);
+            return handle;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -56,15 +72,13 @@ abstract public class
                     //.detectDiskReads()
                     //.detectDiskWrites()
                     //.detectNetwork()   // or .detectAll() for all detectable problems
-                    .detectAll()
-                    .penaltyLog()
+                    .detectAll().penaltyLog()
                     //.penaltyDeath()
                     .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     //.detectLeakedSqlLiteObjects()
                     //.detectLeakedClosableObjects()
-                    .detectAll()
-                    .penaltyLog()
+                    .detectAll().penaltyLog()
                     //.penaltyDeath()
                     .build());
             if (DEBUG) Log.i(TAG, "onCreate developer mode enabled");
@@ -106,15 +120,15 @@ abstract public class
         if (DEBUG) Log.i(TAG, "createActionBar()");
     }
 
-    protected void createPreViews() {}
+    protected void createPreViews() {
+    }
 
     abstract protected void createViews(Bundle bundle);
 
     protected void setAdapters() {
         if (DEBUG) Log.i(TAG, "setSpinnerAdapter() begin this=" + this);
         initSpinnerArray();
-        mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
-                android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
+        mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //mIgnoreMode = true;
         //selectActionBarNavigationItem();
@@ -158,8 +172,7 @@ abstract public class
 
     protected void checkNSFW() {
         boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
-        if (newShowNSFW != mShowNSFW)
-            mShowNSFW = newShowNSFW;
+        if (newShowNSFW != mShowNSFW) mShowNSFW = newShowNSFW;
         setAdapters();
         /*
         if (newShowNSFW != mShowNSFW) {
@@ -192,7 +205,8 @@ abstract public class
     }
 
     @Override
-    public void closeSearch() {}
+    public void closeSearch() {
+    }
 
     @Override
     public void setProgress(final boolean on) {
@@ -212,43 +226,18 @@ abstract public class
 
     abstract protected void closeDrawer();
 
-    private ActionBar.OnNavigationListener spinnerNavigationListener = new ActionBar.OnNavigationListener() {
-        @Override
-        public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-            if (mIgnoreMode) {
-                mIgnoreMode = false;
-                return true;
-            }
-            String item = mSpinnerAdapter.getItem(itemPosition);
-            if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] this=" + this + " calling handleSelectItem");
-            boolean handle = handleSelectItem(item);
-            if (handle) {
-                closeDrawer();
-            }
-            if (DEBUG) Log.i(TAG, "spinnerNavigationListener pos=" + itemPosition + " item=[" + item + "] returned handleSelectItem=" + handle);
-            return handle;
-        }
-    };
-
     protected boolean handleSelectItem(String boardAsMenu) {
         boardAsMenu = boardAsMenu.trim();
         if (DEBUG) Log.i(TAG, "handleSelectItem boardAsMenu=" + boardAsMenu);
-        if (isSelfDrawerMenu(boardAsMenu))
-            return false;
-        if (matchForMenu(boardAsMenu))
-            return true;
-        if (matchForBoardType(boardAsMenu))
-            return true;
-        if (matchForThread(boardAsMenu))
-            return true;
-        if (matchForBoard(boardAsMenu))
-            return true;
-        return false;
+        if (isSelfDrawerMenu(boardAsMenu)) return false;
+        if (matchForMenu(boardAsMenu)) return true;
+        if (matchForBoardType(boardAsMenu)) return true;
+        if (matchForThread(boardAsMenu)) return true;
+        return matchForBoard(boardAsMenu);
     }
 
     protected boolean matchForMenu(String boardAsMenu) {
-        if (getString(R.string.board_select).equals(boardAsMenu))
-            return false;
+        if (getString(R.string.board_select).equals(boardAsMenu)) return false;
         if (getString(R.string.send_feedback_menu).equals(boardAsMenu))
             return SendFeedback.email(this);
         if (getString(R.string.settings_menu).equals(boardAsMenu))
@@ -260,14 +249,14 @@ abstract public class
 
     protected boolean matchForBoardType(String boardAsMenu) {
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
-        if (boardType == null)
-            return false;
+        if (boardType == null) return false;
         String boardTypeCode = boardType.boardCode();
         if (boardTypeCode.equals(boardCode)) {
             if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
             return false;
         }
-        if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/ this=" + this + " switching board");
+        if (DEBUG)
+            Log.i(TAG, "matched board type /" + boardTypeCode + "/ this=" + this + " switching board");
         switchBoard(boardTypeCode, "");
         return true;
     }
@@ -283,8 +272,7 @@ abstract public class
         long threadNoForJump;
         try {
             threadNoForJump = m.group(2) == null ? -1 : Long.valueOf(m.group(2));
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             if (DEBUG) Log.i(TAG, "matched non-number thread, bailing");
             return false;
         }
@@ -300,9 +288,11 @@ abstract public class
             if (DEBUG) Log.i(TAG, "matched same thread, no jump done");
             return false;
         }
-        if (DEBUG) Log.i(TAG, "matched thread /" + boardCodeForJump + "/" + threadNoForJump + ", starting");
+        if (DEBUG)
+            Log.i(TAG, "matched thread /" + boardCodeForJump + "/" + threadNoForJump + ", starting");
 
-        if (DEBUG) Log.i(TAG, "starting /" + boardCodeForJump + "/" + threadNoForJump + " from this=" + this);
+        if (DEBUG)
+            Log.i(TAG, "starting /" + boardCodeForJump + "/" + threadNoForJump + " from this=" + this);
         ThreadActivity.startActivity(this, boardCodeForJump, threadNoForJump, "");
         //mIgnoreMode = false;
         return true;
@@ -333,7 +323,8 @@ abstract public class
             switchBoard(boardCode, "");
         }
         */
-        if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/ this=" + this + " switching board");
+        if (DEBUG)
+            Log.i(TAG, "matched board /" + boardCodeForJump + "/ this=" + this + " switching board");
         switchBoard(boardCodeForJump, "");
 
         /*
@@ -353,8 +344,7 @@ abstract public class
         if (!isTaskRoot()) {
             final Intent intent = getIntent();
             final String intentAction = intent.getAction();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) &&
-                    intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
                 finish();
             }
         }
@@ -375,31 +365,32 @@ abstract public class
             if (type != null && type.boardCode().equals(boardCode)) {
                 pos = i;
                 break;
-            }
-            else if (boardText.matches(" ?/" + boardCode + "/.*")) {
+            } else if (boardText.matches(" ?/" + boardCode + "/.*")) {
                 pos = i;
                 break;
             }
         }
         if (pos >= 0) {
             String boardText = mSpinnerAdapter.getItem(pos);
-            if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ found pos=" + pos + " text=" + boardText);
-        }
-        else {
+            if (DEBUG)
+                Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ found pos=" + pos + " text=" + boardText);
+        } else {
             pos = 0;
-            if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ not found defaulted pos=" + pos);
+            if (DEBUG)
+                Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ not found defaulted pos=" + pos);
         }
         if (actionBar.getSelectedNavigationIndex() != pos) {
             actionBar.setSelectedNavigationItem(pos);
-        }
-        else {
+        } else {
             mIgnoreMode = false;
         }
-        if (DEBUG) Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ set pos=" + pos + " end");
+        if (DEBUG)
+            Log.i(TAG, "selectActionBarNavigationItem /" + boardCode + "/ set pos=" + pos + " end");
     }
 
     @Override
-    public void switchBoard(String boardCode, String query) {}
+    public void switchBoard(String boardCode, String query) {
+    }
 
     /*
     @Override

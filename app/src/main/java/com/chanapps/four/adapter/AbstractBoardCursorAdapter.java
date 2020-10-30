@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.chanapps.four.adapter;
 
@@ -10,8 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ResourceCursorAdapter;
+
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanThread;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -24,8 +28,8 @@ import com.chanapps.four.data.*;
  *
  */
 abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
-	protected static final String TAG = AbstractBoardCursorAdapter.class.getSimpleName();
-	protected static final boolean DEBUG = false;
+    protected static final String TAG = AbstractBoardCursorAdapter.class.getSimpleName();
+    protected static final boolean DEBUG = false;
     protected static final String ID_COL = "_id";
 
     /**
@@ -66,7 +70,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         final ViewBinder binder = mViewBinder;
         Object tag = view.getTag();
         if (tag != null && tag instanceof Long) {
-            long viewPostId = (Long)tag;
+            long viewPostId = (Long) tag;
             long cursorPostId = cursor.getLong(cursor.getColumnIndex(ID_COL));
             if (viewPostId == cursorPostId) { // prevent flickering caused by redrawing when not needed
                 if (DEBUG) Log.i(TAG, "view already set, updating pos=" + cursor.getPosition());
@@ -76,12 +80,10 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         }
         if (isBlocked(cursor)) {
             ViewGroup.LayoutParams params = view.getLayoutParams();
-            if (params != null)
-                params.height = 0;
+            if (params != null) params.height = 0;
             view.setVisibility(View.GONE);
         }
-        if (binder != null)
-            binder.setViewValue(view, cursor, 0);
+        if (binder != null) binder.setViewValue(view, cursor, 0);
     }
 
     protected boolean isHeader(Cursor c) {
@@ -96,8 +98,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
     }
 
     protected boolean isOffWatchlist(Cursor c) {
-        if (!ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode))
-            return false;
+        if (!ChanBoard.WATCHLIST_BOARD_CODE.equals(groupBoardCode)) return false;
         String board = c.getString(c.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         long no = c.getLong(c.getColumnIndex(ChanThread.THREAD_NO));
         final ChanThread thread = ChanFileStorage.loadThreadData(context, board, no);
@@ -112,11 +113,10 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (DEBUG) Log.i(TAG, "Getting view for pos=" + position);
         int tag = getItemViewType(position);
-        if (convertView == null || (Integer)convertView.getTag(R.id.VIEW_TAG_TYPE) != tag) {
+        if (convertView == null || (Integer) convertView.getTag(R.id.VIEW_TAG_TYPE) != tag) {
             convertView = newView(parent, tag, position);
             if (DEBUG) Log.i(TAG, "Created new view=" + convertView);
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "Reusing existing view=" + convertView);
         }
         if (DEBUG) Log.i(TAG, "Binding pos=" + position + " to view=" + convertView);
@@ -131,19 +131,19 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
     /**
      * Create a map from an array of strings to an array of column-id integers in mCursor.
      * If mCursor is null, the array will be discarded.
-     * 
+     *
      * @param from the Strings naming the columns of interest
      */
     private void findColumns(Cursor c, String[] from) {
         //if (c != null) {
-            //int i;
-            //int count = from.length;
-            //if (mFrom == null || mFrom.length != count) {
-            //    mFrom = new int[count];
-            //}
-            //for (i = 0; i < count; i++) {
-            //    mFrom[i] = c.getColumnIndexOrThrow(from[i]);
-            //}
+        //int i;
+        //int count = from.length;
+        //if (mFrom == null || mFrom.length != count) {
+        //    mFrom = new int[count];
+        //}
+        //for (i = 0; i < count; i++) {
+        //    mFrom[i] = c.getColumnIndexOrThrow(from[i]);
+        //}
         //} else {
         //    mFrom = null;
         //}
@@ -178,7 +178,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
 
     /**
      * Change the cursor and change the column-to-view mappings at the same time.
-     *  
+     *
      * @param c The database cursor.  Can be null if the cursor is not available yet.
      * @param from A list of column names representing the data to bind to the UI.  Can be null 
      *            if the cursor is not available yet.
@@ -200,7 +200,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         //findColumns(c, mOriginalFrom);
     }
 
-    public static interface ViewBinder {
+    public interface ViewBinder {
         /**
          * Binds the Cursor column defined by the specified index to the specified view.
          *

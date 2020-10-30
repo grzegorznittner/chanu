@@ -16,9 +16,10 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.data.MediaSet.ItemConsumer;
-
 import android.net.Uri;
+import android.util.Log;
+
+import com.android.gallery3d.data.MediaSet.ItemConsumer;
 
 import java.util.ArrayList;
 
@@ -58,15 +59,6 @@ public abstract class MediaSource {
         return 0;
     }
 
-    public static class PathId {
-        public PathId(Path path, int id) {
-            this.path = path;
-            this.id = id;
-        }
-        public Path path;
-        public int id;
-    }
-
     // Maps a list of Paths (all belong to this MediaSource) to MediaItems,
     // and invoke consumer.consume() for each MediaItem with the given id.
     //
@@ -88,6 +80,16 @@ public abstract class MediaSource {
             if (obj != null) {
                 consumer.consume(pid.id, (MediaItem) obj);
             }
+        }
+    }
+
+    public static class PathId {
+        public Path path;
+        public int id;
+
+        public PathId(Path path, int id) {
+            this.path = path;
+            this.id = id;
         }
     }
 }

@@ -4,12 +4,9 @@
         android:shape="rectangle">
 
     <size
-        android:width="@dimen/drawer_spacer_width"
-        android:height="@dimen/drawer_spacer_height"
-        />
+            android:width="@dimen/drawer_spacer_width"
+            android:height="@dimen/drawer_spacer_height" />
 
-    <solid
-        android:color="@color/PaletteTransparent"
-        />
+    <solid android:color="@color/PaletteTransparent" />
 
 </shape>

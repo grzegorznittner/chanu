@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/iconpref"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:minHeight="?android:attr/listPreferredItemHeight"
-              android:gravity="center"
-              android:paddingTop="6dp"
-              android:paddingBottom="6dp"
-              android:paddingRight="?android:attr/scrollbarSize">
-    <com.chanapps.four.component.StretchyImageView android:id="@+id/icon"
-               android:layout_width="256dp"
-               android:layout_height="256dp"
-               android:layout_marginLeft="6dp"
-               android:layout_marginRight="6dp"
-               android:layout_gravity="center"
-               android:scaleType="centerInside"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/iconpref"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:paddingTop="6dp"
+        android:paddingRight="?android:attr/scrollbarSize"
+        android:paddingBottom="6dp">
+
+    <com.chanapps.four.component.StretchyImageView
+            android:id="@+id/icon"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:scaleType="centerInside" />
     <!--
     <RelativeLayout android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

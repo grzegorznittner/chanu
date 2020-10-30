@@ -16,12 +16,6 @@
 
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.util.GalleryUtils;
-import com.android.gallery3d.util.MediaSetUtils;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,6 +24,13 @@ import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Video;
+import android.util.Log;
+
+import com.android.gallery3d.app.GalleryApp;
+import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.util.GalleryUtils;
+import com.android.gallery3d.util.MediaSetUtils;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -69,10 +70,7 @@ public class LocalAlbumSet extends MediaSet {
     //
     // The order of columns below is important: it must match to the index in
     // MediaStore.
-    private static final String[] PROJECTION_BUCKET = {
-            ImageColumns.BUCKET_ID,
-            FileColumns.MEDIA_TYPE,
-            ImageColumns.BUCKET_DISPLAY_NAME };
+    private static final String[] PROJECTION_BUCKET = {ImageColumns.BUCKET_ID, FileColumns.MEDIA_TYPE, ImageColumns.BUCKET_DISPLAY_NAME};
 
     // We want to order the albums by reverse chronological order. We abuse the
     // "WHERE" parameter to insert a "GROUP BY" clause into the SQL statement.
@@ -83,16 +81,15 @@ public class LocalAlbumSet extends MediaSet {
     // The "(1)" means true. The "1,(2)" means the first two columns specified
     // after SELECT. Note that because there is a ")" in the template, we use
     // "(2" to match it.
-    private static final String BUCKET_GROUP_BY =
-            "1) GROUP BY 1,(2";
+    private static final String BUCKET_GROUP_BY = "1) GROUP BY 1,(2";
     private static final String BUCKET_ORDER_BY = "MAX(datetaken) DESC";
 
     private final GalleryApp mApplication;
     private final int mType;
-    private ArrayList<MediaSet> mAlbums = new ArrayList<MediaSet>();
     private final ChangeNotifier mNotifierImage;
     private final ChangeNotifier mNotifierVideo;
     private final String mName;
+    private ArrayList<MediaSet> mAlbums = new ArrayList<MediaSet>();
 
     public LocalAlbumSet(Path path, GalleryApp application) {
         super(path, nextVersionNumber());
@@ -100,12 +97,11 @@ public class LocalAlbumSet extends MediaSet {
         mType = getTypeFromPath(path);
         mNotifierImage = new ChangeNotifier(this, mWatchUriImage, application);
         mNotifierVideo = new ChangeNotifier(this, mWatchUriVideo, application);
-        mName = application.getResources().getString(
-                R.string.set_label_local_albums);
+        mName = application.getResources().getString(R.string.set_label_local_albums);
     }
 
     private static int getTypeFromPath(Path path) {
-        String name[] = path.split();
+        String[] name = path.split();
         if (name.length < 2) {
             throw new IllegalArgumentException(path.toString());
         }
@@ -113,6 +109,39 @@ public class LocalAlbumSet extends MediaSet {
         if ("image".equals(name[1])) return MEDIA_TYPE_IMAGE;
         if ("video".equals(name[1])) return MEDIA_TYPE_VIDEO;
         throw new IllegalArgumentException(path.toString());
+    }
+
+    private static int findBucket(BucketEntry[] entries, int bucketId) {
+        for (int i = 0, n = entries.length; i < n; ++i) {
+            if (entries[i].bucketId == bucketId) return i;
+        }
+        return -1;
+    }
+
+    public static String getBucketName(ContentResolver resolver, int bucketId) {
+        Uri uri = mBaseUri.buildUpon().appendQueryParameter("limit", "1").build();
+
+        Cursor cursor = resolver.query(uri, PROJECTION_BUCKET, "bucket_id = ?", new String[]{String.valueOf(bucketId)}, null);
+
+        if (cursor == null) {
+            Log.w(TAG, "query fail: " + uri);
+            return "";
+        }
+        try {
+            return cursor.moveToNext() ? cursor.getString(INDEX_BUCKET_NAME) : "";
+        } finally {
+            cursor.close();
+        }
+    }
+
+    // Circular shift the array range from a[i] to a[j] (inclusive). That is,
+    // a[i] -> a[i+1] -> a[i+2] -> ... -> a[j], and a[j] -> a[i]
+    private static <T> void circularShiftRight(T[] array, int i, int j) {
+        T temp = array[j];
+        for (int k = j; k > i; k--) {
+            array[k] = array[k - 1];
+        }
+        array[i] = temp;
     }
 
     @Override
@@ -142,9 +171,7 @@ public class LocalAlbumSet extends MediaSet {
         try {
             while (cursor.moveToNext()) {
                 if ((typeBits & (1 << cursor.getInt(INDEX_MEDIA_TYPE))) != 0) {
-                    BucketEntry entry = new BucketEntry(
-                            cursor.getInt(INDEX_BUCKET_ID),
-                            cursor.getString(INDEX_BUCKET_NAME));
+                    BucketEntry entry = new BucketEntry(cursor.getInt(INDEX_BUCKET_ID), cursor.getString(INDEX_BUCKET_NAME));
                     if (!buffer.contains(entry)) {
                         buffer.add(entry);
                     }
@@ -156,14 +183,6 @@ public class LocalAlbumSet extends MediaSet {
         return buffer.toArray(new BucketEntry[buffer.size()]);
     }
 
-
-    private static int findBucket(BucketEntry entries[], int bucketId) {
-        for (int i = 0, n = entries.length; i < n ; ++i) {
-            if (entries[i].bucketId == bucketId) return i;
-        }
-        return -1;
-    }
-
     @SuppressWarnings("unchecked")
     protected ArrayList<MediaSet> loadSubMediaSets() {
         // Note: it will be faster if we only select media_type and bucket_id.
@@ -171,8 +190,7 @@ public class LocalAlbumSet extends MediaSet {
 
         Uri uri = mBaseUri;
         GalleryUtils.assertNotInRenderThread();
-        Cursor cursor = mApplication.getContentResolver().query(
-                uri, PROJECTION_BUCKET, BUCKET_GROUP_BY, null, BUCKET_ORDER_BY);
+        Cursor cursor = mApplication.getContentResolver().query(uri, PROJECTION_BUCKET, BUCKET_GROUP_BY, null, BUCKET_ORDER_BY);
         if (cursor == null) {
             Log.w(TAG, "cannot open local database: " + uri);
             return new ArrayList<MediaSet>();
@@ -194,8 +212,7 @@ public class LocalAlbumSet extends MediaSet {
         ArrayList<MediaSet> albums = new ArrayList<MediaSet>();
         DataManager dataManager = mApplication.getDataManager();
         for (BucketEntry entry : entries) {
-            albums.add(getLocalAlbum(dataManager,
-                    mType, mPath, entry.bucketId, entry.bucketName));
+            albums.add(getLocalAlbum(dataManager, mType, mPath, entry.bucketId, entry.bucketName));
         }
         for (int i = 0, n = albums.size(); i < n; ++i) {
             albums.get(i).reload();
@@ -203,8 +220,7 @@ public class LocalAlbumSet extends MediaSet {
         return albums;
     }
 
-    private MediaSet getLocalAlbum(
-            DataManager manager, int type, Path parent, int id, String name) {
+    private MediaSet getLocalAlbum(DataManager manager, int type, Path parent, int id, String name) {
         Path path = parent.getChild(id);
         MediaObject object = manager.peekMediaObject(path);
         if (object != null) return (MediaSet) object;
@@ -215,33 +231,9 @@ public class LocalAlbumSet extends MediaSet {
                 return new LocalAlbum(path, mApplication, id, false, name);
             case MEDIA_TYPE_ALL:
                 Comparator<MediaItem> comp = DataManager.sDateTakenComparator;
-                return new LocalMergeAlbum(path, comp, new MediaSet[] {
-                        getLocalAlbum(manager, MEDIA_TYPE_IMAGE, PATH_IMAGE, id, name),
-                        getLocalAlbum(manager, MEDIA_TYPE_VIDEO, PATH_VIDEO, id, name)});
+                return new LocalMergeAlbum(path, comp, new MediaSet[]{getLocalAlbum(manager, MEDIA_TYPE_IMAGE, PATH_IMAGE, id, name), getLocalAlbum(manager, MEDIA_TYPE_VIDEO, PATH_VIDEO, id, name)});
         }
         throw new IllegalArgumentException(String.valueOf(type));
-    }
-
-    public static String getBucketName(ContentResolver resolver, int bucketId) {
-        Uri uri = mBaseUri.buildUpon()
-                .appendQueryParameter("limit", "1")
-                .build();
-
-        Cursor cursor = resolver.query(
-                uri, PROJECTION_BUCKET, "bucket_id = ?",
-                new String[]{String.valueOf(bucketId)}, null);
-
-        if (cursor == null) {
-            Log.w(TAG, "query fail: " + uri);
-            return "";
-        }
-        try {
-            return cursor.moveToNext()
-                    ? cursor.getString(INDEX_BUCKET_NAME)
-                    : "";
-        } finally {
-            cursor.close();
-        }
     }
 
     @Override
@@ -280,15 +272,5 @@ public class LocalAlbumSet extends MediaSet {
             BucketEntry entry = (BucketEntry) object;
             return bucketId == entry.bucketId;
         }
-    }
-
-    // Circular shift the array range from a[i] to a[j] (inclusive). That is,
-    // a[i] -> a[i+1] -> a[i+2] -> ... -> a[j], and a[j] -> a[i]
-    private static <T> void circularShiftRight(T[] array, int i, int j) {
-        T temp = array[j];
-        for (int k = j; k > i; k--) {
-            array[k] = array[k - 1];
-        }
-        array[i] = temp;
     }
 }

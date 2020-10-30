@@ -16,13 +16,14 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.anim.CanvasAnimation;
-import com.android.gallery3d.anim.FloatAnimation;
-
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 
+import com.android.gallery3d.anim.CanvasAnimation;
+import com.android.gallery3d.anim.FloatAnimation;
+
 import java.util.Random;
+
 import javax.microedition.khronos.opengles.GL11;
 
 public class SlideshowView extends GLView {
@@ -32,20 +33,15 @@ public class SlideshowView extends GLView {
     private static final int SLIDESHOW_DURATION = 3500;
     private static final int TRANSITION_DURATION = 1000;
 
-    private static final float SCALE_SPEED = 0.20f ;
+    private static final float SCALE_SPEED = 0.20f;
     private static final float MOVE_SPEED = SCALE_SPEED;
-
+    private final FloatAnimation mTransitionAnimation = new FloatAnimation(0, 1, TRANSITION_DURATION);
     private int mCurrentRotation;
     private BitmapTexture mCurrentTexture;
     private SlideshowAnimation mCurrentAnimation;
-
     private int mPrevRotation;
     private BitmapTexture mPrevTexture;
     private SlideshowAnimation mPrevAnimation;
-
-    private final FloatAnimation mTransitionAnimation =
-            new FloatAnimation(0, 1, TRANSITION_DURATION);
-
     private Random mRandom = new Random();
 
     public void next(Bitmap bitmap, int rotation) {
@@ -64,13 +60,9 @@ public class SlideshowView extends GLView {
         mCurrentRotation = rotation;
         mCurrentTexture = new BitmapTexture(bitmap);
         if (((rotation / 90) & 0x01) == 0) {
-            mCurrentAnimation = new SlideshowAnimation(
-                    mCurrentTexture.getWidth(), mCurrentTexture.getHeight(),
-                    mRandom);
+            mCurrentAnimation = new SlideshowAnimation(mCurrentTexture.getWidth(), mCurrentTexture.getHeight(), mRandom);
         } else {
-            mCurrentAnimation = new SlideshowAnimation(
-                    mCurrentTexture.getHeight(), mCurrentTexture.getWidth(),
-                    mRandom);
+            mCurrentAnimation = new SlideshowAnimation(mCurrentTexture.getHeight(), mCurrentTexture.getWidth(), mRandom);
         }
         mCurrentAnimation.start();
 
@@ -102,8 +94,7 @@ public class SlideshowView extends GLView {
             canvas.setAlpha(1f - alpha);
             mPrevAnimation.apply(canvas);
             canvas.rotate(mPrevRotation, 0, 0, 1);
-            mPrevTexture.draw(canvas, -mPrevTexture.getWidth() / 2,
-                    -mPrevTexture.getHeight() / 2);
+            mPrevTexture.draw(canvas, -mPrevTexture.getWidth() / 2, -mPrevTexture.getHeight() / 2);
             canvas.restore();
         }
         if (mCurrentTexture != null) {
@@ -112,8 +103,7 @@ public class SlideshowView extends GLView {
             canvas.setAlpha(alpha);
             mCurrentAnimation.apply(canvas);
             canvas.rotate(mCurrentRotation, 0, 0, 1);
-            mCurrentTexture.draw(canvas, -mCurrentTexture.getWidth() / 2,
-                    -mCurrentTexture.getHeight() / 2);
+            mCurrentTexture.draw(canvas, -mCurrentTexture.getWidth() / 2, -mCurrentTexture.getHeight() / 2);
             canvas.restore();
         }
         if (requestRender) invalidate();
@@ -130,9 +120,7 @@ public class SlideshowView extends GLView {
         public SlideshowAnimation(int width, int height, Random random) {
             mWidth = width;
             mHeight = height;
-            mMovingVector = new PointF(
-                    MOVE_SPEED * mWidth * (random.nextFloat() - 0.5f),
-                    MOVE_SPEED * mHeight * (random.nextFloat() - 0.5f));
+            mMovingVector = new PointF(MOVE_SPEED * mWidth * (random.nextFloat() - 0.5f), MOVE_SPEED * mHeight * (random.nextFloat() - 0.5f));
             setDuration(SLIDESHOW_DURATION);
         }
 
@@ -141,8 +129,7 @@ public class SlideshowView extends GLView {
             int viewWidth = getWidth();
             int viewHeight = getHeight();
 
-            float initScale = Math.min(2f, Math.min((float)
-                    viewWidth / mWidth, (float) viewHeight / mHeight));
+            float initScale = Math.min(2f, Math.min((float) viewWidth / mWidth, (float) viewHeight / mHeight));
             float scale = initScale * (1 + SCALE_SPEED * mProgress);
 
             float centerX = viewWidth / 2 + mMovingVector.x * mProgress;

@@ -23,30 +23,20 @@ import android.util.TypedValue;
 public class ScrollBarView extends GLView {
     @SuppressWarnings("unused")
     private static final String TAG = "ScrollBarView";
-
-    public interface Listener {
-        void onScrollBarPositionChanged(int position);
-    }
-
     private int mBarHeight;
-
     private int mGripHeight;
     private int mGripPosition;  // left side of the grip
     private int mGripWidth;     // zero if the grip is disabled
     private int mGivenGripWidth;
-
     private int mContentPosition;
     private int mContentTotal;
-
     private Listener mListener;
     private NinePatchTexture mScrollBarTexture;
 
     public ScrollBarView(Context context, int gripHeight, int gripWidth) {
         TypedValue outValue = new TypedValue();
-        context.getTheme().resolveAttribute(
-                android.R.attr.scrollbarThumbHorizontal, outValue, true);
-        mScrollBarTexture = new NinePatchTexture(
-                context, outValue.resourceId);
+        context.getTheme().resolveAttribute(android.R.attr.scrollbarThumbHorizontal, outValue, true);
+        mScrollBarTexture = new NinePatchTexture(context, outValue.resourceId);
         mGripPosition = 0;
         mGripWidth = 0;
         mGivenGripWidth = gripWidth;
@@ -58,8 +48,7 @@ public class ScrollBarView extends GLView {
     }
 
     @Override
-    protected void onLayout(
-            boolean changed, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         if (!changed) return;
         mBarHeight = bottom - top;
     }
@@ -106,6 +95,10 @@ public class ScrollBarView extends GLView {
         Rect b = bounds();
         int y = (mBarHeight - mGripHeight) / 2;
         mScrollBarTexture.draw(canvas, mGripPosition, y, mGripWidth, mGripHeight);
+    }
+
+    public interface Listener {
+        void onScrollBarPositionChanged(int position);
     }
 
     // The onTouch() handler is disabled because now we don't want the user

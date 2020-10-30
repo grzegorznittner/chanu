@@ -7,49 +7,45 @@
             android:id="@+id/grid_item_thread_thumb"
             android:layout_width="@dimen/BoardGridImageSize"
             android:layout_height="@dimen/BoardGridImageSize"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/thread_post_image"
             android:background="@drawable/board_grid_selector_bg"
-            />
+            android:contentDescription="@string/thread_post_image"
+            android:scaleType="centerCrop" />
 
     <TextView
             android:id="@+id/grid_item_thread_subject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/BoardGridImageSize"
+            android:layout_marginTop="@dimen/BoardGridView.topSpacing"
+            android:maxLines="@integer/BoardGridView.maxLines"
             android:paddingLeft="@dimen/BoardGridView.spacing"
             android:paddingRight="@dimen/BoardGridView.rightSpacing"
-            android:layout_marginTop="@dimen/BoardGridView.topSpacing"
             android:textColor="?themedCardSubjectTextColor"
-            android:textSize="@dimen/BoardGridLargeSubject"
-            android:maxLines="@integer/BoardGridView.maxLines"
-            />
+            android:textSize="@dimen/BoardGridLargeSubject" />
 
     <ImageView
             android:id="@+id/grid_item_country_flag"
-            android:layout_marginTop="@dimen/BoardGridImageSizeForFlag"
             android:layout_width="@dimen/BoardGridItemIconWidth"
             android:layout_height="32dp"
-            android:layout_marginRight="@dimen/BoardGridView.spacing"
-            android:scaleType="fitEnd"
             android:layout_alignParentRight="true"
-            android:gravity="bottom|right"
+            android:layout_marginTop="@dimen/BoardGridImageSizeForFlag"
+            android:layout_marginRight="@dimen/BoardGridView.spacing"
             android:contentDescription="@string/thread_country_flag"
-            />
+            android:gravity="bottom|right"
+            android:scaleType="fitEnd" />
 
     <ImageView
             android:id="@+id/grid_item_overflow_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:layout_alignParentRight="true"
+            android:layout_gravity="right"
+            android:background="@drawable/board_grid_selector_bg"
+            android:paddingLeft="19dp"
             android:paddingTop="4dp"
             android:paddingRight="5dp"
             android:paddingBottom="20dp"
-            android:paddingLeft="19dp"
-            android:src="@drawable/card_overflow_icon"
-            android:background="@drawable/board_grid_selector_bg"
-            />
+            android:src="@drawable/card_overflow_icon" />
 
     <LinearLayout
             android:layout_width="wrap_content"
@@ -62,12 +58,11 @@
                 android:id="@+id/grid_item_num_replies_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:paddingLeft="@dimen/BoardGridView.spacing"
                 android:textColor="@color/PaletteLightGray"
-                android:textSize="@dimen/BoardGridLargeSubject"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
-                />
+                android:textSize="@dimen/BoardGridLargeSubject" />
 
         <ImageView
                 android:id="@+id/grid_item_num_replies_img"
@@ -76,19 +71,17 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/BoardGridView.halfSpacing"
                 android:scaleType="fitCenter"
-                android:src="?themedNumRepliesIcon"
-                />
+                android:src="?themedNumRepliesIcon" />
 
         <TextView
                 android:id="@+id/grid_item_num_images_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
                 android:gravity="center_vertical"
                 android:textColor="@color/PaletteLightGray"
-                android:textSize="@dimen/BoardGridLargeSubject"
-                />
+                android:textSize="@dimen/BoardGridLargeSubject" />
 
         <ImageView
                 android:id="@+id/grid_item_num_images_img"
@@ -97,8 +90,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/BoardGridView.halfSpacing"
                 android:scaleType="fitCenter"
-                android:src="?themedNumImagesIcon"
-                />
+                android:src="?themedNumImagesIcon" />
 
         <ImageView
                 android:id="@+id/grid_item_dead_icon"
@@ -107,7 +99,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
                 android:scaleType="fitCenter"
-                android:src="?themedDeadIcon"/>
+                android:src="?themedDeadIcon" />
 
         <ImageView
                 android:id="@+id/grid_item_sticky_icon"
@@ -116,7 +108,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
                 android:scaleType="fitCenter"
-                android:src="?themedStickyIcon"/>
+                android:src="?themedStickyIcon" />
 
         <ImageView
                 android:id="@+id/grid_item_closed_icon"
@@ -125,18 +117,17 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
                 android:scaleType="fitCenter"
-                android:src="?themedClosedIcon"/>
+                android:src="?themedClosedIcon" />
 
         <TextView
                 android:id="@+id/grid_item_board_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:textSize="@dimen/BoardGridLargeSubject"
-                android:textColor="@color/PaletteLightGray"
                 android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
-                />
+                android:gravity="center_vertical"
+                android:textColor="@color/PaletteLightGray"
+                android:textSize="@dimen/BoardGridLargeSubject" />
 
     </LinearLayout>
 

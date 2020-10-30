@@ -26,29 +26,22 @@ import java.util.WeakHashMap;
 // If a BasicTexture is loaded into GL memory, it has a GL texture id.
 abstract class BasicTexture implements Texture {
 
-    @SuppressWarnings("unused")
-    private static final String TAG = "BasicTexture";
     protected static final int UNSPECIFIED = -1;
-
     protected static final int STATE_UNLOADED = 0;
     protected static final int STATE_LOADED = 1;
     protected static final int STATE_ERROR = -1;
-
+    @SuppressWarnings("unused")
+    private static final String TAG = "BasicTexture";
+    private static WeakHashMap<BasicTexture, Object> sAllTextures = new WeakHashMap<BasicTexture, Object>();
+    private static ThreadLocal sInFinalizer = new ThreadLocal();
     protected int mId;
     protected int mState;
-
     protected int mWidth = UNSPECIFIED;
     protected int mHeight = UNSPECIFIED;
-
+    protected WeakReference<GLCanvas> mCanvasRef = null;
     private int mTextureWidth;
     private int mTextureHeight;
-
     private boolean mHasBorder;
-
-    protected WeakReference<GLCanvas> mCanvasRef = null;
-    private static WeakHashMap<BasicTexture, Object> sAllTextures
-            = new WeakHashMap<BasicTexture, Object>();
-    private static ThreadLocal sInFinalizer = new ThreadLocal();
 
     protected BasicTexture(GLCanvas canvas, int id, int state) {
         setAssociatedCanvas(canvas);
@@ -63,10 +56,23 @@ abstract class BasicTexture implements Texture {
         this(null, 0, STATE_UNLOADED);
     }
 
+    // This is for deciding if we can call Bitmap's recycle().
+    // We cannot call Bitmap's recycle() in finalizer because at that point
+    // the finalizer of Bitmap may already be called so recycle() will crash.
+    public static boolean inFinalizer() {
+        return sInFinalizer.get() != null;
+    }
+
+    public static void yieldAllTextures() {
+        synchronized (sAllTextures) {
+            for (BasicTexture t : sAllTextures.keySet()) {
+                t.yield();
+            }
+        }
+    }
+
     protected void setAssociatedCanvas(GLCanvas canvas) {
-        mCanvasRef = canvas == null
-                ? null
-                : new WeakReference<GLCanvas>(canvas);
+        mCanvasRef = canvas == null ? null : new WeakReference<GLCanvas>(canvas);
     }
 
     /**
@@ -166,20 +172,5 @@ abstract class BasicTexture implements Texture {
         sInFinalizer.set(BasicTexture.class);
         recycle();
         sInFinalizer.set(null);
-    }
-
-    // This is for deciding if we can call Bitmap's recycle().
-    // We cannot call Bitmap's recycle() in finalizer because at that point
-    // the finalizer of Bitmap may already be called so recycle() will crash.
-    public static boolean inFinalizer() {
-        return sInFinalizer.get() != null;
-    }
-
-    public static void yieldAllTextures() {
-        synchronized (sAllTextures) {
-            for (BasicTexture t : sAllTextures.keySet()) {
-                t.yield();
-            }
-        }
     }
 }

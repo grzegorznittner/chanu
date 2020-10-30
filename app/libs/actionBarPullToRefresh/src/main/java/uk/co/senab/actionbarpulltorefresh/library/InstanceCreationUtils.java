@@ -50,8 +50,7 @@ class InstanceCreationUtils {
         final Set<Map.Entry<Class, Class>> entries = BUILT_IN_DELEGATES.entrySet();
         for (final Map.Entry<Class, Class> entry : entries) {
             if (entry.getKey().isInstance(view)) {
-                return InstanceCreationUtils.newInstance(view.getContext(),
-                        entry.getValue(), VIEW_DELEGATE_CONSTRUCTOR_SIGNATURE, null);
+                return InstanceCreationUtils.newInstance(view.getContext(), entry.getValue(), VIEW_DELEGATE_CONSTRUCTOR_SIGNATURE, null);
             }
         }
         return null;
@@ -77,8 +76,7 @@ class InstanceCreationUtils {
         return null;
     }
 
-    private static <T> T newInstance(Context context, Class clazz, Class[] constructorSig,
-                                     Object[] arguments) {
+    private static <T> T newInstance(Context context, Class clazz, Class[] constructorSig, Object[] arguments) {
         try {
             Constructor<?> constructor = clazz.getConstructor(constructorSig);
             return (T) constructor.newInstance(arguments);

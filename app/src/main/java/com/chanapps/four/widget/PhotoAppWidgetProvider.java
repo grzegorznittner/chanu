@@ -16,11 +16,6 @@
 
 package com.chanapps.four.widget;
 
-import com.chanapps.four.gallery3d.R;
-import com.chanapps.four.widget.WidgetDatabaseHelper.Entry;
-import com.android.gallery3d.gadget.WidgetClickHandler;
-import com.android.gallery3d.gadget.WidgetService;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -31,6 +26,11 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
+
+import com.android.gallery3d.gadget.WidgetClickHandler;
+import com.android.gallery3d.gadget.WidgetService;
+import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.widget.WidgetDatabaseHelper.Entry;
 
 public class PhotoAppWidgetProvider extends AppWidgetProvider {
 
@@ -48,9 +48,50 @@ public class PhotoAppWidgetProvider extends AppWidgetProvider {
         throw new RuntimeException("invalid type - " + entry.type);
     }
 
+    private static RemoteViews buildStackWidget(Context context, int widgetId, Entry entry) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.appwidget_main);
+
+        Intent intent = new Intent(context, WidgetService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+        intent.putExtra(WidgetService.EXTRA_WIDGET_TYPE, entry.type);
+        intent.putExtra(WidgetService.EXTRA_ALBUM_PATH, entry.albumPath);
+        intent.setData(Uri.parse("widget://gallery/" + widgetId));
+
+        views.setRemoteAdapter(R.id.appwidget_stack_view, intent);
+        views.setEmptyView(R.id.appwidget_stack_view, R.id.appwidget_empty_view);
+
+        Intent clickIntent = new Intent(context, WidgetClickHandler.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.appwidget_stack_view, pendingIntent);
+
+        return views;
+    }
+
+    static RemoteViews buildFrameWidget(Context context, int appWidgetId, Entry entry) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.photo_frame);
+        try {
+            byte[] data = entry.imageData;
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            views.setImageViewBitmap(R.id.photo, bitmap);
+        } catch (Throwable t) {
+            Log.w(TAG, "cannot load widget image: " + appWidgetId, t);
+        }
+
+        if (entry.imageUri != null) {
+            try {
+                Uri uri = Uri.parse(entry.imageUri);
+                Intent clickIntent = new Intent(context, WidgetClickHandler.class).setData(uri);
+                PendingIntent pendingClickIntent = PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                views.setOnClickPendingIntent(R.id.photo, pendingClickIntent);
+            } catch (Throwable t) {
+                Log.w(TAG, "cannot load widget uri: " + appWidgetId, t);
+            }
+        }
+        return views;
+    }
+
     @Override
-    public void onUpdate(Context context,
-            AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         WidgetDatabaseHelper helper = new WidgetDatabaseHelper(context);
         try {
             for (int id : appWidgetIds) {
@@ -66,53 +107,6 @@ public class PhotoAppWidgetProvider extends AppWidgetProvider {
             helper.close();
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-    }
-
-    private static RemoteViews buildStackWidget(Context context, int widgetId, Entry entry) {
-        RemoteViews views = new RemoteViews(
-                context.getPackageName(), R.layout.appwidget_main);
-
-        Intent intent = new Intent(context, WidgetService.class);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-        intent.putExtra(WidgetService.EXTRA_WIDGET_TYPE, entry.type);
-        intent.putExtra(WidgetService.EXTRA_ALBUM_PATH, entry.albumPath);
-        intent.setData(Uri.parse("widget://gallery/" + widgetId));
-
-        views.setRemoteAdapter(R.id.appwidget_stack_view, intent);
-        views.setEmptyView(R.id.appwidget_stack_view, R.id.appwidget_empty_view);
-
-        Intent clickIntent = new Intent(context, WidgetClickHandler.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        views.setPendingIntentTemplate(R.id.appwidget_stack_view, pendingIntent);
-
-        return views;
-    }
-
-    static RemoteViews buildFrameWidget(Context context, int appWidgetId, Entry entry) {
-        RemoteViews views = new RemoteViews(
-                context.getPackageName(), R.layout.photo_frame);
-        try {
-            byte[] data = entry.imageData;
-            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            views.setImageViewBitmap(R.id.photo, bitmap);
-        } catch (Throwable t) {
-            Log.w(TAG, "cannot load widget image: " + appWidgetId, t);
-        }
-
-        if (entry.imageUri != null) {
-            try {
-                Uri uri = Uri.parse(entry.imageUri);
-                Intent clickIntent = new Intent(context, WidgetClickHandler.class)
-                        .setData(uri);
-                PendingIntent pendingClickIntent = PendingIntent.getActivity(context, 0,
-                        clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-                views.setOnClickPendingIntent(R.id.photo, pendingClickIntent);
-            } catch (Throwable t) {
-                Log.w(TAG, "cannot load widget uri: " + appWidgetId, t);
-            }
-        }
-        return views;
     }
 
     @Override

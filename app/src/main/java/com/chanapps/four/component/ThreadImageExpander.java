@@ -9,8 +9,8 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.webkit.WebView;
+
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.gallery.ChanImage;
@@ -24,18 +24,17 @@ import java.io.File;
 import java.net.URI;
 
 /**
-* Created with IntelliJ IDEA.
-* User: johnarleyburns
-* Date: 4/9/13
-* Time: 10:28 AM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: johnarleyburns
+ * Date: 4/9/13
+ * Time: 10:28 AM
+ * To change this template use File | Settings | File Templates.
+ */
 public class ThreadImageExpander {
 
+    public static final String WEBVIEW_BLANK_URL = "about:blank";
     private static final String TAG = ThreadImageExpander.class.getSimpleName();
     private static final boolean DEBUG = false;
-
-    public static final String WEBVIEW_BLANK_URL = "about:blank";
     private static final int BIG_IMAGE_SIZE_BYTES = 1024 * 250; // more than 250kb, show in web view
     private static final int BYTES_PER_PIXEL = 4; // Bitmap.Config.ARGB_8888;
     //private static final double MAX_EXPANDED_SCALE = 1.5;
@@ -59,9 +58,57 @@ public class ThreadImageExpander {
     private View.OnClickListener expandedImageListener;
     private boolean showContextMenu = true;
     private boolean isVideo = false;
+    private View.OnClickListener videoListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Context c = viewHolder.list_item != null ? viewHolder.list_item.getContext() : null;
+            if (c == null) {
+                return;
+            }
+            Activity a = c instanceof Activity ? (Activity) c : null;
+            String mimeType = ChanImage.videoMimeType(postExt);
+            Uri uri = Uri.parse(postImageUrl);
+            ChanImage.startViewer(a, uri, mimeType);
+        }
+    };
+    ImageLoadingListener expandedImageLoadingListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+            displayClickEffect();
+        }
 
-    public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor, boolean withProgress, int stub,
-                               View.OnClickListener expandedImageListener, boolean showContextMenu) {
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            String reason = failReason.toString();
+            if (DEBUG)
+                Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
+            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            if (DEBUG) Log.v(TAG, "onLoadingComplete uri=" + imageUri);
+            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+            displayClickEffect();
+            if (viewHolder.list_item_image_expansion_target != null) {
+                //viewHolder.list_item_image_expansion_target.setOnClickListener(null);
+                //viewHolder.list_item_image_expansion_target.setForeground(view.getResources().getDrawable(R.drawable.null_selector_bg));
+            }
+
+            //if (withProgress)
+            //     ThreadViewer.toggleExpandedImage(viewHolder);
+        }
+
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
+            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+        }
+    };
+
+    public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor, boolean withProgress, int stub, View.OnClickListener expandedImageListener, boolean showContextMenu) {
         this.viewHolder = viewHolder;
         this.withProgress = withProgress;
         this.stub = stub;
@@ -83,10 +130,10 @@ public class ThreadImageExpander {
         postImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
         thumbUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (postImageUrl != null && postImageUrl.endsWith(".gif")) {
-        	File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
-        	fullImagePath = thumbFile != null ? thumbFile.getAbsolutePath() : null;
+            File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
+            fullImagePath = thumbFile != null ? thumbFile.getAbsolutePath() : null;
         } else {
-        	fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
+            fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
         }
         this.showContextMenu = showContextMenu;
         if (DEBUG) Log.i(TAG, "postUrl=" + postImageUrl + " postSize=" + postW + "x" + postH);
@@ -124,7 +171,8 @@ public class ThreadImageExpander {
         int width = isVideo ? thumbW : postW;
         int height = isVideo ? thumbH : postH;
         targetSize = ThreadViewer.sizeHeaderImage(width, height, showContextMenu);
-        if (DEBUG) Log.i(TAG, "inputSize=" + width + "x" + height + " targetSize=" + targetSize.x + "x" + targetSize.y);
+        if (DEBUG)
+            Log.i(TAG, "inputSize=" + width + "x" + height + " targetSize=" + targetSize.x + "x" + targetSize.y);
         setImageDimensions(viewHolder, targetSize);
         displayWebView(width, height);
         /*
@@ -134,60 +182,6 @@ public class ThreadImageExpander {
         else
             displayImageView();
         */
-    }
-    /*
-    protected boolean isAnimatedGif() {
-        return ChanImage.isAnimatedGif(postExt, fsize, postW, postH);
-    }
-
-    protected boolean isBigImage(Point targetSize) {
-        int targetSizeBytes = targetSize.x * targetSize.y * BYTES_PER_PIXEL;
-        return fsize > BIG_IMAGE_SIZE_BYTES
-                || targetSizeBytes > BIG_IMAGE_SIZE_BYTES;
-    }
-    */
-    protected void displayWebView(int width, int height) {
-        if (viewHolder.list_item_image_expanded_wrapper != null)
-            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
-        /*
-        if (viewHolder.list_item_expanded_progress_bar != null)
-            viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-        if (viewHolder.list_item_image_expanded != null)
-            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
-        */
-        if (viewHolder.list_item_image_wrapper != null)
-            viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
-        if (viewHolder.list_item_image_header != null)
-            viewHolder.list_item_image_header.setVisibility(View.GONE);
-
-        WebView v = viewHolder.list_item_image_expanded_webview;
-        if (v == null)
-            return;
-        //v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
-        v.setVisibility(View.INVISIBLE);
-        //v.setWebViewClient(webViewClient);
-
-        if (DEBUG) Log.i(TAG, "Loading anim gif webview url=" + postImageUrl);
-        int scale = calcScale(width, height);
-        v.setInitialScale(scale);
-        displayClickEffect();
-        if (DEBUG) Log.i(TAG, "displayWebView() imageSize=" + width + "x" + height
-                + " targetSize=" + targetSize.x + "x" + targetSize.y
-                + " scale=" + scale);
-
-        if (isVideo) {
-            v.loadUrl(thumbUrl);
-        }
-        else {
-            v.loadUrl(postImageUrl);
-        }
-    }
-    private int calcScale(int width, int height) {
-        float maxWidth = width > 1 ? width : 250;
-        float maxHeight = height > 1 ? height : 250;
-        float itemWidth = targetSize.x;
-        float itemHeight = targetSize.y;
-        return (int)Math.min(Math.ceil(itemWidth * 100 / maxWidth), Math.ceil(itemWidth * 100 / maxWidth));
     }
 
     /*
@@ -233,41 +227,58 @@ public class ThreadImageExpander {
     }
     */
 
-    ImageLoadingListener expandedImageLoadingListener = new ImageLoadingListener() {
-        @Override
-        public void onLoadingStarted(String imageUri, View view) {
-            displayClickEffect();
-        }
+    /*
+    protected boolean isAnimatedGif() {
+        return ChanImage.isAnimatedGif(postExt, fsize, postW, postH);
+    }
 
-        @Override
-        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            String reason = failReason.toString();
-            if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
-            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-        }
+    protected boolean isBigImage(Point targetSize) {
+        int targetSizeBytes = targetSize.x * targetSize.y * BYTES_PER_PIXEL;
+        return fsize > BIG_IMAGE_SIZE_BYTES
+                || targetSizeBytes > BIG_IMAGE_SIZE_BYTES;
+    }
+    */
+    protected void displayWebView(int width, int height) {
+        if (viewHolder.list_item_image_expanded_wrapper != null)
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
+        /*
+        if (viewHolder.list_item_expanded_progress_bar != null)
+            viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+        if (viewHolder.list_item_image_expanded != null)
+            viewHolder.list_item_image_expanded.setVisibility(View.GONE);
+        */
+        if (viewHolder.list_item_image_wrapper != null)
+            viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
+        if (viewHolder.list_item_image_header != null)
+            viewHolder.list_item_image_header.setVisibility(View.GONE);
 
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            if (DEBUG) Log.v(TAG, "onLoadingComplete uri=" + imageUri);
-            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-            displayClickEffect();
-            if (viewHolder.list_item_image_expansion_target != null) {
-                //viewHolder.list_item_image_expansion_target.setOnClickListener(null);
-                //viewHolder.list_item_image_expansion_target.setForeground(view.getResources().getDrawable(R.drawable.null_selector_bg));
-            }
+        WebView v = viewHolder.list_item_image_expanded_webview;
+        if (v == null) return;
+        //v.loadUrl(WEBVIEW_BLANK_URL); // needed so we don't get old image showing
+        v.setVisibility(View.INVISIBLE);
+        //v.setWebViewClient(webViewClient);
 
-            //if (withProgress)
-            //     ThreadViewer.toggleExpandedImage(viewHolder);
-        }
+        if (DEBUG) Log.i(TAG, "Loading anim gif webview url=" + postImageUrl);
+        int scale = calcScale(width, height);
+        v.setInitialScale(scale);
+        displayClickEffect();
+        if (DEBUG)
+            Log.i(TAG, "displayWebView() imageSize=" + width + "x" + height + " targetSize=" + targetSize.x + "x" + targetSize.y + " scale=" + scale);
 
-        @Override
-        public void onLoadingCancelled(String imageUri, View view) {
-            //if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
-            //    viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+        if (isVideo) {
+            v.loadUrl(thumbUrl);
+        } else {
+            v.loadUrl(postImageUrl);
         }
-    };
+    }
+
+    private int calcScale(int width, int height) {
+        float maxWidth = width > 1 ? width : 250;
+        float maxHeight = height > 1 ? height : 250;
+        float itemWidth = targetSize.x;
+        float itemHeight = targetSize.y;
+        return (int) Math.min(Math.ceil(itemWidth * 100 / maxWidth), Math.ceil(itemWidth * 100 / maxWidth));
+    }
 
     private void displayClickEffect() {
         if (viewHolder.list_item_image_expanded_click_effect != null) {
@@ -275,8 +286,7 @@ public class ThreadImageExpander {
             //viewHolder.list_item_image_expanded_click_effect.setOnClickListener(collapseImageListener);
             if (isVideo) {
                 setVideoListener();
-            }
-            else {
+            } else {
                 setGalleryListener();
             }
         }
@@ -285,20 +295,6 @@ public class ThreadImageExpander {
     private void setVideoListener() {
         viewHolder.list_item_image_expanded_click_effect.setOnClickListener(videoListener);
     }
-
-    private View.OnClickListener videoListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Context c = viewHolder.list_item != null ? viewHolder.list_item.getContext() : null;
-            if (c == null) {
-                return;
-            }
-            Activity a = c instanceof Activity ? (Activity)c : null;
-            String mimeType = ChanImage.videoMimeType(postExt);
-            Uri uri = Uri.parse(postImageUrl);
-            ChanImage.startViewer(a, uri, mimeType);
-        }
-    };
 
     private void setGalleryListener() {
         viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
@@ -323,13 +319,10 @@ public class ThreadImageExpander {
         }
         else
         */
-        if (viewHolder.list_item_image_expanded_webview != null
-                && viewHolder.list_item_image_expanded_webview.getVisibility() != View.GONE
-                && viewHolder.list_item_image_expanded_webview.getHeight() > 0) {
+        if (viewHolder.list_item_image_expanded_webview != null && viewHolder.list_item_image_expanded_webview.getVisibility() != View.GONE && viewHolder.list_item_image_expanded_webview.getHeight() > 0) {
             if (DEBUG) Log.i(TAG, "Image webview already expanded, skipping");
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }

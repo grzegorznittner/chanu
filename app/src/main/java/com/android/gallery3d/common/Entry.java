@@ -22,15 +22,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 public abstract class Entry {
-    public static final String[] ID_PROJECTION = { "_id" };
-
-    public static interface Columns {
-        public static final String ID = "_id";
-    }
-
+    public static final String[] ID_PROJECTION = {"_id"};
     // The primary key of the entry.
     @Column("_id")
     public long id = 0;
+
+    public void clear() {
+        id = 0;
+    }
+
+    public interface Columns {
+        String ID = "_id";
+    }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
@@ -48,9 +51,5 @@ public abstract class Entry {
         boolean fullText() default false;
 
         String defaultValue() default "";
-    }
-
-    public void clear() {
-        id = 0;
     }
 }

@@ -11,6 +11,7 @@ import android.net.http.AndroidHttpClient;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
+
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.ChanBoard;
@@ -19,6 +20,7 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,7 +31,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,8 +45,8 @@ import java.util.*;
 public final class WidgetProviderUtils {
 
     public static final String TAG = WidgetProviderUtils.class.getSimpleName();
-    private static final boolean DEBUG = false;
     public static final String WIDGET_PROVIDER_UTILS = "com.chanapps.four.widget.WidgetProviderUtils";
+    private static final boolean DEBUG = false;
 
     public static Set<String> getActiveWidgetPref(Context context) {
         ComponentName widgetProvider = new ComponentName(context, AbstractBoardWidgetProvider.class);
@@ -59,8 +64,7 @@ public final class WidgetProviderUtils {
         for (String widgetBoard : widgetConf) {
             String[] components = widgetBoard.split(WidgetConf.DELIM);
             int widgetId = Integer.valueOf(components[0]);
-            if (activeWidgetIds.contains(widgetId))
-                savedWidgetConf.add(widgetBoard);
+            if (activeWidgetIds.contains(widgetId)) savedWidgetConf.add(widgetBoard);
         }
 
         if (DEBUG) {
@@ -74,10 +78,7 @@ public final class WidgetProviderUtils {
     }
 
     public static void saveWidgetBoardPref(Context context, Set<String> savedWidgetConf) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf)
-                .commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf).commit();
     }
 
     public static WidgetConf loadWidgetConf(Context context, int appWidgetId) {
@@ -85,8 +86,7 @@ public final class WidgetProviderUtils {
         Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         for (String widgetBoard : widgetBoards) {
             WidgetConf widgetConf = new WidgetConf(widgetBoard);
-            if (widgetConf.appWidgetId == appWidgetId)
-                return widgetConf;
+            if (widgetConf.appWidgetId == appWidgetId) return widgetConf;
         }
         return null;
     }
@@ -102,23 +102,23 @@ public final class WidgetProviderUtils {
             boardsToFetch.add(widgetBoardCode);
         }
         for (String boardCode : boardsToFetch) {
-            if (DEBUG) Log.i(WidgetProviderUtils.TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
+            if (DEBUG)
+                Log.i(WidgetProviderUtils.TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
             //if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
             //    GlobalAlarmReceiver.fetchWatchlistThreads(context);
             //else
             if (ChanBoard.isPopularBoard(boardCode))
                 FetchPopularThreadsService.schedulePopularFetchService(context, false, true);
-            else if (ChanBoard.isVirtualBoard(boardCode))
-                ;// skip
-            else
-                FetchChanDataService.scheduleBoardFetch(context, boardCode, false, true);
+            else if (ChanBoard.isVirtualBoard(boardCode)) ;// skip
+            else FetchChanDataService.scheduleBoardFetch(context, boardCode, false, true);
         }
     }
 
     public static void update(Context context, int appWidgetId, String widgetType) {
         WidgetConf widgetConf = loadWidgetConf(context, appWidgetId);
         if (widgetConf != null) {
-            if (DEBUG) Log.i(WidgetProviderUtils.TAG, "update() calling update widget service for widget=" + appWidgetId + " /" + widgetConf.boardCode + "/");
+            if (DEBUG)
+                Log.i(WidgetProviderUtils.TAG, "update() calling update widget service for widget=" + appWidgetId + " /" + widgetConf.boardCode + "/");
             Intent updateIntent = new Intent(context, UpdateWidgetService.class);
             updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             updateIntent.putExtra(WIDGET_PROVIDER_UTILS, widgetType);
@@ -157,7 +157,8 @@ public final class WidgetProviderUtils {
     public static boolean storeWidgetConf(final Context context, final WidgetConf widgetConf) {
         int appWidgetId = widgetConf.appWidgetId;
         String boardCode = widgetConf.boardCode;
-        if (DEBUG) Log.i(WidgetProviderUtils.TAG, "Configuring widget=" + appWidgetId + " with board=" + boardCode);
+        if (DEBUG)
+            Log.i(WidgetProviderUtils.TAG, "Configuring widget=" + appWidgetId + " with board=" + boardCode);
         if (boardCode == null || ChanBoard.getBoardByCode(context, boardCode) == null) {
             Log.e(WidgetProviderUtils.TAG, "Couldn't find board=" + boardCode + " for widget=" + appWidgetId + " not adding widget");
             return false;
@@ -194,8 +195,7 @@ public final class WidgetProviderUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-               if (hasWidgets(context))
-                    fetchAllWidgets(context);
+                if (hasWidgets(context)) fetchAllWidgets(context);
 
                 /*
                 ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
@@ -233,9 +233,7 @@ public final class WidgetProviderUtils {
             return widgetThreads;
         }
 
-        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
-                ? board.loadedThreads
-                : board.threads;
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0 ? board.loadedThreads : board.threads;
         if (boardThreads == null || boardThreads.length == 0) {
             Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode + " making pseudo threads");
             for (int i = 0; i < numThreads; i++) {
@@ -275,8 +273,7 @@ public final class WidgetProviderUtils {
         threadIndex = 0;
         if (filledCount < numThreads) {
             for (int i = 0; i < numThreads; i++) {
-                if (widgetThreads[i] != null)
-                    continue;
+                if (widgetThreads[i] != null) continue;
                 ChanPost thread = null;
                 while (threadIndex < boardThreads.length) {
                     ChanPost test = boardThreads[threadIndex];
@@ -304,9 +301,7 @@ public final class WidgetProviderUtils {
             return null;
         }
 
-        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
-                ? board.loadedThreads
-                : board.threads;
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0 ? board.loadedThreads : board.threads;
         if (boardThreads == null || boardThreads.length == 0 || boardThreads[0] == null || boardThreads[0].defData) {
             Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
             return null;
@@ -320,10 +315,8 @@ public final class WidgetProviderUtils {
             if (thread != null && thread.sticky <= 0 && thread.tim > 0 && thread.no > 0) {
                 String url = thread.thumbnailUrl(context);
                 File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-                if (f == null || !f.canRead() || f.length() <= 0)
-                    preloadURLs.add(url);
-                if (++validThreads >= maxThreads)
-                    break;
+                if (f == null || !f.canRead() || f.length() <= 0) preloadURLs.add(url);
+                if (++validThreads >= maxThreads) break;
             }
         }
 
@@ -337,9 +330,7 @@ public final class WidgetProviderUtils {
             return new ArrayList<ChanPost>();
         }
 
-        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
-                ? board.loadedThreads
-                : board.threads;
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0 ? board.loadedThreads : board.threads;
         if (boardThreads == null || boardThreads.length == 0) {
             Log.e(TAG, "viableThreads() couldn't load widget no threads for boardCode=" + boardCode);
             return new ArrayList<ChanPost>();
@@ -351,25 +342,18 @@ public final class WidgetProviderUtils {
         for (int i = 0; i < boardThreads.length; i++) {
             ChanPost thread = boardThreads[i];
             boolean viable;
-            if (thread == null)
-                viable = false;
+            if (thread == null) viable = false;
             else if (board.isPopularBoard()) // never have images or sticky, so always viable
                 viable = true;
-            else if (thread.sticky <= 0 && thread.tim > 0 && thread.no > 0)
-                viable = true;
-            else
-                viable = false;
-            if (!viable)
-                continue;
+            else viable = thread.sticky <= 0 && thread.tim > 0 && thread.no > 0;
+            if (!viable) continue;
             String url = thread.thumbnailUrl(context);
             File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-            if (f == null || !f.canRead() || f.length() <= 0)
-                continue;
+            if (f == null || !f.canRead() || f.length() <= 0) continue;
             if (viableThreads.size() < maxThreads) {
                 if (DEBUG) Log.i(TAG, "viableThreads adding " + thread);
                 viableThreads.add(thread);
-                if (viableThreads.size() >= maxThreads)
-                    break;
+                if (viableThreads.size() >= maxThreads) break;
             }
         }
 
@@ -387,24 +371,20 @@ public final class WidgetProviderUtils {
 
     static public void downloadAndCacheUrl(final Context context, final String url, final Runnable downloadCallback) {
         Bitmap b = downloadBitmap(url);
-        if (b == null || b.getByteCount() <= 0)
-            return;
+        if (b == null || b.getByteCount() <= 0) return;
         File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-        if (f == null)
-            return;
+        if (f == null) return;
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(f);
             b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
-            if (DEBUG) Log.i(TAG, "downloadAndCacheUrl complete for url=" + url + " notifying callback");
-            if (downloadCallback != null)
-                downloadCallback.run();
-        }
-        catch (IOException e) {
+            if (DEBUG)
+                Log.i(TAG, "downloadAndCacheUrl complete for url=" + url + " notifying callback");
+            if (downloadCallback != null) downloadCallback.run();
+        } catch (IOException e) {
             Log.e(TAG, "Coludn't write file " + f.getAbsolutePath(), e);
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(fos);
         }
     }
@@ -457,16 +437,17 @@ public final class WidgetProviderUtils {
                 Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath());
                 views.setImageViewBitmap(imageId, b);
                 isCached = true;
-                if (DEBUG) Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " set image to file=" + f.getAbsolutePath());
-            }
-            catch (Exception e) {
+                if (DEBUG)
+                    Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " set image to file=" + f.getAbsolutePath());
+            } catch (Exception e) {
                 Log.e(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " exception setting image to file=" + f.getAbsolutePath(), e);
             }
         }
         if (!isCached && i > 0) {
             int defaultImageId = ChanBoard.getRandomImageResourceId(widgetConf.boardCode, i);
             views.setImageViewResource(imageId, defaultImageId);
-            if (DEBUG) Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " no file, set image to default resource");
+            if (DEBUG)
+                Log.i(TAG, "safeSetRemoteViewThumbnail() i=" + i + " url=" + url + " no file, set image to default resource");
         }
         return isCached;
     }

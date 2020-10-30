@@ -16,30 +16,24 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
+import android.content.Context;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View.MeasureSpec;
+
 import com.android.gallery3d.anim.AlphaAnimation;
 import com.android.gallery3d.app.AlbumDataAdapter;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.Path;
+import com.chanapps.four.gallery3d.R;
 
-import android.content.Context;
-import android.view.MotionEvent;
-import android.view.View.MeasureSpec;
-
-public class FilmStripView extends GLView implements ScrollBarView.Listener,
-        UserInteractionListener {
+public class FilmStripView extends GLView implements ScrollBarView.Listener, UserInteractionListener {
     @SuppressWarnings("unused")
     private static final String TAG = "FilmStripView";
 
     private static final int HIDE_ANIMATION_DURATION = 300;  // 0.3 sec
-
-    public interface Listener {
-        // Returns false if it cannot jump to the specified index at this time.
-        boolean onSlotSelected(int slotIndex);
-    }
-
     private int mTopMargin, mMidMargin, mBottomMargin;
     private int mContentSize, mBarSize, mGripSize;
     private AlbumView mAlbumView;
@@ -64,9 +58,7 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
     //            \    +----+--/
     //             ----+----+
     // bottomMargin
-    public FilmStripView(GalleryActivity activity, MediaSet mediaSet,
-            int topMargin, int midMargin, int bottomMargin, int contentSize,
-            int thumbSize, int barSize, int gripSize, int gripWidth) {
+    public FilmStripView(GalleryActivity activity, MediaSet mediaSet, int topMargin, int midMargin, int bottomMargin, int contentSize, int thumbSize, int barSize, int gripSize, int gripWidth) {
         mTopMargin = topMargin;
         mMidMargin = midMargin;
         mBottomMargin = bottomMargin;
@@ -86,18 +78,22 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
             public void onDown(int index) {
                 FilmStripView.this.onDown(index);
             }
+
             @Override
             public void onUp() {
                 FilmStripView.this.onUp();
             }
+
             @Override
             public void onSingleTapUp(int slotIndex) {
                 FilmStripView.this.onSingleTapUp(slotIndex);
             }
+
             @Override
             public void onLongTap(int slotIndex) {
                 FilmStripView.this.onLongTap(slotIndex);
             }
+
             @Override
             public void onScrollPositionChanged(int position, int total) {
                 FilmStripView.this.onScrollPositionChanged(position, total);
@@ -106,14 +102,12 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
         mAlbumView.setUserInteractionListener(this);
         mAlbumDataAdapter = new AlbumDataAdapter(activity, mediaSet);
         addComponent(mAlbumView);
-        mScrollBarView = new ScrollBarView(activity.getAndroidContext(),
-                mGripSize, gripWidth);
+        mScrollBarView = new ScrollBarView(activity.getAndroidContext(), mGripSize, gripWidth);
         mScrollBarView.setListener(this);
         addComponent(mScrollBarView);
 
         mAlbumView.setModel(mAlbumDataAdapter);
-        mBackgroundTexture = new NinePatchTexture(activity.getAndroidContext(),
-                R.drawable.navstrip_translucent);
+        mBackgroundTexture = new NinePatchTexture(activity.getAndroidContext(), R.drawable.navstrip_translucent);
     }
 
     public void setListener(Listener listener) {
@@ -136,8 +130,7 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
         animation.setDuration(HIDE_ANIMATION_DURATION);
         try {
             startAnimation(animation);
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             Log.i(TAG, "Exception running hide animation for film strip, setting invisible", e);
         }
         setVisibility(GLView.INVISIBLE);
@@ -154,14 +147,11 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         int height = mTopMargin + mContentSize + mMidMargin + mBarSize + mBottomMargin;
-        MeasureHelper.getInstance(this)
-                .setPreferredContentSize(MeasureSpec.getSize(widthSpec), height)
-                .measure(widthSpec, heightSpec);
+        MeasureHelper.getInstance(this).setPreferredContentSize(MeasureSpec.getSize(widthSpec), height).measure(widthSpec, heightSpec);
     }
 
     @Override
-    protected void onLayout(
-            boolean changed, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         if (!changed) return;
         mAlbumView.layout(0, mTopMargin, right - left, mTopMargin + mContentSize);
         int barStart = mTopMargin + mContentSize + mMidMargin;
@@ -267,5 +257,10 @@ public class FilmStripView extends GLView implements ScrollBarView.Listener,
     public void resume() {
         mAlbumView.resume();
         mAlbumDataAdapter.resume();
+    }
+
+    public interface Listener {
+        // Returns false if it cannot jump to the specified index at this time.
+        boolean onSlotSelected(int slotIndex);
     }
 }

@@ -26,11 +26,9 @@ import com.android.gallery3d.data.MediaSource;
 import com.android.gallery3d.data.Path;
 
 public class ChanOffLineSource extends MediaSource {
-    private static final String TAG = "ChanOffLineSource";
     public static final String KEY_BUCKET_ID = "bucketId";
-    
     public static final String SOURCE_PREFIX = "chan-offline";
-
+    private static final String TAG = "ChanOffLineSource";
     private GalleryApp mApplication;
 
     private ContentProviderClient mClient;
@@ -43,14 +41,14 @@ public class ChanOffLineSource extends MediaSource {
     @Override
     public MediaObject createMediaObject(Path path) {
         if (SOURCE_PREFIX.equals(path.getPrefix())) {
-        	String[] elems = path.split();
-        	if (elems.length == 1) {
-        		return new ChanOffLineAlbumSet(path, mApplication);
-        	} else if (elems.length == 2) {
-        		return new ChanOffLineAlbum(path, mApplication, elems[1]);
-        	} else if (elems.length == 3) {
-        		return new ChanOffLineImage(mApplication, path, elems[1], elems[2]);
-        	}
+            String[] elems = path.split();
+            if (elems.length == 1) {
+                return new ChanOffLineAlbumSet(path, mApplication);
+            } else if (elems.length == 2) {
+                return new ChanOffLineAlbum(path, mApplication, elems[1]);
+            } else if (elems.length == 3) {
+                return new ChanOffLineImage(mApplication, path, elems[1], elems[2]);
+            }
         }
         return null;
     }
@@ -58,10 +56,10 @@ public class ChanOffLineSource extends MediaSource {
     @Override
     public Path findPathByUri(Uri uri) {
         try {
-        	String uriStr = uri != null ? uri.toString() : "";
-        	if (uriStr.startsWith("/" + SOURCE_PREFIX + "/")) {
-        		return Path.fromString(uriStr);
-        	}
+            String uriStr = uri != null ? uri.toString() : "";
+            if (uriStr.startsWith("/" + SOURCE_PREFIX + "/")) {
+                return Path.fromString(uriStr);
+            }
         } catch (Exception e) {
             Log.w(TAG, "uri: " + uri.toString(), e);
         }
@@ -70,9 +68,9 @@ public class ChanOffLineSource extends MediaSource {
 
     @Override
     public void pause() {
-    	if (mClient != null) {
-    		mClient.release();
-    		mClient = null;
-    	}
+        if (mClient != null) {
+            mClient.release();
+            mClient = null;
+        }
     }
 }

@@ -36,39 +36,39 @@ import java.util.Stack;
  *
  * <p>
  * <table BORDER CELLPADDING=3 CELLSPACING=1>
- *  <tr>
- *    <td></td>
- *    <td ALIGN=CENTER COLSPAN = 2> <b>First Element (Head)</b></td>
- *    <td ALIGN=CENTER COLSPAN = 2> <b>Last Element (Tail)</b></td>
- *  </tr>
- *  <tr>
- *    <td></td>
- *    <td ALIGN=CENTER><em>Throws exception</em></td>
- *    <td ALIGN=CENTER><em>Special value</em></td>
- *    <td ALIGN=CENTER><em>Throws exception</em></td>
- *    <td ALIGN=CENTER><em>Special value</em></td>
- *  </tr>
- *  <tr>
- *    <td><b>Insert</b></td>
- *    <td>{@link #addFirst addFirst(e)}</td>
- *    <td>{@link #offerFirst offerFirst(e)}</td>
- *    <td>{@link #addLast addLast(e)}</td>
- *    <td>{@link #offerLast offerLast(e)}</td>
- *  </tr>
- *  <tr>
- *    <td><b>Remove</b></td>
- *    <td>{@link #removeFirst removeFirst()}</td>
- *    <td>{@link #pollFirst pollFirst()}</td>
- *    <td>{@link #removeLast removeLast()}</td>
- *    <td>{@link #pollLast pollLast()}</td>
- *  </tr>
- *  <tr>
- *    <td><b>Examine</b></td>
- *    <td>{@link #getFirst getFirst()}</td>
- *    <td>{@link #peekFirst peekFirst()}</td>
- *    <td>{@link #getLast getLast()}</td>
- *    <td>{@link #peekLast peekLast()}</td>
- *  </tr>
+ * <tr>
+ * <td></td>
+ * <td ALIGN=CENTER COLSPAN = 2> <b>First Element (Head)</b></td>
+ * <td ALIGN=CENTER COLSPAN = 2> <b>Last Element (Tail)</b></td>
+ * </tr>
+ * <tr>
+ * <td></td>
+ * <td ALIGN=CENTER><em>Throws exception</em></td>
+ * <td ALIGN=CENTER><em>Special value</em></td>
+ * <td ALIGN=CENTER><em>Throws exception</em></td>
+ * <td ALIGN=CENTER><em>Special value</em></td>
+ * </tr>
+ * <tr>
+ * <td><b>Insert</b></td>
+ * <td>{@link #addFirst addFirst(e)}</td>
+ * <td>{@link #offerFirst offerFirst(e)}</td>
+ * <td>{@link #addLast addLast(e)}</td>
+ * <td>{@link #offerLast offerLast(e)}</td>
+ * </tr>
+ * <tr>
+ * <td><b>Remove</b></td>
+ * <td>{@link #removeFirst removeFirst()}</td>
+ * <td>{@link #pollFirst pollFirst()}</td>
+ * <td>{@link #removeLast removeLast()}</td>
+ * <td>{@link #pollLast pollLast()}</td>
+ * </tr>
+ * <tr>
+ * <td><b>Examine</b></td>
+ * <td>{@link #getFirst getFirst()}</td>
+ * <td>{@link #peekFirst peekFirst()}</td>
+ * <td>{@link #getLast getLast()}</td>
+ * <td>{@link #peekLast peekLast()}</td>
+ * </tr>
  * </table>
  *
  * <p>This interface extends the {@link Queue} interface.  When a deque is
@@ -79,34 +79,34 @@ import java.util.Stack;
  *
  * <p>
  * <table BORDER CELLPADDING=3 CELLSPACING=1>
- *  <tr>
- *    <td ALIGN=CENTER> <b><tt>Queue</tt> Method</b></td>
- *    <td ALIGN=CENTER> <b>Equivalent <tt>Deque</tt> Method</b></td>
- *  </tr>
- *  <tr>
- *    <td>{@link java.util.Queue#add add(e)}</td>
- *    <td>{@link #addLast addLast(e)}</td>
- *  </tr>
- *  <tr>
- *    <td>{@link java.util.Queue#offer offer(e)}</td>
- *    <td>{@link #offerLast offerLast(e)}</td>
- *  </tr>
- *  <tr>
- *    <td>{@link java.util.Queue#remove remove()}</td>
- *    <td>{@link #removeFirst removeFirst()}</td>
- *  </tr>
- *  <tr>
- *    <td>{@link java.util.Queue#poll poll()}</td>
- *    <td>{@link #pollFirst pollFirst()}</td>
- *  </tr>
- *  <tr>
- *    <td>{@link java.util.Queue#element element()}</td>
- *    <td>{@link #getFirst getFirst()}</td>
- *  </tr>
- *  <tr>
- *    <td>{@link java.util.Queue#peek peek()}</td>
- *    <td>{@link #peek peekFirst()}</td>
- *  </tr>
+ * <tr>
+ * <td ALIGN=CENTER> <b><tt>Queue</tt> Method</b></td>
+ * <td ALIGN=CENTER> <b>Equivalent <tt>Deque</tt> Method</b></td>
+ * </tr>
+ * <tr>
+ * <td>{@link java.util.Queue#add add(e)}</td>
+ * <td>{@link #addLast addLast(e)}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link java.util.Queue#offer offer(e)}</td>
+ * <td>{@link #offerLast offerLast(e)}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link java.util.Queue#remove remove()}</td>
+ * <td>{@link #removeFirst removeFirst()}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link java.util.Queue#poll poll()}</td>
+ * <td>{@link #pollFirst pollFirst()}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link java.util.Queue#element element()}</td>
+ * <td>{@link #getFirst getFirst()}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link java.util.Queue#peek peek()}</td>
+ * <td>{@link #peek peekFirst()}</td>
+ * </tr>
  * </table>
  *
  * <p>Deques can also be used as LIFO (Last-In-First-Out) stacks.  This
@@ -117,22 +117,22 @@ import java.util.Stack;
  *
  * <p>
  * <table BORDER CELLPADDING=3 CELLSPACING=1>
- *  <tr>
- *    <td ALIGN=CENTER> <b>Stack Method</b></td>
- *    <td ALIGN=CENTER> <b>Equivalent <tt>Deque</tt> Method</b></td>
- *  </tr>
- *  <tr>
- *    <td>{@link #push push(e)}</td>
- *    <td>{@link #addFirst addFirst(e)}</td>
- *  </tr>
- *  <tr>
- *    <td>{@link #pop pop()}</td>
- *    <td>{@link #removeFirst removeFirst()}</td>
- *  </tr>
- *  <tr>
- *    <td>{@link #peek peek()}</td>
- *    <td>{@link #peekFirst peekFirst()}</td>
- *  </tr>
+ * <tr>
+ * <td ALIGN=CENTER> <b>Stack Method</b></td>
+ * <td ALIGN=CENTER> <b>Equivalent <tt>Deque</tt> Method</b></td>
+ * </tr>
+ * <tr>
+ * <td>{@link #push push(e)}</td>
+ * <td>{@link #addFirst addFirst(e)}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #pop pop()}</td>
+ * <td>{@link #removeFirst removeFirst()}</td>
+ * </tr>
+ * <tr>
+ * <td>{@link #peek peek()}</td>
+ * <td>{@link #peekFirst peekFirst()}</td>
+ * </tr>
  * </table>
  *
  * <p>Note that the {@link #peek peek} method works equally well when
@@ -159,10 +159,10 @@ import java.util.Stack;
  * methods, but instead inherit the identity-based versions from class
  * <tt>Object</tt>.
  *
+ * @param <E> the type of elements held in this collection
  * @author Doug Lea
  * @author Josh Bloch
- * @since  1.6
- * @param <E> the type of elements held in this collection
+ * @since 1.6
  */
 
 public interface Deque<E> extends Queue<E> {
@@ -173,14 +173,14 @@ public interface Deque<E> extends Queue<E> {
      * use method {@link #offerFirst}.
      *
      * @param e the element to add
-     * @throws IllegalStateException if the element cannot be added at this
-     *         time due to capacity restrictions
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this deque
-     * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements
+     * @throws IllegalStateException    if the element cannot be added at this
+     *                                  time due to capacity restrictions
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this deque
+     * @throws NullPointerException     if the specified element is null and this
+     *                                  deque does not permit null elements
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this deque
+     *                                  element prevents it from being added to this deque
      */
     void addFirst(E e);
 
@@ -193,14 +193,14 @@ public interface Deque<E> extends Queue<E> {
      * <p>This method is equivalent to {@link #add}.
      *
      * @param e the element to add
-     * @throws IllegalStateException if the element cannot be added at this
-     *         time due to capacity restrictions
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this deque
-     * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements
+     * @throws IllegalStateException    if the element cannot be added at this
+     *                                  time due to capacity restrictions
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this deque
+     * @throws NullPointerException     if the specified element is null and this
+     *                                  deque does not permit null elements
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this deque
+     *                                  element prevents it from being added to this deque
      */
     void addLast(E e);
 
@@ -212,13 +212,13 @@ public interface Deque<E> extends Queue<E> {
      *
      * @param e the element to add
      * @return <tt>true</tt> if the element was added to this deque, else
-     *         <tt>false</tt>
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this deque
-     * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements
+     * <tt>false</tt>
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this deque
+     * @throws NullPointerException     if the specified element is null and this
+     *                                  deque does not permit null elements
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this deque
+     *                                  element prevents it from being added to this deque
      */
     boolean offerFirst(E e);
 
@@ -230,13 +230,13 @@ public interface Deque<E> extends Queue<E> {
      *
      * @param e the element to add
      * @return <tt>true</tt> if the element was added to this deque, else
-     *         <tt>false</tt>
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this deque
-     * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements
+     * <tt>false</tt>
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this deque
+     * @throws NullPointerException     if the specified element is null and this
+     *                                  deque does not permit null elements
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this deque
+     *                                  element prevents it from being added to this deque
      */
     boolean offerLast(E e);
 
@@ -278,7 +278,7 @@ public interface Deque<E> extends Queue<E> {
 
     /**
      * Retrieves, but does not remove, the first element of this deque.
-     *
+     * <p>
      * This method differs from {@link #peekFirst peekFirst} only in that it
      * throws an exception if this deque is empty.
      *
@@ -324,10 +324,10 @@ public interface Deque<E> extends Queue<E> {
      *
      * @param o element to be removed from this deque, if present
      * @return <tt>true</tt> if an element was removed as a result of this call
-     * @throws ClassCastException if the class of the specified element
-     *         is incompatible with this deque (optional)
+     * @throws ClassCastException   if the class of the specified element
+     *                              is incompatible with this deque (optional)
      * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements (optional)
+     *                              deque does not permit null elements (optional)
      */
     boolean removeFirstOccurrence(Object o);
 
@@ -342,10 +342,10 @@ public interface Deque<E> extends Queue<E> {
      *
      * @param o element to be removed from this deque, if present
      * @return <tt>true</tt> if an element was removed as a result of this call
-     * @throws ClassCastException if the class of the specified element
-     *         is incompatible with this deque (optional)
+     * @throws ClassCastException   if the class of the specified element
+     *                              is incompatible with this deque (optional)
      * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements (optional)
+     *                              deque does not permit null elements (optional)
      */
     boolean removeLastOccurrence(Object o);
 
@@ -364,14 +364,14 @@ public interface Deque<E> extends Queue<E> {
      *
      * @param e the element to add
      * @return <tt>true</tt> (as specified by {@link Collection#add})
-     * @throws IllegalStateException if the element cannot be added at this
-     *         time due to capacity restrictions
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this deque
-     * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements
+     * @throws IllegalStateException    if the element cannot be added at this
+     *                                  time due to capacity restrictions
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this deque
+     * @throws NullPointerException     if the specified element is null and this
+     *                                  deque does not permit null elements
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this deque
+     *                                  element prevents it from being added to this deque
      */
     boolean add(E e);
 
@@ -388,13 +388,13 @@ public interface Deque<E> extends Queue<E> {
      *
      * @param e the element to add
      * @return <tt>true</tt> if the element was added to this deque, else
-     *         <tt>false</tt>
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this deque
-     * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements
+     * <tt>false</tt>
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this deque
+     * @throws NullPointerException     if the specified element is null and this
+     *                                  deque does not permit null elements
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this deque
+     *                                  element prevents it from being added to this deque
      */
     boolean offer(E e);
 
@@ -419,7 +419,7 @@ public interface Deque<E> extends Queue<E> {
      * <p>This method is equivalent to {@link #pollFirst()}.
      *
      * @return the first element of this deque, or <tt>null</tt> if
-     *         this deque is empty
+     * this deque is empty
      */
     E poll();
 
@@ -444,7 +444,7 @@ public interface Deque<E> extends Queue<E> {
      * <p>This method is equivalent to {@link #peekFirst()}.
      *
      * @return the head of the queue represented by this deque, or
-     *         <tt>null</tt> if this deque is empty
+     * <tt>null</tt> if this deque is empty
      */
     E peek();
 
@@ -461,14 +461,14 @@ public interface Deque<E> extends Queue<E> {
      * <p>This method is equivalent to {@link #addFirst}.
      *
      * @param e the element to push
-     * @throws IllegalStateException if the element cannot be added at this
-     *         time due to capacity restrictions
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this deque
-     * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements
+     * @throws IllegalStateException    if the element cannot be added at this
+     *                                  time due to capacity restrictions
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this deque
+     * @throws NullPointerException     if the specified element is null and this
+     *                                  deque does not permit null elements
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this deque
+     *                                  element prevents it from being added to this deque
      */
     void push(E e);
 
@@ -479,7 +479,7 @@ public interface Deque<E> extends Queue<E> {
      * <p>This method is equivalent to {@link #removeFirst()}.
      *
      * @return the element at the front of this deque (which is the top
-     *         of the stack represented by this deque)
+     * of the stack represented by this deque)
      * @throws NoSuchElementException if this deque is empty
      */
     E pop();
@@ -500,10 +500,10 @@ public interface Deque<E> extends Queue<E> {
      *
      * @param o element to be removed from this deque, if present
      * @return <tt>true</tt> if an element was removed as a result of this call
-     * @throws ClassCastException if the class of the specified element
-     *         is incompatible with this deque (optional)
+     * @throws ClassCastException   if the class of the specified element
+     *                              is incompatible with this deque (optional)
      * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements (optional)
+     *                              deque does not permit null elements (optional)
      */
     boolean remove(Object o);
 
@@ -515,10 +515,10 @@ public interface Deque<E> extends Queue<E> {
      *
      * @param o element whose presence in this deque is to be tested
      * @return <tt>true</tt> if this deque contains the specified element
-     * @throws ClassCastException if the type of the specified element
-     *         is incompatible with this deque (optional)
+     * @throws ClassCastException   if the type of the specified element
+     *                              is incompatible with this deque (optional)
      * @throws NullPointerException if the specified element is null and this
-     *         deque does not permit null elements (optional)
+     *                              deque does not permit null elements (optional)
      */
     boolean contains(Object o);
 
@@ -527,7 +527,7 @@ public interface Deque<E> extends Queue<E> {
      *
      * @return the number of elements in this deque
      */
-    public int size();
+    int size();
 
     /**
      * Returns an iterator over the elements in this deque in proper sequence.

@@ -15,65 +15,24 @@
  */
 package com.android.gallery3d.ui;
 
+import android.content.Context;
 import android.content.DialogInterface;
-import com.chanapps.four.gallery3d.R;
+import android.view.View.MeasureSpec;
+
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.ui.DetailsAddressResolver.AddressResolvingListener;
-
-import android.content.Context;
-import android.view.View.MeasureSpec;
+import com.chanapps.four.gallery3d.R;
 
 public class DetailsHelper {
     private static DetailsAddressResolver sAddressResolver;
     private DetailsViewContainer mContainer;
 
-    public interface DetailsSource {
-        public int size();
-        public int getIndex();
-        public int findIndex(int indexHint);
-        public MediaDetails getDetails();
-    }
-
-    public interface CloseListener {
-        public void onClose();
-    }
-
-    public interface DetailsViewContainer {
-        public void reloadDetails(int indexHint);
-        public void setCloseListener(CloseListener listener);
-        public void setClickListener(int stringId, DialogInterface.OnClickListener listener);
-        public void show();
-        public void hide();
-    }
-
     public DetailsHelper(GalleryActivity activity, GLView rootPane, DetailsSource source) {
         mContainer = new DialogDetailsView(activity, source);
     }
 
-    public void layout(int left, int top, int right, int bottom) {
-        if (mContainer instanceof GLView) {
-            GLView view = (GLView) mContainer;
-            view.measure(MeasureSpec.UNSPECIFIED,
-                    MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.AT_MOST));
-            view.layout(0, top, view.getMeasuredWidth(), top + view.getMeasuredHeight());
-        }
-    }
-
-    public void reloadDetails(int indexHint) {
-        mContainer.reloadDetails(indexHint);
-    }
-
-    public void setClickListener(int stringId, DialogInterface.OnClickListener listener) {
-        mContainer.setClickListener(stringId, listener);
-    }
-
-    public void setCloseListener(CloseListener listener) {
-        mContainer.setCloseListener(listener);
-    }
-
-    public static String resolveAddress(GalleryActivity activity, double[] latlng,
-            AddressResolvingListener listener) {
+    public static String resolveAddress(GalleryActivity activity, double[] latlng, AddressResolvingListener listener) {
         if (sAddressResolver == null) {
             sAddressResolver = new DetailsAddressResolver(activity);
         } else {
@@ -84,14 +43,6 @@ public class DetailsHelper {
 
     public static void pause() {
         if (sAddressResolver != null) sAddressResolver.cancel();
-    }
-
-    public void show() {
-        mContainer.show();
-    }
-
-    public void hide() {
-        mContainer.hide();
     }
 
     public static String getDetailsName(Context context, int key) {
@@ -137,6 +88,60 @@ public class DetailsHelper {
             default:
                 return "Unknown key" + key;
         }
+    }
+
+    public void layout(int left, int top, int right, int bottom) {
+        if (mContainer instanceof GLView) {
+            GLView view = (GLView) mContainer;
+            view.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.AT_MOST));
+            view.layout(0, top, view.getMeasuredWidth(), top + view.getMeasuredHeight());
+        }
+    }
+
+    public void reloadDetails(int indexHint) {
+        mContainer.reloadDetails(indexHint);
+    }
+
+    public void setClickListener(int stringId, DialogInterface.OnClickListener listener) {
+        mContainer.setClickListener(stringId, listener);
+    }
+
+    public void setCloseListener(CloseListener listener) {
+        mContainer.setCloseListener(listener);
+    }
+
+    public void show() {
+        mContainer.show();
+    }
+
+    public void hide() {
+        mContainer.hide();
+    }
+
+    public interface DetailsSource {
+        int size();
+
+        int getIndex();
+
+        int findIndex(int indexHint);
+
+        MediaDetails getDetails();
+    }
+
+    public interface CloseListener {
+        void onClose();
+    }
+
+    public interface DetailsViewContainer {
+        void reloadDetails(int indexHint);
+
+        void setCloseListener(CloseListener listener);
+
+        void setClickListener(int stringId, DialogInterface.OnClickListener listener);
+
+        void show();
+
+        void hide();
     }
 }
 

@@ -1,4 +1,5 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
 
     <!-- titles -->
     <string name="thread_activity">Fir de discuție</string>
@@ -335,7 +336,6 @@
     <string name="pref_theme_light_value">0</string>
     <string name="pref_theme_dark_value">1</string>
     <string name="pref_theme_auto_value">2</string>
-    <string name="pref_theme_default_value">@string/pref_theme_light_value</string>
     <string name="pref_autoload_images_title">Autoload Thread Images</string>
     <string name="pref_autoload_images_summary">Never, always, or auto based on connection speed</string>
     <string name="pref_autoload_images_never">Never</string>
@@ -552,7 +552,7 @@
         ]]>
     </string>
 
-<string name="board_3_rules">
+    <string name="board_3_rules">
 <![CDATA[
 <h3>/3/ - 3DCG</h3>
 <p>Images and discussion should relate to 3D modeling and imagery.</p>
@@ -561,7 +561,7 @@
 </string>
 
 
-<string name="board_a_rules">
+    <string name="board_a_rules">
 <![CDATA[
 <h3>/a/ - Anime &amp; Manga</h3>
 <p>1. All images and resulting discussion should pertain to anime or manga. For long-term series discussion, please refer to the <a href="http://dis.4chan.org/anime/">http://dis.4chan.org/anime/</a> board.</p>
@@ -574,7 +574,7 @@
 </string>
 
 
-<string name="board_adv_rules">
+    <string name="board_adv_rules">
 <![CDATA[
 <h3>/adv/ - Advice</h3>
 
@@ -587,7 +587,7 @@
 </string>
 
 
-<string name="board_an_rules">
+    <string name="board_an_rules">
 <![CDATA[
 <h3>/an/ - Animals &amp; Nature</h3>
 
@@ -598,7 +598,7 @@
 </string>
 
 
-<string name="board_asp_rules">
+    <string name="board_asp_rules">
 <![CDATA[
 <h3>/asp/ - Alternative Sports</h3>
 <p>1. This board is for discussion of sports other than the major professional sports. This includes topics such as skydiving, surfing, skateboarding, rock-climing, bungee-jumping, BMX, wrestling, paintball and other "extreme" sports.</p>
@@ -607,7 +607,7 @@
 </string>
 
 
-<string name="board_b_rules">
+    <string name="board_b_rules">
 <![CDATA[
 <h3>/b/ - Random</h3>
 
@@ -620,7 +620,7 @@
 </string>
 
 
-<string name="board_c_rules">
+    <string name="board_c_rules">
 <![CDATA[
 <h3>/c/ - Anime/Cute</h3>
 
@@ -632,7 +632,7 @@
 </string>
 
 
-<string name="board_cgl_rules">
+    <string name="board_cgl_rules">
 <![CDATA[
 <h3>/cgl/ - Cosplay &amp; EGL</h3>
 
@@ -646,7 +646,7 @@
 </string>
 
 
-<string name="board_ck_rules">
+    <string name="board_ck_rules">
 <![CDATA[
 <h3>/ck/ - Food &amp; Cooking</h3>
 
@@ -657,7 +657,7 @@
 </string>
 
 
-<string name="board_cm_rules">
+    <string name="board_cm_rules">
 <![CDATA[
 <h3>/cm/ - Cute/Male</h3>
 
@@ -670,7 +670,7 @@
 </string>
 
 
-<string name="board_co_rules">
+    <string name="board_co_rules">
 <![CDATA[
 <h3>/co/ - Comics &amp; Cartoons</h3>
 
@@ -681,7 +681,7 @@
 </string>
 
 
-<string name="board_d_rules">
+    <string name="board_d_rules">
 <![CDATA[
 <h3>/d/ - Hentai/Alternative</h3>
 
@@ -692,7 +692,7 @@
 </string>
 
 
-<string name="board_diy_rules">
+    <string name="board_diy_rules">
 <![CDATA[
 <h3>/diy/ - Do-It-Yourself</h3>
 
@@ -703,7 +703,7 @@
 </string>
 
 
-<string name="board_e_rules">
+    <string name="board_e_rules">
 <![CDATA[
 <h3>/e/ - Ecchi</h3>
 
@@ -714,7 +714,7 @@
 </string>
 
 
-<string name="board_f_rules">
+    <string name="board_f_rules">
 <![CDATA[
 <h3>/f/ - Flash</h3>
 
@@ -727,7 +727,7 @@
 </string>
 
 
-<string name="board_fa_rules">
+    <string name="board_fa_rules">
 <![CDATA[
 <h3>/fa/ - Fashion</h3>
 
@@ -737,7 +737,7 @@
 </string>
 
 
-<string name="board_fit_rules">
+    <string name="board_fit_rules">
 <![CDATA[
 <h3>/fit/ - Fitness</h3>
 
@@ -748,7 +748,7 @@
 </string>
 
 
-<string name="board_g_rules">
+    <string name="board_g_rules">
 <![CDATA[
 <h3>/g/ - Technology</h3>
 
@@ -761,7 +761,7 @@
 </string>
 
 
-<string name="board_gd_rules">
+    <string name="board_gd_rules">
 <![CDATA[
 <h3>/gd/ - Graphic Design</h3>
 <p>1. This board is for the discussion of graphic design software and computer-aided graphic design techniques (ie. "Photoshopping").</p>
@@ -770,7 +770,7 @@
 </string>
 
 
-<string name="board_gif_rules">
+    <string name="board_gif_rules">
 <![CDATA[
 <h3>/gif/ - Animated GIF</h3>
 
@@ -780,7 +780,7 @@
 </string>
 
 
-<string name="board_h_rules">
+    <string name="board_h_rules">
 <![CDATA[
 <h3>/h/ - Hentai</h3>
 
@@ -794,7 +794,7 @@
 </string>
 
 
-<string name="board_hc_rules">
+    <string name="board_hc_rules">
 <![CDATA[
 <h3>/hc/ - Hardcore</h3>
 
@@ -807,7 +807,7 @@
 </string>
 
 
-<string name="board_hm_rules">
+    <string name="board_hm_rules">
 <![CDATA[
 <h3>/hm/ - Handsome Men</h3>
 
@@ -820,7 +820,7 @@
 </string>
 
 
-<string name="board_hr_rules">
+    <string name="board_hr_rules">
 <![CDATA[
 <h3>/hr/ - High Resolution</h3>
 
@@ -833,7 +833,7 @@
 </string>
 
 
-<string name="board_i_rules">
+    <string name="board_i_rules">
 <![CDATA[
 <h3>/i/ - Oekaki</h3>
 
@@ -843,7 +843,7 @@
 </string>
 
 
-<string name="board_ic_rules">
+    <string name="board_ic_rules">
 <![CDATA[
 <h3>/ic/ - Artwork/Critique</h3>
 
@@ -856,7 +856,7 @@
 </string>
 
 
-<string name="board_int_rules">
+    <string name="board_int_rules">
 <![CDATA[
 <h3>/int/ - International</h3>
 
@@ -867,7 +867,7 @@
 </string>
 
 
-<string name="board_jp_rules">
+    <string name="board_jp_rules">
 <![CDATA[
 <h3>/jp/ - Otaku Culture</h3>
 
@@ -878,7 +878,7 @@
 </string>
 
 
-<string name="board_k_rules">
+    <string name="board_k_rules">
 <![CDATA[
 <h3>/k/ - Weapons</h3>
 
@@ -888,7 +888,7 @@
 </string>
 
 
-<string name="board_lgbt_rules">
+    <string name="board_lgbt_rules">
 <![CDATA[
 <h3>/lgbt/ - LGBT</h3>
 <p>1. This board is for the respectful discussion of LGBT lifestyle and the LGBT community.</p>
@@ -898,7 +898,7 @@
 </string>
 
 
-<string name="board_lit_rules">
+    <string name="board_lit_rules">
 <![CDATA[
 <h3>/lit/ - Literature</h3>
 
@@ -908,7 +908,7 @@
 </string>
 
 
-<string name="board_m_rules">
+    <string name="board_m_rules">
 <![CDATA[
 <h3>/m/ - Mecha</h3>
 
@@ -918,7 +918,7 @@
 </string>
 
 
-<string name="board_mlp_rules">
+    <string name="board_mlp_rules">
 <![CDATA[
 <h3>/mlp/ - Pony</h3>
 
@@ -936,7 +936,7 @@
 </string>
 
 
-<string name="board_mu_rules">
+    <string name="board_mu_rules">
 <![CDATA[
 <h3>/mu/ - Music</h3>
 
@@ -947,7 +947,7 @@
 </string>
 
 
-<string name="board_n_rules">
+    <string name="board_n_rules">
 <![CDATA[
 <h3>/n/ - Transportation</h3>
 
@@ -959,7 +959,7 @@
 </string>
 
 
-<string name="board_o_rules">
+    <string name="board_o_rules">
 <![CDATA[
 <h3>/o/ - Auto</h3>
 
@@ -970,7 +970,7 @@
 </string>
 
 
-<string name="board_out_rules">
+    <string name="board_out_rules">
 <![CDATA[
 <h3>/out/ - Outdoors</h3>
 <p>1. This board is for discussions about hiking, camping, geocaching, orienteering, farming, gardening, etc.</p>
@@ -979,7 +979,7 @@
 </string>
 
 
-<string name="board_p_rules">
+    <string name="board_p_rules">
 <![CDATA[
 <h3>/p/ - Photography</h3>
 
@@ -993,7 +993,7 @@
 </string>
 
 
-<string name="board_po_rules">
+    <string name="board_po_rules">
 <![CDATA[
 <h3>/po/ - Papercraft &amp; Origami</h3>
 
@@ -1004,7 +1004,7 @@
 </string>
 
 
-<string name="board_pol_rules">
+    <string name="board_pol_rules">
 <![CDATA[
 <h3>/pol/ - Politically Incorrect</h3>
 
@@ -1015,7 +1015,7 @@
 </string>
 
 
-<string name="board_q_rules">
+    <string name="board_q_rules">
 <![CDATA[
 <h3>/q/ - 4chan Feedback</h3>
 
@@ -1026,7 +1026,7 @@
 </string>
 
 
-<string name="board_r9k_rules">
+    <string name="board_r9k_rules">
 <![CDATA[
 <h3>/r9k/ - ROBOT9001</h3>
 
@@ -1038,7 +1038,7 @@
 </string>
 
 
-<string name="board_r_rules">
+    <string name="board_r_rules">
 <![CDATA[
 <h3>/r/ - Request</h3>
 
@@ -1051,7 +1051,7 @@
 </string>
 
 
-<string name="board_rs_rules">
+    <string name="board_rs_rules">
 <![CDATA[
 <h3>/rs/ - Rapidshares</h3>
 
@@ -1062,7 +1062,7 @@
 </string>
 
 
-<string name="board_s_rules">
+    <string name="board_s_rules">
 <![CDATA[
 <h3>/s/ - Sexy Beautiful Women</h3>
 
@@ -1077,7 +1077,7 @@
 </string>
 
 
-<string name="board_sci_rules">
+    <string name="board_sci_rules">
 <![CDATA[
 <h3>/sci/ - Science &amp; Math</h3>
 
@@ -1089,7 +1089,7 @@
 </string>
 
 
-<string name="board_soc_rules">
+    <string name="board_soc_rules">
 <![CDATA[
 <h3>/soc/ - Cams &amp; Meetups</h3>
 
@@ -1106,7 +1106,7 @@
 </string>
 
 
-<string name="board_sp_rules">
+    <string name="board_sp_rules">
 <![CDATA[
 <h3>/sp/ - Sports</h3>
 
@@ -1117,7 +1117,7 @@
 </string>
 
 
-<string name="board_t_rules">
+    <string name="board_t_rules">
 <![CDATA[
 <h3>/t/ - Torrents</h3>
 
@@ -1130,7 +1130,7 @@
 </string>
 
 
-<string name="board_tg_rules">
+    <string name="board_tg_rules">
 <![CDATA[
 <h3>/tg/ - Traditional Games</h3>
 
@@ -1140,7 +1140,7 @@
 </string>
 
 
-<string name="board_toy_rules">
+    <string name="board_toy_rules">
 <![CDATA[
 <h3>/toy/ - Toys</h3>
 
@@ -1152,7 +1152,7 @@
 </string>
 
 
-<string name="board_trv_rules">
+    <string name="board_trv_rules">
 <![CDATA[
 <h3>/trv/ - Travel</h3>
 
@@ -1164,7 +1164,7 @@
 </string>
 
 
-<string name="board_tv_rules">
+    <string name="board_tv_rules">
 <![CDATA[
 <h3>/tv/ - Television &amp; Film</h3>
 
@@ -1175,7 +1175,7 @@
 </string>
 
 
-<string name="board_u_rules">
+    <string name="board_u_rules">
 <![CDATA[
 <h3>/u/ - Yuri</h3>
 
@@ -1185,7 +1185,7 @@
 </string>
 
 
-<string name="board_v_rules">
+    <string name="board_v_rules">
 <![CDATA[
 <h3>/v/ - Video Games</h3>
 
@@ -1200,7 +1200,7 @@
 </string>
 
 
-<string name="board_vg_rules">
+    <string name="board_vg_rules">
 <![CDATA[
 <h3>/vg/ - Video Game Generals</h3>
 
@@ -1211,7 +1211,7 @@
 </string>
 
 
-<string name="board_vp_rules">
+    <string name="board_vp_rules">
 <![CDATA[
 <h3>/vp/ - Pokémon</h3>
 
@@ -1224,7 +1224,7 @@
 </string>
 
 
-<string name="board_vr_rules">
+    <string name="board_vr_rules">
 <![CDATA[
 <h3>/vr/ - Retro Games</h3>
 <p>1. This board is for the discussion of classic, or "retro" games. Retro gaming means consoles, computer games, arcade games (including pinball) and any other forms of video games circa 2001 and earlier. Sixth generation and later consoles are not considered retro.</p>
@@ -1232,7 +1232,7 @@
 </string>
 
 
-<string name="board_w_rules">
+    <string name="board_w_rules">
 <![CDATA[
 <h3>/w/ - Anime/Wallpapers</h3>
 
@@ -1243,7 +1243,7 @@
 </string>
 
 
-<string name="board_wg_rules">
+    <string name="board_wg_rules">
 <![CDATA[
 <h3>/wg/ - Wallpapers/General</h3>
 
@@ -1254,7 +1254,7 @@
 </string>
 
 
-<string name="board_wsg_rules">
+    <string name="board_wsg_rules">
 <![CDATA[
 <h3>/wsg/ - Worksafe GIF</h3>
 
@@ -1264,7 +1264,7 @@
 </string>
 
 
-<string name="board_x_rules">
+    <string name="board_x_rules">
 <![CDATA[
 <h3>/x/ - Paranormal</h3>
 
@@ -1274,7 +1274,7 @@
 </string>
 
 
-<string name="board_y_rules">
+    <string name="board_y_rules">
 <![CDATA[
 <h3>/y/ - Yaoi</h3>
 
@@ -1291,18 +1291,18 @@
     <string name="pref_download_images_per_board">Per board (eg. board_a)</string>
     <string name="pref_download_images_per_thread">Per thread (eg. a_1234567)</string>
 
-<string name="report_post_type_rule">Violare regulă</string>
-<string name="report_post_type_illegal">Conținut ilegal</string>
-<string name="report_post_type_spam">Comercial spam/reclamă</string>
+    <string name="report_post_type_rule">Violare regulă</string>
+    <string name="report_post_type_illegal">Conținut ilegal</string>
+    <string name="report_post_type_spam">Comercial spam/reclamă</string>
 
-<!-- MOVED FROM PLURALS.XML -->
+    <!-- MOVED FROM PLURALS.XML -->
 
-<string name="plurals_thread_activity_udpdated_one">%1$d comentariu nou</string>
-<string name="plurals_thread_actviity_updated_other">%1$d comentarii noi</string>
-<string name="plurals_thread_num_replies_label_one">COMENTARIU</string>
-<string name="plurals_thread_num_replies_label_other">COMENTARII</string>
-<string name="plurals_thread_num_images_label_one">IMAGINE</string>
-<string name="plurals_thread_num_images_label_other">IMAGINI</string>
+    <string name="plurals_thread_activity_udpdated_one">%1$d comentariu nou</string>
+    <string name="plurals_thread_actviity_updated_other">%1$d comentarii noi</string>
+    <string name="plurals_thread_num_replies_label_one">COMENTARIU</string>
+    <string name="plurals_thread_num_replies_label_other">COMENTARII</string>
+    <string name="plurals_thread_num_images_label_one">IMAGINE</string>
+    <string name="plurals_thread_num_images_label_other">IMAGINI</string>
 
     <!-- new strings -->
     <string name="cancel_download_title">Image Download</string>
@@ -1327,8 +1327,8 @@
 
     <string name="pref_hide_last_replies">Hide Last Replies</string>
     <string name="show_hidden_threads">Show Hidden Threads</string>
-	<string name="undo">Undo</string>
-	<string name="undo_all">Undo All</string>
+    <string name="undo">Undo</string>
+    <string name="undo_all">Undo All</string>
     <string name="block_type_id">Id</string>
     <string name="block_type_trip">Tripcode</string>
     <string name="block_type_text">Text</string>

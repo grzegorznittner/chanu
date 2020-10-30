@@ -16,10 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.ui.GLRoot;
-import com.android.gallery3d.ui.GLRootView;
-
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,8 +24,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 
-public class PickerActivity extends AbstractGalleryActivity
-        implements OnClickListener {
+import com.android.gallery3d.ui.GLRoot;
+import com.android.gallery3d.ui.GLRootView;
+import com.chanapps.four.gallery3d.R;
+
+public class PickerActivity extends AbstractGalleryActivity implements OnClickListener {
 
     public static final String KEY_ALBUM_PATH = "album-path";
 

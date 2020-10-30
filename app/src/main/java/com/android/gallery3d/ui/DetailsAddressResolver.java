@@ -31,10 +31,61 @@ import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 
 public class DetailsAddressResolver {
-    private AddressResolvingListener mListener;
     private final GalleryActivity mContext;
-    private Future<Address> mAddressLookupJob;
     private final Handler mHandler;
+    private AddressResolvingListener mListener;
+    private Future<Address> mAddressLookupJob;
+
+    public DetailsAddressResolver(GalleryActivity context) {
+        mContext = context;
+        mHandler = new Handler(Looper.getMainLooper());
+    }
+
+    public String resolveAddress(double[] latlng, AddressResolvingListener listener) {
+        mListener = listener;
+        mAddressLookupJob = mContext.getThreadPool().submit(new AddressLookupJob(latlng), new FutureListener<Address>() {
+            public void onFutureDone(final Future<Address> future) {
+                mAddressLookupJob = null;
+                if (!future.isCancelled()) {
+                    mHandler.post(new Runnable() {
+                        public void run() {
+                            updateLocation(future.get());
+                        }
+                    });
+                }
+            }
+        });
+        return GalleryUtils.formatLatitudeLongitude("(%f,%f)", latlng[0], latlng[1]);
+    }
+
+    private void updateLocation(Address address) {
+        if (address != null) {
+            Context context = mContext.getAndroidContext();
+            String[] parts = {address.getAdminArea(), address.getSubAdminArea(), address.getLocality(), address.getSubLocality(), address.getThoroughfare(), address.getSubThoroughfare(), address.getPremises(), address.getPostalCode(), address.getCountryName()};
+
+            String addressText = "";
+            for (int i = 0; i < parts.length; i++) {
+                if (parts[i] == null || parts[i].isEmpty()) continue;
+                if (!addressText.isEmpty()) {
+                    addressText += ", ";
+                }
+                addressText += parts[i];
+            }
+            String text = String.format("%s : %s", DetailsHelper.getDetailsName(context, MediaDetails.INDEX_LOCATION), addressText);
+            mListener.onAddressAvailable(text);
+        }
+    }
+
+    public void cancel() {
+        if (mAddressLookupJob != null) {
+            mAddressLookupJob.cancel();
+            mAddressLookupJob = null;
+        }
+    }
+
+    public interface AddressResolvingListener {
+        void onAddressAvailable(String address);
+    }
 
     private class AddressLookupJob implements Job<Address> {
         private double[] mLatlng;
@@ -46,70 +97,6 @@ public class DetailsAddressResolver {
         public Address run(JobContext jc) {
             ReverseGeocoder geocoder = new ReverseGeocoder(mContext.getAndroidContext());
             return geocoder.lookupAddress(mLatlng[0], mLatlng[1], true);
-        }
-    }
-
-    public interface AddressResolvingListener {
-        public void onAddressAvailable(String address);
-    }
-
-    public DetailsAddressResolver(GalleryActivity context) {
-        mContext = context;
-        mHandler = new Handler(Looper.getMainLooper());
-    }
-
-    public String resolveAddress(double[] latlng, AddressResolvingListener listener) {
-        mListener = listener;
-        mAddressLookupJob = mContext.getThreadPool().submit(
-                new AddressLookupJob(latlng),
-                new FutureListener<Address>() {
-                    public void onFutureDone(final Future<Address> future) {
-                        mAddressLookupJob = null;
-                        if (!future.isCancelled()) {
-                            mHandler.post(new Runnable() {
-                                public void run() {
-                                    updateLocation(future.get());
-                                }
-                            });
-                        }
-                    }
-                });
-        return GalleryUtils.formatLatitudeLongitude("(%f,%f)", latlng[0], latlng[1]);
-    }
-
-    private void updateLocation(Address address) {
-        if (address != null) {
-            Context context = mContext.getAndroidContext();
-            String parts[] = {
-                address.getAdminArea(),
-                address.getSubAdminArea(),
-                address.getLocality(),
-                address.getSubLocality(),
-                address.getThoroughfare(),
-                address.getSubThoroughfare(),
-                address.getPremises(),
-                address.getPostalCode(),
-                address.getCountryName()
-            };
-
-            String addressText = "";
-            for (int i = 0; i < parts.length; i++) {
-                if (parts[i] == null || parts[i].isEmpty()) continue;
-                if (!addressText.isEmpty()) {
-                    addressText += ", ";
-                }
-                addressText += parts[i];
-            }
-            String text = String.format("%s : %s", DetailsHelper.getDetailsName(
-                    context, MediaDetails.INDEX_LOCATION), addressText);
-            mListener.onAddressAvailable(text);
-        }
-    }
-
-    public void cancel() {
-        if (mAddressLookupJob != null) {
-            mAddressLookupJob.cancel();
-            mAddressLookupJob = null;
         }
     }
 }

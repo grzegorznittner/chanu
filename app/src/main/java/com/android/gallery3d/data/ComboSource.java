@@ -43,12 +43,10 @@ class ComboSource extends MediaSource {
         DataManager dataManager = mApplication.getDataManager();
         switch (mMatcher.match(path)) {
             case COMBO_ALBUMSET:
-                return new ComboAlbumSet(path, mApplication,
-                        dataManager.getMediaSetsFromString(segments[1]));
+                return new ComboAlbumSet(path, mApplication, dataManager.getMediaSetsFromString(segments[1]));
 
             case COMBO_ALBUM:
-                return new ComboAlbum(path,
-                        dataManager.getMediaSetsFromString(segments[2]), segments[1]);
+                return new ComboAlbum(path, dataManager.getMediaSetsFromString(segments[2]), segments[1]);
         }
         return null;
     }

@@ -19,8 +19,8 @@ package com.android.gallery3d.ui;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Message;
+import android.util.Log;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaItem;
@@ -32,52 +32,30 @@ import com.android.gallery3d.util.FutureListener;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.MediaSetUtils;
 import com.android.gallery3d.util.ThreadPool;
+import com.chanapps.four.gallery3d.R;
 
 public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
     private static final String TAG = "GallerySlidingWindow";
     private static final int MSG_LOAD_BITMAP_DONE = 0;
     private static final int PLACEHOLDER_COLOR = 0xFF222222;
-
-    public static interface Listener {
-        public void onSizeChanged(int size);
-        public void onContentInvalidated();
-        public void onWindowContentChanged(
-                int slot, AlbumSetItem old, AlbumSetItem update);
-    }
-
     private final AlbumSetView.Model mSource;
-    private int mSize;
     private final AlbumSetView.LabelSpec mLabelSpec;
-
-    private int mContentStart = 0;
-    private int mContentEnd = 0;
-
-    private int mActiveStart = 0;
-    private int mActiveEnd = 0;
-
-    private Listener mListener;
-
-    private final MyAlbumSetItem mData[];
-    private SelectionDrawer mSelectionDrawer;
+    private final MyAlbumSetItem[] mData;
     private final ColorTexture mWaitLoadingTexture;
-
     private final SynchronizedHandler mHandler;
     private final ThreadPool mThreadPool;
-
-    private int mActiveRequestCount = 0;
     private final String mLoadingLabel;
+    private int mSize;
+    private int mContentStart = 0;
+    private int mContentEnd = 0;
+    private int mActiveStart = 0;
+    private int mActiveEnd = 0;
+    private Listener mListener;
+    private SelectionDrawer mSelectionDrawer;
+    private int mActiveRequestCount = 0;
     private boolean mIsActive = false;
 
-    private static class MyAlbumSetItem extends AlbumSetItem {
-        public Path setPath;
-        public int sourceType;
-        public int cacheFlag;
-        public int cacheStatus;
-    }
-
-    public AlbumSetSlidingWindow(GalleryActivity activity,
-            AlbumSetView.LabelSpec labelSpec, SelectionDrawer drawer,
-            AlbumSetView.Model source, int cacheSize) {
+    public AlbumSetSlidingWindow(GalleryActivity activity, AlbumSetView.LabelSpec labelSpec, SelectionDrawer drawer, AlbumSetView.Model source, int cacheSize) {
         source.setModelListener(this);
         mLabelSpec = labelSpec;
         mLoadingLabel = activity.getAndroidContext().getString(R.string.loading);
@@ -100,6 +78,46 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
         mThreadPool = activity.getThreadPool();
     }
 
+    private static int identifySourceType(MediaSet set) {
+        if (set == null) {
+            return SelectionDrawer.DATASOURCE_TYPE_NOT_CATEGORIZED;
+        }
+
+        Path path = set.getPath();
+        if (MediaSetUtils.isCameraSource(path)) {
+            return SelectionDrawer.DATASOURCE_TYPE_CAMERA;
+        }
+
+        int type = SelectionDrawer.DATASOURCE_TYPE_NOT_CATEGORIZED;
+        String prefix = path.getPrefix();
+
+        if (prefix.equals("picasa")) {
+            type = SelectionDrawer.DATASOURCE_TYPE_PICASA;
+        } else if (prefix.equals("local") || prefix.equals("merge")) {
+            type = SelectionDrawer.DATASOURCE_TYPE_LOCAL;
+        } else if (prefix.equals("mtp")) {
+            type = SelectionDrawer.DATASOURCE_TYPE_MTP;
+        }
+
+        return type;
+    }
+
+    private static int identifyCacheFlag(MediaSet set) {
+        if (set == null || (set.getSupportedOperations() & MediaSet.SUPPORT_CACHE) == 0) {
+            return MediaSet.CACHE_FLAG_NO;
+        }
+
+        return set.getCacheFlag();
+    }
+
+    private static int identifyCacheStatus(MediaSet set) {
+        if (set == null || (set.getSupportedOperations() & MediaSet.SUPPORT_CACHE) == 0) {
+            return MediaSet.CACHE_STATUS_NOT_CACHED;
+        }
+
+        return set.getCacheStatus();
+    }
+
     public void setSelectionDrawer(SelectionDrawer drawer) {
         mSelectionDrawer = drawer;
     }
@@ -109,9 +127,7 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
     }
 
     public AlbumSetItem get(int slotIndex) {
-        Utils.assertTrue(isActiveSlot(slotIndex),
-                "invalid slot: %s outsides (%s, %s)",
-                slotIndex, mActiveStart, mActiveEnd);
+        Utils.assertTrue(isActiveSlot(slotIndex), "invalid slot: %s outsides (%s, %s)", slotIndex, mActiveStart, mActiveEnd);
         return mData[slotIndex % mData.length];
     }
 
@@ -155,18 +171,14 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
     }
 
     public void setActiveWindow(int start, int end) {
-        Utils.assertTrue(
-                start <= end && end - start <= mData.length && end <= mSize,
-                "start = %s, end = %s, length = %s, size = %s",
-                start, end, mData.length, mSize);
+        Utils.assertTrue(start <= end && end - start <= mData.length && end <= mSize, "start = %s, end = %s, length = %s, size = %s", start, end, mData.length, mSize);
 
-        AlbumSetItem data[] = mData;
+        AlbumSetItem[] data = mData;
 
         mActiveStart = start;
         mActiveEnd = end;
 
-        int contentStart = Utils.clamp((start + end) / 2 - data.length / 2,
-                0, Math.max(0, mSize - data.length));
+        int contentStart = Utils.clamp((start + end) / 2 - data.length / 2, 0, Math.max(0, mSize - data.length));
         int contentEnd = Math.min(contentStart + data.length, mSize);
         setContentWindow(contentStart, contentEnd);
         if (mIsActive) updateAllImageRequests();
@@ -178,18 +190,16 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
     //                   |<-  active  ->|
     //         |<-------- cached range ----------->|
     private void requestNonactiveImages() {
-        int range = Math.max(
-                mContentEnd - mActiveEnd, mActiveStart - mContentStart);
-        for (int i = 0 ;i < range; ++i) {
+        int range = Math.max(mContentEnd - mActiveEnd, mActiveStart - mContentStart);
+        for (int i = 0; i < range; ++i) {
             requestImagesInSlot(mActiveEnd + i);
             requestImagesInSlot(mActiveStart - 1 - i);
         }
     }
 
     private void cancelNonactiveImages() {
-        int range = Math.max(
-                mContentEnd - mActiveEnd, mActiveStart - mContentStart);
-        for (int i = 0 ;i < range; ++i) {
+        int range = Math.max(mContentEnd - mActiveEnd, mActiveStart - mContentStart);
+        for (int i = 0; i < range; ++i) {
             cancelImagesInSlot(mActiveEnd + i);
             cancelImagesInSlot(mActiveStart - 1 - i);
         }
@@ -212,7 +222,7 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
     }
 
     private void freeSlotContent(int slotIndex) {
-        AlbumSetItem data[] = mData;
+        AlbumSetItem[] data = mData;
         int index = slotIndex % data.length;
         AlbumSetItem original = data[index];
         if (original != null) {
@@ -224,9 +234,7 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
     }
 
     private long getMediaSetDataVersion(MediaSet set) {
-        return set == null
-                ? MediaSet.INVALID_DATA_VERSION
-                : set.getDataVersion();
+        return set == null ? MediaSet.INVALID_DATA_VERSION : set.getDataVersion();
     }
 
     private void prepareSlotContent(int slotIndex) {
@@ -263,7 +271,7 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
 
     private void updateSlotContent(final int slotIndex) {
 
-        MyAlbumSetItem data[] = mData;
+        MyAlbumSetItem[] data = mData;
         int pos = slotIndex % data.length;
         MyAlbumSetItem original = data[pos];
 
@@ -294,9 +302,7 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
     private void notifySlotChanged(int slotIndex) {
         // If the updated content is not cached, ignore it
         if (slotIndex < mContentStart || slotIndex >= mContentEnd) {
-            Log.w(TAG, String.format(
-                    "invalid update: %s is outside (%s, %s)",
-                    slotIndex, mContentStart, mContentEnd) );
+            Log.w(TAG, String.format("invalid update: %s is outside (%s, %s)", slotIndex, mContentStart, mContentEnd));
             return;
         }
         updateSlotContent(slotIndex);
@@ -328,15 +334,59 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
         }
     }
 
-    private class GalleryDisplayItem extends AbstractDisplayItem
-            implements FutureListener<Bitmap> {
-        private Future<Bitmap> mFuture;
+    public void onSizeChanged(int size) {
+        if (mIsActive && mSize != size) {
+            mSize = size;
+            if (mListener != null) mListener.onSizeChanged(mSize);
+        }
+    }
+
+    public void onWindowContentChanged(int index) {
+        if (!mIsActive) {
+            // paused, ignore slot changed event
+            return;
+        }
+        notifySlotChanged(index);
+    }
+
+    public void pause() {
+        mIsActive = false;
+        for (int i = mContentStart, n = mContentEnd; i < n; ++i) {
+            freeSlotContent(i);
+        }
+    }
+
+    public void resume() {
+        mIsActive = true;
+        for (int i = mContentStart, n = mContentEnd; i < n; ++i) {
+            prepareSlotContent(i);
+        }
+        updateAllImageRequests();
+    }
+
+    public interface Listener {
+        void onSizeChanged(int size);
+
+        void onContentInvalidated();
+
+        void onWindowContentChanged(int slot, AlbumSetItem old, AlbumSetItem update);
+    }
+
+    private static class MyAlbumSetItem extends AlbumSetItem {
+        public Path setPath;
+        public int sourceType;
+        public int cacheFlag;
+        public int cacheStatus;
+    }
+
+    private class GalleryDisplayItem extends AbstractDisplayItem implements FutureListener<Bitmap> {
         private final int mSlotIndex;
         private final int mCoverIndex;
         private final int mMediaType;
-        private Texture mContent;
         private final long mDataVersion;
         private final boolean mIsPanorama;
+        private Future<Bitmap> mFuture;
+        private Texture mContent;
         private boolean mWaitLoadingDisplayed;
 
         public GalleryDisplayItem(int slotIndex, int coverIndex, MediaItem item) {
@@ -396,19 +446,13 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
                 cacheStatus = set.cacheStatus;
             }
 
-            mSelectionDrawer.draw(canvas, mContent, width, height,
-                    getRotation(), path, sourceType, mMediaType,
-                    mIsPanorama, mLabelSpec.labelBackgroundHeight,
-                    cacheFlag == MediaSet.CACHE_FLAG_FULL,
-                    (cacheFlag == MediaSet.CACHE_FLAG_FULL)
-                    && (cacheStatus != MediaSet.CACHE_STATUS_CACHED_FULL));
+            mSelectionDrawer.draw(canvas, mContent, width, height, getRotation(), path, sourceType, mMediaType, mIsPanorama, mLabelSpec.labelBackgroundHeight, cacheFlag == MediaSet.CACHE_FLAG_FULL, (cacheFlag == MediaSet.CACHE_FLAG_FULL) && (cacheStatus != MediaSet.CACHE_STATUS_CACHED_FULL));
 
             if (mContent == mWaitLoadingTexture) {
                 mWaitLoadingDisplayed = true;
             }
 
-            if ((mContent instanceof FadeInTexture) &&
-                    ((FadeInTexture) mContent).isAnimating()) {
+            if ((mContent instanceof FadeInTexture) && ((FadeInTexture) mContent).isAnimating()) {
                 return RENDER_MORE_FRAME;
             } else {
                 return 0;
@@ -417,8 +461,7 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
 
         @Override
         public void startLoadBitmap() {
-            mFuture = mThreadPool.submit(mMediaItem.requestImage(
-                    MediaItem.TYPE_MICROTHUMBNAIL), this);
+            mFuture = mThreadPool.submit(mMediaItem.requestImage(MediaItem.TYPE_MICROTHUMBNAIL), this);
         }
 
         @Override
@@ -443,58 +486,15 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
         }
     }
 
-    private static int identifySourceType(MediaSet set) {
-        if (set == null) {
-            return SelectionDrawer.DATASOURCE_TYPE_NOT_CATEGORIZED;
-        }
-
-        Path path = set.getPath();
-        if (MediaSetUtils.isCameraSource(path)) {
-            return SelectionDrawer.DATASOURCE_TYPE_CAMERA;
-        }
-
-        int type = SelectionDrawer.DATASOURCE_TYPE_NOT_CATEGORIZED;
-        String prefix = path.getPrefix();
-
-        if (prefix.equals("picasa")) {
-            type = SelectionDrawer.DATASOURCE_TYPE_PICASA;
-        } else if (prefix.equals("local") || prefix.equals("merge")) {
-            type = SelectionDrawer.DATASOURCE_TYPE_LOCAL;
-        } else if (prefix.equals("mtp")) {
-            type = SelectionDrawer.DATASOURCE_TYPE_MTP;
-        }
-
-        return type;
-    }
-
-    private static int identifyCacheFlag(MediaSet set) {
-        if (set == null || (set.getSupportedOperations()
-                & MediaSet.SUPPORT_CACHE) == 0) {
-            return MediaSet.CACHE_FLAG_NO;
-        }
-
-        return set.getCacheFlag();
-    }
-
-    private static int identifyCacheStatus(MediaSet set) {
-        if (set == null || (set.getSupportedOperations()
-                & MediaSet.SUPPORT_CACHE) == 0) {
-            return MediaSet.CACHE_STATUS_NOT_CACHED;
-        }
-
-        return set.getCacheStatus();
-    }
-
     private class LabelDisplayItem extends DisplayItem {
         private static final int FONT_COLOR_TITLE = Color.WHITE;
         private static final int FONT_COLOR_COUNT = 0x80FFFFFF;  // 50% white
-
+        private final int mSlotIndex;
         private StringTexture mTextureTitle;
         private StringTexture mTextureCount;
         private String mTitle;
         private String mCount;
         private int mLastWidth;
-        private final int mSlotIndex;
         private boolean mHasIcon;
 
         public LabelDisplayItem(int slotIndex) {
@@ -509,24 +509,17 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
                 title = Utils.ensureNotNull(set.getName());
                 count = "" + set.getTotalMediaItemCount();
             }
-            if (Utils.equals(title, mTitle)
-                    && Utils.equals(count, mCount)
-                    && Utils.equals(mBoxWidth, mLastWidth)) {
-                    return false;
+            if (Utils.equals(title, mTitle) && Utils.equals(count, mCount) && Utils.equals(mBoxWidth, mLastWidth)) {
+                return false;
             }
             mTitle = title;
             mCount = count;
             mLastWidth = mBoxWidth;
-            mHasIcon = (identifySourceType(set) !=
-                    SelectionDrawer.DATASOURCE_TYPE_NOT_CATEGORIZED);
+            mHasIcon = (identifySourceType(set) != SelectionDrawer.DATASOURCE_TYPE_NOT_CATEGORIZED);
 
             AlbumSetView.LabelSpec s = mLabelSpec;
-            mTextureTitle = StringTexture.newInstance(
-                    title, s.titleFontSize, FONT_COLOR_TITLE,
-                    mBoxWidth - s.leftMargin, false);
-            mTextureCount = StringTexture.newInstance(
-                    count, s.countFontSize, FONT_COLOR_COUNT,
-                    mBoxWidth - s.leftMargin, true);
+            mTextureTitle = StringTexture.newInstance(title, s.titleFontSize, FONT_COLOR_TITLE, mBoxWidth - s.leftMargin, false);
+            mTextureCount = StringTexture.newInstance(count, s.countFontSize, FONT_COLOR_COUNT, mBoxWidth - s.leftMargin, true);
 
             return true;
         }
@@ -552,35 +545,5 @@ public class AlbumSetSlidingWindow implements AlbumSetView.ModelListener {
         public long getIdentity() {
             return System.identityHashCode(this);
         }
-    }
-
-    public void onSizeChanged(int size) {
-        if (mIsActive && mSize != size) {
-            mSize = size;
-            if (mListener != null) mListener.onSizeChanged(mSize);
-        }
-    }
-
-    public void onWindowContentChanged(int index) {
-        if (!mIsActive) {
-            // paused, ignore slot changed event
-            return;
-        }
-        notifySlotChanged(index);
-    }
-
-    public void pause() {
-        mIsActive = false;
-        for (int i = mContentStart, n = mContentEnd; i < n; ++i) {
-            freeSlotContent(i);
-        }
-    }
-
-    public void resume() {
-        mIsActive = true;
-        for (int i = mContentStart, n = mContentEnd; i < n; ++i) {
-            prepareSlotContent(i);
-        }
-        updateAllImageRequests();
     }
 }

@@ -16,6 +16,8 @@
 
 package com.android.gallery3d.data;
 
+import android.util.Log;
+
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.util.Future;
 
@@ -39,18 +41,31 @@ public abstract class MediaSet extends MediaObject {
     public static final int SYNC_RESULT_SUCCESS = 0;
     public static final int SYNC_RESULT_CANCELLED = 1;
     public static final int SYNC_RESULT_ERROR = 2;
+    private static final Future<Integer> FUTURE_STUB = new Future<Integer>() {
+        @Override
+        public void cancel() {
+        }
 
-    /** Listener to be used with requestSync(SyncListener). */
-    public static interface SyncListener {
-        /**
-         * Called when the sync task completed. Completion may be due to normal termination,
-         * an exception, or cancellation.
-         *
-         * @param mediaSet the MediaSet that's done with sync
-         * @param resultCode one of the SYNC_RESULT_* constants
-         */
-        void onSyncDone(MediaSet mediaSet, int resultCode);
-    }
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+
+        @Override
+        public Integer get() {
+            return SYNC_RESULT_SUCCESS;
+        }
+
+        @Override
+        public void waitDone() {
+        }
+    };
+    private WeakHashMap<ContentListener, Object> mListeners = new WeakHashMap<ContentListener, Object>();
 
     public MediaSet(Path path, long version) {
         super(path, version);
@@ -95,10 +110,8 @@ public abstract class MediaSet extends MediaObject {
     public int getIndexOfItem(Path path, int hint) {
         // hint < 0 is handled below
         // first, try to find it around the hint
-        int start = Math.max(0,
-                hint - MEDIAITEM_BATCH_FETCH_COUNT / 2);
-        ArrayList<MediaItem> list = getMediaItem(
-                start, MEDIAITEM_BATCH_FETCH_COUNT);
+        int start = Math.max(0, hint - MEDIAITEM_BATCH_FETCH_COUNT / 2);
+        ArrayList<MediaItem> list = getMediaItem(start, MEDIAITEM_BATCH_FETCH_COUNT);
         int index = getIndexOf(path, list);
         if (index != INDEX_NOT_FOUND) return start + index;
 
@@ -122,9 +135,6 @@ public abstract class MediaSet extends MediaObject {
     }
 
     public abstract String getName();
-
-    private WeakHashMap<ContentListener, Object> mListeners =
-            new WeakHashMap<ContentListener, Object>();
 
     // NOTE: The MediaSet only keeps a weak reference to the listener. The
     // listener is automatically removed when there is no other reference to
@@ -172,10 +182,6 @@ public abstract class MediaSet extends MediaObject {
         enumerateTotalMediaItems(consumer, 0);
     }
 
-    public static interface ItemConsumer {
-        void consume(int index, MediaItem item);
-    }
-
     // The default implementation uses getMediaItem() for enumerateMediaItems().
     // Subclasses may override this and use more efficient implementations.
     // Returns the number of items enumerated.
@@ -196,14 +202,12 @@ public abstract class MediaSet extends MediaObject {
 
     // Recursively enumerate all media items under this set.
     // Returns the number of items enumerated.
-    protected int enumerateTotalMediaItems(
-            ItemConsumer consumer, int startIndex) {
+    protected int enumerateTotalMediaItems(ItemConsumer consumer, int startIndex) {
         int start = 0;
         start += enumerateMediaItems(consumer, startIndex);
         int m = getSubMediaSetCount();
         for (int i = 0; i < m; i++) {
-            start += getSubMediaSet(i).enumerateTotalMediaItems(
-                    consumer, startIndex + start);
+            start += getSubMediaSet(i).enumerateTotalMediaItems(consumer, startIndex + start);
         }
         return start;
     }
@@ -212,9 +216,9 @@ public abstract class MediaSet extends MediaObject {
      * Requests sync on this MediaSet. It returns a Future object that can be used by the caller
      * to query the status of the sync. The sync result code is one of the SYNC_RESULT_* constants
      * defined in this class and can be obtained by Future.get().
-     *
+     * <p>
      * Subclasses should perform sync on a different thread.
-     *
+     * <p>
      * The default implementation here returns a Future stub that does nothing and returns
      * SYNC_RESULT_SUCCESS by get().
      */
@@ -222,40 +226,34 @@ public abstract class MediaSet extends MediaObject {
         return FUTURE_STUB;
     }
 
-    private static final Future<Integer> FUTURE_STUB = new Future<Integer>() {
-        @Override
-        public void cancel() {}
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
-
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-
-        @Override
-        public Integer get() {
-            return SYNC_RESULT_SUCCESS;
-        }
-
-        @Override
-        public void waitDone() {}
-    };
-
     protected Future<Integer> requestSyncOnEmptySets(MediaSet[] sets, SyncListener listener) {
         MultiSetSyncFuture future = new MultiSetSyncFuture(listener);
         future.requestSyncOnEmptySets(sets);
         return future;
     }
 
+    /**
+     * Listener to be used with requestSync(SyncListener).
+     */
+    public interface SyncListener {
+        /**
+         * Called when the sync task completed. Completion may be due to normal termination,
+         * an exception, or cancellation.
+         *
+         * @param mediaSet   the MediaSet that's done with sync
+         * @param resultCode one of the SYNC_RESULT_* constants
+         */
+        void onSyncDone(MediaSet mediaSet, int resultCode);
+    }
+
+    public interface ItemConsumer {
+        void consume(int index, MediaItem item);
+    }
+
     private class MultiSetSyncFuture implements Future<Integer>, SyncListener {
         private static final String TAG = "Gallery.MultiSetSync";
 
-        private final HashMap<MediaSet, Future<Integer>> mMediaSetMap =
-                new HashMap<MediaSet, Future<Integer>>();
+        private final HashMap<MediaSet, Future<Integer>> mMediaSetMap = new HashMap<MediaSet, Future<Integer>>();
         private final SyncListener mListener;
 
         private boolean mIsCancelled = false;
@@ -319,8 +317,7 @@ public abstract class MediaSet extends MediaObject {
             SyncListener listener = null;
             synchronized (this) {
                 if (mMediaSetMap.remove(mediaSet) != null) {
-                    Log.d(TAG, "onSyncDone: " + Utils.maskDebugInfo(mediaSet.getName())
-                            + " #pending=" + mMediaSetMap.size());
+                    Log.d(TAG, "onSyncDone: " + Utils.maskDebugInfo(mediaSet.getName()) + " #pending=" + mMediaSetMap.size());
                     if (resultCode == SYNC_RESULT_ERROR) {
                         mResult = SYNC_RESULT_ERROR;
                     }

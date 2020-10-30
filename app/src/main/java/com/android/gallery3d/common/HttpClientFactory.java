@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
+
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -36,9 +37,16 @@ import java.lang.reflect.Method;
 public final class HttpClientFactory {
     // TODO: migrate GDataClient to use this util method instead of apache's
     // DefaultHttpClient.
+
+    private static String sUserAgent = null;
+
+    private HttpClientFactory() {
+    }
+
     /**
      * Creates an HttpClient with the userAgent string constructed from the
      * package name contained in the context.
+     *
      * @return the client
      */
     public static HttpClient newHttpClient(Context context) {
@@ -47,6 +55,7 @@ public final class HttpClientFactory {
 
     /**
      * Creates an HttpClient with the specified userAgent string.
+     *
      * @param userAgent the userAgent string
      * @return the client
      */
@@ -102,31 +111,16 @@ public final class HttpClientFactory {
         }
     }
 
-    private static String sUserAgent = null;
-
     private static String getUserAgent(Context context) {
         if (sUserAgent == null) {
             PackageInfo pi;
             try {
-                pi = context.getPackageManager().getPackageInfo(
-                        context.getPackageName(), 0);
+                pi = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             } catch (NameNotFoundException e) {
                 throw new IllegalStateException("getPackageInfo failed");
             }
-            sUserAgent = String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s",
-                    pi.packageName,
-                    pi.versionName,
-                    Build.BRAND,
-                    Build.DEVICE,
-                    Build.MODEL,
-                    Build.ID,
-                    Build.VERSION.SDK_INT,
-                    Build.VERSION.RELEASE,
-                    Build.VERSION.INCREMENTAL);
+            sUserAgent = String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s", pi.packageName, pi.versionName, Build.BRAND, Build.DEVICE, Build.MODEL, Build.ID, Build.VERSION.SDK_INT, Build.VERSION.RELEASE, Build.VERSION.INCREMENTAL);
         }
         return sUserAgent;
-    }
-
-    private HttpClientFactory() {
     }
 }

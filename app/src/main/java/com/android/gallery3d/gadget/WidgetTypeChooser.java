@@ -16,9 +16,6 @@
 
 package com.android.gallery3d.gadget;
 
-import com.chanapps.four.gallery3d.R;
-import com.chanapps.four.widget.PhotoAppWidgetConfigure;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,13 +25,15 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.widget.PhotoAppWidgetConfigure;
+
 public class WidgetTypeChooser extends Activity {
 
     private OnCheckedChangeListener mListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
-            Intent data = new Intent()
-                    .putExtra(PhotoAppWidgetConfigure.KEY_WIDGET_TYPE, checkedId);
+            Intent data = new Intent().putExtra(PhotoAppWidgetConfigure.KEY_WIDGET_TYPE, checkedId);
             setResult(RESULT_OK, data);
             finish();
         }
@@ -45,10 +44,10 @@ public class WidgetTypeChooser extends Activity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.widget_type);
         setContentView(R.layout.choose_widget_type);
-        RadioGroup rg = (RadioGroup) findViewById(R.id.widget_type);
+        RadioGroup rg = findViewById(R.id.widget_type);
         rg.setOnCheckedChangeListener(mListener);
 
-        Button cancel = (Button) findViewById(R.id.cancel);
+        Button cancel = findViewById(R.id.cancel);
         cancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

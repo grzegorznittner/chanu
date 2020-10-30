@@ -20,18 +20,23 @@ import com.android.gallery3d.anim.CanvasAnimation;
 
 public interface GLRoot {
 
-    public static interface OnGLIdleListener {
-        public boolean onGLIdle(GLRoot root, GLCanvas canvas);
+    void addOnGLIdleListener(OnGLIdleListener listener);
+
+    void registerLaunchedAnimation(CanvasAnimation animation);
+
+    void requestRender();
+
+    void requestLayoutContentPane();
+
+    boolean hasStencil();
+
+    void lockRenderThread();
+
+    void unlockRenderThread();
+
+    void setContentPane(GLView content);
+
+    interface OnGLIdleListener {
+        boolean onGLIdle(GLRoot root, GLCanvas canvas);
     }
-
-    public void addOnGLIdleListener(OnGLIdleListener listener);
-    public void registerLaunchedAnimation(CanvasAnimation animation);
-    public void requestRender();
-    public void requestLayoutContentPane();
-    public boolean hasStencil();
-
-    public void lockRenderThread();
-    public void unlockRenderThread();
-
-    public void setContentPane(GLView content);
 }

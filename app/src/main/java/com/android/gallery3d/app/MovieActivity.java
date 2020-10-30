@@ -16,8 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -27,10 +25,13 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video.VideoColumns;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.chanapps.four.gallery3d.R;
 
 /**
  * This activity plays a video from a specified URI.
@@ -53,10 +54,8 @@ public class MovieActivity extends Activity {
         View rootView = findViewById(R.id.root);
         Intent intent = getIntent();
         initializeActionBar(intent);
-        mFinishOnCompletion = intent.getBooleanExtra(
-                MediaStore.EXTRA_FINISH_ON_COMPLETION, true);
-        mPlayer = new MoviePlayer(rootView, this, intent.getData(), savedInstanceState,
-                !mFinishOnCompletion) {
+        mFinishOnCompletion = intent.getBooleanExtra(MediaStore.EXTRA_FINISH_ON_COMPLETION, true);
+        mPlayer = new MoviePlayer(rootView, this, intent.getData(), savedInstanceState, !mFinishOnCompletion) {
             @Override
             public void onCompletion() {
                 if (mFinishOnCompletion) {
@@ -65,9 +64,7 @@ public class MovieActivity extends Activity {
             }
         };
         if (intent.hasExtra(MediaStore.EXTRA_SCREEN_ORIENTATION)) {
-            int orientation = intent.getIntExtra(
-                    MediaStore.EXTRA_SCREEN_ORIENTATION,
-                    ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            int orientation = intent.getIntExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             if (orientation != getRequestedOrientation()) {
                 setRequestedOrientation(orientation);
             }
@@ -81,14 +78,12 @@ public class MovieActivity extends Activity {
 
     private void initializeActionBar(Intent intent) {
         ActionBar actionBar = getActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP,
-                ActionBar.DISPLAY_HOME_AS_UP);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP, ActionBar.DISPLAY_HOME_AS_UP);
         String title = intent.getStringExtra(Intent.EXTRA_TITLE);
         if (title == null) {
             Cursor cursor = null;
             try {
-                cursor = getContentResolver().query(intent.getData(),
-                        new String[] {VideoColumns.TITLE}, null, null, null);
+                cursor = getContentResolver().query(intent.getData(), new String[]{VideoColumns.TITLE}, null, null, null);
                 if (cursor != null && cursor.moveToNext()) {
                     title = cursor.getString(0);
                 }
@@ -112,16 +107,13 @@ public class MovieActivity extends Activity {
 
     @Override
     public void onStart() {
-        ((AudioManager) getSystemService(AUDIO_SERVICE))
-                .requestAudioFocus(null, AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+        ((AudioManager) getSystemService(AUDIO_SERVICE)).requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        ((AudioManager) getSystemService(AUDIO_SERVICE))
-                .abandonAudioFocus(null);
+        ((AudioManager) getSystemService(AUDIO_SERVICE)).abandonAudioFocus(null);
         super.onStop();
     }
 

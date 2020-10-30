@@ -1,34 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
     <ScrollView
             android:id="@+id/popup_full_text_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/done"
-            >
+            android:layout_above="@+id/done">
 
-            <TextView
-                    android:id="@+id/detail_html"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:paddingTop="8dp"
-                    android:paddingLeft="16dp"
-                    android:paddingBottom="8dp"
-                    android:paddingRight="16dp"
-                    android:linksClickable="true"
-                    android:autoLink="web"/>
+        <TextView
+                android:id="@+id/detail_html"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="8dp"
+                android:textSize="16sp" />
 
     </ScrollView>
 
     <Button
             android:id="@+id/done"
-            style="@style/WidgetConfigureOkButton"
-            />
+            style="@style/WidgetConfigureOkButton" />
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+<resources>
 
     <dimen name="BoardGridViewTablet_image_width">112dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width">304dp</dimen>

@@ -16,17 +16,17 @@
 
 package com.android.gallery3d.gadget;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.data.MediaItem;
-import com.android.gallery3d.util.ThreadPool;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Bitmap.Config;
 import android.util.Log;
+
+import com.android.gallery3d.data.MediaItem;
+import com.android.gallery3d.util.ThreadPool;
+import com.chanapps.four.gallery3d.R;
 
 public class WidgetUtils {
 
@@ -45,8 +45,7 @@ public class WidgetUtils {
     }
 
     public static Bitmap createWidgetBitmap(MediaItem image) {
-        Bitmap bitmap = image.requestImage(MediaItem.TYPE_THUMBNAIL)
-               .run(ThreadPool.JOB_CONTEXT_STUB);
+        Bitmap bitmap = image.requestImage(MediaItem.TYPE_THUMBNAIL).run(ThreadPool.JOB_CONTEXT_STUB);
         if (bitmap == null) {
             Log.w(TAG, "fail to get image of " + image.toString());
             return null;
@@ -60,15 +59,12 @@ public class WidgetUtils {
 
         float scale;
         if (((rotation / 90) & 1) == 0) {
-            scale = Math.max((float) sStackPhotoWidth / w,
-                    (float) sStackPhotoHeight / h);
+            scale = Math.max((float) sStackPhotoWidth / w, (float) sStackPhotoHeight / h);
         } else {
-            scale = Math.max((float) sStackPhotoWidth / h,
-                    (float) sStackPhotoHeight / w);
+            scale = Math.max((float) sStackPhotoWidth / h, (float) sStackPhotoHeight / w);
         }
 
-        Bitmap target = Bitmap.createBitmap(
-                sStackPhotoWidth, sStackPhotoHeight, Config.ARGB_8888);
+        Bitmap target = Bitmap.createBitmap(sStackPhotoWidth, sStackPhotoHeight, Config.ARGB_8888);
         Canvas canvas = new Canvas(target);
         canvas.translate(sStackPhotoWidth / 2, sStackPhotoHeight / 2);
         canvas.rotate(rotation);

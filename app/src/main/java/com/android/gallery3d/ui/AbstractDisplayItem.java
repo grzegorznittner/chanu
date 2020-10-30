@@ -16,9 +16,9 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.data.MediaItem;
-
 import android.graphics.Bitmap;
+
+import com.android.gallery3d.data.MediaItem;
 
 public abstract class AbstractDisplayItem extends DisplayItem {
 
@@ -29,13 +29,11 @@ public abstract class AbstractDisplayItem extends DisplayItem {
     private static final int STATE_UPDATING = 0x04;
     private static final int STATE_CANCELING = 0x08;
     private static final int STATE_ERROR = 0x10;
-
+    protected final MediaItem mMediaItem;
     private int mState = STATE_INVALID;
     private boolean mImageRequested = false;
     private boolean mRecycling = false;
     private Bitmap mBitmap;
-
-    protected final MediaItem mMediaItem;
     private int mRotation;
 
     public AbstractDisplayItem(MediaItem item) {
@@ -59,7 +57,7 @@ public abstract class AbstractDisplayItem extends DisplayItem {
         }
 
         mBitmap = bitmap;
-        mState = bitmap == null ? STATE_ERROR : STATE_VALID ;
+        mState = bitmap == null ? STATE_ERROR : STATE_VALID;
         onBitmapAvailable(mBitmap);
     }
 
@@ -70,9 +68,7 @@ public abstract class AbstractDisplayItem extends DisplayItem {
 
     @Override
     public long getIdentity() {
-        return mMediaItem != null
-                ? System.identityHashCode(mMediaItem.getPath())
-                : System.identityHashCode(this);
+        return mMediaItem != null ? System.identityHashCode(mMediaItem.getPath()) : System.identityHashCode(this);
     }
 
     public void requestImage() {
@@ -109,6 +105,8 @@ public abstract class AbstractDisplayItem extends DisplayItem {
     }
 
     abstract protected void startLoadBitmap();
+
     abstract protected void cancelLoadBitmap();
+
     abstract protected void onBitmapAvailable(Bitmap bitmap);
 }

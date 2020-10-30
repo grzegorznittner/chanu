@@ -16,9 +16,9 @@
 
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
-
 import android.content.Context;
+
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -38,8 +38,7 @@ public class TagClustering extends Clustering {
 
     @Override
     public void run(MediaSet baseSet) {
-        final TreeMap<String, ArrayList<Path>> map =
-                new TreeMap<String, ArrayList<Path>>();
+        final TreeMap<String, ArrayList<Path>> map = new TreeMap<String, ArrayList<Path>>();
         final ArrayList<Path> untagged = new ArrayList<Path>();
 
         baseSet.enumerateTotalMediaItems(new MediaSet.ItemConsumer() {
