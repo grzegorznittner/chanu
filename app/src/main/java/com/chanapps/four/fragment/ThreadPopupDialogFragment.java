@@ -1,19 +1,27 @@
 package com.chanapps.four.fragment;
 
-import android.app.*;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.SearchManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.*;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.ResourceCursorAdapter;
+
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
@@ -30,30 +38,23 @@ import com.chanapps.four.viewer.ThreadListener;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+
 import java.util.HashSet;
 
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 12/14/12
-* Time: 12:44 PM
-* To change this template use File | Settings | File Templates.
-*/
-public class ThreadPopupDialogFragment extends DialogFragment implements ThreadViewable
-{
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 12/14/12
+ * Time: 12:44 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class ThreadPopupDialogFragment extends DialogFragment implements ThreadViewable {
     public static final String TAG = ThreadPopupDialogFragment.class.getSimpleName();
     public static final boolean DEBUG = false;
 
     public static final String LAST_POSITION = "lastPosition";
     public static final String POPUP_TYPE = "popupType";
-
-    static public enum PopupType {
-        SELF,
-        BACKLINKS,
-        REPLIES,
-        SAME_ID
-    }
-
+    protected static final int CURSOR_LOADER_ID = 0x19; // arbitrary
     protected String boardCode;
     protected long threadNo;
     protected long postNo;
@@ -69,6 +70,63 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     protected ThreadListener threadListener;
     protected Fragment parent;
     protected String query;
+    protected LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/" + threadNo + " id=" + id);
+            return new ThreadCursorLoader(parent.getActivity(), boardCode, threadNo, "", false);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (DEBUG)
+                Log.i(TAG, "onLoadFinished /" + boardCode + "/" + threadNo + " id=" + loader.getId() + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
+            int count = data == null ? 0 : data.getCount();
+            Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " callback returned " + count + " rows");
+            cursor = data;
+            loadCursorAsync();
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            if (DEBUG)
+                Log.i(TAG, "onLoaderReset /" + boardCode + "/" + threadNo + " id=" + loader.getId());
+            //adapter.swapCursor(null);
+            adapter.changeCursor(null);
+        }
+    };
+    protected AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (DEBUG) Log.i(TAG, "onItemClick() pos=" + position + " postNo=" + id);
+            try {
+                dismiss();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Can't dismiss previous fragment", e);
+            }
+            Activity activity = getActivity();
+            if (activity == null || !(activity instanceof ThreadActivity)) {
+                if (DEBUG) Log.i(TAG, "onItemClick() no activity");
+                return;
+            }
+            ThreadFragment fragment = ((ThreadActivity) activity).getCurrentFragment();
+            if (fragment == null) {
+                if (DEBUG) Log.i(TAG, "onItemClick() no thread fragment");
+                return;
+            }
+            if (DEBUG) Log.i(TAG, "onItemClick() scrolling to postNo=" + id);
+            fragment.scrollToPostAsync(id);
+        }
+    };
+    protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            return ThreadViewer.setViewValue(view, cursor, boardCode, false, 0, 0, null, //threadListener.thumbOnClickListener,
+                    threadListener.backlinkOnClickListener, null, null, threadListener.repliesOnClickListener, null, //threadListener.sameIdOnClickListener,
+                    null, //threadListener.exifOnClickListener,
+                    null, threadListener.expandedImageListener, null, null);
+        }
+    };
 
     public ThreadPopupDialogFragment() {
         super();
@@ -85,15 +143,15 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         this.pos = -1;
         this.popupType = popupType;
         this.query = query;
-        if (DEBUG) Log.i(TAG, "ThreadPopupDialogFragment() /" + boardCode + "/" + threadNo + "#p" + postNo + " pos=" + pos + " query=" + query);
+        if (DEBUG)
+            Log.i(TAG, "ThreadPopupDialogFragment() /" + boardCode + "/" + threadNo + "#p" + postNo + " pos=" + pos + " query=" + query);
     }
 
     protected void inflateLayout() {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         if (popupType == PopupType.SELF)
             layout = inflater.inflate(R.layout.thread_single_popup_dialog_fragment, null);
-        else
-            layout = inflater.inflate(R.layout.thread_popup_dialog_fragment, null);
+        else layout = inflater.inflate(R.layout.thread_popup_dialog_fragment, null);
     }
 
     @Override
@@ -105,21 +163,19 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             //pos = savedInstanceState.getInt(LAST_POSITION);
             popupType = PopupType.valueOf(savedInstanceState.getString(POPUP_TYPE));
             query = savedInstanceState.getString(SearchManager.QUERY);
-            if (DEBUG) Log.i(TAG, "onCreateDialog() /" + boardCode + "/" + threadNo + " restored from bundle");
+            if (DEBUG)
+                Log.i(TAG, "onCreateDialog() /" + boardCode + "/" + threadNo + " restored from bundle");
+        } else {
+            if (DEBUG)
+                Log.i(TAG, "onCreateDialog() /" + boardCode + "/" + threadNo + " null bundle");
         }
-        else {
-            if (DEBUG) Log.i(TAG, "onCreateDialog() /" + boardCode + "/" + threadNo + " null bundle");
-        }
-        if (popupType == null)
-            popupType = PopupType.SELF;
+        if (popupType == null) popupType = PopupType.SELF;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         inflateLayout();
         init();
         setStyle(STYLE_NO_TITLE, 0);
         if (DEBUG) Log.i(TAG, "creating dialog");
-        Dialog dialog = builder
-                .setView(layout)
-                .create();
+        Dialog dialog = builder.setView(layout).create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
     }
@@ -158,93 +214,72 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     @Override
     public void onStart() {
         super.onStart();
-        if (handler == null)
-            handler = new Handler();
+        if (handler == null) handler = new Handler();
         loadAdapter();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (handler == null)
-            handler = new Handler();
+        if (handler == null) handler = new Handler();
     }
 
     protected void loadAdapter() {
-        ThreadActivity activity = (ThreadActivity)getActivity();
+        ThreadActivity activity = (ThreadActivity) getActivity();
         if (activity == null) {
-            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null activity, exiting");
+            if (DEBUG)
+                Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null activity, exiting");
             dismiss();
             return;
         }
         ThreadFragment fragment = activity.getCurrentFragment();
         if (fragment == null) {
-            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null fragment, exiting");
+            if (DEBUG)
+                Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null fragment, exiting");
             dismiss();
             return;
         }
-        if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " fragment=" + fragment + " query=" + query);
+        if (DEBUG)
+            Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " fragment=" + fragment + " query=" + query);
 
         ResourceCursorAdapter fragmentAdapter;
         if (query == null || query.isEmpty()) { // load directly from fragment for empty queries
             if ((fragmentAdapter = fragment.getAdapter()) == null) {
-                if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null adapter, exiting");
+                if (DEBUG)
+                    Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null adapter, exiting");
                 dismiss();
-            }
-            else {
-                if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo
-                        + " loading empty query cursor async count=" + fragmentAdapter.getCount());
+            } else {
+                if (DEBUG)
+                    Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " loading empty query cursor async count=" + fragmentAdapter.getCount());
                 cursor = fragmentAdapter.getCursor();
                 loadCursorAsync();
             }
-        }
-        else { // load from callback for non-empty queries
+        } else { // load from callback for non-empty queries
             loadCursorFromFragmentCallback(fragment);
         }
     }
 
-    protected static final int CURSOR_LOADER_ID = 0x19; // arbitrary
-    
     protected void loadCursorFromFragmentCallback(ThreadFragment fragment) {
-        if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " doing cursor loader callback");
+        if (DEBUG)
+            Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " doing cursor loader callback");
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, loaderCallbacks);
     }
 
-    protected LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/" + threadNo + " id=" + id);
-            return new ThreadCursorLoader(parent.getActivity(), boardCode, threadNo, "", false);
-        }
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/" + threadNo + " id=" + loader.getId()
-                    + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
-            int count = data == null ? 0 : data.getCount();
-            Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " callback returned " + count + " rows");
-            cursor = data;
-            loadCursorAsync();
-        }
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/" + threadNo + " id=" + loader.getId());
-            //adapter.swapCursor(null);
-            adapter.changeCursor(null);
-        }
-    };
-
     protected void loadCursorAsync() {
         if (cursor == null) {
-            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null cursor, exiting");
+            if (DEBUG)
+                Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null cursor, exiting");
             dismiss();
             return;
         }
         if (cursor.getCount() == 0) {
-            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " empty cursor, exiting");
+            if (DEBUG)
+                Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " empty cursor, exiting");
             dismiss();
             return;
         }
-        if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " fragment cursor size=" + cursor.getCount());
+        if (DEBUG)
+            Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " fragment cursor size=" + cursor.getCount());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -265,14 +300,14 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                     return;
                 }
                 final Cursor detailCursor = detailsCursor();
-                if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " detail cursor size=" + detailCursor.getCount());
-                if (handler != null)
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.swapCursor(detailCursor);
-                        }
-                    });
+                if (DEBUG)
+                    Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " detail cursor size=" + detailCursor.getCount());
+                if (handler != null) handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.swapCursor(detailCursor);
+                    }
+                });
             }
         }).start();
     }
@@ -297,14 +332,13 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                     dismiss();
                 }
             });
-        }
-        else {
-        adapter = new ThreadCursorAdapter(getActivity(), viewBinder, true, new Runnable() {
-            @Override
-            public void run() {
-                dismiss();
-            }
-        });
+        } else {
+            adapter = new ThreadCursorAdapter(getActivity(), viewBinder, true, new Runnable() {
+                @Override
+                public void run() {
+                    dismiss();
+                }
+            });
         }
     }
 
@@ -317,31 +351,6 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
     }
-
-    protected AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (DEBUG) Log.i(TAG, "onItemClick() pos=" + position + " postNo=" + id);
-            try {
-                dismiss();
-            }
-            catch (IllegalStateException e) {
-                Log.e(TAG, "Can't dismiss previous fragment", e);
-            }
-            Activity activity = getActivity();
-            if (activity == null || !(activity instanceof ThreadActivity)) {
-                if (DEBUG) Log.i(TAG, "onItemClick() no activity");
-                return;
-            }
-            ThreadFragment fragment = ((ThreadActivity) activity).getCurrentFragment();
-            if (fragment == null) {
-                if (DEBUG) Log.i(TAG, "onItemClick() no thread fragment");
-                return;
-            }
-            if (DEBUG) Log.i(TAG, "onItemClick() scrolling to postNo=" + id);
-            fragment.scrollToPostAsync(id);
-        }
-    };
 
     @Override
     public AbsListView getAbsListView() {
@@ -402,81 +411,67 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     }
 
     protected int addBlobRows(MatrixCursor matrixCursor, String columnName) {
-        if (DEBUG) Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " popupType=" + popupType + " columnName=" + columnName);
+        if (DEBUG)
+            Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " popupType=" + popupType + " columnName=" + columnName);
         if (!cursor.moveToPosition(pos)) {
-            if (DEBUG) Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " could not move to position");
+            if (DEBUG)
+                Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " could not move to position");
             return 0;
         }
         byte[] b = cursor.getBlob(cursor.getColumnIndex(columnName));
         if (b == null || b.length == 0) {
-            if (DEBUG) Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " no blob found for columnName=" + columnName);
+            if (DEBUG)
+                Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " no blob found for columnName=" + columnName);
             return 0;
         }
         HashSet<?> links = ChanPost.parseBlob(b);
         if (links == null || links.size() <= 0) {
-            if (DEBUG) Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " no links found in blob");
+            if (DEBUG)
+                Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " no links found in blob");
             return 0;
         }
         int count = links.size();
-        if (DEBUG) Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " found links count=" + count);
+        if (DEBUG)
+            Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " found links count=" + count);
         if (!cursor.moveToFirst()) {
-            if (DEBUG) Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " could not move to first");
+            if (DEBUG)
+                Log.i(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " could not move to first");
             return 0;
         }
         while (!cursor.isAfterLast()) {
             long id = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            if (DEBUG) Log.d(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " checking pos=" + cursor.getPosition() + " id=" + id);
+            if (DEBUG)
+                Log.d(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " checking pos=" + cursor.getPosition() + " id=" + id);
             if (links.contains(id)) {
-                if (DEBUG) Log.d(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " found link at pos=" + cursor.getPosition());
+                if (DEBUG)
+                    Log.d(TAG, "addBlobRows() /" + boardCode + "/" + threadNo + " pos=" + pos + " found link at pos=" + cursor.getPosition());
                 Object[] row = ChanPost.extractPostRow(cursor);
-                if (row != null)
-                    matrixCursor.addRow(row);
+                if (row != null) matrixCursor.addRow(row);
             }
-            if (!cursor.moveToNext())
-                break;
+            if (!cursor.moveToNext()) break;
         }
         return count;
     }
 
     protected void addSelfRow(MatrixCursor matrixCursor) {
         if (!cursor.moveToPosition(pos)) {
-            if (DEBUG) Log.i(TAG, "addSelfRow() /" + boardCode + "/" + threadNo + " could not move to pos=" + pos);
+            if (DEBUG)
+                Log.i(TAG, "addSelfRow() /" + boardCode + "/" + threadNo + " could not move to pos=" + pos);
             return;
         }
         Object[] row = ChanPost.extractPostRow(cursor);
         if (row == null) {
-            if (DEBUG) Log.i(TAG, "addSelfRow() /" + boardCode + "/" + threadNo + " null row from pos=" + pos);
+            if (DEBUG)
+                Log.i(TAG, "addSelfRow() /" + boardCode + "/" + threadNo + " null row from pos=" + pos);
             return;
         }
-        if (DEBUG) Log.i(TAG, "addSelfRow() /" + boardCode + "/" + threadNo + " loaded row pos=" + pos);
+        if (DEBUG)
+            Log.i(TAG, "addSelfRow() /" + boardCode + "/" + threadNo + " loaded row pos=" + pos);
         matrixCursor.addRow(row);
     }
 
-    protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
-        @Override
-        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            return ThreadViewer.setViewValue(view, cursor, boardCode,
-                    false,
-                    0,
-                    0,
-                    null, //threadListener.thumbOnClickListener,
-                    threadListener.backlinkOnClickListener,
-                    null,
-                    null,
-                    threadListener.repliesOnClickListener,
-                    null, //threadListener.sameIdOnClickListener,
-                    null, //threadListener.exifOnClickListener,
-                    null,
-                    threadListener.expandedImageListener,
-                    null,
-                    null
-            );
-        }
-    };
-
     @Override
-    public void showDialog(String boardCode, long threadNo, long postNo, int pos,
-                           ThreadPopupDialogFragment.PopupType popupType) {
+    public void showDialog(String boardCode, long threadNo, long postNo, int pos, ThreadPopupDialogFragment.PopupType popupType) {
         Activity activity = getActivity();
         if (activity == null || !(activity instanceof ThreadActivity)) {
             if (DEBUG) Log.i(TAG, "onItemClick() no activity");
@@ -490,8 +485,11 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         if (DEBUG) Log.i(TAG, "onItemClick() scrolling to postNo=" + postNo);
         dismiss();
         //(new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, pos, popupType, query))
-        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, popupType, query))
-                .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
+        (new ThreadPopupDialogFragment(fragment, boardCode, threadNo, postNo, popupType, query)).show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
+    }
+
+    public enum PopupType {
+        SELF, BACKLINKS, REPLIES, SAME_ID
     }
 
 }

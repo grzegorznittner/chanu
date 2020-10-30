@@ -16,10 +16,6 @@
 
 package com.chanapps.four.mColorPicker;
 
-import com.chanapps.four.activity.R;
-import com.chanapps.four.mColorPicker.views.ColorPanelView;
-import com.chanapps.four.mColorPicker.views.ColorPickerView;
-import com.chanapps.four.mColorPicker.views.ColorPickerView.OnColorChangedListener;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -27,70 +23,70 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
-public class ColorPickerDialog extends AlertDialog implements
-		ColorPickerView.OnColorChangedListener {
+import com.chanapps.four.activity.R;
+import com.chanapps.four.mColorPicker.views.ColorPanelView;
+import com.chanapps.four.mColorPicker.views.ColorPickerView;
+import com.chanapps.four.mColorPicker.views.ColorPickerView.OnColorChangedListener;
 
-	private ColorPickerView mColorPicker;
+public class ColorPickerDialog extends AlertDialog implements ColorPickerView.OnColorChangedListener {
 
-	private ColorPanelView mOldColor;
-	private ColorPanelView mNewColor;
+    private ColorPickerView mColorPicker;
 
-	private OnColorChangedListener mListener;
+    private ColorPanelView mOldColor;
+    private ColorPanelView mNewColor;
 
-	public ColorPickerDialog(Context context, int initialColor) {
-		super(context);
+    private OnColorChangedListener mListener;
 
-		init(initialColor);
-	}
+    public ColorPickerDialog(Context context, int initialColor) {
+        super(context);
 
-	private void init(int color) {
-		// To fight color branding.
-		getWindow().setFormat(PixelFormat.RGBA_8888);
+        init(initialColor);
+    }
 
-		setUp(color);
+    private void init(int color) {
+        // To fight color branding.
+        getWindow().setFormat(PixelFormat.RGBA_8888);
 
-	}
+        setUp(color);
 
-	private void setUp(int color) {
-		LayoutInflater inflater = (LayoutInflater) getContext()
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.dialog_color_picker, null);
+    }
 
-		setView(layout);
+    private void setUp(int color) {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.dialog_color_picker, null);
 
-		mColorPicker = (ColorPickerView) layout
-				.findViewById(R.id.color_picker_view);
-		mOldColor = (ColorPanelView) layout.findViewById(R.id.old_color_panel);
-		mNewColor = (ColorPanelView) layout.findViewById(R.id.new_color_panel);
+        setView(layout);
 
-		((LinearLayout) mOldColor.getParent()).setPadding(Math
-				.round(mColorPicker.getDrawingOffset()), 0, Math
-				.round(mColorPicker.getDrawingOffset()), 0);
+        mColorPicker = layout.findViewById(R.id.color_picker_view);
+        mOldColor = layout.findViewById(R.id.old_color_panel);
+        mNewColor = layout.findViewById(R.id.new_color_panel);
 
-		mColorPicker.setOnColorChangedListener(this);
+        ((LinearLayout) mOldColor.getParent()).setPadding(Math.round(mColorPicker.getDrawingOffset()), 0, Math.round(mColorPicker.getDrawingOffset()), 0);
 
-		mOldColor.setColor(color);
-		mColorPicker.setColor(color, true);
+        mColorPicker.setOnColorChangedListener(this);
 
-	}
+        mOldColor.setColor(color);
+        mColorPicker.setColor(color, true);
 
-	@Override
-	public void onColorChanged(int color) {
+    }
 
-		mNewColor.setColor(color);
+    @Override
+    public void onColorChanged(int color) {
 
-		if (mListener != null) {
-			mListener.onColorChanged(color);
-		}
+        mNewColor.setColor(color);
 
-	}
+        if (mListener != null) {
+            mListener.onColorChanged(color);
+        }
 
-	public void setAlphaSliderVisible(boolean visible) {
-		mColorPicker.setAlphaSliderVisible(visible);
-	}
+    }
 
-	public int getColor() {
-		return mColorPicker.getColor();
-	}
+    public void setAlphaSliderVisible(boolean visible) {
+        mColorPicker.setAlphaSliderVisible(visible);
+    }
+
+    public int getColor() {
+        return mColorPicker.getColor();
+    }
 
 }

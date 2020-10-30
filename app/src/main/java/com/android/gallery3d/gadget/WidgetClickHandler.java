@@ -16,9 +16,6 @@
 
 package com.android.gallery3d.gadget;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.app.Gallery;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
@@ -27,14 +24,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.gallery3d.app.Gallery;
+import com.chanapps.four.gallery3d.R;
+
 public class WidgetClickHandler extends Activity {
     private static final String TAG = "PhotoAppWidgetClickHandler";
 
     private boolean isValidDataUri(Uri dataUri) {
         if (dataUri == null) return false;
         try {
-            AssetFileDescriptor f = getContentResolver()
-                    .openAssetFileDescriptor(dataUri, "r");
+            AssetFileDescriptor f = getContentResolver().openAssetFileDescriptor(dataUri, "r");
             f.close();
             return true;
         } catch (Throwable e) {
@@ -50,8 +49,7 @@ public class WidgetClickHandler extends Activity {
         if (isValidDataUri(intent.getData())) {
             startActivity(new Intent(Intent.ACTION_VIEW, intent.getData()));
         } else {
-            Toast.makeText(this,
-                    R.string.no_such_item, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_such_item, Toast.LENGTH_LONG).show();
             startActivity(new Intent(this, Gallery.class));
         }
         finish();

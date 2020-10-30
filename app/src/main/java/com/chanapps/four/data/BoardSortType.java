@@ -2,6 +2,7 @@ package com.chanapps.four.data;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 
@@ -28,27 +29,18 @@ public enum BoardSortType {
         return null;
     }
 
-    public int displayStringId() {
-        return displayStringId;
-    }
-
     public static BoardSortType loadFromPrefs(Context context) {
-        BoardSortType sortType = BoardSortType.valueOfDisplayString(context, PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getString(SettingsActivity.PREF_BOARD_SORT_TYPE,
-                        context.getString(R.string.sort_order_bump_order)));
-        if (sortType == null)
-            sortType = BoardSortType.BUMP_ORDER;
+        BoardSortType sortType = BoardSortType.valueOfDisplayString(context, PreferenceManager.getDefaultSharedPreferences(context).getString(SettingsActivity.PREF_BOARD_SORT_TYPE, context.getString(R.string.sort_order_image_count)));
+        if (sortType == null) sortType = BoardSortType.IMAGE_COUNT;
         return sortType;
     }
 
     public static void saveToPrefs(Context context, BoardSortType boardSortType) {
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .putString(SettingsActivity.PREF_BOARD_SORT_TYPE,
-                        context.getString(boardSortType.displayStringId()))
-                .commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(SettingsActivity.PREF_BOARD_SORT_TYPE, context.getString(boardSortType.displayStringId())).apply();
+    }
+
+    public int displayStringId() {
+        return displayStringId;
     }
 
 }

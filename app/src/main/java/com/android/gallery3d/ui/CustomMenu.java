@@ -16,11 +16,9 @@
 
 package com.android.gallery3d.ui;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import com.chanapps.four.gallery3d.R;
-
-import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,52 +27,13 @@ import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 
+import com.chanapps.four.gallery3d.R;
+
 import java.util.ArrayList;
 
 public class CustomMenu implements OnMenuItemClickListener {
     @SuppressWarnings("unused")
     private static final String TAG = "FilterMenu";
-
-    public static class DropDownMenu {
-        private Button mButton;
-        private PopupMenu mPopupMenu;
-        private Menu mMenu;
-
-        public DropDownMenu(Context context, Button button, int menuId,
-                OnMenuItemClickListener listener) {
-            mButton = button;
-            Drawable d = context.getResources().getDrawable(R.drawable.dropdown_normal_holo_dark);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-                deprecatedSetBackground(mButton, d);
-            else
-                mButton.setBackground(d);
-            mPopupMenu = new PopupMenu(context, mButton);
-            mMenu = mPopupMenu.getMenu();
-            mPopupMenu.getMenuInflater().inflate(menuId, mMenu);
-            mPopupMenu.setOnMenuItemClickListener(listener);
-            mButton.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    mPopupMenu.show();
-                }
-            });
-        }
-
-        @SuppressWarnings("deprecation")
-        protected void deprecatedSetBackground(Button b, Drawable d) {
-            b.setBackgroundDrawable(d);
-        }
-
-        public MenuItem findItem(int id) {
-            return mMenu.findItem(id);
-        }
-
-        public void setTitle(CharSequence title) {
-            mButton.setText(title);
-        }
-    }
-
-
-
     private Context mContext;
     private ArrayList<DropDownMenu> mMenus;
     private OnMenuItemClickListener mListener;
@@ -103,8 +62,7 @@ public class CustomMenu implements OnMenuItemClickListener {
         return item;
     }
 
-    public void setMenuItemAppliedEnabled(int id, boolean applied, boolean enabled,
-            boolean updateTitle) {
+    public void setMenuItemAppliedEnabled(int id, boolean applied, boolean enabled, boolean updateTitle) {
         MenuItem item = null;
         for (DropDownMenu menu : mMenus) {
             item = menu.findItem(id);
@@ -131,5 +89,41 @@ public class CustomMenu implements OnMenuItemClickListener {
             return mListener.onMenuItemClick(item);
         }
         return false;
+    }
+
+    public static class DropDownMenu {
+        private Button mButton;
+        private PopupMenu mPopupMenu;
+        private Menu mMenu;
+
+        public DropDownMenu(Context context, Button button, int menuId, OnMenuItemClickListener listener) {
+            mButton = button;
+            Drawable d = context.getResources().getDrawable(R.drawable.dropdown_normal_holo_dark);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                deprecatedSetBackground(mButton, d);
+            else mButton.setBackground(d);
+            mPopupMenu = new PopupMenu(context, mButton);
+            mMenu = mPopupMenu.getMenu();
+            mPopupMenu.getMenuInflater().inflate(menuId, mMenu);
+            mPopupMenu.setOnMenuItemClickListener(listener);
+            mButton.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    mPopupMenu.show();
+                }
+            });
+        }
+
+        @SuppressWarnings("deprecation")
+        protected void deprecatedSetBackground(Button b, Drawable d) {
+            b.setBackgroundDrawable(d);
+        }
+
+        public MenuItem findItem(int id) {
+            return mMenu.findItem(id);
+        }
+
+        public void setTitle(CharSequence title) {
+            mButton.setText(title);
+        }
     }
 }

@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="@dimen/BlocklistItemHeight"
         android:orientation="vertical"
-        android:paddingTop="@dimen/PostReplyEditText_padding"
-        android:paddingBottom="@dimen/PostReplyEditText_padding"
         android:paddingLeft="16dp"
+        android:paddingTop="@dimen/PostReplyEditText_padding"
         android:paddingRight="16dp"
-        >
+        android:paddingBottom="@dimen/PostReplyEditText_padding">
 
     <TextView
             android:id="@+id/text1"
-            android:textSize="16sp"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/text2"
-            android:layout_height="wrap_content"
             android:textColor="?themedCardSubjectTextColor"
-            />
+            android:textSize="16sp" />
 
     <TextView
             android:id="@+id/text2"
-            android:textSize="16sp"
-            android:layout_centerVertical="true"
             android:layout_width="100dp"
-            android:layout_alignParentRight="true"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:textColor="@color/PaletteLightGray"
-            />
+            android:textSize="16sp" />
 
 </RelativeLayout>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2010 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,23 +13,26 @@
      limitations under the License.
 -->
 
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-    <Button android:id="@+id/selection_menu"
-            android:divider="?android:attr/listDividerAlertDialog"
+
+    <Button
+            android:id="@+id/selection_menu"
             style="?android:attr/borderlessButtonStyle"
-            android:singleLine="true"
-            android:gravity="left|center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-    <ImageView android:layout_marginLeft="8dip"
-            android:layout_marginRight="8dip"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:divider="?android:attr/listDividerAlertDialog"
+            android:gravity="left|center_vertical"
+            android:singleLine="true" />
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dip"
+            android:layout_marginRight="8dip"
             android:gravity="bottom"
             android:src="@drawable/cab_divider_vertical_dark" />
 </LinearLayout>

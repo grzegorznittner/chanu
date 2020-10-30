@@ -6,14 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.chanapps.four.component.*;
+
+import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.StringResourceDialog;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
@@ -26,8 +28,6 @@ import com.chanapps.four.fragment.SettingsFragment;
 public class SettingsActivity extends Activity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
     public static final String TAG = SettingsActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
-
     public static final String PREF_SHOW_NSFW_BOARDS = "pref_show_nsfw_boards";
     public static final String PREF_NOTIFICATIONS = "pref_notifications";
     //public static final String PREF_START_WITH_FAVORITES = "pref_start_with_favorites";
@@ -70,18 +70,14 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_USE_FAST_SCROLL = "pref_use_fast_scroll";
     public static final String PREF_SHARE_IMAGE_URL = "pref_share_image_url";
     public static final String PREF_FORCE_ENGLISH = "pref_force_english";
-
-    static public boolean shouldLoadThumbs(Context context) {
-        String autoloadType = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(PREF_AUTOLOAD_IMAGES,
-                        context.getString(R.string.pref_autoload_images_default_value));
-        return !(context.getString(R.string.pref_autoload_images_nothumbs_value).equals(autoloadType));
-    }
-
-    public static enum DownloadImages {STANDARD, ALL_IN_ONE, PER_BOARD, PER_THREAD};
-
+    private static final boolean DEBUG = false;
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
+
+    static public boolean shouldLoadThumbs(Context context) {
+        String autoloadType = PreferenceManager.getDefaultSharedPreferences(context).getString(PREF_AUTOLOAD_IMAGES, context.getString(R.string.pref_autoload_images_default_value));
+        return !(context.getString(R.string.pref_autoload_images_nothumbs_value).equals(autoloadType));
+    }
 
     public static boolean startActivity(final Activity from) {
         Intent intent = new Intent(from, SettingsActivity.class);
@@ -143,28 +139,31 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     }
 
     @Override
-	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.SETTINGS_ACTIVITY);
-	}
-
-	@Override
-	public Handler getChanHandler() {
-		return null;
-	}
+    public ChanActivityId getChanActivityId() {
+        return new ChanActivityId(LastActivity.SETTINGS_ACTIVITY);
+    }
 
     @Override
-    public void refresh() {}
+    public Handler getChanHandler() {
+        return null;
+    }
 
     @Override
-    public void closeSearch() {}
+    public void refresh() {
+    }
 
     @Override
-    public void setProgress(boolean on) {}
+    public void closeSearch() {
+    }
+
+    @Override
+    public void setProgress(boolean on) {
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.settings_menu, menu);
+//        inflater.inflate(R.menu.settings_menu, menu);
         getActionBar().setDisplayShowHomeEnabled(true);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         return super.onCreateOptionsMenu(menu);
@@ -178,11 +177,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                 //BoardActivity.startDefaultActivity(this);
                 return true;
             case R.id.global_rules_menu:
-                (new StringResourceDialog(this,
-                        R.layout.board_rules_dialog,
-                        R.string.global_rules_menu,
-                        R.string.global_rules_detail))
-                        .show();
+                (new StringResourceDialog(this, R.layout.board_rules_dialog, R.string.global_rules_menu, R.string.global_rules_detail)).show();
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(this, null);
@@ -204,16 +199,16 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
         int numTasks = p.first;
         ActivityManager.RunningTaskInfo task = p.second;
         if (task != null) {
-            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
-            if (task.baseActivity != null
-                    && !getClass().getName().equals(task.baseActivity.getClassName())) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
-                        + getClass().getName() + " base=" + task.baseActivity.getClassName());
+            if (DEBUG)
+                Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (task.baseActivity != null && !getClass().getName().equals(task.baseActivity.getClassName())) {
+                if (DEBUG)
+                    Log.i(TAG, "navigateUp() using finish instead of intents with me=" + getClass().getName() + " base=" + task.baseActivity.getClassName());
                 finish();
                 return;
-            }
-            else if (task.baseActivity != null && numTasks >= 2) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + numTasks);
+            } else if (task.baseActivity != null && numTasks >= 2) {
+                if (DEBUG)
+                    Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + numTasks);
                 finish();
                 return;
             }
@@ -226,7 +221,10 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     }
 
     @Override
-    public void switchBoard(String boardCode, String query) {}
+    public void switchBoard(String boardCode, String query) {
+    }
+
+    public enum DownloadImages {STANDARD, ALL_IN_ONE, PER_BOARD, PER_THREAD}
 
 }
 

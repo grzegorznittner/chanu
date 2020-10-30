@@ -16,8 +16,18 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.app.GalleryActionBar;
+import android.app.Activity;
+import android.content.Context;
+import android.os.Handler;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.PopupMenu.OnMenuItemClickListener;
+
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.DataManager;
@@ -29,35 +39,13 @@ import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Handler;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.PopupMenu.OnMenuItemClickListener;
-import android.widget.ShareActionProvider.OnShareTargetSelectedListener;
-import android.widget.ShareActionProvider;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 
 public class ActionModeHandler implements ActionMode.Callback {
     private static final String TAG = "ActionModeHandler";
-    private static final int SUPPORT_MULTIPLE_MASK = MediaObject.SUPPORT_DELETE
-            | MediaObject.SUPPORT_ROTATE | MediaObject.SUPPORT_SHARE
-            | MediaObject.SUPPORT_CACHE | MediaObject.SUPPORT_IMPORT;
-
-    public interface ActionModeListener {
-        public boolean onActionItemClicked(MenuItem item);
-    }
-
+    private static final int SUPPORT_MULTIPLE_MASK = MediaObject.SUPPORT_DELETE | MediaObject.SUPPORT_ROTATE | MediaObject.SUPPORT_SHARE | MediaObject.SUPPORT_CACHE | MediaObject.SUPPORT_IMPORT;
     private final GalleryActivity mActivity;
     private final MenuExecutor mMenuExecutor;
     private final SelectionManager mSelectionManager;
@@ -66,10 +54,8 @@ public class ActionModeHandler implements ActionMode.Callback {
     private ActionModeListener mListener;
     private Future<?> mMenuTask;
     private Handler mMainHandler;
-    private ShareActionProvider mShareActionProvider;
 
-    public ActionModeHandler(
-            GalleryActivity activity, SelectionManager selectionManager) {
+    public ActionModeHandler(GalleryActivity activity, SelectionManager selectionManager) {
         mActivity = Utils.checkNotNull(activity);
         mSelectionManager = Utils.checkNotNull(selectionManager);
         mMenuExecutor = new MenuExecutor(activity, selectionManager);
@@ -80,12 +66,9 @@ public class ActionModeHandler implements ActionMode.Callback {
         Activity a = (Activity) mActivity;
         final ActionMode actionMode = a.startActionMode(this);
         CustomMenu customMenu = new CustomMenu(a);
-        View customView = LayoutInflater.from(a).inflate(
-                R.layout.action_mode, null);
+        View customView = LayoutInflater.from(a).inflate(R.layout.action_mode, null);
         actionMode.setCustomView(customView);
-        mSelectionMenu = customMenu.addDropDownMenu(
-                (Button) customView.findViewById(R.id.selection_menu),
-                R.menu.selection);
+        mSelectionMenu = customMenu.addDropDownMenu((Button) customView.findViewById(R.id.selection_menu), R.menu.selection);
         updateSelectionMenu();
         customMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
@@ -113,9 +96,6 @@ public class ActionModeHandler implements ActionMode.Callback {
             }
         }
         ProgressListener listener = null;
-        if (item.getItemId() == R.id.action_import) {
-            listener = new ImportCompleteListener(mActivity);
-        }
         result = mMenuExecutor.onMenuClicked(item, listener);
         if (item.getItemId() == R.id.action_select_all) {
             updateSupportedOperation();
@@ -127,8 +107,7 @@ public class ActionModeHandler implements ActionMode.Callback {
     private void updateSelectionMenu() {
         // update title
         int count = mSelectionManager.getSelectedCount();
-        String format = mActivity.getResources().getQuantityString(
-                R.plurals.number_of_items_selected, count);
+        String format = mActivity.getResources().getQuantityString(R.plurals.number_of_items_selected, count);
         setTitle(String.format(format, count));
         // For clients who call SelectionManager.selectAll() directly, we need to ensure the
         // menu status is consistent with selection manager.
@@ -147,16 +126,6 @@ public class ActionModeHandler implements ActionMode.Callback {
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.operation, menu);
-
-        mShareActionProvider = GalleryActionBar.initializeShareActionProvider(menu);
-        OnShareTargetSelectedListener listener = new OnShareTargetSelectedListener() {
-            public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
-                mSelectionManager.leaveSelectionMode();
-                return false;
-            }
-        };
-
-        mShareActionProvider.setOnShareTargetSelectedListener(listener);
         mMenu = menu;
         return true;
     }
@@ -207,50 +176,6 @@ public class ActionModeHandler implements ActionMode.Callback {
         });
     }
 
-    // Share intent needs to expand the selection set so we can get URI of
-    // each media item
-    private void updateSharingIntent(JobContext jc) {
-        if (mShareActionProvider == null) return;
-        ArrayList<Path> paths = mSelectionManager.getSelected(true);
-        if (paths.size() == 0) return;
-
-        final ArrayList<Uri> uris = new ArrayList<Uri>();
-
-        DataManager manager = mActivity.getDataManager();
-        int type = 0;
-
-        final Intent intent = new Intent();
-        for (Path path : paths) {
-            int support = manager.getSupportedOperations(path);
-            type |= manager.getMediaType(path);
-
-            if ((support & MediaObject.SUPPORT_SHARE) != 0) {
-                uris.add(manager.getContentUri(path));
-            }
-        }
-
-        final int size = uris.size();
-        if (size > 0) {
-            final String mimeType = MenuExecutor.getMimeType(type);
-            if (size > 1) {
-                intent.setAction(Intent.ACTION_SEND_MULTIPLE).setType(mimeType);
-                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            } else {
-                intent.setAction(Intent.ACTION_SEND).setType(mimeType);
-                intent.putExtra(Intent.EXTRA_STREAM, uris.get(0));
-            }
-            intent.setType(mimeType);
-
-            mMainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.v(TAG, "Sharing intent is ready: action = " + intent.getAction());
-                    mShareActionProvider.setShareIntent(intent);
-                }
-            });
-        }
-    }
-
     public void updateSupportedOperation(Path path, boolean selected) {
         // TODO: We need to improve the performance
         updateSupportedOperation();
@@ -261,17 +186,11 @@ public class ActionModeHandler implements ActionMode.Callback {
             mMenuTask.cancel();
         }
 
-        // Disable share action until share intent is in good shape
-        if (mShareActionProvider != null) {
-            Log.v(TAG, "Disable sharing until intent is ready");
-            mShareActionProvider.setShareIntent(null);
-        }
-
         // Generate sharing intent and update supported operations in the background
         mMenuTask = mActivity.getThreadPool().submit(new Job<Void>() {
             public Void run(JobContext jc) {
                 updateMenuOptions(jc);
-                updateSharingIntent(jc);
+//                updateSharingIntent(jc);
                 return null;
             }
         });
@@ -287,5 +206,9 @@ public class ActionModeHandler implements ActionMode.Callback {
 
     public void resume() {
         updateSupportedOperation();
+    }
+
+    public interface ActionModeListener {
+        boolean onActionItemClicked(MenuItem item);
     }
 }

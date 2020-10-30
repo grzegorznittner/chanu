@@ -16,6 +16,11 @@
 
 package com.android.gallery3d.picasasource;
 
+import android.app.Activity;
+import android.content.Context;
+import android.media.ExifInterface;
+import android.os.ParcelFileDescriptor;
+
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
@@ -23,26 +28,17 @@ import com.android.gallery3d.data.MediaSource;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.data.PathMatcher;
 
-import android.app.Activity;
-import android.content.Context;
-import android.media.ExifInterface;
-import android.os.ParcelFileDescriptor;
-
 import java.io.FileNotFoundException;
 
 public class PicasaSource extends MediaSource {
+    public static final Path ALBUM_PATH = Path.fromString("/picasa/all");
     private static final String TAG = "PicasaSource";
-
     private static final int NO_MATCH = -1;
     private static final int IMAGE_MEDIA_ID = 1;
-
     private static final int PICASA_ALBUMSET = 0;
     private static final int MAP_BATCH_COUNT = 100;
-
     private GalleryApp mApplication;
     private PathMatcher mMatcher;
-
-    public static final Path ALBUM_PATH = Path.fromString("/picasa/all");
 
     public PicasaSource(GalleryApp application) {
         super("picasa");
@@ -51,33 +47,6 @@ public class PicasaSource extends MediaSource {
         mMatcher.add("/picasa/all", PICASA_ALBUMSET);
         mMatcher.add("/picasa/image", PICASA_ALBUMSET);
         mMatcher.add("/picasa/video", PICASA_ALBUMSET);
-    }
-
-    private static class EmptyAlbumSet extends MediaSet {
-
-        public EmptyAlbumSet(Path path, long version) {
-            super(path, version);
-        }
-
-        @Override
-        public String getName() {
-            return "picasa";
-        }
-
-        @Override
-        public long reload() {
-            return mDataVersion;
-        }
-    }
-
-    @Override
-    public MediaObject createMediaObject(Path path) {
-        switch (mMatcher.match(path)) {
-            case PICASA_ALBUMSET:
-                return new EmptyAlbumSet(path, MediaObject.nextVersionNumber());
-            default:
-                throw new RuntimeException("bad path: " + path);
-        }
     }
 
     public static boolean isPicasaImage(MediaObject object) {
@@ -112,8 +81,7 @@ public class PicasaSource extends MediaSource {
         throw new UnsupportedOperationException();
     }
 
-    public static ParcelFileDescriptor openFile(Context context, MediaObject image, String mode)
-            throws FileNotFoundException {
+    public static ParcelFileDescriptor openFile(Context context, MediaObject image, String mode) throws FileNotFoundException {
         throw new UnsupportedOperationException();
     }
 
@@ -128,4 +96,31 @@ public class PicasaSource extends MediaSource {
     public static void onPackageRemoved(Context context, String packageName) {/*do nothing*/}
 
     public static void extractExifValues(MediaObject item, ExifInterface exif) {/*do nothing*/}
+
+    @Override
+    public MediaObject createMediaObject(Path path) {
+        switch (mMatcher.match(path)) {
+            case PICASA_ALBUMSET:
+                return new EmptyAlbumSet(path, MediaObject.nextVersionNumber());
+            default:
+                throw new RuntimeException("bad path: " + path);
+        }
+    }
+
+    private static class EmptyAlbumSet extends MediaSet {
+
+        public EmptyAlbumSet(Path path, long version) {
+            super(path, version);
+        }
+
+        @Override
+        public String getName() {
+            return "picasa";
+        }
+
+        @Override
+        public long reload() {
+            return mDataVersion;
+        }
+    }
 }

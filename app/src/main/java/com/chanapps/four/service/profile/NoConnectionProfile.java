@@ -2,9 +2,12 @@ package com.chanapps.four.service.profile;
 
 import android.content.Context;
 import android.os.Handler;
-
 import android.widget.Toast;
-import com.chanapps.four.activity.*;
+
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.LastActivity;
@@ -13,42 +16,41 @@ import com.chanapps.four.service.NetworkProfileManager;
 
 public class NoConnectionProfile extends AbstractNetworkProfile {
 
-	@Override
-	public Type getConnectionType() {
-		return Type.NO_CONNECTION;
-	}
+    @Override
+    public Type getConnectionType() {
+        return Type.NO_CONNECTION;
+    }
 
-	@Override
-	public Health getConnectionHealth() {
-		return Health.NO_CONNECTION;
-	}
-	
-	@Override
-	public void onProfileActivated(Context context) {
-		super.onProfileActivated(context);
-		
-		FetchChanDataService.clearServiceQueue(context);
-		
-		makeToast(R.string.no_connection_profile);
-	}
+    @Override
+    public Health getConnectionHealth() {
+        return Health.NO_CONNECTION;
+    }
 
-	@Override
-	public void onApplicationStart(Context context) {
-		super.onApplicationStart(context);
-	}
+    @Override
+    public void onProfileActivated(Context context) {
+        super.onProfileActivated(context);
+
+        FetchChanDataService.clearServiceQueue(context);
+
+        makeToast(R.string.no_connection_profile);
+    }
+
+    @Override
+    public void onApplicationStart(Context context) {
+        super.onApplicationStart(context);
+    }
 
     @Override
     public void onBoardSelectorRefreshed(final Context context, Handler handler, String boardCode) {
         super.onBoardSelectorRefreshed(context, handler, boardCode);
-        if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    activity.setProgress(false);
-                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (handler != null) handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                activity.setProgress(false);
+                Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -56,29 +58,27 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
         super.onBoardRefreshed(context, handler, boardCode);
         if (ChanFileStorage.hasNewBoardData(context, boardCode))
             onUpdateViewData(context, handler, boardCode);
-        else if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    activity.setProgress(false);
-                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                }
-            });
+        else if (handler != null) handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                activity.setProgress(false);
+                Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onThreadRefreshed(Context context, Handler handler, String boardCode, long threadNo) {
         super.onThreadRefreshed(context, handler, boardCode, threadNo);
-        if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    activity.setProgress(false);
-                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (handler != null) handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                activity.setProgress(false);
+                Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -96,30 +96,26 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
         }
         final String refreshMessage = refreshText;
 
-        boolean boardActivity = currentActivityId != null
-                && currentActivityId.boardCode != null
-                && currentActivityId.boardCode.equals(boardCode);
+        boolean boardActivity = currentActivityId != null && currentActivityId.boardCode != null && currentActivityId.boardCode.equals(boardCode);
 
-        if (boardActivity
-                && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
-                && currentActivityId.threadNo == 0 && handler != null)
+        if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY && currentActivityId.threadNo == 0 && handler != null)
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     //((BoardActivity)activity).refresh(refreshMessage);
-                    ((BoardActivity)activity).refresh();
+                    activity.refresh();
                 }
             });
     }
 
     @Override
-	public void onBoardSelected(Context context, String board) {
-		super.onBoardSelected(context, board);
+    public void onBoardSelected(Context context, String board) {
+        super.onBoardSelected(context, board);
     }
 
-	@Override
-	public void onThreadSelected(Context context, String board, long threadId) {
-		super.onThreadSelected(context, board, threadId);
+    @Override
+    public void onThreadSelected(Context context, String board, long threadId) {
+        super.onThreadSelected(context, board, threadId);
     }
 
     @Override
@@ -133,41 +129,35 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
     }
 
     @Override
-	public void onDataParseSuccess(ChanIdentifiedService service) {
-		ChanActivityId data = service.getChanActivityId();
-		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
-		
-		if (data.threadNo == 0) {
-			// board fetching
-			boolean boardActivity = currentActivityId != null
-					&& currentActivityId.boardCode != null
-					&& currentActivityId.boardCode.equals(data.boardCode);
-			if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
-					&& currentActivityId.threadNo == 0) {
-				// user is on the board page, we need to be reloaded it
-				Handler handler = activity.getChanHandler();
-				if (handler != null) {
-					handler.sendEmptyMessage(0);
-				}
-			}
-		} else if (data.postNo == 0) {
-			// thread fetching
-			boolean threadActivity = currentActivityId != null && currentActivityId.boardCode != null
-					&& currentActivityId.boardCode.equals(data.boardCode)
-					&& currentActivityId.threadNo == data.threadNo;
-			if (currentActivityId != null && threadActivity && currentActivityId.activity == LastActivity.THREAD_ACTIVITY
-					&& currentActivityId.postNo == 0) {
-				// user is on the thread page, we need to reload it
-				Handler handler = activity.getChanHandler();
-				if (handler != null) {
-					handler.sendEmptyMessage(0);
+    public void onDataParseSuccess(ChanIdentifiedService service) {
+        ChanActivityId data = service.getChanActivityId();
+        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
+
+        if (data.threadNo == 0) {
+            // board fetching
+            boolean boardActivity = currentActivityId != null && currentActivityId.boardCode != null && currentActivityId.boardCode.equals(data.boardCode);
+            if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY && currentActivityId.threadNo == 0) {
+                // user is on the board page, we need to be reloaded it
+                Handler handler = activity.getChanHandler();
+                if (handler != null) {
+                    handler.sendEmptyMessage(0);
+                }
+            }
+        } else if (data.postNo == 0) {
+            // thread fetching
+            boolean threadActivity = currentActivityId != null && currentActivityId.boardCode != null && currentActivityId.boardCode.equals(data.boardCode) && currentActivityId.threadNo == data.threadNo;
+            if (currentActivityId != null && threadActivity && currentActivityId.activity == LastActivity.THREAD_ACTIVITY && currentActivityId.postNo == 0) {
+                // user is on the thread page, we need to reload it
+                Handler handler = activity.getChanHandler();
+                if (handler != null) {
+                    handler.sendEmptyMessage(0);
                     if (data.threadUpdateMessage != null)
                         Toast.makeText(activity.getBaseContext(), data.threadUpdateMessage, Toast.LENGTH_SHORT).show();
-				}
-			}
-		} else {
-			// image fetching
-		}
-	}
+                }
+            }
+        } else {
+            // image fetching
+        }
+    }
 }

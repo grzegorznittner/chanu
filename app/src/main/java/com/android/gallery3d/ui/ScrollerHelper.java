@@ -16,11 +16,11 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.common.Utils;
-
 import android.content.Context;
 import android.view.ViewConfiguration;
 import android.widget.OverScroller;
+
+import com.android.gallery3d.common.Utils;
 
 public class ScrollerHelper {
     private OverScroller mScroller;
@@ -58,23 +58,21 @@ public class ScrollerHelper {
         return mScroller.getCurrX();
     }
 
-    public float getCurrVelocity() {
-        return mScroller.getCurrVelocity();
-    }
-
     public void setPosition(int position) {
-        mScroller.startScroll(
-                position, 0,    // startX, startY
+        mScroller.startScroll(position, 0,    // startX, startY
                 0, 0, 0);       // dx, dy, duration
 
         // This forces the scroller to reach the final position.
         mScroller.abortAnimation();
     }
 
+    public float getCurrVelocity() {
+        return mScroller.getCurrVelocity();
+    }
+
     public void fling(int velocity, int min, int max) {
         int currX = getPosition();
-        mScroller.fling(
-                currX, 0,      // startX, startY
+        mScroller.fling(currX, 0,      // startX, startY
                 velocity, 0,   // velocityX, velocityY
                 min, max,      // minX, maxX
                 0, 0,          // minY, maxY
@@ -87,9 +85,8 @@ public class ScrollerHelper {
         int finalPosition = mScroller.getFinalX();
         int newPosition = Utils.clamp(finalPosition + distance, min, max);
         if (newPosition != currPosition) {
-            mScroller.startScroll(
-                currPosition, 0,                    // startX, startY
-                newPosition - currPosition, 0, 0);  // dx, dy, duration
+            mScroller.startScroll(currPosition, 0,                    // startX, startY
+                    newPosition - currPosition, 0, 0);  // dx, dy, duration
         }
         return finalPosition + distance - newPosition;
     }

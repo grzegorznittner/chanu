@@ -16,8 +16,6 @@
 
 package com.android.gallery3d.util;
 
-import com.android.gallery3d.common.BlobCache;
-
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -25,6 +23,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import com.android.gallery3d.common.BlobCache;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,12 +35,12 @@ import java.util.List;
 import java.util.Locale;
 
 public class ReverseGeocoder {
-    private static final String TAG = "ReverseGeocoder";
     public static final int EARTH_RADIUS_METERS = 6378137;
     public static final int LAT_MIN = -90;
     public static final int LAT_MAX = 90;
     public static final int LON_MIN = -180;
     public static final int LON_MAX = 180;
+    private static final String TAG = "ReverseGeocoder";
     private static final int MAX_COUNTRY_NAME_LENGTH = 8;
     // If two points are within 20 miles of each other, use
     // "Around Palo Alto, CA" or "Around Mountain View, CA".
@@ -52,36 +52,31 @@ public class ReverseGeocoder {
     private static final int GEO_CACHE_MAX_ENTRIES = 1000;
     private static final int GEO_CACHE_MAX_BYTES = 500 * 1024;
     private static final int GEO_CACHE_VERSION = 0;
-
-    public static class SetLatLong {
-        // The latitude and longitude of the min latitude point.
-        public double mMinLatLatitude = LAT_MAX;
-        public double mMinLatLongitude;
-        // The latitude and longitude of the max latitude point.
-        public double mMaxLatLatitude = LAT_MIN;
-        public double mMaxLatLongitude;
-        // The latitude and longitude of the min longitude point.
-        public double mMinLonLatitude;
-        public double mMinLonLongitude = LON_MAX;
-        // The latitude and longitude of the max longitude point.
-        public double mMaxLonLatitude;
-        public double mMaxLonLongitude = LON_MIN;
-    }
-
+    private static Address sCurrentAddress; // last known address
     private Context mContext;
     private Geocoder mGeocoder;
     private BlobCache mGeoCache;
     private ConnectivityManager mConnectivityManager;
-    private static Address sCurrentAddress; // last known address
 
     public ReverseGeocoder(Context context) {
         mContext = context;
         mGeocoder = new Geocoder(mContext);
-        mGeoCache = CacheManager.getCache(context, GEO_CACHE_FILE,
-                GEO_CACHE_MAX_ENTRIES, GEO_CACHE_MAX_BYTES,
-                GEO_CACHE_VERSION);
-        mConnectivityManager = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        mGeoCache = CacheManager.getCache(context, GEO_CACHE_FILE, GEO_CACHE_MAX_ENTRIES, GEO_CACHE_MAX_BYTES, GEO_CACHE_VERSION);
+        mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    public static final void writeUTF(DataOutputStream dos, String string) throws IOException {
+        if (string == null) {
+            dos.writeUTF("");
+        } else {
+            dos.writeUTF(string);
+        }
+    }
+
+    public static final String readUTF(DataInputStream dis) throws IOException {
+        String retVal = dis.readUTF();
+        if (retVal.length() == 0) return null;
+        return retVal;
     }
 
     public String computeAddress(SetLatLong set) {
@@ -90,8 +85,7 @@ public class ReverseGeocoder {
         double setMinLongitude = set.mMinLatLongitude;
         double setMaxLatitude = set.mMaxLatLatitude;
         double setMaxLongitude = set.mMaxLatLongitude;
-        if (Math.abs(set.mMaxLatLatitude - set.mMinLatLatitude)
-                < Math.abs(set.mMaxLonLongitude - set.mMinLonLongitude)) {
+        if (Math.abs(set.mMaxLatLatitude - set.mMinLatLatitude) < Math.abs(set.mMaxLonLongitude - set.mMinLonLongitude)) {
             setMinLatitude = set.mMinLonLatitude;
             setMinLongitude = set.mMinLonLongitude;
             setMaxLatitude = set.mMaxLonLatitude;
@@ -99,32 +93,27 @@ public class ReverseGeocoder {
         }
         Address addr1 = lookupAddress(setMinLatitude, setMinLongitude, true);
         Address addr2 = lookupAddress(setMaxLatitude, setMaxLongitude, true);
-        if (addr1 == null)
-            addr1 = addr2;
-        if (addr2 == null)
-            addr2 = addr1;
+        if (addr1 == null) addr1 = addr2;
+        if (addr2 == null) addr2 = addr1;
         if (addr1 == null || addr2 == null) {
             return null;
         }
 
         // Get current location, we decide the granularity of the string based
         // on this.
-        LocationManager locationManager =
-                (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         Location location = null;
         List<String> providers = locationManager.getAllProviders();
         for (int i = 0; i < providers.size(); ++i) {
             String provider = providers.get(i);
             location = (provider != null) ? locationManager.getLastKnownLocation(provider) : null;
-            if (location != null)
-                break;
+            if (location != null) break;
         }
         String currentCity = "";
         String currentAdminArea = "";
         String currentCountry = Locale.getDefault().getCountry();
         if (location != null) {
-            Address currentAddress = lookupAddress(
-                    location.getLatitude(), location.getLongitude(), true);
+            Address currentAddress = lookupAddress(location.getLatitude(), location.getLongitude(), true);
             if (currentAddress == null) {
                 currentAddress = sCurrentAddress;
             } else {
@@ -222,8 +211,7 @@ public class ReverseGeocoder {
         // Just choose one of the localities if within a MAX_LOCALITY_MILE_RANGE
         // mile radius.
         float[] distanceFloat = new float[1];
-        Location.distanceBetween(setMinLatitude, setMinLongitude,
-                setMaxLatitude, setMaxLongitude, distanceFloat);
+        Location.distanceBetween(setMinLatitude, setMinLongitude, setMaxLatitude, setMaxLongitude, distanceFloat);
         int distance = (int) GalleryUtils.toMile(distanceFloat[0]);
         if (distance < MAX_LOCALITY_MILE_RANGE) {
             // Try each of the points and just return the first one to have a
@@ -258,12 +246,9 @@ public class ReverseGeocoder {
         // There is no intersection, let's choose a nicer name.
         String addr1Country = addr1.getCountryName();
         String addr2Country = addr2.getCountryName();
-        if (addr1Country == null)
-            addr1Country = addr1CountryCode;
-        if (addr2Country == null)
-            addr2Country = addr2CountryCode;
-        if (addr1Country == null || addr2Country == null)
-            return null;
+        if (addr1Country == null) addr1Country = addr1CountryCode;
+        if (addr2Country == null) addr2Country = addr2CountryCode;
+        if (addr1Country == null || addr2Country == null) return null;
         if (addr1Country.length() > MAX_COUNTRY_NAME_LENGTH || addr2Country.length() > MAX_COUNTRY_NAME_LENGTH) {
             closestCommonLocation = addr1CountryCode + " - " + addr2CountryCode;
         } else {
@@ -273,16 +258,13 @@ public class ReverseGeocoder {
     }
 
     private String checkNull(String locality) {
-        if (locality == null)
-            return "";
-        if (locality.equals("null"))
-            return "";
+        if (locality == null) return "";
+        if (locality.equals("null")) return "";
         return locality;
     }
 
     private String getLocalityAdminForAddress(final Address addr, final boolean approxLocation) {
-        if (addr == null)
-            return "";
+        if (addr == null) return "";
         String localityAdminStr = addr.getLocality();
         if (localityAdminStr != null && !("null".equals(localityAdminStr))) {
             if (approxLocation) {
@@ -301,11 +283,9 @@ public class ReverseGeocoder {
         return null;
     }
 
-    public Address lookupAddress(final double latitude, final double longitude,
-            boolean useCache) {
+    public Address lookupAddress(final double latitude, final double longitude, boolean useCache) {
         try {
-            long locationKey = (long) (((latitude + LAT_MAX) * 2 * LAT_MAX
-                    + (longitude + LON_MAX)) * EARTH_RADIUS_METERS);
+            long locationKey = (long) (((latitude + LAT_MAX) * 2 * LAT_MAX + (longitude + LON_MAX)) * EARTH_RADIUS_METERS);
             byte[] cachedLocation = null;
             if (useCache && mGeoCache != null) {
                 cachedLocation = mGeoCache.lookup(locationKey);
@@ -351,8 +331,7 @@ public class ReverseGeocoder {
                 }
             } else {
                 // Parsing the address from the byte stream.
-                DataInputStream dis = new DataInputStream(
-                        new ByteArrayInputStream(cachedLocation));
+                DataInputStream dis = new DataInputStream(new ByteArrayInputStream(cachedLocation));
                 String language = readUTF(dis);
                 String country = readUTF(dis);
                 String variant = readUTF(dis);
@@ -400,18 +379,18 @@ public class ReverseGeocoder {
         return (a != null && b != null && a.equalsIgnoreCase(b)) ? a : null;
     }
 
-    public static final void writeUTF(DataOutputStream dos, String string) throws IOException {
-        if (string == null) {
-            dos.writeUTF("");
-        } else {
-            dos.writeUTF(string);
-        }
-    }
-
-    public static final String readUTF(DataInputStream dis) throws IOException {
-        String retVal = dis.readUTF();
-        if (retVal.length() == 0)
-            return null;
-        return retVal;
+    public static class SetLatLong {
+        // The latitude and longitude of the min latitude point.
+        public double mMinLatLatitude = LAT_MAX;
+        public double mMinLatLongitude;
+        // The latitude and longitude of the max latitude point.
+        public double mMaxLatLatitude = LAT_MIN;
+        public double mMaxLatLongitude;
+        // The latitude and longitude of the min longitude point.
+        public double mMinLonLatitude;
+        public double mMinLonLongitude = LON_MAX;
+        // The latitude and longitude of the max longitude point.
+        public double mMaxLonLatitude;
+        public double mMaxLonLongitude = LON_MIN;
     }
 }

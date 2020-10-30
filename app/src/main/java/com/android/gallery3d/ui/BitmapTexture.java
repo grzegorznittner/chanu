@@ -16,10 +16,10 @@
 
 package com.android.gallery3d.ui;
 
-import android.graphics.BitmapFactory;
-import com.android.gallery3d.common.Utils;
-
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import com.android.gallery3d.common.Utils;
 
 // BitmapTexture is a texture whose content is specified by a fixed Bitmap.
 //
@@ -55,8 +55,7 @@ public class BitmapTexture extends UploadedTexture {
         if (mContentBitmap != null) {
             options.outWidth = mContentBitmap.getWidth();
             options.outHeight = mContentBitmap.getHeight();
-        }
-        else {
+        } else {
             options.outWidth = 0;
             options.outHeight = 0;
         }

@@ -16,9 +16,9 @@
 
 package com.android.gallery3d.data;
 
-import com.chanapps.four.gallery3d.R;
-
 import android.content.Context;
+
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -38,8 +38,7 @@ public class FaceClustering extends Clustering {
 
     @Override
     public void run(MediaSet baseSet) {
-        final TreeMap<Face, ArrayList<Path>> map =
-                new TreeMap<Face, ArrayList<Path>>();
+        final TreeMap<Face, ArrayList<Path>> map = new TreeMap<Face, ArrayList<Path>>();
         final ArrayList<Path> untagged = new ArrayList<Path>();
 
         baseSet.enumerateTotalMediaItems(new MediaSet.ItemConsumer() {

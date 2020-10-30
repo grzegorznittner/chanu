@@ -66,15 +66,14 @@ class FlingScroller {
     }
 
     public int getCurrVelocityX() {
-        return (int)Math.round(mCurrV * mCosAngle);
+        return (int) Math.round(mCurrV * mCosAngle);
     }
 
     public int getCurrVelocityY() {
-        return (int)Math.round(mCurrV * mSinAngle);
+        return (int) Math.round(mCurrV * mSinAngle);
     }
 
-    public void fling(int startX, int startY, int velocityX, int velocityY,
-            int minX, int maxX, int minY, int maxY) {
+    public void fling(int startX, int startY, int velocityX, int velocityY, int minX, int maxX, int minY, int maxY) {
         mStartX = startX;
         mStartY = startY;
         mMinX = minX;
@@ -93,12 +92,10 @@ class FlingScroller {
         //
 
         // Ta = T_ref * (Va / V_ref) ^ (1 / (d - 1)); V_ref = 1 pixel/second;
-        mDuration = (int)Math.round(FLING_DURATION_PARAM
-                * Math.pow(Math.abs(velocity), 1.0 / (DECELERATED_FACTOR - 1)));
+        mDuration = (int) Math.round(FLING_DURATION_PARAM * Math.pow(Math.abs(velocity), 1.0 / (DECELERATED_FACTOR - 1)));
 
         // (e - s) = v0 * T / d
-        mDistance = (int)Math.round(
-                velocity * mDuration / DECELERATED_FACTOR / 1000);
+        mDistance = (int) Math.round(velocity * mDuration / DECELERATED_FACTOR / 1000);
 
         mFinalX = getX(1.0f);
         mFinalY = getY(1.0f);
@@ -114,18 +111,15 @@ class FlingScroller {
     }
 
     private int getX(float f) {
-        return (int) Utils.clamp(
-                Math.round(mStartX + f * mDistance * mCosAngle), mMinX, mMaxX);
+        return (int) Utils.clamp(Math.round(mStartX + f * mDistance * mCosAngle), mMinX, mMaxX);
     }
 
     private int getY(float f) {
-        return (int) Utils.clamp(
-                Math.round(mStartY + f * mDistance * mSinAngle), mMinY, mMaxY);
+        return (int) Utils.clamp(Math.round(mStartY + f * mDistance * mSinAngle), mMinY, mMaxY);
     }
 
     private double getV(float progress) {
         // velocity formula: v(t) = d * (e - s) * (1 - t / T) ^ (d - 1) / T
-        return DECELERATED_FACTOR * mDistance * 1000 *
-                Math.pow(1 - progress, DECELERATED_FACTOR - 1) / mDuration;
+        return DECELERATED_FACTOR * mDistance * 1000 * Math.pow(1 - progress, DECELERATED_FACTOR - 1) / mDuration;
     }
 }

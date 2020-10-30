@@ -316,7 +316,9 @@
     <dimen name="widget_board_coverflowcard_height">@dimen/widget_twocol_inner</dimen>
     <dimen name="widget_board_coverflowcard_image_width">@dimen/widget_twocol_inner</dimen>
     <dimen name="widget_board_coverflowcard_image_height">@dimen/widget_twocol_inner</dimen>
-    <dimen name="widget_board_coverflowcard_text_paddingLeft">@dimen/widget_twocol_inner_paddingLeft</dimen>
+    <dimen name="widget_board_coverflowcard_text_paddingLeft">
+        @dimen/widget_twocol_inner_paddingLeft
+    </dimen>
     <dimen name="widget_board_coverflowcard_textSize">@dimen/widget_textSize</dimen>
 
     <!-- drawer -->
@@ -440,7 +442,7 @@
     <string name="pref_theme_light_value">0</string>
     <string name="pref_theme_dark_value">1</string>
     <string name="pref_theme_auto_value">2</string>
-    <string name="pref_theme_default_value">@string/pref_theme_light_value</string>
+    <string name="pref_theme_default_value">@string/pref_theme_dark_value</string>
     <string name="pref_autoload_images_nothumbs_value">3</string>
     <string name="pref_autoload_images_never_value">0</string>
     <string name="pref_autoload_images_always_value">1</string>
@@ -465,7 +467,7 @@
     <string name="thread_has_bumplimit">(BL)</string>
     <string name="thread_has_imagelimit">(IL)</string>
     <string name="board_vg_abbrev">/vg/</string>
-    <string name="app_name">Chanu</string>
+<!--    <string name="app_name">Chanu</string>-->
 
     <dimen name="BlocklistItemHeight">48dp</dimen>
 

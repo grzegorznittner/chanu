@@ -22,6 +22,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
+
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 
@@ -33,7 +34,7 @@ import com.chanapps.four.activity.R;
  */
 public class YesNoPreference extends DialogPreference {
     private boolean mWasPositiveResult;
-    
+
     public YesNoPreference(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -41,7 +42,7 @@ public class YesNoPreference extends DialogPreference {
     public YesNoPreference(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.yesNoPreferenceStyle);
     }
-    
+
     public YesNoPreference(Context context) {
         this(context, null);
     }
@@ -55,21 +56,6 @@ public class YesNoPreference extends DialogPreference {
         }
     }
 
-    /**
-     * Sets the value of this preference, and saves it to the persistent store
-     * if required.
-     * 
-     * @param value The value of the preference.
-     */
-    public void setValue(boolean value) {
-        mWasPositiveResult = value;
-        
-        persistBoolean(value);
-        
-        notifyDependencyChange(!value);
-        setSummary(value);
-    }
-
     protected void setSummary(boolean value) {
         int id = value ? R.string.pref_show_nsfw_boards_summ_on : R.string.pref_show_nsfw_boards_summ_off;
         super.setSummary(id);
@@ -78,13 +64,28 @@ public class YesNoPreference extends DialogPreference {
 
     /**
      * Gets the value of this preference.
-     * 
+     *
      * @return The value of the preference.
      */
     public boolean getValue() {
         return mWasPositiveResult;
     }
-    
+
+    /**
+     * Sets the value of this preference, and saves it to the persistent store
+     * if required.
+     *
+     * @param value The value of the preference.
+     */
+    public void setValue(boolean value) {
+        mWasPositiveResult = value;
+
+        persistBoolean(value);
+
+        notifyDependencyChange(!value);
+        setSummary(value);
+    }
+
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
         return a.getBoolean(index, false);
@@ -92,15 +93,14 @@ public class YesNoPreference extends DialogPreference {
 
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        setValue(restorePersistedValue ? getPersistedBoolean(mWasPositiveResult) :
-            (Boolean) defaultValue);
+        setValue(restorePersistedValue ? getPersistedBoolean(mWasPositiveResult) : (Boolean) defaultValue);
     }
 
     @Override
     public boolean shouldDisableDependents() {
         return !mWasPositiveResult || super.shouldDisableDependents();
     }
-    
+
     @Override
     protected Parcelable onSaveInstanceState() {
         final Parcelable superState = super.onSaveInstanceState();
@@ -108,7 +108,7 @@ public class YesNoPreference extends DialogPreference {
             // No need to save instance state since it's persistent
             return superState;
         }
-        
+
         final SavedState myState = new SavedState(superState);
         myState.wasPositiveResult = getValue();
         return myState;
@@ -121,32 +121,18 @@ public class YesNoPreference extends DialogPreference {
             super.onRestoreInstanceState(state);
             return;
         }
-         
+
         SavedState myState = (SavedState) state;
         super.onRestoreInstanceState(myState.getSuperState());
         setValue(myState.wasPositiveResult);
     }
-    
+
+    public void show() {
+        showDialog(null);
+    }
+
     private static class SavedState extends BaseSavedState {
-        boolean wasPositiveResult;
-        
-        public SavedState(Parcel source) {
-            super(source);
-            wasPositiveResult = source.readInt() == 1;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(wasPositiveResult ? 1 : 0);
-        }
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in);
             }
@@ -155,9 +141,21 @@ public class YesNoPreference extends DialogPreference {
                 return new SavedState[size];
             }
         };
-    }
+        boolean wasPositiveResult;
 
-    public void show() {
-        showDialog(null);
+        public SavedState(Parcel source) {
+            super(source);
+            wasPositiveResult = source.readInt() == 1;
+        }
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(wasPositiveResult ? 1 : 0);
+        }
     }
 }

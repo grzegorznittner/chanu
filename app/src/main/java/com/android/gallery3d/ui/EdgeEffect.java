@@ -16,13 +16,13 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+
+import com.chanapps.four.gallery3d.R;
 
 // This is copied from android.widget.EdgeEffect with some small modifications:
 // (1) Copy the images (overscroll_{edge|glow}.png) to local resources.
@@ -77,19 +77,31 @@ public class EdgeEffect {
     private static final int MIN_VELOCITY = 100;
 
     private static final float EPSILON = 0.001f;
-
+    private static final int STATE_IDLE = 0;
+    private static final int STATE_PULL = 1;
+    private static final int STATE_ABSORB = 2;
+    private static final int STATE_RECEDE = 3;
+    private static final int STATE_PULL_DECAY = 4;
+    // How much dragging should effect the height of the edge image.
+    // Number determined by user testing.
+    private static final int PULL_DISTANCE_EDGE_FACTOR = 7;
+    // How much dragging should effect the height of the glow image.
+    // Number determined by user testing.
+    private static final int PULL_DISTANCE_GLOW_FACTOR = 7;
+    private static final float PULL_DISTANCE_ALPHA_GLOW_FACTOR = 1.1f;
+    private static final int VELOCITY_EDGE_FACTOR = 8;
+    private static final int VELOCITY_GLOW_FACTOR = 16;
     private final Drawable mEdge;
     private final Drawable mGlow;
-    private int mWidth;
-    private int mHeight;
     private final int MIN_WIDTH = 300;
     private final int mMinWidth;
-
+    private final Interpolator mInterpolator;
+    private int mWidth;
+    private int mHeight;
     private float mEdgeAlpha;
     private float mEdgeScaleY;
     private float mGlowAlpha;
     private float mGlowScaleY;
-
     private float mEdgeAlphaStart;
     private float mEdgeAlphaFinish;
     private float mEdgeScaleYStart;
@@ -98,36 +110,15 @@ public class EdgeEffect {
     private float mGlowAlphaFinish;
     private float mGlowScaleYStart;
     private float mGlowScaleYFinish;
-
     private long mStartTime;
     private float mDuration;
-
-    private final Interpolator mInterpolator;
-
-    private static final int STATE_IDLE = 0;
-    private static final int STATE_PULL = 1;
-    private static final int STATE_ABSORB = 2;
-    private static final int STATE_RECEDE = 3;
-    private static final int STATE_PULL_DECAY = 4;
-
-    // How much dragging should effect the height of the edge image.
-    // Number determined by user testing.
-    private static final int PULL_DISTANCE_EDGE_FACTOR = 7;
-
-    // How much dragging should effect the height of the glow image.
-    // Number determined by user testing.
-    private static final int PULL_DISTANCE_GLOW_FACTOR = 7;
-    private static final float PULL_DISTANCE_ALPHA_GLOW_FACTOR = 1.1f;
-
-    private static final int VELOCITY_EDGE_FACTOR = 8;
-    private static final int VELOCITY_GLOW_FACTOR = 16;
-
     private int mState = STATE_IDLE;
 
     private float mPullDistance;
 
     /**
      * Construct a new EdgeEffect with a theme appropriate for the provided context.
+     *
      * @param context Context used to provide theming and resource information for the EdgeEffect
      */
     public EdgeEffect(Context context) {
@@ -141,7 +132,7 @@ public class EdgeEffect {
     /**
      * Set the size of this edge effect in pixels.
      *
-     * @param width Effect width in pixels
+     * @param width  Effect width in pixels
      * @param height Effect height in pixels
      */
     public void setSize(int width, int height) {
@@ -195,12 +186,9 @@ public class EdgeEffect {
         float distance = Math.abs(mPullDistance);
 
         mEdgeAlpha = mEdgeAlphaStart = Math.max(PULL_EDGE_BEGIN, Math.min(distance, MAX_ALPHA));
-        mEdgeScaleY = mEdgeScaleYStart = Math.max(
-                HELD_EDGE_SCALE_Y, Math.min(distance * PULL_DISTANCE_EDGE_FACTOR, 1.f));
+        mEdgeScaleY = mEdgeScaleYStart = Math.max(HELD_EDGE_SCALE_Y, Math.min(distance * PULL_DISTANCE_EDGE_FACTOR, 1.f));
 
-        mGlowAlpha = mGlowAlphaStart = Math.min(MAX_ALPHA,
-                mGlowAlpha +
-                (Math.abs(deltaDistance) * PULL_DISTANCE_ALPHA_GLOW_FACTOR));
+        mGlowAlpha = mGlowAlphaStart = Math.min(MAX_ALPHA, mGlowAlpha + (Math.abs(deltaDistance) * PULL_DISTANCE_ALPHA_GLOW_FACTOR));
 
         float glowChange = Math.abs(deltaDistance);
         if (deltaDistance > 0 && mPullDistance < 0) {
@@ -211,8 +199,7 @@ public class EdgeEffect {
         }
 
         // Do not allow glow to get larger than MAX_GLOW_HEIGHT.
-        mGlowScaleY = mGlowScaleYStart = Math.min(MAX_GLOW_HEIGHT, Math.max(
-                0, mGlowScaleY + glowChange * PULL_DISTANCE_GLOW_FACTOR));
+        mGlowScaleY = mGlowScaleYStart = Math.min(MAX_GLOW_HEIGHT, Math.max(0, mGlowScaleY + glowChange * PULL_DISTANCE_GLOW_FACTOR));
 
         mEdgeAlphaFinish = mEdgeAlpha;
         mEdgeScaleYFinish = mEdgeScaleY;
@@ -278,8 +265,7 @@ public class EdgeEffect {
         // reflect the strength of the user's scrolling.
         mEdgeAlphaFinish = Math.max(0, Math.min(velocity * VELOCITY_EDGE_FACTOR, 1));
         // Edge should never get larger than the size of its asset.
-        mEdgeScaleYFinish = Math.max(
-                HELD_EDGE_SCALE_Y, Math.min(velocity * VELOCITY_EDGE_FACTOR, 1.f));
+        mEdgeScaleYFinish = Math.max(HELD_EDGE_SCALE_Y, Math.min(velocity * VELOCITY_EDGE_FACTOR, 1.f));
 
         // Growth for the size of the glow should be quadratic to properly
         // respond
@@ -287,8 +273,7 @@ public class EdgeEffect {
         // intense the effect should be for both the size and the saturation.
         mGlowScaleYFinish = Math.min(0.025f + (velocity * (velocity / 100) * 0.00015f), 1.75f);
         // Alpha should change for the glow as well as size.
-        mGlowAlphaFinish = Math.max(
-                mGlowAlphaStart, Math.min(velocity * VELOCITY_GLOW_FACTOR * .00001f, MAX_ALPHA));
+        mGlowAlphaFinish = Math.max(mGlowAlphaStart, Math.min(velocity * VELOCITY_GLOW_FACTOR * .00001f, MAX_ALPHA));
     }
 
 
@@ -300,7 +285,7 @@ public class EdgeEffect {
      *
      * @param canvas Canvas to draw into
      * @return true if drawing should continue beyond this frame to continue the
-     *         animation
+     * animation
      */
     public boolean draw(GLCanvas canvas) {
         update();
@@ -312,12 +297,10 @@ public class EdgeEffect {
 
         mGlow.setAlpha((int) (Math.max(0, Math.min(mGlowAlpha, 1)) * 255));
 
-        int glowBottom = (int) Math.min(
-                glowHeight * mGlowScaleY * glowHeight/ glowWidth * 0.6f,
-                glowHeight * MAX_GLOW_HEIGHT);
+        int glowBottom = (int) Math.min(glowHeight * mGlowScaleY * glowHeight / glowWidth * 0.6f, glowHeight * MAX_GLOW_HEIGHT);
         if (mWidth < mMinWidth) {
             // Center the glow and clip it.
-            int glowLeft = (mWidth - mMinWidth)/2;
+            int glowLeft = (mWidth - mMinWidth) / 2;
             mGlow.setBounds(glowLeft, 0, mWidth - glowLeft, glowBottom);
         } else {
             // Stretch the glow to fit.
@@ -331,7 +314,7 @@ public class EdgeEffect {
         int edgeBottom = (int) (edgeHeight * mEdgeScaleY);
         if (mWidth < mMinWidth) {
             // Center the edge and clip it.
-            int edgeLeft = (mWidth - mMinWidth)/2;
+            int edgeLeft = (mWidth - mMinWidth) / 2;
             mEdge.setBounds(edgeLeft, 0, mWidth - edgeLeft, edgeBottom);
         } else {
             // Stretch the edge to fit.
@@ -390,12 +373,8 @@ public class EdgeEffect {
                 case STATE_PULL_DECAY:
                     // When receding, we want edge to decrease more slowly
                     // than the glow.
-                    float factor = mGlowScaleYFinish != 0 ? 1
-                            / (mGlowScaleYFinish * mGlowScaleYFinish)
-                            : Float.MAX_VALUE;
-                    mEdgeScaleY = mEdgeScaleYStart +
-                        (mEdgeScaleYFinish - mEdgeScaleYStart) *
-                            interp * factor;
+                    float factor = mGlowScaleYFinish != 0 ? 1 / (mGlowScaleYFinish * mGlowScaleYFinish) : Float.MAX_VALUE;
+                    mEdgeScaleY = mEdgeScaleYStart + (mEdgeScaleYFinish - mEdgeScaleYStart) * interp * factor;
                     mState = STATE_RECEDE;
                     break;
                 case STATE_RECEDE:

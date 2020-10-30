@@ -16,9 +16,9 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.Path;
+import com.chanapps.four.gallery3d.R;
 
 // This class handles filtering and clustering.
 //
@@ -54,19 +54,16 @@ import com.android.gallery3d.data.Path;
 // functions. setupMenuItems() makes sure those types cannot be selected.
 //
 public class FilterUtils {
-    private static final String TAG = "FilterUtils";
-
     public static final int CLUSTER_BY_ALBUM = 1;
     public static final int CLUSTER_BY_TIME = 2;
     public static final int CLUSTER_BY_LOCATION = 4;
     public static final int CLUSTER_BY_TAG = 8;
     public static final int CLUSTER_BY_SIZE = 16;
     public static final int CLUSTER_BY_FACE = 32;
-
     public static final int FILTER_IMAGE_ONLY = 1;
     public static final int FILTER_VIDEO_ONLY = 2;
     public static final int FILTER_ALL = 4;
-
+    private static final String TAG = "FilterUtils";
     // These are indices of the return values of getAppliedFilters().
     // The _F suffix means "fixed".
     private static final int CLUSTER_TYPE = 0;
@@ -85,29 +82,18 @@ public class FilterUtils {
         int ccurrent = result[CLUSTER_CURRENT_TYPE];
         int fcurrent = result[FILTER_CURRENT_TYPE];
 
-        setMenuItemApplied(model, CLUSTER_BY_TIME,
-                (ctype & CLUSTER_BY_TIME) != 0, (ccurrent & CLUSTER_BY_TIME) != 0);
-        setMenuItemApplied(model, CLUSTER_BY_LOCATION,
-                (ctype & CLUSTER_BY_LOCATION) != 0, (ccurrent & CLUSTER_BY_LOCATION) != 0);
-        setMenuItemApplied(model, CLUSTER_BY_TAG,
-                (ctype & CLUSTER_BY_TAG) != 0, (ccurrent & CLUSTER_BY_TAG) != 0);
-        setMenuItemApplied(model, CLUSTER_BY_FACE,
-                (ctype & CLUSTER_BY_FACE) != 0, (ccurrent & CLUSTER_BY_FACE) != 0);
+        setMenuItemApplied(model, CLUSTER_BY_TIME, (ctype & CLUSTER_BY_TIME) != 0, (ccurrent & CLUSTER_BY_TIME) != 0);
+        setMenuItemApplied(model, CLUSTER_BY_LOCATION, (ctype & CLUSTER_BY_LOCATION) != 0, (ccurrent & CLUSTER_BY_LOCATION) != 0);
+        setMenuItemApplied(model, CLUSTER_BY_TAG, (ctype & CLUSTER_BY_TAG) != 0, (ccurrent & CLUSTER_BY_TAG) != 0);
+        setMenuItemApplied(model, CLUSTER_BY_FACE, (ctype & CLUSTER_BY_FACE) != 0, (ccurrent & CLUSTER_BY_FACE) != 0);
 
         model.setClusterItemVisibility(CLUSTER_BY_ALBUM, !inAlbum || ctype == 0);
 
         // A filtering is available if it's not applied, and the old filtering
         // (if any) is not fixed.
-        setMenuItemAppliedEnabled(model, R.string.show_images_only,
-                (ftype & FILTER_IMAGE_ONLY) != 0,
-                (ftype & FILTER_IMAGE_ONLY) == 0 && ftypef == 0,
-                (fcurrent & FILTER_IMAGE_ONLY) != 0);
-        setMenuItemAppliedEnabled(model, R.string.show_videos_only,
-                (ftype & FILTER_VIDEO_ONLY) != 0,
-                (ftype & FILTER_VIDEO_ONLY) == 0 && ftypef == 0,
-                (fcurrent & FILTER_VIDEO_ONLY) != 0);
-        setMenuItemAppliedEnabled(model, R.string.show_all,
-                ftype == 0, ftype != 0 && ftypef == 0, fcurrent == 0);
+        setMenuItemAppliedEnabled(model, R.string.show_images_only, (ftype & FILTER_IMAGE_ONLY) != 0, (ftype & FILTER_IMAGE_ONLY) == 0 && ftypef == 0, (fcurrent & FILTER_IMAGE_ONLY) != 0);
+        setMenuItemAppliedEnabled(model, R.string.show_videos_only, (ftype & FILTER_VIDEO_ONLY) != 0, (ftype & FILTER_VIDEO_ONLY) == 0 && ftypef == 0, (fcurrent & FILTER_VIDEO_ONLY) != 0);
+        setMenuItemAppliedEnabled(model, R.string.show_all, ftype == 0, ftype != 0 && ftypef == 0, fcurrent == 0);
     }
 
     // Gets the filters applied in the path.
@@ -159,8 +145,7 @@ public class FilterUtils {
         return 0;
     }
 
-    private static void setMenuItemApplied(
-            GalleryActionBar model, int id, boolean applied, boolean updateTitle) {
+    private static void setMenuItemApplied(GalleryActionBar model, int id, boolean applied, boolean updateTitle) {
         model.setClusterItemEnabled(id, !applied);
     }
 

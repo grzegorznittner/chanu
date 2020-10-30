@@ -16,11 +16,6 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.anim.Animation;
-import com.android.gallery3d.app.GalleryActivity;
-import com.android.gallery3d.common.Utils;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -35,28 +30,28 @@ import android.view.MotionEvent;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
+import com.android.gallery3d.anim.Animation;
+import com.android.gallery3d.app.GalleryActivity;
+import com.android.gallery3d.common.Utils;
+import com.chanapps.four.gallery3d.R;
+
 import java.util.ArrayList;
+
 import javax.microedition.khronos.opengles.GL11;
 
 /**
  * The activity can crop specific region of interest from an image.
  */
 public class CropView extends GLView {
+    public static final float UNSPECIFIED = -1f;
     private static final String TAG = "CropView";
-
     private static final int FACE_PIXEL_COUNT = 120000; // around 400x300
-
     private static final int COLOR_OUTLINE = 0xFF008AFF;
     private static final int COLOR_FACE_OUTLINE = 0xFF000000;
-
     private static final float OUTLINE_WIDTH = 3f;
-
     private static final int SIZE_UNKNOWN = -1;
     private static final int TOUCH_TOLERANCE = 30;
-
     private static final float MIN_SELECTION_LENGTH = 16f;
-    public static final float UNSPECIFIED = -1f;
-
     private static final int MAX_FACE_COUNT = 3;
     private static final float FACE_EYE_RATIO = 2f;
 
@@ -143,8 +138,7 @@ public class CropView extends GLView {
         if (mImageHeight != SIZE_UNKNOWN) {
             mAnimation.initialize();
             if (mHighlightRectangle.getVisibility() == GLView.VISIBLE) {
-                mAnimation.parkNow(
-                        mHighlightRectangle.mHighlightRect);
+                mAnimation.parkNow(mHighlightRectangle.mHighlightRect);
             }
         }
     }
@@ -155,11 +149,16 @@ public class CropView extends GLView {
         TileImageView t = mImageView;
         int rotation = mImageRotation;
         switch (rotation) {
-            case 0: return t.setPosition(centerX, centerY, scale, 0);
-            case 90: return t.setPosition(centerY, inverseX, scale, 90);
-            case 180: return t.setPosition(inverseX, inverseY, scale, 180);
-            case 270: return t.setPosition(inverseY, centerX, scale, 270);
-            default: throw new IllegalArgumentException(String.valueOf(rotation));
+            case 0:
+                return t.setPosition(centerX, centerY, scale, 0);
+            case 90:
+                return t.setPosition(centerY, inverseX, scale, 90);
+            case 180:
+                return t.setPosition(inverseX, inverseY, scale, 180);
+            case 270:
+                return t.setPosition(inverseY, centerX, scale, 270);
+            default:
+                throw new IllegalArgumentException(String.valueOf(rotation));
         }
     }
 
@@ -179,8 +178,7 @@ public class CropView extends GLView {
     public RectF getCropRectangle() {
         if (mHighlightRectangle.getVisibility() == GLView.INVISIBLE) return null;
         RectF rect = mHighlightRectangle.mHighlightRect;
-        RectF result = new RectF(rect.left * mImageWidth, rect.top * mImageHeight,
-                rect.right * mImageWidth, rect.bottom * mImageHeight);
+        RectF result = new RectF(rect.left * mImageWidth, rect.top * mImageHeight, rect.right * mImageWidth, rect.bottom * mImageHeight);
         return result;
     }
 
@@ -190,6 +188,64 @@ public class CropView extends GLView {
 
     public int getImageHeight() {
         return mImageHeight;
+    }
+
+    public void setDataModel(TileImageView.Model dataModel, int rotation) {
+        if (((rotation / 90) & 0x01) != 0) {
+            mImageWidth = dataModel.getImageHeight();
+            mImageHeight = dataModel.getImageWidth();
+        } else {
+            mImageWidth = dataModel.getImageWidth();
+            mImageHeight = dataModel.getImageHeight();
+        }
+
+        mImageRotation = rotation;
+
+        mImageView.setModel(dataModel);
+        mAnimation.initialize();
+    }
+
+    public void detectFaces(Bitmap bitmap) {
+        int rotation = mImageRotation;
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        float scale = (float) Math.sqrt((double) FACE_PIXEL_COUNT / (width * height));
+
+        // faceBitmap is a correctly rotated bitmap, as viewed by a user.
+        Bitmap faceBitmap;
+        if (((rotation / 90) & 1) == 0) {
+            int w = (Math.round(width * scale) & ~1); // must be even
+            int h = Math.round(height * scale);
+            faceBitmap = Bitmap.createBitmap(w, h, Config.RGB_565);
+            Canvas canvas = new Canvas(faceBitmap);
+            canvas.rotate(rotation, w / 2, h / 2);
+            canvas.scale((float) w / width, (float) h / height);
+            canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
+        } else {
+            int w = (Math.round(height * scale) & ~1); // must be even
+            int h = Math.round(width * scale);
+            faceBitmap = Bitmap.createBitmap(w, h, Config.RGB_565);
+            Canvas canvas = new Canvas(faceBitmap);
+            canvas.translate(w / 2, h / 2);
+            canvas.rotate(rotation);
+            canvas.translate(-h / 2, -w / 2);
+            canvas.scale((float) w / height, (float) h / width);
+            canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
+        }
+        new DetectFaceTask(faceBitmap).start();
+    }
+
+    public void initializeHighlightRectangle() {
+        mHighlightRectangle.setInitRectangle();
+        mHighlightRectangle.setVisibility(GLView.VISIBLE);
+    }
+
+    public void resume() {
+        mImageView.prepareTextures();
+    }
+
+    public void pause() {
+        mImageView.freeTextures();
     }
 
     private class FaceHighlightView extends GLView {
@@ -295,9 +351,7 @@ public class CropView extends GLView {
         public void initialize() {
             mCurrentX = mImageWidth / 2;
             mCurrentY = mImageHeight / 2;
-            mCurrentScale = Math.min(2, Math.min(
-                    (float) getWidth() / mImageWidth,
-                    (float) getHeight() / mImageHeight));
+            mCurrentScale = Math.min(2, Math.min((float) getWidth() / mImageWidth, (float) getHeight() / mImageHeight));
         }
 
         public void startParkingAnimation(RectF highlight) {
@@ -308,10 +362,8 @@ public class CropView extends GLView {
             float wr = r.width() / width;
             float hr = r.height() / height;
             final int d = ANIMATION_TRIGGER;
-            if (wr >= MIN_SELECTION_RATIO && wr < MAX_SELECTION_RATIO
-                    && hr >= MIN_SELECTION_RATIO && hr < MAX_SELECTION_RATIO
-                    && r.left >= d && r.right < width - d
-                    && r.top >= d && r.bottom < height - d) return;
+            if (wr >= MIN_SELECTION_RATIO && wr < MAX_SELECTION_RATIO && hr >= MIN_SELECTION_RATIO && hr < MAX_SELECTION_RATIO && r.left >= d && r.right < width - d && r.top >= d && r.bottom < height - d)
+                return;
 
             mStartX = mCurrentX;
             mStartY = mCurrentY;
@@ -330,10 +382,8 @@ public class CropView extends GLView {
 
         public void inverseMapPoint(PointF point) {
             float s = mCurrentScale;
-            point.x = Utils.clamp(((point.x - getWidth() * 0.5f) / s
-                    + mCurrentX) / mImageWidth, 0, 1);
-            point.y = Utils.clamp(((point.y - getHeight() * 0.5f) / s
-                    + mCurrentY) / mImageHeight, 0, 1);
+            point.x = Utils.clamp(((point.x - getWidth() * 0.5f) / s + mCurrentX) / mImageWidth, 0, 1);
+            point.y = Utils.clamp(((point.y - getHeight() * 0.5f) / s + mCurrentY) / mImageHeight, 0, 1);
         }
 
         public RectF mapRect(RectF input, RectF output) {
@@ -342,11 +392,7 @@ public class CropView extends GLView {
             int x = mCurrentX;
             int y = mCurrentY;
             float s = mCurrentScale;
-            output.set(
-                    offsetX + (input.left * mImageWidth - x) * s,
-                    offsetY + (input.top * mImageHeight - y) * s,
-                    offsetX + (input.right * mImageWidth - x) * s,
-                    offsetY + (input.bottom * mImageHeight - y) * s);
+            output.set(offsetX + (input.left * mImageWidth - x) * s, offsetY + (input.top * mImageHeight - y) * s, offsetX + (input.right * mImageWidth - x) * s, offsetY + (input.bottom * mImageHeight - y) * s);
             return output;
         }
 
@@ -356,8 +402,8 @@ public class CropView extends GLView {
             mCurrentY = Math.round(mStartY + (mTargetY - mStartY) * progress);
             mCurrentScale = mStartScale + (mTargetScale - mStartScale) * progress;
 
-            if (mCurrentX == mTargetX && mCurrentY == mTargetY
-                    && mCurrentScale == mTargetScale) forceStop();
+            if (mCurrentX == mTargetX && mCurrentY == mTargetY && mCurrentScale == mTargetScale)
+                forceStop();
         }
 
         public int getCenterX() {
@@ -378,26 +424,20 @@ public class CropView extends GLView {
 
             if (mImageWidth != SIZE_UNKNOWN) {
                 float minScale = Math.min(width / mImageWidth, height / mImageHeight);
-                float scale = Utils.clamp(SELECTION_RATIO * Math.min(
-                        width / (highlight.width() * mImageWidth),
-                        height / (highlight.height() * mImageHeight)), minScale, 2f);
-                int centerX = Math.round(
-                        mImageWidth * (highlight.left + highlight.right) * 0.5f);
-                int centerY = Math.round(
-                        mImageHeight * (highlight.top + highlight.bottom) * 0.5f);
+                float scale = Utils.clamp(SELECTION_RATIO * Math.min(width / (highlight.width() * mImageWidth), height / (highlight.height() * mImageHeight)), minScale, 2f);
+                int centerX = Math.round(mImageWidth * (highlight.left + highlight.right) * 0.5f);
+                int centerY = Math.round(mImageHeight * (highlight.top + highlight.bottom) * 0.5f);
 
                 if (Math.round(mImageWidth * scale) > width) {
                     int limitX = Math.round(width * 0.5f / scale);
-                    centerX = Math.round(
-                            (highlight.left + highlight.right) * mImageWidth / 2);
+                    centerX = Math.round((highlight.left + highlight.right) * mImageWidth / 2);
                     centerX = Utils.clamp(centerX, limitX, mImageWidth - limitX);
                 } else {
                     centerX = mImageWidth / 2;
                 }
                 if (Math.round(mImageHeight * scale) > height) {
                     int limitY = Math.round(height * 0.5f / scale);
-                    centerY = Math.round(
-                            (highlight.top + highlight.bottom) * mImageHeight / 2);
+                    centerY = Math.round((highlight.top + highlight.bottom) * mImageHeight / 2);
                     centerY = Utils.clamp(centerY, limitY, mImageHeight - limitY);
                 } else {
                     centerY = mImageHeight / 2;
@@ -422,14 +462,11 @@ public class CropView extends GLView {
         private float mReferenceY;
 
         public HighlightRectangle() {
-            mArrow = new ResourceTexture(mActivity.getAndroidContext(),
-                    R.drawable.camera_crop_holo);
+            mArrow = new ResourceTexture(mActivity.getAndroidContext(), R.drawable.camera_crop_holo);
         }
 
         public void setInitRectangle() {
-            float targetRatio = mAspectRatio == UNSPECIFIED
-                    ? 1f
-                    : mAspectRatio * mImageHeight / mImageWidth;
+            float targetRatio = mAspectRatio == UNSPECIFIED ? 1f : mAspectRatio * mImageHeight / mImageWidth;
             float w = SELECTION_RATIO / 2f;
             float h = SELECTION_RATIO / 2f;
             if (targetRatio > 1) {
@@ -455,8 +492,8 @@ public class CropView extends GLView {
             RectF r = mHighlightRect;
 
             if ((mMovingEdges & MOVE_BLOCK) != 0) {
-                dx = Utils.clamp(dx, -r.left,  1 - r.right);
-                dy = Utils.clamp(dy, -r.top , 1 - r.bottom);
+                dx = Utils.clamp(dx, -r.left, 1 - r.right);
+                dy = Utils.clamp(dy, -r.top, 1 - r.bottom);
                 r.top += dy;
                 r.bottom += dy;
                 r.left += dx;
@@ -523,16 +560,13 @@ public class CropView extends GLView {
             float x = event.getX();
             float y = event.getY();
 
-            if (x > r.left + TOUCH_TOLERANCE && x < r.right - TOUCH_TOLERANCE
-                    && y > r.top + TOUCH_TOLERANCE && y < r.bottom - TOUCH_TOLERANCE) {
+            if (x > r.left + TOUCH_TOLERANCE && x < r.right - TOUCH_TOLERANCE && y > r.top + TOUCH_TOLERANCE && y < r.bottom - TOUCH_TOLERANCE) {
                 mMovingEdges = MOVE_BLOCK;
                 return;
             }
 
-            boolean inVerticalRange = (r.top - TOUCH_TOLERANCE) <= y
-                    && y <= (r.bottom + TOUCH_TOLERANCE);
-            boolean inHorizontalRange = (r.left - TOUCH_TOLERANCE) <= x
-                    && x <= (r.right + TOUCH_TOLERANCE);
+            boolean inVerticalRange = (r.top - TOUCH_TOLERANCE) <= y && y <= (r.bottom + TOUCH_TOLERANCE);
+            boolean inHorizontalRange = (r.left - TOUCH_TOLERANCE) <= x && x <= (r.right + TOUCH_TOLERANCE);
 
             if (inVerticalRange) {
                 boolean left = Math.abs(x - r.left) <= TOUCH_TOLERANCE;
@@ -544,8 +578,7 @@ public class CropView extends GLView {
                 if (left) mMovingEdges |= MOVE_LEFT;
                 if (right) mMovingEdges |= MOVE_RIGHT;
                 if (mAspectRatio != UNSPECIFIED && inHorizontalRange) {
-                    mMovingEdges |= (y >
-                            (r.top + r.bottom) / 2) ? MOVE_BOTTOM : MOVE_TOP;
+                    mMovingEdges |= (y > (r.top + r.bottom) / 2) ? MOVE_BOTTOM : MOVE_TOP;
                 }
             }
             if (inHorizontalRange) {
@@ -558,8 +591,7 @@ public class CropView extends GLView {
                 if (top) mMovingEdges |= MOVE_TOP;
                 if (bottom) mMovingEdges |= MOVE_BOTTOM;
                 if (mAspectRatio != UNSPECIFIED && inVerticalRange) {
-                    mMovingEdges |= (x >
-                            (r.left + r.right) / 2) ? MOVE_RIGHT : MOVE_LEFT;
+                    mMovingEdges |= (x > (r.left + r.right) / 2) ? MOVE_RIGHT : MOVE_LEFT;
                 }
             }
         }
@@ -597,24 +629,16 @@ public class CropView extends GLView {
             float centerX = (r.left + r.right) / 2;
             boolean notMoving = mMovingEdges == 0;
             if ((mMovingEdges & MOVE_RIGHT) != 0 || notMoving) {
-                mArrow.draw(canvas,
-                        Math.round(r.right - mArrow.getWidth() / 2),
-                        Math.round(centerY - mArrow.getHeight() / 2));
+                mArrow.draw(canvas, Math.round(r.right - mArrow.getWidth() / 2), Math.round(centerY - mArrow.getHeight() / 2));
             }
             if ((mMovingEdges & MOVE_LEFT) != 0 || notMoving) {
-                mArrow.draw(canvas,
-                        Math.round(r.left - mArrow.getWidth() / 2),
-                        Math.round(centerY - mArrow.getHeight() / 2));
+                mArrow.draw(canvas, Math.round(r.left - mArrow.getWidth() / 2), Math.round(centerY - mArrow.getHeight() / 2));
             }
             if ((mMovingEdges & MOVE_TOP) != 0 || notMoving) {
-                mArrow.draw(canvas,
-                        Math.round(centerX - mArrow.getWidth() / 2),
-                        Math.round(r.top - mArrow.getHeight() / 2));
+                mArrow.draw(canvas, Math.round(centerX - mArrow.getWidth() / 2), Math.round(r.top - mArrow.getHeight() / 2));
             }
             if ((mMovingEdges & MOVE_BOTTOM) != 0 || notMoving) {
-                mArrow.draw(canvas,
-                        Math.round(centerX - mArrow.getWidth() / 2),
-                        Math.round(r.bottom - mArrow.getHeight() / 2));
+                mArrow.draw(canvas, Math.round(centerX - mArrow.getWidth() / 2), Math.round(r.bottom - mArrow.getHeight() / 2));
             }
         }
 
@@ -671,11 +695,9 @@ public class CropView extends GLView {
         @Override
         public void run() {
             Bitmap bitmap = mFaceBitmap;
-            FaceDetector detector = new FaceDetector(
-                    bitmap.getWidth(), bitmap.getHeight(), MAX_FACE_COUNT);
+            FaceDetector detector = new FaceDetector(bitmap.getWidth(), bitmap.getHeight(), MAX_FACE_COUNT);
             mFaceCount = detector.findFaces(bitmap, mFaces);
-            mMainHandler.sendMessage(
-                    mMainHandler.obtainMessage(MSG_UPDATE_FACES, this));
+            mMainHandler.sendMessage(mMainHandler.obtainMessage(MSG_UPDATE_FACES, this));
         }
 
         private RectF getFaceRect(FaceDetector.Face face) {
@@ -695,8 +717,7 @@ public class CropView extends GLView {
                 }
             }
 
-            RectF r = new RectF(
-                    point.x - rx, point.y - ry, point.x + rx, point.y + ry);
+            RectF r = new RectF(point.x - rx, point.y - ry, point.x + rx, point.y + ry);
             r.intersect(0, 0, width, height);
 
             if (aspect != UNSPECIFIED) {
@@ -706,7 +727,7 @@ public class CropView extends GLView {
                     r.right = r.left + w;
                 } else {
                     float h = r.width() / aspect;
-                    r.top =  (r.top + r.bottom - h) * 0.5f;
+                    r.top = (r.top + r.bottom - h) * 0.5f;
                     r.bottom = r.top + h;
                 }
             }
@@ -724,8 +745,7 @@ public class CropView extends GLView {
                     mFaceDetectionView.addFace(getFaceRect(mFaces[i]));
                 }
                 mFaceDetectionView.setVisibility(GLView.VISIBLE);
-                Toast.makeText(mActivity.getAndroidContext(),
-                        R.string.multiface_crop_help, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity.getAndroidContext(), R.string.multiface_crop_help, Toast.LENGTH_SHORT).show();
             } else if (mFaceCount == 1) {
                 mFaceDetectionView.setVisibility(GLView.INVISIBLE);
                 mHighlightRectangle.setRectangle(getFaceRect(mFaces[0]));
@@ -735,65 +755,6 @@ public class CropView extends GLView {
                 mHighlightRectangle.setVisibility(GLView.VISIBLE);
             }
         }
-    }
-
-    public void setDataModel(TileImageView.Model dataModel, int rotation) {
-        if (((rotation / 90) & 0x01) != 0) {
-            mImageWidth = dataModel.getImageHeight();
-            mImageHeight = dataModel.getImageWidth();
-        } else {
-            mImageWidth = dataModel.getImageWidth();
-            mImageHeight = dataModel.getImageHeight();
-        }
-
-        mImageRotation = rotation;
-
-        mImageView.setModel(dataModel);
-        mAnimation.initialize();
-    }
-
-    public void detectFaces(Bitmap bitmap) {
-        int rotation = mImageRotation;
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        float scale = (float) Math.sqrt(
-                (double) FACE_PIXEL_COUNT / (width * height));
-
-        // faceBitmap is a correctly rotated bitmap, as viewed by a user.
-        Bitmap faceBitmap;
-        if (((rotation / 90) & 1) == 0) {
-            int w = (Math.round(width * scale) & ~1); // must be even
-            int h = Math.round(height * scale);
-            faceBitmap = Bitmap.createBitmap(w, h, Config.RGB_565);
-            Canvas canvas = new Canvas(faceBitmap);
-            canvas.rotate(rotation, w / 2, h / 2);
-            canvas.scale((float) w / width, (float) h / height);
-            canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
-        } else {
-            int w = (Math.round(height * scale) & ~1); // must be even
-            int h = Math.round(width * scale);
-            faceBitmap = Bitmap.createBitmap(w, h, Config.RGB_565);
-            Canvas canvas = new Canvas(faceBitmap);
-            canvas.translate(w / 2, h / 2);
-            canvas.rotate(rotation);
-            canvas.translate(-h / 2, -w / 2);
-            canvas.scale((float) w / height, (float) h / width);
-            canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG));
-        }
-        new DetectFaceTask(faceBitmap).start();
-    }
-
-    public void initializeHighlightRectangle() {
-        mHighlightRectangle.setInitRectangle();
-        mHighlightRectangle.setVisibility(GLView.VISIBLE);
-    }
-
-    public void resume() {
-        mImageView.prepareTextures();
-    }
-
-    public void pause() {
-        mImageView.freeTextures();
     }
 }
 

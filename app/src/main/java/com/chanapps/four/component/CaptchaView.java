@@ -1,11 +1,5 @@
 package com.chanapps.four.component;
 
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.apache.commons.io.IOUtils;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -13,18 +7,16 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class CaptchaView extends WebView {
 
     private static final String BASE_URL = "http://chanu.4chan.org";
     private String captchaResponse;
-    
-    public class CaptchaCallback {
-
-        @JavascriptInterface
-        public void captchaEntered(String response) {
-            setCaptchaResponse(response);
-        }
-    }
 
     public CaptchaView(Context context) {
         super(context);
@@ -41,7 +33,7 @@ public class CaptchaView extends WebView {
     public void initCaptcha() {
         try {
             String body = IOUtils.toString(new BufferedInputStream(getResources().getAssets().open("captcha.html")));
-            
+
             getSettings().setJavaScriptEnabled(true);
             setWebChromeClient(new WebChromeClient());
             addJavascriptInterface(new CaptchaCallback(), "CaptchaCallback");
@@ -60,5 +52,13 @@ public class CaptchaView extends WebView {
 
     public void setCaptchaResponse(String captchaResponse) {
         this.captchaResponse = captchaResponse;
+    }
+
+    public class CaptchaCallback {
+
+        @JavascriptInterface
+        public void captchaEntered(String response) {
+            setCaptchaResponse(response);
+        }
     }
 }

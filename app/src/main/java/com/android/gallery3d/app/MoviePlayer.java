@@ -16,11 +16,6 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.common.BlobCache;
-import com.android.gallery3d.util.CacheManager;
-import com.android.gallery3d.util.GalleryUtils;
-
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -35,19 +30,23 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.VideoView;
+
+import com.android.gallery3d.common.BlobCache;
+import com.android.gallery3d.util.CacheManager;
+import com.android.gallery3d.util.GalleryUtils;
+import com.chanapps.four.gallery3d.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-public class MoviePlayer implements
-        MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener,
-        ControllerOverlay.Listener {
+public class MoviePlayer implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, ControllerOverlay.Listener {
     @SuppressWarnings("unused")
     private static final String TAG = "MoviePlayer";
 
@@ -62,8 +61,6 @@ public class MoviePlayer implements
     // If we resume the acitivty with in RESUMEABLE_TIMEOUT, we will keep playing.
     // Otherwise, we pause the player.
     private static final long RESUMEABLE_TIMEOUT = 3 * 60 * 1000; // 3 mins
-
-    private Context mContext;
     private final VideoView mVideoView;
     private final Bookmarker mBookmarker;
     private final Uri mUri;
@@ -71,17 +68,6 @@ public class MoviePlayer implements
     private final AudioBecomingNoisyReceiver mAudioBecomingNoisyReceiver;
     private final ActionBar mActionBar;
     private final ControllerOverlay mController;
-
-    private long mResumeableTime = Long.MAX_VALUE;
-    private int mVideoPosition = 0;
-    private boolean mHasPaused = false;
-
-    // If the time bar is being dragged.
-    private boolean mDragging;
-
-    // If the time bar is visible.
-    private boolean mShowing;
-
     private final Runnable mPlayingChecker = new Runnable() {
         @Override
         public void run() {
@@ -92,7 +78,14 @@ public class MoviePlayer implements
             }
         }
     };
-
+    private Context mContext;
+    private long mResumeableTime = Long.MAX_VALUE;
+    private int mVideoPosition = 0;
+    private boolean mHasPaused = false;
+    // If the time bar is being dragged.
+    private boolean mDragging;
+    // If the time bar is visible.
+    private boolean mShowing;
     private final Runnable mProgressChecker = new Runnable() {
         @Override
         public void run() {
@@ -101,16 +94,15 @@ public class MoviePlayer implements
         }
     };
 
-    public MoviePlayer(View rootView, final MovieActivity movieActivity, Uri videoUri,
-            Bundle savedInstance, boolean canReplay) {
+    public MoviePlayer(View rootView, final MovieActivity movieActivity, Uri videoUri, Bundle savedInstance, boolean canReplay) {
         mContext = movieActivity.getApplicationContext();
-        mVideoView = (VideoView) rootView.findViewById(R.id.surface_view);
+        mVideoView = rootView.findViewById(R.id.surface_view);
         mBookmarker = new Bookmarker(movieActivity);
         mActionBar = movieActivity.getActionBar();
         mUri = videoUri;
 
         mController = new MovieControllerOverlay(mContext);
-        ((ViewGroup)rootView).addView(mController.getView());
+        ((ViewGroup) rootView).addView(mController.getView());
         mController.setListener(this);
         mController.setCanReplay(canReplay);
 
@@ -127,8 +119,7 @@ public class MoviePlayer implements
         // When the user touches the screen or uses some hard key, the framework
         // will change system ui visibility from invisible to visible. We show
         // the media control at this point.
-        mVideoView.setOnSystemUiVisibilityChangeListener(
-                new View.OnSystemUiVisibilityChangeListener() {
+        mVideoView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
             public void onSystemUiVisibilityChange(int visibility) {
                 if ((visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) {
                     mController.show();
@@ -172,25 +163,21 @@ public class MoviePlayer implements
     private void showResumeDialog(Context context, final int bookmark) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.resume_playing_title);
-        builder.setMessage(String.format(
-                context.getString(R.string.resume_playing_message),
-                GalleryUtils.formatDuration(context, bookmark / 1000)));
+        builder.setMessage(String.format(context.getString(R.string.resume_playing_message), GalleryUtils.formatDuration(context, bookmark / 1000)));
         builder.setOnCancelListener(new OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
                 onCompletion();
             }
         });
-        builder.setPositiveButton(
-                R.string.resume_playing_resume, new OnClickListener() {
+        builder.setPositiveButton(R.string.resume_playing_resume, new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mVideoView.seekTo(bookmark);
                 startVideo();
             }
         });
-        builder.setNegativeButton(
-                R.string.resume_playing_restart, new OnClickListener() {
+        builder.setNegativeButton(R.string.resume_playing_restart, new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startVideo();
@@ -336,8 +323,7 @@ public class MoviePlayer implements
     private class AudioBecomingNoisyReceiver extends BroadcastReceiver {
 
         public void register() {
-            mContext.registerReceiver(this,
-                    new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+            mContext.registerReceiver(this, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
         }
 
         public void unregister() {
@@ -348,7 +334,7 @@ public class MoviePlayer implements
         public void onReceive(Context context, Intent intent) {
             if (mVideoView.isPlaying()) {
                 mVideoView.pause();
-          }
+            }
         }
     }
 }
@@ -372,9 +358,7 @@ class Bookmarker {
 
     public void setBookmark(Uri uri, int bookmark, int duration) {
         try {
-            BlobCache cache = CacheManager.getCache(mContext,
-                    BOOKMARK_CACHE_FILE, BOOKMARK_CACHE_MAX_ENTRIES,
-                    BOOKMARK_CACHE_MAX_BYTES, BOOKMARK_CACHE_VERSION);
+            BlobCache cache = CacheManager.getCache(mContext, BOOKMARK_CACHE_FILE, BOOKMARK_CACHE_MAX_ENTRIES, BOOKMARK_CACHE_MAX_BYTES, BOOKMARK_CACHE_VERSION);
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(bos);
@@ -390,17 +374,14 @@ class Bookmarker {
 
     public Integer getBookmark(Uri uri) {
         try {
-            BlobCache cache = CacheManager.getCache(mContext,
-                    BOOKMARK_CACHE_FILE, BOOKMARK_CACHE_MAX_ENTRIES,
-                    BOOKMARK_CACHE_MAX_BYTES, BOOKMARK_CACHE_VERSION);
+            BlobCache cache = CacheManager.getCache(mContext, BOOKMARK_CACHE_FILE, BOOKMARK_CACHE_MAX_ENTRIES, BOOKMARK_CACHE_MAX_BYTES, BOOKMARK_CACHE_VERSION);
 
             byte[] data = cache.lookup(uri.hashCode());
             if (data == null) return null;
 
-            DataInputStream dis = new DataInputStream(
-                    new ByteArrayInputStream(data));
+            DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
 
-            String uriString = dis.readUTF(dis);
+            String uriString = DataInputStream.readUTF(dis);
             int bookmark = dis.readInt();
             int duration = dis.readInt();
 
@@ -408,8 +389,7 @@ class Bookmarker {
                 return null;
             }
 
-            if ((bookmark < HALF_MINUTE) || (duration < TWO_MINUTES)
-                    || (bookmark > (duration - HALF_MINUTE))) {
+            if ((bookmark < HALF_MINUTE) || (duration < TWO_MINUTES) || (bookmark > (duration - HALF_MINUTE))) {
                 return null;
             }
             return Integer.valueOf(bookmark);

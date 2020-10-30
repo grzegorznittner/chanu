@@ -16,6 +16,8 @@
 
 package com.android.gallery3d.util;
 
+import android.util.Log;
+
 import java.util.concurrent.Callable;
 
 // NOTE: If the Callable throws any Throwable, the result value will be null.
@@ -74,7 +76,7 @@ public class FutureTask<T> implements Runnable, Future<T> {
             }
         }
 
-        synchronized(this) {
+        synchronized (this) {
             mResult = result;
             mIsDone = true;
             if (mListener != null) {

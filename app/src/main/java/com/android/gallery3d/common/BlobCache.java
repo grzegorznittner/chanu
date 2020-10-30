@@ -122,6 +122,18 @@ public class BlobCache {
     private byte[] mIndexHeader = new byte[INDEX_HEADER_SIZE];
     private byte[] mBlobHeader = new byte[BLOB_HEADER_SIZE];
     private Adler32 mAdler32 = new Adler32();
+    // This method is for one-off lookup. For repeated lookup, use the version
+    // accepting LookupRequest to avoid repeated memory allocation.
+    private LookupRequest mLookupRequest = new LookupRequest();
+    // Tries to look up a key in the specified hash region.
+    // Returns true if the lookup is successful.
+    // The slot offset in the index file is saved in mSlotOffset. If the lookup
+    // is successful, it's the slot found. Otherwise it's the slot suitable for
+    // insertion.
+    // If the lookup is successful, the file offset is also saved in
+    // mFileOffset.
+    private int mSlotOffset;
+    private int mFileOffset;
 
     // Creates the cache. Three files will be created:
     // path + ".idx", path + ".0", and path + ".1"
@@ -129,13 +141,11 @@ public class BlobCache {
     // them can grow to the size specified by maxBytes. The maxEntries parameter
     // specifies the maximum number of entries each region can have. If the
     // "reset" parameter is true, the cache will be cleared before use.
-    public BlobCache(String path, int maxEntries, int maxBytes, boolean reset)
-            throws IOException {
+    public BlobCache(String path, int maxEntries, int maxBytes, boolean reset) throws IOException {
         this(path, maxEntries, maxBytes, reset, 0);
     }
 
-    public BlobCache(String path, int maxEntries, int maxBytes, boolean reset,
-            int version) throws IOException {
+    public BlobCache(String path, int maxEntries, int maxBytes, boolean reset, int version) throws IOException {
         mIndexFile = new RandomAccessFile(path + ".idx", "rw");
         mDataFile0 = new RandomAccessFile(path + ".0", "rw");
         mDataFile1 = new RandomAccessFile(path + ".1", "rw");
@@ -166,6 +176,41 @@ public class BlobCache {
             new File(path).delete();
         } catch (Throwable t) {
             // ignore;
+        }
+    }
+
+    static void closeSilently(Closeable c) {
+        if (c == null) return;
+        try {
+            c.close();
+        } catch (Throwable t) {
+            // do nothing
+        }
+    }
+
+    static int readInt(byte[] buf, int offset) {
+        return (buf[offset] & 0xff) | ((buf[offset + 1] & 0xff) << 8) | ((buf[offset + 2] & 0xff) << 16) | ((buf[offset + 3] & 0xff) << 24);
+    }
+
+    static long readLong(byte[] buf, int offset) {
+        long result = buf[offset + 7] & 0xff;
+        for (int i = 6; i >= 0; i--) {
+            result = (result << 8) | (buf[offset + i] & 0xff);
+        }
+        return result;
+    }
+
+    static void writeInt(byte[] buf, int offset, int value) {
+        for (int i = 0; i < 4; i++) {
+            buf[offset + i] = (byte) (value & 0xff);
+            value >>= 8;
+        }
+    }
+
+    static void writeLong(byte[] buf, int offset, long value) {
+        for (int i = 0; i < 8; i++) {
+            buf[offset + i] = (byte) (value & 0xff);
+            value >>= 8;
         }
     }
 
@@ -240,8 +285,7 @@ public class BlobCache {
                 Log.w(TAG, "invalid active bytes");
                 return false;
             }
-            if (mIndexFile.length() !=
-                    INDEX_HEADER_SIZE + mMaxEntries * 12 * 2) {
+            if (mIndexFile.length() != INDEX_HEADER_SIZE + mMaxEntries * 12 * 2) {
                 Log.w(TAG, "invalid index file length");
                 return false;
             }
@@ -267,8 +311,7 @@ public class BlobCache {
 
             // Map index file to memory
             mIndexChannel = mIndexFile.getChannel();
-            mIndexBuffer = mIndexChannel.map(FileChannel.MapMode.READ_WRITE,
-                    0, mIndexFile.length());
+            mIndexBuffer = mIndexChannel.map(FileChannel.MapMode.READ_WRITE, 0, mIndexFile.length());
             mIndexBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
             setActiveVariables();
@@ -339,8 +382,7 @@ public class BlobCache {
 
     // Sync mIndexHeader to the index file.
     private void updateIndexHeader() {
-        writeInt(mIndexHeader, IH_CHECKSUM,
-                checkSum(mIndexHeader, 0, IH_CHECKSUM));
+        writeInt(mIndexHeader, IH_CHECKSUM, checkSum(mIndexHeader, 0, IH_CHECKSUM));
         mIndexBuffer.position(0);
         mIndexBuffer.put(mIndexHeader);
     }
@@ -349,7 +391,7 @@ public class BlobCache {
     private void clearHash(int hashStart) {
         byte[] zero = new byte[1024];
         mIndexBuffer.position(hashStart);
-        for (int count = mMaxEntries * 12; count > 0;) {
+        for (int count = mMaxEntries * 12; count > 0; ) {
             int todo = Math.min(count, 1024);
             mIndexBuffer.put(zero, 0, todo);
             count -= todo;
@@ -362,8 +404,7 @@ public class BlobCache {
             throw new RuntimeException("blob is too large!");
         }
 
-        if (mActiveBytes + BLOB_HEADER_SIZE + data.length > mMaxBytes
-                || mActiveEntries * 2 >= mMaxEntries) {
+        if (mActiveBytes + BLOB_HEADER_SIZE + data.length > mMaxBytes || mActiveEntries * 2 >= mMaxEntries) {
             flipRegion();
         }
 
@@ -381,8 +422,7 @@ public class BlobCache {
     // Appends the data to the active file. It also updates the hash entry.
     // The proper hash entry (suitable for insertion or replacement) must be
     // pointed by mSlotOffset.
-    private void insertInternal(long key, byte[] data, int length)
-            throws IOException {
+    private void insertInternal(long key, byte[] data, int length) throws IOException {
         byte[] header = mBlobHeader;
         int sum = checkSum(data);
         writeLong(header, BH_KEY, key);
@@ -398,15 +438,6 @@ public class BlobCache {
         writeInt(mIndexHeader, IH_ACTIVE_BYTES, mActiveBytes);
     }
 
-    public static class LookupRequest {
-        public long key;        // input: the key to find
-        public byte[] buffer;   // input/output: the buffer to store the blob
-        public int length;      // output: the length of the blob
-    }
-
-    // This method is for one-off lookup. For repeated lookup, use the version
-    // accepting LookupRequest to avoid repeated memory allocation.
-    private LookupRequest mLookupRequest = new LookupRequest();
     public byte[] lookup(long key) throws IOException {
         mLookupRequest.key = key;
         mLookupRequest.buffer = null;
@@ -445,8 +476,7 @@ public class BlobCache {
             if (getBlob(mInactiveDataFile, mFileOffset, req)) {
                 // If we don't have enough space to insert this blob into
                 // the active file, just return it.
-                if (mActiveBytes + BLOB_HEADER_SIZE + req.length > mMaxBytes
-                    || mActiveEntries * 2 >= mMaxEntries) {
+                if (mActiveBytes + BLOB_HEADER_SIZE + req.length > mMaxBytes || mActiveEntries * 2 >= mMaxEntries) {
                     return true;
                 }
                 // Otherwise copy it over.
@@ -466,15 +496,13 @@ public class BlobCache {
         return false;
     }
 
-
     // Copies the blob for the specified offset in the specified file to
     // req.buffer. If req.buffer is null or too small, allocate a buffer and
     // assign it to req.buffer.
     // Returns false if the blob is not available (either the index file is
     // not sync with the data file, or one of them is corrupted). The length
     // of the blob is stored in the req.length variable.
-    private boolean getBlob(RandomAccessFile file, int offset,
-            LookupRequest req) throws IOException {
+    private boolean getBlob(RandomAccessFile file, int offset, LookupRequest req) throws IOException {
         byte[] header = mBlobHeader;
         long oldPosition = file.getFilePointer();
         try {
@@ -515,7 +543,7 @@ public class BlobCache {
                 return false;
             }
             return true;
-        } catch (Throwable t)  {
+        } catch (Throwable t) {
             Log.e(TAG, "getBlob failed.", t);
             return false;
         } finally {
@@ -523,15 +551,6 @@ public class BlobCache {
         }
     }
 
-    // Tries to look up a key in the specified hash region.
-    // Returns true if the lookup is successful.
-    // The slot offset in the index file is saved in mSlotOffset. If the lookup
-    // is successful, it's the slot found. Otherwise it's the slot suitable for
-    // insertion.
-    // If the lookup is successful, the file offset is also saved in
-    // mFileOffset.
-    private int mSlotOffset;
-    private int mFileOffset;
     private boolean lookupInternal(long key, int hashStart) {
         int slot = (int) (key % mMaxEntries);
         if (slot < 0) slot += mMaxEntries;
@@ -613,41 +632,9 @@ public class BlobCache {
         return (int) mAdler32.getValue();
     }
 
-    static void closeSilently(Closeable c) {
-        if (c == null) return;
-        try {
-            c.close();
-        } catch (Throwable t) {
-            // do nothing
-        }
-    }
-
-    static int readInt(byte[] buf, int offset) {
-        return (buf[offset] & 0xff)
-                | ((buf[offset + 1] & 0xff) << 8)
-                | ((buf[offset + 2] & 0xff) << 16)
-                | ((buf[offset + 3] & 0xff) << 24);
-    }
-
-    static long readLong(byte[] buf, int offset) {
-        long result = buf[offset + 7] & 0xff;
-        for (int i = 6; i >= 0; i--) {
-            result = (result << 8) | (buf[offset + i] & 0xff);
-        }
-        return result;
-    }
-
-    static void writeInt(byte[] buf, int offset, int value) {
-        for (int i = 0; i < 4; i++) {
-            buf[offset + i] = (byte) (value & 0xff);
-            value >>= 8;
-        }
-    }
-
-    static void writeLong(byte[] buf, int offset, long value) {
-        for (int i = 0; i < 8; i++) {
-            buf[offset + i] = (byte) (value & 0xff);
-            value >>= 8;
-        }
+    public static class LookupRequest {
+        public long key;        // input: the key to find
+        public byte[] buffer;   // input/output: the buffer to store the blob
+        public int length;      // output: the length of the blob
     }
 }

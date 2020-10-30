@@ -53,24 +53,18 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
     private final MediaItem[][] mCoverData;
     private final long[] mItemVersion;
     private final long[] mSetVersion;
-
+    private final MediaSet mSource;
+    private final Handler mMainHandler;
+    private final MySourceListener mSourceListener = new MySourceListener();
     private int mActiveStart = 0;
     private int mActiveEnd = 0;
-
     private int mContentStart = 0;
     private int mContentEnd = 0;
-
-    private final MediaSet mSource;
     private long mSourceVersion = MediaObject.INVALID_DATA_VERSION;
     private int mSize;
-
     private AlbumSetView.ModelListener mModelListener;
     private LoadingListener mLoadingListener;
     private ReloadTask mReloadTask;
-
-    private final Handler mMainHandler;
-
-    private final MySourceListener mSourceListener = new MySourceListener();
 
     public AlbumSetDataAdapter(GalleryActivity activity, MediaSet albumSet, int cacheSize) {
         mSource = Utils.checkNotNull(albumSet);
@@ -99,6 +93,20 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
         };
     }
 
+    private static void getRepresentativeItems(MediaSet set, int wanted, ArrayList<MediaItem> result) {
+        if (set.getMediaItemCount() > 0) {
+            result.addAll(set.getMediaItem(0, wanted));
+        }
+
+        int n = set.getSubMediaSetCount();
+        for (int i = 0; i < n && wanted > result.size(); i++) {
+            MediaSet subset = set.getSubMediaSet(i);
+            double perSet = (double) (wanted - result.size()) / (n - i);
+            int m = (int) Math.ceil(perSet);
+            getRepresentativeItems(subset, m, result);
+        }
+    }
+
     public void pause() {
         mReloadTask.terminate();
         mReloadTask = null;
@@ -113,16 +121,14 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
 
     public MediaSet getMediaSet(int index) {
         if (index < mActiveStart && index >= mActiveEnd) {
-            throw new IllegalArgumentException(String.format(
-                    "%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
+            throw new IllegalArgumentException(String.format("%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
         }
         return mData[index % mData.length];
     }
 
     public MediaItem[] getCoverItems(int index) {
         if (index < mActiveStart && index >= mActiveEnd) {
-            throw new IllegalArgumentException(String.format(
-                    "%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
+            throw new IllegalArgumentException(String.format("%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
         }
         MediaItem[] result = mCoverData[index % mCoverData.length];
 
@@ -182,8 +188,7 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
     public void setActiveWindow(int start, int end) {
         if (start == mActiveStart && end == mActiveEnd) return;
 
-        Utils.assertTrue(start <= end
-                && end - start <= mCoverData.length && end <= mSize);
+        Utils.assertTrue(start <= end && end - start <= mCoverData.length && end <= mSize);
 
         mActiveStart = start;
         mActiveEnd = end;
@@ -192,18 +197,10 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
         // If no data is visible, keep the cache content
         if (start == end) return;
 
-        int contentStart = Utils.clamp((start + end) / 2 - length / 2,
-                0, Math.max(0, mSize - length));
+        int contentStart = Utils.clamp((start + end) / 2 - length / 2, 0, Math.max(0, mSize - length));
         int contentEnd = Math.min(contentStart + length, mSize);
-        if (mContentStart > start || mContentEnd < end
-                || Math.abs(contentStart - mContentStart) > MIN_LOAD_COUNT) {
+        if (mContentStart > start || mContentEnd < end || Math.abs(contentStart - mContentStart) > MIN_LOAD_COUNT) {
             setContentWindow(contentStart, contentEnd);
-        }
-    }
-
-    private class MySourceListener implements ContentListener {
-        public void onContentDirty() {
-            mReloadTask.notifyDirty();
         }
     }
 
@@ -215,18 +212,15 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
         mLoadingListener = listener;
     }
 
-    private static void getRepresentativeItems(MediaSet set, int wanted,
-            ArrayList<MediaItem> result) {
-        if (set.getMediaItemCount() > 0) {
-            result.addAll(set.getMediaItem(0, wanted));
-        }
-
-        int n = set.getSubMediaSetCount();
-        for (int i = 0; i < n && wanted > result.size(); i++) {
-            MediaSet subset = set.getSubMediaSet(i);
-            double perSet = (double) (wanted - result.size()) / (n - i);
-            int m = (int) Math.ceil(perSet);
-            getRepresentativeItems(subset, m, result);
+    private <T> T executeAndWait(Callable<T> callable) {
+        FutureTask<T> task = new FutureTask<T>(callable);
+        mMainHandler.sendMessage(mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
+        try {
+            return task.get();
+        } catch (InterruptedException e) {
+            return null;
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -236,7 +230,13 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
 
         public int size;
         public MediaSet item;
-        public MediaItem covers[];
+        public MediaItem[] covers;
+    }
+
+    private class MySourceListener implements ContentListener {
+        public void onContentDirty() {
+            mReloadTask.notifyDirty();
+        }
     }
 
     private class GetUpdateInfo implements Callable<UpdateInfo> {
@@ -248,7 +248,7 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
         }
 
         private int getInvalidIndex(long version) {
-            long setVersion[] = mSetVersion;
+            long[] setVersion = mSetVersion;
             int length = setVersion.length;
             for (int i = mContentStart, n = mContentEnd; i < n; ++i) {
                 int index = i % length;
@@ -297,25 +297,11 @@ public class AlbumSetDataAdapter implements AlbumSetView.Model {
                 mItemVersion[pos] = itemVersion;
                 mData[pos] = info.item;
                 mCoverData[pos] = info.covers;
-                if (mModelListener != null
-                        && info.index >= mActiveStart && info.index < mActiveEnd) {
+                if (mModelListener != null && info.index >= mActiveStart && info.index < mActiveEnd) {
                     mModelListener.onWindowContentChanged(info.index);
                 }
             }
             return null;
-        }
-    }
-
-    private <T> T executeAndWait(Callable<T> callable) {
-        FutureTask<T> task = new FutureTask<T>(callable);
-        mMainHandler.sendMessage(
-                mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
-        try {
-            return task.get();
-        } catch (InterruptedException e) {
-            return null;
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
         }
     }
 

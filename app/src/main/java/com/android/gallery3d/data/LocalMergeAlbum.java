@@ -42,8 +42,7 @@ public class LocalMergeAlbum extends MediaSet implements ContentListener {
     // mIndex maps global position to the position of each underlying media sets.
     private TreeMap<Integer, int[]> mIndex = new TreeMap<Integer, int[]>();
 
-    public LocalMergeAlbum(
-            Path path, Comparator<MediaItem> comparator, MediaSet[] sources) {
+    public LocalMergeAlbum(Path path, Comparator<MediaItem> comparator, MediaSet[] sources) {
         super(path, INVALID_DATA_VERSION);
         mComparator = comparator;
         mSources = sources;
@@ -179,6 +178,11 @@ public class LocalMergeAlbum extends MediaSet implements ContentListener {
         }
     }
 
+    @Override
+    public boolean isLeafAlbum() {
+        return true;
+    }
+
     private static class FetchCache {
         private MediaSet mBaseSet;
         private SoftReference<ArrayList<MediaItem>> mCacheRef;
@@ -195,8 +199,7 @@ public class LocalMergeAlbum extends MediaSet implements ContentListener {
         public MediaItem getItem(int index) {
             boolean needLoading = false;
             ArrayList<MediaItem> cache = null;
-            if (mCacheRef == null
-                    || index < mStartPos || index >= mStartPos + PAGE_SIZE) {
+            if (mCacheRef == null || index < mStartPos || index >= mStartPos + PAGE_SIZE) {
                 needLoading = true;
             } else {
                 cache = mCacheRef.get();
@@ -217,10 +220,5 @@ public class LocalMergeAlbum extends MediaSet implements ContentListener {
 
             return cache.get(index - mStartPos);
         }
-    }
-
-    @Override
-    public boolean isLeafAlbum() {
-        return true;
     }
 }

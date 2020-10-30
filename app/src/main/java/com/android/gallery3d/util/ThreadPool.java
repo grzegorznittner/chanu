@@ -16,36 +16,58 @@
 
 package com.android.gallery3d.util;
 
+import android.util.Log;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ThreadPool {
-    private static final String TAG = "ThreadPool";
-    private static final int CORE_POOL_SIZE = 4;
-    private static final int MAX_POOL_SIZE = 8;
-    private static final int KEEP_ALIVE_TIME = 10; // 10 seconds
-
     // Resource type
     public static final int MODE_NONE = 0;
     public static final int MODE_CPU = 1;
     public static final int MODE_NETWORK = 2;
-
     public static final JobContext JOB_CONTEXT_STUB = new JobContextStub();
-
+    private static final String TAG = "ThreadPool";
+    private static final int CORE_POOL_SIZE = 4;
+    private static final int MAX_POOL_SIZE = 8;
+    private static final int KEEP_ALIVE_TIME = 10; // 10 seconds
+    private final Executor mExecutor;
     ResourceCounter mCpuCounter = new ResourceCounter(2);
     ResourceCounter mNetworkCounter = new ResourceCounter(2);
 
+    public ThreadPool() {
+        mExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new PriorityThreadFactory("thread-pool", android.os.Process.THREAD_PRIORITY_BACKGROUND));
+    }
+
+    // Submit a job to the thread pool. The listener will be called when the
+    // job is finished (or cancelled).
+    public <T> Future<T> submit(Job<T> job, FutureListener<T> listener) {
+        Worker<T> w = new Worker<T>(job, listener);
+        mExecutor.execute(w);
+        return w;
+    }
+
+    public <T> Future<T> submit(Job<T> job) {
+        return submit(job, null);
+    }
+
     // A Job is like a Callable, but it has an addition JobContext parameter.
     public interface Job<T> {
-        public T run(JobContext jc);
+        T run(JobContext jc);
     }
 
     public interface JobContext {
         boolean isCancelled();
+
         void setCancelListener(CancelListener listener);
+
         boolean setMode(int mode);
+    }
+
+    public interface CancelListener {
+        void onCancel();
     }
 
     private static class JobContextStub implements JobContext {
@@ -64,37 +86,12 @@ public class ThreadPool {
         }
     }
 
-    public interface CancelListener {
-        public void onCancel();
-    }
-
     private static class ResourceCounter {
         public int value;
+
         public ResourceCounter(int v) {
             value = v;
         }
-    }
-
-    private final Executor mExecutor;
-
-    public ThreadPool() {
-        mExecutor = new ThreadPoolExecutor(
-                CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME,
-                TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),
-                new PriorityThreadFactory("thread-pool",
-                android.os.Process.THREAD_PRIORITY_BACKGROUND));
-    }
-
-    // Submit a job to the thread pool. The listener will be called when the
-    // job is finished (or cancelled).
-    public <T> Future<T> submit(Job<T> job, FutureListener<T> listener) {
-        Worker<T> w = new Worker<T>(job, listener);
-        mExecutor.execute(w);
-        return w;
-    }
-
-    public <T> Future<T> submit(Job<T> job) {
-        return submit(job, null);
     }
 
     private class Worker<T> implements Runnable, Future<T>, JobContext {
@@ -127,7 +124,7 @@ public class ThreadPool {
                 }
             }
 
-            synchronized(this) {
+            synchronized (this) {
                 setMode(MODE_NONE);
                 mResult = result;
                 mIsDone = true;

@@ -25,44 +25,14 @@ public class ClusterAlbum extends MediaSet implements ContentListener {
     private DataManager mDataManager;
     private MediaSet mClusterAlbumSet;
 
-    public ClusterAlbum(Path path, DataManager dataManager,
-            MediaSet clusterAlbumSet) {
+    public ClusterAlbum(Path path, DataManager dataManager, MediaSet clusterAlbumSet) {
         super(path, nextVersionNumber());
         mDataManager = dataManager;
         mClusterAlbumSet = clusterAlbumSet;
         mClusterAlbumSet.addContentListener(this);
     }
 
-    void setMediaItems(ArrayList<Path> paths) {
-        mPaths = paths;
-    }
-
-    ArrayList<Path> getMediaItems() {
-        return mPaths;
-    }
-
-    public void setName(String name) {
-        mName = name;
-    }
-
-    @Override
-    public String getName() {
-        return mName;
-    }
-
-    @Override
-    public int getMediaItemCount() {
-        return mPaths.size();
-    }
-
-    @Override
-    public ArrayList<MediaItem> getMediaItem(int start, int count) {
-        return getMediaItemFromPath(mPaths, start, count, mDataManager);
-    }
-
-    public static ArrayList<MediaItem> getMediaItemFromPath(
-            ArrayList<Path> paths, int start, int count,
-            DataManager dataManager) {
+    public static ArrayList<MediaItem> getMediaItemFromPath(ArrayList<Path> paths, int start, int count, DataManager dataManager) {
         if (start >= paths.size()) {
             return new ArrayList<MediaItem>();
         }
@@ -80,6 +50,33 @@ public class ClusterAlbum extends MediaSet implements ContentListener {
             result.add(buf[i]);
         }
         return result;
+    }
+
+    ArrayList<Path> getMediaItems() {
+        return mPaths;
+    }
+
+    void setMediaItems(ArrayList<Path> paths) {
+        mPaths = paths;
+    }
+
+    @Override
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        mName = name;
+    }
+
+    @Override
+    public int getMediaItemCount() {
+        return mPaths.size();
+    }
+
+    @Override
+    public ArrayList<MediaItem> getMediaItem(int start, int count) {
+        return getMediaItemFromPath(mPaths, start, count, mDataManager);
     }
 
     @Override

@@ -1,24 +1,43 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    compileSdkVersion 30
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "com.chanapps.four.activity"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 25
+        //before setting sdk 26+ we have to fix notification too
+
+        versionCode 100
+        versionName "2.0.30"
+        multiDexEnabled true
+        archivesBaseName = "$applicationId-$versionName"+"-"+getDate()
+
+        //used to get build date info
+        buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
+    }
+
+    lintOptions {
+        checkReleaseBuilds true
+        abortOnError false
     }
 
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles 'proguard.cfg'
         }
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
+        }
+
     }
 
-    packagingOptions{
+    packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE'
@@ -26,12 +45,23 @@ android {
     }
 }
 
+static def getDate() {
+    return new Date().format('yyyy.MM.dd.HH.mm.ss')
+}
+
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    compile project(':gallery')
-    compile project(':actionBarPullToRefresh')
-    compile files('libs/commons-io-2.0.1.jar')
-    compile files('libs/commons-lang3-3.1.jar')
-    compile files('libs/jackson-all-1.8.2.jar')
-    compile files('libs/nineoldandroids-2.4.0.jar')
-    compile 'com.android.support:support-v4:23.1.0'
+    api project(':gallery')
+    api project(':actionBarPullToRefresh')
+    implementation files('libs/jackson-all-1.8.2.jar')
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'org.apache.commons:commons-lang3:3.3.1'
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    // debugImplementation because LeakCanary should only run in debug builds.
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 }

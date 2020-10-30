@@ -16,11 +16,11 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.data.DataManager;
-
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.android.gallery3d.data.DataManager;
+import com.chanapps.four.gallery3d.R;
 
 public class AlbumPicker extends PickerActivity {
 
@@ -35,8 +35,7 @@ public class AlbumPicker extends PickerActivity {
         Bundle data = extras == null ? new Bundle() : new Bundle(extras);
 
         data.putBoolean(Gallery.KEY_GET_ALBUM, true);
-        data.putString(AlbumSetPage.KEY_MEDIA_PATH,
-                getDataManager().getTopSetPath(DataManager.INCLUDE_IMAGE));
+        data.putString(AlbumSetPage.KEY_MEDIA_PATH, getDataManager().getTopSetPath(DataManager.INCLUDE_IMAGE));
         getStateManager().startState(AlbumSetPage.class, data);
     }
 }

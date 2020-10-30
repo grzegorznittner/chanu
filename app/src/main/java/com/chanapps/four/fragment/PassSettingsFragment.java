@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import com.chanapps.four.activity.*;
+
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.URLFormatComponent;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -21,8 +24,7 @@ import com.chanapps.four.task.AuthorizePassTask;
  * Time: 3:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PassSettingsFragment extends PreferenceFragment
-{
+public class PassSettingsFragment extends PreferenceFragment {
 
     public static String TAG = PassSettingsFragment.class.getSimpleName();
 
@@ -58,8 +60,7 @@ public class PassSettingsFragment extends PreferenceFragment
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // we're cheating
-                ActivityDispatcher.launchUrlInBrowser(getActivity(),
-                        URLFormatComponent.getUrl(getActivity(), URLFormatComponent.CHAN_PASS_PURCHASE_URL));
+                ActivityDispatcher.launchUrlInBrowser(getActivity(), URLFormatComponent.getUrl(getActivity(), URLFormatComponent.CHAN_PASS_PURCHASE_URL));
                 return true;
             }
         });
@@ -88,13 +89,11 @@ public class PassSettingsFragment extends PreferenceFragment
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.remove(this);
         ft.commit();
-        if (dismissListener != null)
-            dismissListener.onDismiss(null);
+        if (dismissListener != null) dismissListener.onDismiss(null);
     }
 
     public SharedPreferences ensurePrefs() {
-        if (prefs == null)
-            prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return prefs;
     }
 
@@ -114,16 +113,14 @@ public class PassSettingsFragment extends PreferenceFragment
     }
 
     private void updateAuthorizeVisibility() {
-        if (isPassAvailable())
-            authButton.setEnabled(true);
-        else
-            authButton.setEnabled(false);
+        if (isPassAvailable()) authButton.setEnabled(true);
+        else authButton.setEnabled(false);
     }
 
     private void authorizePass() {
         String passToken = ensurePrefs().getString(SettingsActivity.PREF_PASS_TOKEN, "");
         String passPIN = ensurePrefs().getString(SettingsActivity.PREF_PASS_PIN, "");
-        AuthorizePassTask authorizePassTask = new AuthorizePassTask((ChanIdentifiedActivity)getActivity(), passToken, passPIN);
+        AuthorizePassTask authorizePassTask = new AuthorizePassTask((ChanIdentifiedActivity) getActivity(), passToken, passPIN);
         AuthorizingPassDialogFragment passDialogFragment = new AuthorizingPassDialogFragment(authorizePassTask);
         passDialogFragment.show(getFragmentManager(), AuthorizingPassDialogFragment.TAG);
         if (!authorizePassTask.isCancelled()) {

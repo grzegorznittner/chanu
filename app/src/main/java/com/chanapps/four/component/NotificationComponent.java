@@ -10,10 +10,22 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import com.chanapps.four.activity.*;
-import com.chanapps.four.data.*;
+
+import androidx.core.app.NotificationCompat;
+
+import com.chanapps.four.activity.BoardActivity;
+import com.chanapps.four.activity.CancelDownloadActivity;
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.GalleryViewActivity;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.activity.ThreadActivity;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.DownloadImageTargetType;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
@@ -36,13 +48,14 @@ public class NotificationComponent {
 
     private static final int CLEAR_CACHE_NOTIFY_ID = 0x870932; // a unique notify idea is needed for each notify to "clump" together
     private static final long NOTIFICATION_UPDATE_TIME = 3000;  // 1s
+    private static final int FAVORITES_NOTIFICATION_TOKEN = 0x13;
 
     public static void notifyNewReplies(Context context, ChanPost watchedThread, ChanThread loadedThread) {
-        if (DEBUG) Log.i(TAG, "notifyNewReplies() watched=" + watchedThread + " loaded=" + loadedThread);
+        if (DEBUG)
+            Log.i(TAG, "notifyNewReplies() watched=" + watchedThread + " loaded=" + loadedThread);
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
             return;
-        if (watchedThread == null || loadedThread == null)
-            return;
+        if (watchedThread == null || loadedThread == null) return;
         if (loadedThread.posts == null || loadedThread.posts.length == 0 || loadedThread.posts[0] == null)
             return;
 
@@ -53,27 +66,27 @@ public class NotificationComponent {
         // limit notification when on watchlist or active thread
         if (activity != null && activity.getChanHandler() != null && aid != null) {
             if (board.equals(aid.boardCode) && threadNo == aid.threadNo) {
-                if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on thread, skipping notification");
+                if (DEBUG)
+                    Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on thread, skipping notification");
                 return;
-            }
-            else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(aid.boardCode)) {
-                if (DEBUG) Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on watchlist, skipping notification");
+            } else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(aid.boardCode)) {
+                if (DEBUG)
+                    Log.i(TAG, "notifyNewReplies /" + board + "/" + threadNo + " user on watchlist, skipping notification");
                 return;
             }
         }
 
         int numNewReplies = loadedThread.posts[0].replies - (watchedThread.replies >= 0 ? watchedThread.replies : 0);
-        if (DEBUG) Log.i(TAG, "notifyNewReplies() /" + board + "/" + threadNo + " newReplies=" + numNewReplies);
-        if (numNewReplies <= 0 && !loadedThread.isDead)
-            return;
-        int notificationId = board.hashCode() + (int)threadNo;
+        if (DEBUG)
+            Log.i(TAG, "notifyNewReplies() /" + board + "/" + threadNo + " newReplies=" + numNewReplies);
+        if (numNewReplies <= 0 && !loadedThread.isDead) return;
+        int notificationId = board.hashCode() + (int) threadNo;
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String title = context.getString(R.string.app_name);
         String postText;
         if (loadedThread.isDead) {
             postText = context.getString(R.string.mobile_profile_fetch_dead_thread);
-        }
-        else {
+        } else {
             String postPlurals = context.getResources().getQuantityString(R.plurals.thread_activity_updated, numNewReplies);
             //String imagePlurals = context.getResources().getQuantityString(R.plurals.thread_num_images, numNewImages);
             postText = String.format(postPlurals, 0).replace("0", "");
@@ -84,29 +97,21 @@ public class NotificationComponent {
         String text = (postText + " " + threadId).trim();
 
         Intent threadActivityIntent = ThreadActivity.createIntent(context, board, threadNo, "");
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)System.currentTimeMillis(),
-                threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-        Notification.Builder notifBuilder = new Notification.Builder(context)
-                .setSmallIcon(R.drawable.app_icon_notification)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        Notification.Builder notifBuilder = new Notification.Builder(context).setSmallIcon(R.drawable.app_icon_notification).setContentTitle(title).setContentText(text).setAutoCancel(true).setContentIntent(pendingIntent);
         Bitmap largeIcon = loadLargeIcon(context, loadedThread.posts[0]);
-        if (largeIcon != null)
-            notifBuilder.setLargeIcon(largeIcon);
-        if (numNewReplies > 0)
-            notifBuilder.setNumber(numNewReplies);
+        if (largeIcon != null) notifBuilder.setLargeIcon(largeIcon);
+        if (numNewReplies > 0) notifBuilder.setNumber(numNewReplies);
         Notification noti = buildNotification(notifBuilder);
-        if (DEBUG) Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);
+        if (DEBUG)
+            Log.i(TAG, "notifyNewReplies() sending notification for " + numNewReplies + " new replies for /" + board + "/" + threadNo);
         notificationManager.notify(notificationId, noti);
     }
 
     protected static Notification buildNotification(Notification.Builder notifBuilder) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             return deprecatedBuildNotification(notifBuilder);
-        else
-            return notifBuilder.build();
+        else return notifBuilder.build();
     }
 
     @SuppressWarnings("deprecation")
@@ -132,12 +137,7 @@ public class NotificationComponent {
         Intent intent = BoardActivity.createIntent(context, ChanBoard.defaultBoardCode(context), "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification notification = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.app_icon_notification)
-                .setContentTitle(context.getString(R.string.pref_clear_cache_notification_title))
-                .setContentText(contentText)
-                .setContentIntent(pendingIntent)
-                .build();
+        Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.app_icon_notification).setContentTitle(context.getString(R.string.pref_clear_cache_notification_title)).setContentText(contentText).setContentIntent(pendingIntent).build();
         return notification;
     }
 
@@ -150,33 +150,27 @@ public class NotificationComponent {
         String text = titleText + " " + threadText;
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(text)
-                .setSmallIcon(R.drawable.app_icon_notification);
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context).setContentTitle(context.getString(R.string.app_name)).setContentText(text).setSmallIcon(R.drawable.app_icon_notification);
 
         notificationManager.notify(notificationId, notifBuilder.build());
     }
 
-    public static void notifyDownloadFinished(Context context, int notificationId, DownloadImageTargetType downloadImageTargetType,
-                                              ChanThread thread, String board, long threadNo, String targetFile) {
+    public static void notifyDownloadFinished(Context context, int notificationId, DownloadImageTargetType downloadImageTargetType, ChanThread thread, String board, long threadNo, String targetFile) {
         if (ThreadImageDownloadService.checkIfStopped(notificationId)) {
             return;
         }
-        if (DEBUG) Log.i(TAG, "notifyDownloadFinished " + downloadImageTargetType + " " + board + "/" + threadNo
-                + " " + thread.posts.length + " posts, file " + targetFile);
+        if (DEBUG)
+            Log.i(TAG, "notifyDownloadFinished " + downloadImageTargetType + " " + board + "/" + threadNo + " " + thread.posts.length + " posts, file " + targetFile);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
-            return;
+        if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true)) return;
 
         //boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         boolean useFriendlyIds = false;
-        if (thread != null)
-            thread.useFriendlyIds = useFriendlyIds;
+        if (thread != null) thread.useFriendlyIds = useFriendlyIds;
 
         Intent threadActivityIntent = null;
-        switch(downloadImageTargetType) {
+        switch (downloadImageTargetType) {
             case TO_BOARD:
             case TO_ZIP:
                 threadActivityIntent = ThreadActivity.createIntent(context, board, threadNo, "");
@@ -193,10 +187,8 @@ public class NotificationComponent {
             notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
             notifBuilder.setAutoCancel(true);
             notifBuilder.setContentTitle(context.getString(R.string.download_all_images_complete));
-            notifBuilder.setContentText
-                    (String.format(context.getString(R.string.download_all_images_complete_detail), board, threadNo));
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-                    threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
+            notifBuilder.setContentText(String.format(context.getString(R.string.download_all_images_complete_detail), board, threadNo));
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
             notifBuilder.setContentIntent(pendingIntent);
             Notification noti = buildNotification(notifBuilder);
             notificationManager.notify(notificationId, noti);
@@ -208,13 +200,12 @@ public class NotificationComponent {
         try {
             try {
                 largeIcon = loadIconBitmap(context, loadedThread);
-                if (DEBUG) Log.i(TAG, "loadLargeIcon() loaded notification large icon=" + largeIcon);
-            }
-            catch (Exception e) {
+                if (DEBUG)
+                    Log.i(TAG, "loadLargeIcon() loaded notification large icon=" + largeIcon);
+            } catch (Exception e) {
                 Log.e(TAG, "loadLargeIcon() exception loading thumbnail for notification for thread=" + loadedThread.no, e);
                 if (DEBUG) Log.i(TAG, "using default notification large icon");
-            }
-            catch (Error e) {
+            } catch (Error e) {
                 Log.e(TAG, "loadLargeIcon() error loading thumbnail for notification for thread=" + loadedThread.no, e);
                 if (DEBUG) Log.i(TAG, "using default notification large icon");
             }
@@ -227,23 +218,19 @@ public class NotificationComponent {
                 if (DEBUG) Log.i(TAG, "loadLargeIcon() null bitmap, loading app-wide resource");
                 largeIcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.app_icon_notification_large);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "loadLargeIcon() exception loading default thumbnail for notification for thread=" + loadedThread.no, e);
-        }
-        catch (Error e) {
+        } catch (Error e) {
             Log.e(TAG, "loadLargeIcon() error loading default thumbnail for notification for thread=" + loadedThread.no, e);
         }
         return largeIcon;
     }
 
     private static Bitmap loadIconBitmap(Context context, ChanPost loadedThread) throws Exception {
-        if (loadedThread == null)
-            return null;
+        if (loadedThread == null) return null;
         String imageUrl = loadedThread.thumbnailUrl(context);
         if (DEBUG) Log.i(TAG, "loadLargeIcon() imageUrl=" + imageUrl);
-        if (imageUrl == null)
-            return null;
+        if (imageUrl == null) return null;
         File bitmapFile = ChanImageLoader.getInstance(context).getDiscCache().get(imageUrl);
         if (DEBUG) Log.i(TAG, "loadLargeIcon() bitmapFile=" + bitmapFile);
         Bitmap tmp = BitmapFactory.decodeFile(bitmapFile.getAbsolutePath());
@@ -254,55 +241,43 @@ public class NotificationComponent {
         return Bitmap.createBitmap(tmp, offsetX, offsetY, widthPx, heightPx);
     }
 
-    public static long notifyDownloadUpdated(Context context, int notificationId, String board, long threadNo,
-                                             int totalNumImages, int downloadedImages, long lastUpdateTime) {
+    public static long notifyDownloadUpdated(Context context, int notificationId, String board, long threadNo, int totalNumImages, int downloadedImages, long lastUpdateTime) {
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
             return lastUpdateTime;
         if (ThreadImageDownloadService.checkIfStopped(notificationId)) {
-			return lastUpdateTime;
-		}
-		long now = new Date().getTime();
-		if (now - lastUpdateTime < NOTIFICATION_UPDATE_TIME) {
-			return lastUpdateTime;
-		}
-		lastUpdateTime = now;
+            return lastUpdateTime;
+        }
+        long now = new Date().getTime();
+        if (now - lastUpdateTime < NOTIFICATION_UPDATE_TIME) {
+            return lastUpdateTime;
+        }
+        lastUpdateTime = now;
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String titleText = totalNumImages > 1
-                ? context.getString(R.string.download_all_images_to_gallery_menu)
-                : context.getString(R.string.download_images_to_gallery_menu);
+        String titleText = totalNumImages > 1 ? context.getString(R.string.download_all_images_to_gallery_menu) : context.getString(R.string.download_images_to_gallery_menu);
         String threadText = "/" + board + "/" + threadNo;
         String downloadText = downloadedImages + "/" + totalNumImages;
         String text = titleText + " " + threadText + " " + downloadText;
 
-        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(text)
-                .setProgress(totalNumImages, downloadedImages, false)
-                .setSmallIcon(R.drawable.app_icon_notification);
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context).setContentTitle(context.getString(R.string.app_name)).setContentText(text).setProgress(totalNumImages, downloadedImages, false).setSmallIcon(R.drawable.app_icon_notification);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-                CancelDownloadActivity.createIntent(context, notificationId, board, threadNo),
-        		Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, CancelDownloadActivity.createIntent(context, notificationId, board, threadNo), Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
         notifBuilder.setContentIntent(pendingIntent);
 
-		notificationManager.notify(notificationId, notifBuilder.build());
+        notificationManager.notify(notificationId, notifBuilder.build());
         return lastUpdateTime;
-	}
+    }
 
     public static void notifyDownloadError(Context context, int notificationId, ChanThread thread) {
-        if (thread == null)
-            return;
+        if (thread == null) return;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))
-            return;
+        if (!prefs.getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true)) return;
 
         //boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         boolean useFriendlyIds = false;
-        if (thread != null)
-            thread.useFriendlyIds = useFriendlyIds;
+        if (thread != null) thread.useFriendlyIds = useFriendlyIds;
 
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder notifBuilder = new Notification.Builder(context);
         notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
         notifBuilder.setAutoCancel(true);
@@ -311,18 +286,14 @@ public class NotificationComponent {
         notifBuilder.setSmallIcon(R.drawable.app_icon_notification);
 
         Intent threadActivityIntent = ThreadActivity.createIntent(context, thread.board, thread.no, "");
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-                threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
         notifBuilder.setContentIntent(pendingIntent);
 
         Notification noti = buildNotification(notifBuilder);
         notificationManager.notify(notificationId, noti);
     }
 
-    private static final int FAVORITES_NOTIFICATION_TOKEN = 0x13;
-
-    public static void notifyNewThreads(final Context context, final String boardCode, final int numNewThreads,
-                                        final ChanThread newThread) {
+    public static void notifyNewThreads(final Context context, final String boardCode, final int numNewThreads, final ChanThread newThread) {
         if (DEBUG) Log.i(TAG, "notifyNewThreads() /" + boardCode + "/ numThreads=" + numNewThreads);
         /*
         if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_NOTIFICATIONS, true))

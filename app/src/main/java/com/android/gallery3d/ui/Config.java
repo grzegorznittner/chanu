@@ -17,15 +17,15 @@
 package com.android.gallery3d.ui;
 
 interface DetailsWindowConfig {
-    public static final int FONT_SIZE = 18;
-    public static final int PREFERRED_WIDTH = 400;
-    public static final int LEFT_RIGHT_EXTRA_PADDING = 9;
-    public static final int TOP_BOTTOM_EXTRA_PADDING = 9;
-    public static final int LINE_SPACING = 5;
-    public static final int FIRST_LINE_SPACING = 18;
+    int FONT_SIZE = 18;
+    int PREFERRED_WIDTH = 400;
+    int LEFT_RIGHT_EXTRA_PADDING = 9;
+    int TOP_BOTTOM_EXTRA_PADDING = 9;
+    int LINE_SPACING = 5;
+    int FIRST_LINE_SPACING = 18;
 }
 
 interface TextButtonConfig {
-    public static final int HORIZONTAL_PADDINGS = 16;
-    public static final int VERTICAL_PADDINGS = 5;
+    int HORIZONTAL_PADDINGS = 16;
+    int VERTICAL_PADDINGS = 5;
 }

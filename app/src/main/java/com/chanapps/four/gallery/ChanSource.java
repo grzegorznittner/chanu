@@ -29,10 +29,9 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 
 public class ChanSource extends MediaSource {
+    public static final String KEY_BUCKET_ID = "bucketId";
     private static final String TAG = "ChanSource";
     private static final boolean DEBUG = false;
-    public static final String KEY_BUCKET_ID = "bucketId";
-
     private GalleryApp mApplication;
 
     private ContentProviderClient mClient;
@@ -45,27 +44,27 @@ public class ChanSource extends MediaSource {
     @Override
     public MediaObject createMediaObject(Path path) {
         if ("chan".equals(path.getPrefix())) {
-        	String[] elems = path.split();
-        	String board = elems[1];
-        	String threadStr = elems[2];
-    		long threadNo = Long.parseLong(threadStr);
+            String[] elems = path.split();
+            String board = elems[1];
+            String threadStr = elems[2];
+            long threadNo = Long.parseLong(threadStr);
             //ChanThread thread = ChanFileStorage.getCachedThreadData(mApplication.getAndroidContext(), board, threadNo);
             // really should not be on main thread, but gallery not yet setup to async load thread data on start without crashing
             ChanThread thread = ChanFileStorage.loadThreadData(mApplication.getAndroidContext(), board, threadNo);
-            if (DEBUG) Log.i(TAG, "createMediaObject() path=" + path + " found cached thread=" + thread);
-        	if (thread == null) {
+            if (DEBUG)
+                Log.i(TAG, "createMediaObject() path=" + path + " found cached thread=" + thread);
+            if (thread == null) {
                 return null;
+            } else if (elems.length == 3) {
+                return new ChanAlbum(path, mApplication, thread);
+            } else {
+                long postNo = Long.parseLong(elems[3]);
+                for (ChanPost post : thread.posts) {
+                    if (post.no == postNo) {
+                        return new ChanImage(mApplication, path, post);
+                    }
+                }
             }
-            else if (elems.length == 3) {
-        		return new ChanAlbum(path, mApplication, thread);
-        	} else {
-        		long postNo = Long.parseLong(elems[3]);
-        		for (ChanPost post : thread.posts) {
-        			if (post.no == postNo) {
-        				return new ChanImage(mApplication, path, post);
-        			}
-        		}
-        	}
         }
         return null;
     }
@@ -73,10 +72,10 @@ public class ChanSource extends MediaSource {
     @Override
     public Path findPathByUri(Uri uri) {
         try {
-        	String uriStr = uri != null ? uri.toString() : "";
-        	if (uriStr.startsWith("/chan/")) {
-        		return Path.fromString(uriStr);
-        	}
+            String uriStr = uri != null ? uri.toString() : "";
+            if (uriStr.startsWith("/chan/")) {
+                return Path.fromString(uriStr);
+            }
         } catch (Exception e) {
             Log.w(TAG, "uri: " + uri.toString(), e);
         }
@@ -85,9 +84,9 @@ public class ChanSource extends MediaSource {
 
     @Override
     public void pause() {
-    	if (mClient != null) {
-    		mClient.release();
-    		mClient = null;
-    	}
+        if (mClient != null) {
+            mClient.release();
+            mClient = null;
+        }
     }
 }

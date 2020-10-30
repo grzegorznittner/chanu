@@ -42,7 +42,6 @@ public class AlphaAnimation extends CanvasAnimation {
 
     @Override
     protected void onCalculate(float progress) {
-        mCurrentAlpha = Utils.clamp(mStartAlpha
-                + (mEndAlpha - mStartAlpha) * progress, 0f, 1f);
+        mCurrentAlpha = Utils.clamp(mStartAlpha + (mEndAlpha - mStartAlpha) * progress, 0f, 1f);
     }
 }

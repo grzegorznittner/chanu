@@ -1,18 +1,34 @@
 package com.chanapps.four.loader;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.*;
-
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
+import androidx.loader.content.AsyncTaskLoader;
+
 import com.chanapps.four.component.AlphanumComparator;
-import com.chanapps.four.data.*;
+import com.chanapps.four.data.BoardSortType;
+import com.chanapps.four.data.BoardType;
+import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
@@ -42,8 +58,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         mObserver = new ForceLoadContentObserver();
     }
 
-    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev, boolean header,
-                             BoardSortType boardSortType) {
+    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev, boolean header, BoardSortType boardSortType) {
         this(context);
         this.context = context;
         this.boardName = boardName;
@@ -64,6 +79,58 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     }
     */
 
+    public static ChanBoard loadBoardSorted(Context context, String boardCode) {
+        BoardSortType boardSortType = BoardSortType.loadFromPrefs(context);
+        final ChanBoard bumpOrderBoard = ChanFileStorage.loadBoardData(context, boardCode);
+        return BoardCursorLoader.copyBoardSorted(bumpOrderBoard, boardSortType);
+    }
+
+    private static ChanBoard copyBoardSorted(ChanBoard board, BoardSortType boardSortType) {
+        if (boardSortType == BoardSortType.BUMP_ORDER) return board;
+
+        ChanThread[] threads = board.threads;
+        Map<Long, List<Integer>> positionMap = new HashMap<Long, List<Integer>>(threads.length);
+        Set<Long> valueSet = new HashSet<Long>(threads.length);
+        for (int pos = 0; pos < threads.length; pos++) {
+            ChanThread thread = threads[pos];
+            long value;
+            switch (boardSortType) {
+                case REPLY_COUNT:
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null ? thread.replies : thread.posts[0].replies;
+                    break;
+                case IMAGE_COUNT:
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null ? thread.images : thread.posts[0].images;
+                    break;
+                case CREATION_DATE:
+                    value = thread.no;
+                    break;
+                default:
+                    throw new AssertionError("board sort type = " + boardSortType + " should have been handled elsewhere");
+            }
+            if (!positionMap.containsKey(value)) positionMap.put(value, new ArrayList<Integer>(1));
+            positionMap.get(value).add(pos);
+            valueSet.add(value);
+        }
+
+        List<Long> values = new ArrayList<Long>(valueSet);
+        Collections.sort(values); // natural order
+        Collections.reverse(values);
+
+        ChanThread[] sortedThreads = new ChanThread[threads.length];
+        int i = 0;
+        for (Long value : values) {
+            if (positionMap.containsKey(value)) {
+                for (int pos : positionMap.get(value)) {
+                    sortedThreads[i++] = threads[pos];
+                }
+            }
+        }
+
+        ChanBoard sortedBoard = board.copy();
+        sortedBoard.threads = sortedThreads;
+        return sortedBoard;
+    }
+
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
@@ -72,12 +139,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         //if (ChanBoard.META_BOARD_CODE.equals(boardName))
         //    cursor = loadMetaBoard();
         //else
-        if (ChanBoard.isMetaBoard(boardName))
-            cursor = loadMetaTypeBoard();
-        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardName))
-            cursor = loadFavoritesBoard();
-        else
-            cursor = loadBoard();
+        if (ChanBoard.isMetaBoard(boardName)) cursor = loadMetaTypeBoard();
+        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardName)) cursor = loadFavoritesBoard();
+        else cursor = loadBoard();
         registerContentObserver(cursor, mObserver);
         return cursor;
     }
@@ -87,23 +151,18 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         if (DEBUG) Log.i(TAG, "loadMetaTypeBoard showNSFWBoards=" + showNSFWBoards);
         List<ChanBoard> sorted = new ArrayList<ChanBoard>();
         for (BoardType boardType : BoardType.values()) {
-            if (BoardType.ALL_BOARDS == boardType)
-                continue;
-            if (!boardType.isCategory())
-                continue;
-            if (!boardType.isSFW() && !showNSFWBoards)
-                continue;
-            if (!ChanBoard.isMetaBoard(boardType.boardCode()))
-                continue;
+            if (BoardType.ALL_BOARDS == boardType) continue;
+            if (!boardType.isCategory()) continue;
+            if (!boardType.isSFW() && !showNSFWBoards) continue;
+            if (!ChanBoard.isMetaBoard(boardType.boardCode())) continue;
             if (!boardName.equals(boardType.boardCode()) && !boardName.equals(ChanBoard.ALL_BOARDS_BOARD_CODE))
                 continue;
             List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
-            if (boards == null || boards.isEmpty())
-                continue;
-            if (DEBUG) Log.i(TAG, "Found " + boards.size() + " boards = " + Arrays.toString(boards.toArray()));
+            if (boards == null || boards.isEmpty()) continue;
+            if (DEBUG)
+                Log.i(TAG, "Found " + boards.size() + " boards = " + Arrays.toString(boards.toArray()));
             for (ChanBoard board : boards) {
-                if (board.isMetaBoard())
-                    continue;
+                if (board.isMetaBoard()) continue;
                 if (ChanBoard.isRemoved(board.link)) {
                     if (DEBUG) Log.i(TAG, "Board /" + board.link + "/ has been removed from 4chan");
                     continue;
@@ -134,10 +193,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected Cursor loadFavoritesBoard() {
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
-        if (DEBUG)  {
+        if (DEBUG) {
             Log.i(TAG, "loadFavoritesBoard /" + boardName + "/");
-            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
-                    + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
+            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0 + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
         }
 
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor(board.threads == null ? 0 : board.threads.length);
@@ -158,8 +216,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 if (DEBUG) Log.i(TAG, "Board /" + thread.board + "/ has been removed from 4chan");
                 continue;
             }
-            if (thread.no <= 0)
-                sorted.add(thread);
+            if (thread.no <= 0) sorted.add(thread);
         }
 
         final AlphanumComparator comparator = new AlphanumComparator();
@@ -175,9 +232,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             String boardCode = thread.board;
             String name = ChanBoard.getName(context, boardCode);
             int imageId = ChanBoard.getImageResourceId(boardCode, 0, 0);
-            if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + boardCode
-                    + "/ name=" + name
-                    + " resourceId=" + imageId);
+            if (DEBUG)
+                Log.i(TAG, "loadBoard adding board link row /" + boardCode + "/ name=" + name + " resourceId=" + imageId);
             Object[] row = ChanThread.makeBoardRow(context, boardCode, name, imageId, 0);
             matrixCursor.addRow(row);
             if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
@@ -190,15 +246,13 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected <T> Cursor loadBoard() {
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
-        if (DEBUG)  {
+        if (DEBUG) {
             Log.i(TAG, "loadBoard /" + boardName + "/");
             Log.i(TAG, "boardSortType=" + boardSortType + " ");
-            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
-                    + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
+            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0 + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
         }
 
-        if (board.shouldSwapThreads())
-        { // auto-update if we have no threads to show
+        if (board.shouldSwapThreads()) { // auto-update if we have no threads to show
             if (DEBUG) Log.i(TAG, "auto-swapping /" + boardName + "/");
             board.swapLoadedThreads();
         }
@@ -220,8 +274,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         if (boardSortType == BoardSortType.BUMP_ORDER) { // load immediate
             for (ChanThread thread : board.threads)
                 loadThread(matrixCursor, board, thread);
-        }
-        else {
+        } else {
             loadSorted(matrixCursor, board, board.threads);
         }
         if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads");
@@ -252,16 +305,14 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             return;
         }
         //boolean matchedQuery = !query.isEmpty();
-        Object row[];
+        Object[] row;
         if (thread.no <= 0) {
             String name = ChanBoard.getName(context, thread.board);
             int imageId = ChanBoard.getImageResourceId(thread.board, 0, 0);
-            if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + thread.board
-                    + "/ name=" + name
-                    + " resourceId=" + imageId);
+            if (DEBUG)
+                Log.i(TAG, "loadBoard adding board link row /" + thread.board + "/ name=" + name + " resourceId=" + imageId);
             row = ChanThread.makeBoardRow(context, thread.board, name, imageId, 0);
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "loadBoard adding thread row " + thread);
             row = ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard(), abbrev);
         }
@@ -281,7 +332,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on the UI thread */
     @Override
     public void deliverResult(Cursor cursor) {
-		if (DEBUG) Log.i(TAG, "deliverResult isReset(): " + isReset());
+        if (DEBUG) Log.i(TAG, "deliverResult isReset(): " + isReset());
         if (isReset()) {
             // An async query came in while the loader is stopped
             if (cursor != null) {
@@ -305,12 +356,12 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
      * Starts an asynchronous load of the contacts list data. When the result is ready the callbacks
      * will be called on the UI thread. If a previous load has been completed and is still valid
      * the result may be passed to the callbacks immediately.
-     *
+     * <p>
      * Must be called from the UI thread
      */
     @Override
     protected void onStartLoading() {
-    	if (DEBUG) Log.i(TAG, "onStartLoading mCursor: " + mCursor);
+        if (DEBUG) Log.i(TAG, "onStartLoading mCursor: " + mCursor);
         if (mCursor != null) {
             deliverResult(mCursor);
         }
@@ -324,14 +375,14 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStopLoading() {
-    	if (DEBUG) Log.i(TAG, "onStopLoading");
+        if (DEBUG) Log.i(TAG, "onStopLoading");
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
 
     @Override
     public void onCanceled(Cursor cursor) {
-    	if (DEBUG) Log.i(TAG, "onCanceled cursor: " + cursor);
+        if (DEBUG) Log.i(TAG, "onCanceled cursor: " + cursor);
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
@@ -353,8 +404,12 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
-        writer.print(prefix); writer.print("boardName="); writer.println(boardName);
-        writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
+        writer.print(prefix);
+        writer.print("boardName=");
+        writer.println(boardName);
+        writer.print(prefix);
+        writer.print("mCursor=");
+        writer.println(mCursor);
     }
 
     protected void loadSorted(MatrixCursor cursor, ChanBoard board, ChanThread[] threads) {
@@ -365,14 +420,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             long value;
             switch (boardSortType) {
                 case REPLY_COUNT:
-                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
-                            ? thread.replies
-                            : thread.posts[0].replies;
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null ? thread.replies : thread.posts[0].replies;
                     break;
                 case IMAGE_COUNT:
-                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
-                            ? thread.images
-                            : thread.posts[0].images;
+                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null ? thread.images : thread.posts[0].images;
                     break;
                 case CREATION_DATE:
                     value = thread.no;
@@ -380,8 +431,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 default:
                     throw new AssertionError("board sort type = " + boardSortType + " should have been handled elsewhere");
             }
-            if (!positionMap.containsKey(value))
-                positionMap.put(value, new ArrayList<Integer>(1));
+            if (!positionMap.containsKey(value)) positionMap.put(value, new ArrayList<Integer>(1));
             positionMap.get(value).add(pos);
             valueSet.add(value);
         }
@@ -398,64 +448,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             }
         }
 
-    }
-
-    public static ChanBoard loadBoardSorted(Context context, String boardCode) {
-        BoardSortType boardSortType = BoardSortType.loadFromPrefs(context);
-        final ChanBoard bumpOrderBoard = ChanFileStorage.loadBoardData(context, boardCode);
-        return BoardCursorLoader.copyBoardSorted(bumpOrderBoard, boardSortType);
-    }
-
-    private static ChanBoard copyBoardSorted(ChanBoard board, BoardSortType boardSortType) {
-        if (boardSortType == BoardSortType.BUMP_ORDER)
-            return board;
-
-        ChanThread[] threads = board.threads;
-        Map<Long, List<Integer>> positionMap = new HashMap<Long, List<Integer>>(threads.length);
-        Set<Long> valueSet = new HashSet<Long>(threads.length);
-        for (int pos = 0; pos < threads.length; pos++) {
-            ChanThread thread = threads[pos];
-            long value;
-            switch (boardSortType) {
-                case REPLY_COUNT:
-                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
-                            ? thread.replies
-                            : thread.posts[0].replies;
-                    break;
-                case IMAGE_COUNT:
-                    value = thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null
-                            ? thread.images
-                            : thread.posts[0].images;
-                    break;
-                case CREATION_DATE:
-                    value = thread.no;
-                    break;
-                default:
-                    throw new AssertionError("board sort type = " + boardSortType + " should have been handled elsewhere");
-            }
-            if (!positionMap.containsKey(value))
-                positionMap.put(value, new ArrayList<Integer>(1));
-            positionMap.get(value).add(pos);
-            valueSet.add(value);
-        }
-
-        List<Long> values = new ArrayList<Long>(valueSet);
-        Collections.sort(values); // natural order
-        Collections.reverse(values);
-
-        ChanThread[] sortedThreads = new ChanThread[threads.length];
-        int i = 0;
-        for (Long value : values) {
-            if (positionMap.containsKey(value)) {
-                for (int pos : positionMap.get(value)) {
-                    sortedThreads[i++] = threads[pos];
-                }
-            }
-        }
-
-        ChanBoard sortedBoard = board.copy();
-        sortedBoard.threads = sortedThreads;
-        return sortedBoard;
     }
 
 }

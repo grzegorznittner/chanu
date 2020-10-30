@@ -1,6 +1,7 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
+
 import com.chanapps.four.activity.R;
 
 import java.util.regex.Matcher;
@@ -15,10 +16,10 @@ import java.util.regex.Pattern;
  */
 public class AuthorizePassResponse {
 
-    private Context ctx = null;
-    private String response = null;
-    private boolean isAuthorized = false;
-    private String error = null;
+    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
+    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
+    private static final Pattern GENERIC_ERROR_REG = Pattern.compile("<div[^>]*><span[^>]*>(<strong[^>]*>)?([^<]*)");
+    private static final Pattern SUCCESS_REG = Pattern.compile("(<title[^>]*>)?([^<]*Authorization\\s+Successful[^<]*|[^<]*-\\s+Authenticated[^<]*)");
 
     /*
     RESPONSE GOOD:
@@ -48,11 +49,10 @@ RESPONSE ERROR:
 <div style="text-align: center;"><span style="font-size: 14pt; color: red; font-weight: bold;">Incorrect Token or PIN.<br><br><div style="text-align: center;">[<a href="https ://sys.4chan.org/auth">Return</a>]</div></span></div>
 
      */
-
-    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
-    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
-    private static final Pattern GENERIC_ERROR_REG = Pattern.compile("<div[^>]*><span[^>]*>(<strong[^>]*>)?([^<]*)");
-    private static final Pattern SUCCESS_REG = Pattern.compile("(<title[^>]*>)?([^<]*Authorization\\s+Successful[^<]*|[^<]*-\\s+Authenticated[^<]*)");
+    private Context ctx = null;
+    private String response = null;
+    private boolean isAuthorized = false;
+    private String error = null;
 
     public AuthorizePassResponse(Context ctx, String response) {
         this.ctx = ctx;
@@ -66,18 +66,14 @@ RESPONSE ERROR:
             Matcher banMatch = BAN_REG.matcher(response);
             Matcher errorMatch = ERROR_REG.matcher(response);
             Matcher genericErrorMatch = GENERIC_ERROR_REG.matcher(response);
-            if ("".equals(response))
-                error = ctx.getString(R.string.delete_post_response_error);
-            else if (successMatch.find())
-                isAuthorized = true;
+            if ("".equals(response)) error = ctx.getString(R.string.delete_post_response_error);
+            else if (successMatch.find()) isAuthorized = true;
             else if (banMatch.find())
                 error = banMatch.group(1) + " " + banMatch.group(2) + " " + banMatch.group(3);
-            else if (errorMatch.find())
-                error = errorMatch.group(2).replaceFirst("Error: ", "");
+            else if (errorMatch.find()) error = errorMatch.group(2).replaceFirst("Error: ", "");
             else if (genericErrorMatch.find())
                 error = genericErrorMatch.group(2).replaceFirst("Error: ", "");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             error = e.getLocalizedMessage();
             isAuthorized = false;
         }

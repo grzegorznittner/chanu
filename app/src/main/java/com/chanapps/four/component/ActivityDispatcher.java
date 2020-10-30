@@ -13,7 +13,11 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
-import com.chanapps.four.activity.*;
+
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.R;
+
 import java.util.List;
 
 /**
@@ -25,23 +29,11 @@ import java.util.List;
  */
 public class ActivityDispatcher {
 
+    public static final String IGNORE_DISPATCH = "ignoreDispatch";
     private static final String TAG = ActivityDispatcher.class.getSimpleName();
     private static final String LAST_ACTIVITY = "ActivityDispatcherLastActivity";
     private static final boolean DEBUG = false;
-    public static final String IGNORE_DISPATCH = "ignoreDispatch";
-
-    public static void store(ChanIdentifiedActivity activity) {
-        ChanActivityId activityId = activity.getChanActivityId();
-        String serialized = activityId.serialize();
-        if (serialized == null || serialized.isEmpty()) {
-            if (DEBUG) Log.e(TAG, "store() serialize empty");
-            return;
-        }
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext()).edit();
-        editor.putString(LAST_ACTIVITY, serialized);
-        editor.commit();
-        if (DEBUG) Log.i(TAG, "store() stored " + activityId);
-    }
+    private static final int MAX_RUNNING_TASKS = 2;
 
     /*
     public static boolean isDispatchable(ChanIdentifiedActivity activity) {
@@ -130,6 +122,19 @@ public class ActivityDispatcher {
     }
     */
 
+    public static void store(ChanIdentifiedActivity activity) {
+        ChanActivityId activityId = activity.getChanActivityId();
+        String serialized = activityId.serialize();
+        if (serialized == null || serialized.isEmpty()) {
+            if (DEBUG) Log.e(TAG, "store() serialize empty");
+            return;
+        }
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext()).edit();
+        editor.putString(LAST_ACTIVITY, serialized);
+        editor.commit();
+        if (DEBUG) Log.i(TAG, "store() stored " + activityId);
+    }
+
     public static void launchUrlInBrowser(Context context, String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
@@ -140,11 +145,9 @@ public class ActivityDispatcher {
         if (showChooser) {
             Intent chooser = Intent.createChooser(intent, context.getString(R.string.dialog_choose));
             context.startActivity(chooser);
-        }
-        else if (isIntentSafe) {
+        } else if (isIntentSafe) {
             context.startActivity(intent);
-        }
-        else {
+        } else {
             Log.e(TAG, "error: no application found for url=[" + url + "]");
         }
     }
@@ -152,7 +155,7 @@ public class ActivityDispatcher {
     public static void exitApplication(Context context) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -160,17 +163,14 @@ public class ActivityDispatcher {
         return Looper.getMainLooper().equals(Looper.myLooper());
     }
 
-    private static final int MAX_RUNNING_TASKS = 2;
-
     public static Pair<Integer, ActivityManager.RunningTaskInfo> safeGetRunningTasks(final Context context) {
         try {
-            ActivityManager manager = (ActivityManager)context.getSystemService( Activity.ACTIVITY_SERVICE );
+            ActivityManager manager = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
             List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(MAX_RUNNING_TASKS);
             int numTasks = tasks == null ? 0 : tasks.size();
             ActivityManager.RunningTaskInfo topTask = (tasks == null || tasks.size() == 0) ? null : tasks.get(0);
             return new Pair(numTasks, topTask);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception getting running task", e);
             return new Pair(0, null);
         }
@@ -182,7 +182,8 @@ public class ActivityDispatcher {
         int numTasks = p.first;
         ActivityManager.RunningTaskInfo task = p.second;
         if (task != null && task.topActivity != null) {
-            if (DEBUG) Log.d(TAG, "foreground activity: " + task.topActivity.getClass().getSimpleName());
+            if (DEBUG)
+                Log.d(TAG, "foreground activity: " + task.topActivity.getClass().getSimpleName());
             ComponentName componentInfo = task.topActivity;
             isFg = componentInfo != null && componentInfo.getPackageName().startsWith("com.chanapps");
         }

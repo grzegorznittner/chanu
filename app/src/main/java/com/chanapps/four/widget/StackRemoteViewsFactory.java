@@ -7,19 +7,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanPost;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
-* Created with IntelliJ IDEA.
-* User: johnarleyburns
-* Date: 8/26/13
-* Time: 11:18 AM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: johnarleyburns
+ * Date: 8/26/13
+ * Time: 11:18 AM
+ * To change this template use File | Settings | File Templates.
+ */
 public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final String TAG = StackRemoteViewsFactory.class.getSimpleName();
@@ -46,26 +48,30 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onCreate() {
-        if (DEBUG) Log.i(TAG, "onCreate() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
+        if (DEBUG)
+            Log.i(TAG, "onCreate() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
     }
 
     @Override
     public void onDestroy() {
-        if (DEBUG) Log.i(TAG, "onDestroy() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
+        if (DEBUG)
+            Log.i(TAG, "onDestroy() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
     }
 
     @Override
     public int getCount() {
-        if (DEBUG) Log.i(TAG, "getCount() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ count=" + threads.size());
+        if (DEBUG)
+            Log.i(TAG, "getCount() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ count=" + threads.size());
         return threads.size();
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
-        if (DEBUG) Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + position);
+        if (DEBUG)
+            Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + position);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_coverflow_item);
         int i = position;
-        if (i >= 0 && i< threads.size() && threads.get(i) != null) {
+        if (i >= 0 && i < threads.size() && threads.get(i) != null) {
             ChanPost thread = threads.get(i);
             String url = thread.thumbnailUrl(context);
             WidgetProviderUtils.safeSetRemoteViewThumbnail(context, widgetConf, views, R.id.image_coverflow_item, url, position);
@@ -100,7 +106,8 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onDataSetChanged() {
-        if (DEBUG) Log.i(TAG, "onDataSetChanged() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
+        if (DEBUG)
+            Log.i(TAG, "onDataSetChanged() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
         initWidget();
     }
 

@@ -16,6 +16,13 @@
 
 package com.android.gallery3d.data;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.LruCache;
 import com.android.gallery3d.common.Utils;
@@ -26,12 +33,6 @@ import com.android.gallery3d.util.ThreadPool;
 import com.android.gallery3d.util.ThreadPool.CancelListener;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
@@ -48,16 +49,13 @@ public class DownloadCache {
 
     private static final String TABLE_NAME = DownloadEntry.SCHEMA.getTableName();
 
-    private static final String QUERY_PROJECTION[] = {Columns.ID, Columns.DATA};
-    private static final String WHERE_HASH_AND_URL = String.format(
-            "%s = ? AND %s = ?", Columns.HASH_CODE, Columns.CONTENT_URL);
+    private static final String[] QUERY_PROJECTION = {Columns.ID, Columns.DATA};
+    private static final String WHERE_HASH_AND_URL = String.format("%s = ? AND %s = ?", Columns.HASH_CODE, Columns.CONTENT_URL);
     private static final int QUERY_INDEX_ID = 0;
     private static final int QUERY_INDEX_DATA = 1;
 
-    private static final String FREESPACE_PROJECTION[] = {
-            Columns.ID, Columns.DATA, Columns.CONTENT_URL, Columns.CONTENT_SIZE};
-    private static final String FREESPACE_ORDER_BY =
-            String.format("%s ASC", Columns.LAST_ACCESS);
+    private static final String[] FREESPACE_PROJECTION = {Columns.ID, Columns.DATA, Columns.CONTENT_URL, Columns.CONTENT_SIZE};
+    private static final String FREESPACE_ORDER_BY = String.format("%s ASC", Columns.LAST_ACCESS);
     private static final int FREESPACE_IDNEX_ID = 0;
     private static final int FREESPACE_IDNEX_DATA = 1;
     private static final int FREESPACE_INDEX_CONTENT_URL = 2;
@@ -65,14 +63,11 @@ public class DownloadCache {
 
     private static final String ID_WHERE = Columns.ID + " = ?";
 
-    private static final String SUM_PROJECTION[] =
-            {String.format("sum(%s)", Columns.CONTENT_SIZE)};
+    private static final String[] SUM_PROJECTION = {String.format("sum(%s)", Columns.CONTENT_SIZE)};
     private static final int SUM_INDEX_SUM = 0;
 
-    private final LruCache<String, Entry> mEntryMap =
-            new LruCache<String, Entry>(LRU_CAPACITY);
-    private final HashMap<String, DownloadTask> mTaskMap =
-            new HashMap<String, DownloadTask>();
+    private final LruCache<String, Entry> mEntryMap = new LruCache<String, Entry>(LRU_CAPACITY);
+    private final HashMap<String, DownloadTask> mTaskMap = new HashMap<String, DownloadTask>();
     private final File mRoot;
     private final GalleryApp mApplication;
     private final SQLiteDatabase mDatabase;
@@ -86,15 +81,13 @@ public class DownloadCache {
         mRoot = Utils.checkNotNull(root);
         mApplication = Utils.checkNotNull(application);
         mCapacity = capacity;
-        mDatabase = new DatabaseHelper(application.getAndroidContext())
-                .getWritableDatabase();
+        mDatabase = new DatabaseHelper(application.getAndroidContext()).getWritableDatabase();
     }
 
     private Entry findEntryInDatabase(String stringUrl) {
         long hash = Utils.crc64Long(stringUrl);
-        String whereArgs[] = {String.valueOf(hash), stringUrl};
-        Cursor cursor = mDatabase.query(TABLE_NAME, QUERY_PROJECTION,
-                WHERE_HASH_AND_URL, whereArgs, null, null, null);
+        String[] whereArgs = {String.valueOf(hash), stringUrl};
+        Cursor cursor = mDatabase.query(TABLE_NAME, QUERY_PROJECTION, WHERE_HASH_AND_URL, whereArgs, null, null, null);
         try {
             if (cursor.moveToNext()) {
                 File file = new File(cursor.getString(QUERY_INDEX_DATA));
@@ -180,17 +173,14 @@ public class DownloadCache {
     private void updateLastAccess(long id) {
         ContentValues values = new ContentValues();
         values.put(Columns.LAST_ACCESS, System.currentTimeMillis());
-        mDatabase.update(TABLE_NAME, values,
-                ID_WHERE, new String[] {String.valueOf(id)});
+        mDatabase.update(TABLE_NAME, values, ID_WHERE, new String[]{String.valueOf(id)});
     }
 
     private synchronized void freeSomeSpaceIfNeed(int maxDeleteFileCount) {
         if (mTotalBytes <= mCapacity) return;
-        Cursor cursor = mDatabase.query(TABLE_NAME,
-                FREESPACE_PROJECTION, null, null, null, null, FREESPACE_ORDER_BY);
+        Cursor cursor = mDatabase.query(TABLE_NAME, FREESPACE_PROJECTION, null, null, null, null, FREESPACE_ORDER_BY);
         try {
-            while (maxDeleteFileCount > 0
-                    && mTotalBytes > mCapacity && cursor.moveToNext()) {
+            while (maxDeleteFileCount > 0 && mTotalBytes > mCapacity && cursor.moveToNext()) {
                 long id = cursor.getLong(FREESPACE_IDNEX_ID);
                 String url = cursor.getString(FREESPACE_INDEX_CONTENT_URL);
                 long size = cursor.getLong(FREESPACE_INDEX_CONTENT_SIZE);
@@ -203,8 +193,7 @@ public class DownloadCache {
                     --maxDeleteFileCount;
                     mTotalBytes -= size;
                     new File(path).delete();
-                    mDatabase.delete(TABLE_NAME,
-                            ID_WHERE, new String[]{String.valueOf(id)});
+                    mDatabase.delete(TABLE_NAME, ID_WHERE, new String[]{String.valueOf(id)});
                 } else {
                     // skip delete, since it is being used
                 }
@@ -236,8 +225,7 @@ public class DownloadCache {
             throw new RuntimeException("cannot create " + mRoot.getAbsolutePath());
         }
 
-        Cursor cursor = mDatabase.query(
-                TABLE_NAME, SUM_PROJECTION, null, null, null, null, null);
+        Cursor cursor = mDatabase.query(TABLE_NAME, SUM_PROJECTION, null, null, null, null, null);
         mTotalBytes = 0;
         try {
             if (cursor.moveToNext()) {
@@ -247,6 +235,39 @@ public class DownloadCache {
             cursor.close();
         }
         if (mTotalBytes > mCapacity) freeSomeSpaceIfNeed(MAX_DELETE_COUNT);
+    }
+
+    public static class TaskProxy {
+        private DownloadTask mTask;
+        private boolean mIsCancelled = false;
+        private Entry mEntry;
+
+        synchronized void setResult(Entry entry) {
+            if (mIsCancelled) return;
+            mEntry = entry;
+            notifyAll();
+        }
+
+        public synchronized Entry get(JobContext jc) {
+            jc.setCancelListener(new CancelListener() {
+                public void onCancel() {
+                    mTask.removeProxy(TaskProxy.this);
+                    synchronized (TaskProxy.this) {
+                        mIsCancelled = true;
+                        TaskProxy.this.notifyAll();
+                    }
+                }
+            });
+            while (!mIsCancelled && mEntry == null) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    Log.w(TAG, "ignore interrupt", e);
+                }
+            }
+            jc.setCancelListener(null);
+            return mEntry;
+        }
     }
 
     private final class DatabaseHelper extends SQLiteOpenHelper {
@@ -291,9 +312,9 @@ public class DownloadCache {
     }
 
     private class DownloadTask implements Job<File>, FutureListener<File> {
+        private final String mUrl;
         private HashSet<TaskProxy> mProxySet = new HashSet<TaskProxy>();
         private Future<File> mFuture;
-        private final String mUrl;
 
         public DownloadTask(String url) {
             mUrl = Utils.checkNotNull(url);
@@ -352,8 +373,7 @@ public class DownloadCache {
                 tempFile = File.createTempFile("cache", ".tmp", mRoot);
                 try {
                     File f = new File(mRoot, ".nomedia");
-                    if (!f.exists())
-                        f.createNewFile();
+                    if (!f.exists()) f.createNewFile();
                 } catch (IOException e) {
                     L.i("Can't create \".nomedia\" file in gallery cache directory " + mRoot);
                 }
@@ -369,39 +389,6 @@ public class DownloadCache {
             }
             if (tempFile != null) tempFile.delete();
             return null;
-        }
-    }
-
-    public static class TaskProxy {
-        private DownloadTask mTask;
-        private boolean mIsCancelled = false;
-        private Entry mEntry;
-
-        synchronized void setResult(Entry entry) {
-            if (mIsCancelled) return;
-            mEntry = entry;
-            notifyAll();
-        }
-
-        public synchronized Entry get(JobContext jc) {
-            jc.setCancelListener(new CancelListener() {
-                public void onCancel() {
-                    mTask.removeProxy(TaskProxy.this);
-                    synchronized (TaskProxy.this) {
-                        mIsCancelled = true;
-                        TaskProxy.this.notifyAll();
-                    }
-                }
-            });
-            while (!mIsCancelled && mEntry == null) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    Log.w(TAG, "ignore interrupt", e);
-                }
-            }
-            jc.setCancelListener(null);
-            return mEntry;
         }
     }
 }

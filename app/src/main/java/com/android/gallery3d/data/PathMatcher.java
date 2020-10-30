@@ -91,12 +91,12 @@ public class PathMatcher {
             return mMap.get(segment);
         }
 
-        void setKind(int kind) {
-            mKind = kind;
-        }
-
         int getKind() {
             return mKind;
+        }
+
+        void setKind(int kind) {
+            mKind = kind;
         }
     }
 }

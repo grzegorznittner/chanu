@@ -16,12 +16,13 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.anim.CanvasAnimation;
-import com.android.gallery3d.common.Utils;
-
 import android.graphics.Rect;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
+
+import com.android.gallery3d.anim.CanvasAnimation;
+import com.android.gallery3d.common.Utils;
 
 import java.util.ArrayList;
 
@@ -41,37 +42,29 @@ import java.util.ArrayList;
 // lockRendering() if the rendering thread should not run at the same time.
 //
 public class GLView {
-    private static final String TAG = "GLView";
-
     public static final int VISIBLE = 0;
     public static final int INVISIBLE = 1;
-
+    private static final String TAG = "GLView";
     private static final int FLAG_INVISIBLE = 1;
     private static final int FLAG_SET_MEASURED_SIZE = 2;
     private static final int FLAG_LAYOUT_REQUESTED = 4;
 
     protected final Rect mBounds = new Rect();
     protected final Rect mPaddings = new Rect();
-
-    private GLRoot mRoot;
     protected GLView mParent;
-    private ArrayList<GLView> mComponents;
-    private GLView mMotionTarget;
-
-    private CanvasAnimation mAnimation;
-
-    private int mViewFlags = 0;
-
     protected int mMeasuredWidth = 0;
     protected int mMeasuredHeight = 0;
-
-    private int mLastWidthSpec = -1;
-    private int mLastHeightSpec = -1;
-
     protected int mScrollY = 0;
     protected int mScrollX = 0;
     protected int mScrollHeight = 0;
     protected int mScrollWidth = 0;
+    private GLRoot mRoot;
+    private ArrayList<GLView> mComponents;
+    private GLView mMotionTarget;
+    private CanvasAnimation mAnimation;
+    private int mViewFlags = 0;
+    private int mLastWidthSpec = -1;
+    private int mLastHeightSpec = -1;
 
     public void startAnimation(CanvasAnimation animation) {
         GLRoot root = getGLRoot();
@@ -82,6 +75,11 @@ public class GLView {
             root.registerLaunchedAnimation(mAnimation);
         }
         invalidate();
+    }
+
+    // Returns GLView.VISIBLE or GLView.INVISIBLE
+    public int getVisibility() {
+        return (mViewFlags & FLAG_INVISIBLE) == 0 ? VISIBLE : INVISIBLE;
     }
 
     // Sets the visiblity of this GLView (either GLView.VISIBLE or
@@ -95,11 +93,6 @@ public class GLView {
         }
         onVisibilityChanged(visibility);
         invalidate();
-    }
-
-    // Returns GLView.VISIBLE or GLView.INVISIBLE
-    public int getVisibility() {
-        return (mViewFlags & FLAG_INVISIBLE) == 0 ? VISIBLE : INVISIBLE;
     }
 
     // This should only be called on the content pane (the topmost GLView).
@@ -167,8 +160,7 @@ public class GLView {
     private void removeOneComponent(GLView component) {
         if (mMotionTarget == component) {
             long now = SystemClock.uptimeMillis();
-            MotionEvent cancelEvent = MotionEvent.obtain(
-                    now, now, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+            MotionEvent cancelEvent = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0, 0, 0);
             dispatchTouchEvent(cancelEvent);
             cancelEvent.recycle();
         }
@@ -224,8 +216,7 @@ public class GLView {
     }
 
     protected void renderChild(GLCanvas canvas, GLView component) {
-        if (component.getVisibility() != GLView.VISIBLE
-                && component.mAnimation == null) return;
+        if (component.getVisibility() != GLView.VISIBLE && component.mAnimation == null) return;
 
         int xoffset = component.mBounds.left - mScrollX;
         int yoffset = component.mBounds.top - mScrollY;
@@ -251,8 +242,7 @@ public class GLView {
         return false;
     }
 
-    protected boolean dispatchTouchEvent(MotionEvent event,
-            int x, int y, GLView component, boolean checkBounds) {
+    protected boolean dispatchTouchEvent(MotionEvent event, int x, int y, GLView component, boolean checkBounds) {
         Rect rect = component.mBounds;
         int left = rect.left;
         int top = rect.top;
@@ -279,8 +269,7 @@ public class GLView {
                 mMotionTarget = null;
             } else {
                 dispatchTouchEvent(event, x, y, mMotionTarget, false);
-                if (action == MotionEvent.ACTION_CANCEL
-                        || action == MotionEvent.ACTION_UP) {
+                if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
                     mMotionTarget = null;
                 }
                 return true;
@@ -317,22 +306,20 @@ public class GLView {
         if (sizeChanged) {
             mViewFlags &= ~FLAG_LAYOUT_REQUESTED;
             onLayout(true, left, top, right, bottom);
-        } else if ((mViewFlags & FLAG_LAYOUT_REQUESTED)!= 0) {
+        } else if ((mViewFlags & FLAG_LAYOUT_REQUESTED) != 0) {
             mViewFlags &= ~FLAG_LAYOUT_REQUESTED;
             onLayout(false, left, top, right, bottom);
         }
     }
 
     private boolean setBounds(int left, int top, int right, int bottom) {
-        boolean sizeChanged = (right - left) != (mBounds.right - mBounds.left)
-                || (bottom - top) != (mBounds.bottom - mBounds.top);
+        boolean sizeChanged = (right - left) != (mBounds.right - mBounds.left) || (bottom - top) != (mBounds.bottom - mBounds.top);
         mBounds.set(left, top, right, bottom);
         return sizeChanged;
     }
 
     public void measure(int widthSpec, int heightSpec) {
-        if (widthSpec == mLastWidthSpec && heightSpec == mLastHeightSpec
-                && (mViewFlags & FLAG_LAYOUT_REQUESTED) == 0) {
+        if (widthSpec == mLastWidthSpec && heightSpec == mLastHeightSpec && (mViewFlags & FLAG_LAYOUT_REQUESTED) == 0) {
             return;
         }
 
@@ -342,8 +329,7 @@ public class GLView {
         mViewFlags &= ~FLAG_SET_MEASURED_SIZE;
         onMeasure(widthSpec, heightSpec);
         if ((mViewFlags & FLAG_SET_MEASURED_SIZE) == 0) {
-            throw new IllegalStateException(getClass().getName()
-                    + " should call setMeasuredSize() in onMeasure()");
+            throw new IllegalStateException(getClass().getName() + " should call setMeasuredSize() in onMeasure()");
         }
     }
 
@@ -364,8 +350,7 @@ public class GLView {
         return mMeasuredHeight;
     }
 
-    protected void onLayout(
-            boolean changeSize, int left, int top, int right, int bottom) {
+    protected void onLayout(boolean changeSize, int left, int top, int right, int bottom) {
     }
 
     /**
@@ -382,8 +367,7 @@ public class GLView {
             yoffset += bounds.top;
             view = view.mParent;
         }
-        out.set(xoffset, yoffset, xoffset + descendant.getWidth(),
-                yoffset + descendant.getHeight());
+        out.set(xoffset, yoffset, xoffset + descendant.getWidth(), yoffset + descendant.getHeight());
         return true;
     }
 

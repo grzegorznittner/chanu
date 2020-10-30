@@ -29,14 +29,11 @@ public class AdaptiveBackground extends GLView {
     private static final int BACKGROUND_HEIGHT = 64;
     private static final int FILTERED_COLOR = 0xffaaaaaa;
     private static final int ANIMATION_DURATION = 500;
-
+    private final Paint mPaint;
+    private final FloatAnimation mAnimation = new FloatAnimation(0, 1, ANIMATION_DURATION);
     private BasicTexture mOldBackground;
     private BasicTexture mBackground;
-
-    private final Paint mPaint;
     private Bitmap mPendingBitmap;
-    private final FloatAnimation mAnimation =
-            new FloatAnimation(0, 1, ANIMATION_DURATION);
 
     public AdaptiveBackground() {
         Paint paint = new Paint();
@@ -46,8 +43,7 @@ public class AdaptiveBackground extends GLView {
     }
 
     public Bitmap getAdaptiveBitmap(Bitmap bitmap) {
-        Bitmap target = Bitmap.createBitmap(
-                BACKGROUND_WIDTH, BACKGROUND_HEIGHT, Bitmap.Config.ARGB_8888);
+        Bitmap target = Bitmap.createBitmap(BACKGROUND_WIDTH, BACKGROUND_HEIGHT, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(target);
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -63,8 +59,7 @@ public class AdaptiveBackground extends GLView {
             top = (BACKGROUND_HEIGHT - (int) (height * scale + 0.5)) / 2;
         }
         canvas.drawBitmap(bitmap, left, top, mPaint);
-        BoxBlurFilter.apply(target,
-                BoxBlurFilter.MODE_REPEAT, BoxBlurFilter.MODE_CLAMP);
+        BoxBlurFilter.apply(target, BoxBlurFilter.MODE_REPEAT, BoxBlurFilter.MODE_CLAMP);
         return target;
     }
 
@@ -110,12 +105,10 @@ public class AdaptiveBackground extends GLView {
                 mBackground.draw(canvas, i - scroll, 0, width, height);
             }
         } else {
-            boolean moreAnimation =
-                    mAnimation.calculate(canvas.currentAnimationTimeMillis());
+            boolean moreAnimation = mAnimation.calculate(canvas.currentAnimationTimeMillis());
             float ratio = mAnimation.get();
             for (int i = start, n = scroll + getWidth(); i < n; i += width) {
-                canvas.drawMixed(mOldBackground,
-                        mBackground, ratio, i - scroll, 0, width, height);
+                canvas.drawMixed(mOldBackground, mBackground, ratio, i - scroll, 0, width, height);
             }
             if (moreAnimation) {
                 invalidate();

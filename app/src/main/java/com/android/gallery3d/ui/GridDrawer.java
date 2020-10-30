@@ -16,21 +16,21 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.data.Path;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Layout;
 
+import com.android.gallery3d.data.Path;
+import com.chanapps.four.gallery3d.R;
+
 public class GridDrawer extends IconDrawer {
-    private Texture mImportLabel;
-    private int mGridWidth;
     private final SelectionManager mSelectionManager;
     private final Context mContext;
     private final int IMPORT_FONT_SIZE = 14;
     private final int IMPORT_FONT_COLOR = Color.WHITE;
     private final int IMPORT_LABEL_MARGIN = 10;
+    private Texture mImportLabel;
+    private int mGridWidth;
     private boolean mSelectionMode;
 
     public GridDrawer(Context context, SelectionManager selectionManager) {
@@ -45,10 +45,7 @@ public class GridDrawer extends IconDrawer {
     }
 
     @Override
-    public void draw(GLCanvas canvas, Texture content, int width,
-            int height, int rotation, Path path,
-            int dataSourceType, int mediaType, boolean isPanorama,
-            int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
+    public void draw(GLCanvas canvas, Texture content, int width, int height, int rotation, Path path, int dataSourceType, int mediaType, boolean isPanorama, int labelBackgroundHeight, boolean wantCache, boolean isCaching) {
 
         int x = -width / 2;
         int y = -height / 2;
@@ -65,7 +62,7 @@ public class GridDrawer extends IconDrawer {
 
         drawMediaTypeOverlay(canvas, mediaType, isPanorama, x, y, width, height);
         drawLabelBackground(canvas, width, height, labelBackgroundHeight);
-        drawIcon(canvas, width, height, dataSourceType);
+//        drawIcon(canvas, width, height, dataSourceType);
         if (dataSourceType == DATASOURCE_TYPE_MTP) {
             drawImportLabel(canvas, width, height);
         }
@@ -81,11 +78,7 @@ public class GridDrawer extends IconDrawer {
     private void drawImportLabel(GLCanvas canvas, int width, int height) {
         if (mImportLabel == null || mGridWidth != width) {
             mGridWidth = width;
-            mImportLabel = MultiLineTexture.newInstance(
-                    mContext.getString(R.string.click_import),
-                    width - 2 * IMPORT_LABEL_MARGIN,
-                    IMPORT_FONT_SIZE, IMPORT_FONT_COLOR,
-                    Layout.Alignment.ALIGN_CENTER);
+            mImportLabel = MultiLineTexture.newInstance(mContext.getString(R.string.click_import), width - 2 * IMPORT_LABEL_MARGIN, IMPORT_FONT_SIZE, IMPORT_FONT_COLOR, Layout.Alignment.ALIGN_CENTER);
         }
         int w = mImportLabel.getWidth();
         int h = mImportLabel.getHeight();

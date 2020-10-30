@@ -27,13 +27,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SelectionManager {
-    @SuppressWarnings("unused")
-    private static final String TAG = "SelectionManager";
-
     public static final int ENTER_SELECTION_MODE = 1;
     public static final int LEAVE_SELECTION_MODE = 2;
     public static final int SELECT_ALL_MODE = 3;
-
+    @SuppressWarnings("unused")
+    private static final String TAG = "SelectionManager";
     private Set<Path> mClickedSet;
     private MediaSet mSourceMediaSet;
     private SelectionListener mListener;
@@ -45,16 +43,30 @@ public class SelectionManager {
     private int mTotal;
     private Path mPressedPath;
 
-    public interface SelectionListener {
-        public void onSelectionModeChange(int mode);
-        public void onSelectionChange(Path path, boolean selected);
-    }
-
     public SelectionManager(GalleryContext galleryContext, boolean isAlbumSet) {
         mDataManager = galleryContext.getDataManager();
         mClickedSet = new HashSet<Path>();
         mIsAlbumSet = isAlbumSet;
         mTotal = -1;
+    }
+
+    private static void expandMediaSet(ArrayList<Path> items, MediaSet set) {
+        int subCount = set.getSubMediaSetCount();
+        for (int i = 0; i < subCount; i++) {
+            expandMediaSet(items, set.getSubMediaSet(i));
+        }
+        int total = set.getMediaItemCount();
+        int batch = 50;
+        int index = 0;
+
+        while (index < total) {
+            int count = index + batch < total ? batch : total - index;
+            ArrayList<MediaItem> list = set.getMediaItem(index, count);
+            for (MediaItem item : list) {
+                items.add(item.getPath());
+            }
+            index += batch;
+        }
     }
 
     // Whether we will leave selection mode automatically once the number of
@@ -112,9 +124,7 @@ public class SelectionManager {
         int count = mClickedSet.size();
         if (mInverseSelection) {
             if (mTotal < 0) {
-                mTotal = mIsAlbumSet
-                        ? mSourceMediaSet.getSubMediaSetCount()
-                        : mSourceMediaSet.getMediaItemCount();
+                mTotal = mIsAlbumSet ? mSourceMediaSet.getSubMediaSetCount() : mSourceMediaSet.getMediaItemCount();
             }
             count = mTotal - count;
         }
@@ -141,27 +151,6 @@ public class SelectionManager {
 
     public boolean isPressedPath(Path path) {
         return path != null && path == mPressedPath;
-    }
-
-    private static void expandMediaSet(ArrayList<Path> items, MediaSet set) {
-        int subCount = set.getSubMediaSetCount();
-        for (int i = 0; i < subCount; i++) {
-            expandMediaSet(items, set.getSubMediaSet(i));
-        }
-        int total = set.getMediaItemCount();
-        int batch = 50;
-        int index = 0;
-
-        while (index < total) {
-            int count = index + batch < total
-                    ? batch
-                    : total - index;
-            ArrayList<MediaItem> list = set.getMediaItem(index, count);
-            for (MediaItem item : list) {
-                items.add(item.getPath());
-            }
-            index += batch;
-        }
     }
 
     public ArrayList<Path> getSelected(boolean expandSet) {
@@ -204,12 +193,14 @@ public class SelectionManager {
                     index += count;
                 }
             } else {
-                for (Path id : mClickedSet) {
-                    selected.add(id);
-                }
+                selected.addAll(mClickedSet);
             }
         }
         return selected;
+    }
+
+    public MediaSet getSourceMediaSet() {
+        return mSourceMediaSet;
     }
 
     public void setSourceMediaSet(MediaSet set) {
@@ -217,7 +208,9 @@ public class SelectionManager {
         mTotal = -1;
     }
 
-    public MediaSet getSourceMediaSet() {
-        return mSourceMediaSet;
+    public interface SelectionListener {
+        void onSelectionModeChange(int mode);
+
+        void onSelectionChange(Path path, boolean selected);
     }
 }

@@ -5,17 +5,19 @@ import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.AbsListView;
+import android.widget.TextView;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPost;
 
 /**
-* Created with IntelliJ IDEA.
-* User: johnarleyburns
-* Date: 4/9/13
-* Time: 10:28 AM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: johnarleyburns
+ * Date: 4/9/13
+ * Time: 10:28 AM
+ * To change this template use File | Settings | File Templates.
+ */
 public class ThreadExpandExifOnClickListener implements View.OnClickListener {
 
     private static final String TAG = ThreadExpandExifOnClickListener.class.getSimpleName();
@@ -38,16 +40,14 @@ public class ThreadExpandExifOnClickListener implements View.OnClickListener {
 
     private void collapseExif() {
         if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
-        if (itemExifView != null)
-            itemExifView.setVisibility(View.GONE);
+        if (itemExifView != null) itemExifView.setVisibility(View.GONE);
     }
 
     @Override
     public void onClick(View v) {
         if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
-        itemExifView = (TextView)v.findViewById(R.id.list_item_exif_text);
-        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0)
-            expandExif();
+        itemExifView = v.findViewById(R.id.list_item_exif_text);
+        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0) expandExif();
     }
 
 
@@ -72,13 +72,12 @@ public class ThreadExpandExifOnClickListener implements View.OnClickListener {
         if (itemExifView != null && exifText != null && !exifText.isEmpty()) {
             itemExifView.setText(Html.fromHtml(exifText));
             itemExifView.setVisibility(View.VISIBLE);
-            if (absListView != null && handler != null)
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        absListView.smoothScrollBy(250, 250);
-                    }
-                }, 250); // give time for EXIF data to appear
+            if (absListView != null && handler != null) handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    absListView.smoothScrollBy(250, 250);
+                }
+            }, 250); // give time for EXIF data to appear
         }
     }
 

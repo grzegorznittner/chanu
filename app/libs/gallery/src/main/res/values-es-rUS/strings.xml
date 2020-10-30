@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--  Copyright (C) 2007 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!--  Copyright (C) 2007 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,9 +13,8 @@
      limitations under the License.
  -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name" msgid="1928079047368929634">"Chanu"</string>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<!--    <string name="app_name" msgid="1928079047368929634">"Chanu"</string>-->
     <string name="gadget_title" msgid="259405922673466798">"Marco de imagen"</string>
     <string name="details_ms" msgid="940634969189855292">"%1$02d:%2$02d"</string>
     <string name="details_hms" msgid="3215779248094151255">"%1$d:%2$02d:%3$02d"</string>
@@ -55,21 +53,21 @@
     <string name="details_title" msgid="2611396603977441273">"%1$d de %2$d elementos:"</string>
     <string name="close" msgid="5585646033158453043">"Cerca"</string>
     <string name="switch_to_camera" msgid="7280111806675169992">"Cambiar a cámara"</string>
-  <plurals name="number_of_items_selected">
-    <item quantity="zero" msgid="2142579311530586258">"%1$d seleccionado(s)"</item>
-    <item quantity="one" msgid="2478365152745637768">"%1$d seleccionado(s)"</item>
-    <item quantity="other" msgid="754722656147810487">"%1$d seleccionado(s)"</item>
-  </plurals>
-  <plurals name="number_of_albums_selected">
-    <item quantity="zero" msgid="749292746814788132">"%1$d seleccionado(s)"</item>
-    <item quantity="one" msgid="6184377003099987825">"%1$d seleccionado(s)"</item>
-    <item quantity="other" msgid="53105607141906130">"%1$d seleccionado(s)"</item>
-  </plurals>
-  <plurals name="number_of_groups_selected">
-    <item quantity="zero" msgid="3466388370310869238">"%1$d seleccionado(s)"</item>
-    <item quantity="one" msgid="5030162638216034260">"%1$d seleccionado(s)"</item>
-    <item quantity="other" msgid="3512041363942842738">"%1$d seleccionado(s)"</item>
-  </plurals>
+    <plurals name="number_of_items_selected">
+        <item msgid="2142579311530586258" quantity="zero">"%1$d seleccionado(s)"</item>
+        <item msgid="2478365152745637768" quantity="one">"%1$d seleccionado(s)"</item>
+        <item msgid="754722656147810487" quantity="other">"%1$d seleccionado(s)"</item>
+    </plurals>
+    <plurals name="number_of_albums_selected">
+        <item msgid="749292746814788132" quantity="zero">"%1$d seleccionado(s)"</item>
+        <item msgid="6184377003099987825" quantity="one">"%1$d seleccionado(s)"</item>
+        <item msgid="53105607141906130" quantity="other">"%1$d seleccionado(s)"</item>
+    </plurals>
+    <plurals name="number_of_groups_selected">
+        <item msgid="3466388370310869238" quantity="zero">"%1$d seleccionado(s)"</item>
+        <item msgid="5030162638216034260" quantity="one">"%1$d seleccionado(s)"</item>
+        <item msgid="3512041363942842738" quantity="other">"%1$d seleccionado(s)"</item>
+    </plurals>
     <string name="show_on_map" msgid="6157544221201750980">"Mostrar en el mapa"</string>
     <string name="rotate_left" msgid="5888273317282539839">"Rotar hacia la izquierda"</string>
     <string name="rotate_right" msgid="6776325835923384839">"Rotar hacia la derecha"</string>
@@ -130,10 +128,10 @@
     <string name="auto" msgid="4296941368722892821">"Automático"</string>
     <string name="flash_on" msgid="7891556231891837284">"Flash activado"</string>
     <string name="flash_off" msgid="1445443413822680010">"Sin flash"</string>
-  <plurals name="make_albums_available_offline">
-    <item quantity="one" msgid="2171596356101611086">"Permitiendo que el álbum esté disponible sin conexión"</item>
-    <item quantity="other" msgid="4948604338155959389">"Permitiendo que los álbumes estén disponibles sin conexión"</item>
-  </plurals>
+    <plurals name="make_albums_available_offline">
+        <item msgid="2171596356101611086" quantity="one">"Permitiendo que el álbum esté disponible sin conexión"</item>
+        <item msgid="4948604338155959389" quantity="other">"Permitiendo que los álbumes estén disponibles sin conexión"</item>
+    </plurals>
     <string name="try_to_set_local_album_available_offline" msgid="2184754031896160755">"Este elemento se guardó de manera local y se encuentra disponible sin conexión."</string>
     <string name="set_label_all_albums" msgid="4581863582996336783">"Todos los álbumes"</string>
     <string name="set_label_local_albums" msgid="6698133661656266702">"Álbumes locales"</string>

@@ -21,6 +21,7 @@ import android.content.ContentUris;
 import android.content.UriMatcher;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.android.gallery3d.app.Gallery;
 import com.android.gallery3d.app.GalleryApp;
@@ -33,13 +34,8 @@ import java.util.Comparator;
 class LocalSource extends MediaSource {
 
     public static final String KEY_BUCKET_ID = "bucketId";
-
-    private GalleryApp mApplication;
-    private PathMatcher mMatcher;
-    private static final int NO_MATCH = -1;
-    private final UriMatcher mUriMatcher = new UriMatcher(NO_MATCH);
     public static final Comparator<PathId> sIdComparator = new IdComparator();
-
+    private static final int NO_MATCH = -1;
     private static final int LOCAL_IMAGE_ALBUMSET = 0;
     private static final int LOCAL_VIDEO_ALBUMSET = 1;
     private static final int LOCAL_IMAGE_ALBUM = 2;
@@ -48,9 +44,13 @@ class LocalSource extends MediaSource {
     private static final int LOCAL_VIDEO_ITEM = 5;
     private static final int LOCAL_ALL_ALBUMSET = 6;
     private static final int LOCAL_ALL_ALBUM = 7;
-
     private static final String TAG = "LocalSource";
-
+    // The media type bit passed by the intent
+    private static final int MEDIA_TYPE_IMAGE = 1;
+    private static final int MEDIA_TYPE_VIDEO = 4;
+    private final UriMatcher mUriMatcher = new UriMatcher(NO_MATCH);
+    private GalleryApp mApplication;
+    private PathMatcher mMatcher;
     private ContentProviderClient mClient;
 
     public LocalSource(GalleryApp context) {
@@ -67,14 +67,21 @@ class LocalSource extends MediaSource {
         mMatcher.add("/local/image/item/*", LOCAL_IMAGE_ITEM);
         mMatcher.add("/local/video/item/*", LOCAL_VIDEO_ITEM);
 
-        mUriMatcher.addURI(MediaStore.AUTHORITY,
-                "external/images/media/#", LOCAL_IMAGE_ITEM);
-        mUriMatcher.addURI(MediaStore.AUTHORITY,
-                "external/video/media/#", LOCAL_VIDEO_ITEM);
-        mUriMatcher.addURI(MediaStore.AUTHORITY,
-                "external/images/media", LOCAL_IMAGE_ALBUM);
-        mUriMatcher.addURI(MediaStore.AUTHORITY,
-                "external/video/media", LOCAL_VIDEO_ALBUM);
+        mUriMatcher.addURI(MediaStore.AUTHORITY, "external/images/media/#", LOCAL_IMAGE_ITEM);
+        mUriMatcher.addURI(MediaStore.AUTHORITY, "external/video/media/#", LOCAL_VIDEO_ITEM);
+        mUriMatcher.addURI(MediaStore.AUTHORITY, "external/images/media", LOCAL_IMAGE_ALBUM);
+        mUriMatcher.addURI(MediaStore.AUTHORITY, "external/video/media", LOCAL_VIDEO_ALBUM);
+    }
+
+    private static int getMediaType(String type, int defaultType) {
+        if (type == null) return defaultType;
+        try {
+            int value = Integer.parseInt(type);
+            if ((value & (MEDIA_TYPE_IMAGE | MEDIA_TYPE_VIDEO)) != 0) return value;
+        } catch (NumberFormatException e) {
+            Log.w(TAG, "invalid type: " + type, e);
+        }
+        return defaultType;
     }
 
     @Override
@@ -92,13 +99,10 @@ class LocalSource extends MediaSource {
             case LOCAL_ALL_ALBUM: {
                 int bucketId = mMatcher.getIntVar(0);
                 DataManager dataManager = app.getDataManager();
-                MediaSet imageSet = (MediaSet) dataManager.getMediaObject(
-                        LocalAlbumSet.PATH_IMAGE.getChild(bucketId));
-                MediaSet videoSet = (MediaSet) dataManager.getMediaObject(
-                        LocalAlbumSet.PATH_VIDEO.getChild(bucketId));
+                MediaSet imageSet = (MediaSet) dataManager.getMediaObject(LocalAlbumSet.PATH_IMAGE.getChild(bucketId));
+                MediaSet videoSet = (MediaSet) dataManager.getMediaObject(LocalAlbumSet.PATH_VIDEO.getChild(bucketId));
                 Comparator<MediaItem> comp = DataManager.sDateTakenComparator;
-                return new LocalMergeAlbum(
-                        path, comp, new MediaSet[] {imageSet, videoSet});
+                return new LocalMergeAlbum(path, comp, new MediaSet[]{imageSet, videoSet});
             }
             case LOCAL_IMAGE_ITEM:
                 return new LocalImage(path, mApplication, mMatcher.getIntVar(0));
@@ -109,26 +113,8 @@ class LocalSource extends MediaSource {
         }
     }
 
-    private static int getMediaType(String type, int defaultType) {
-        if (type == null) return defaultType;
-        try {
-            int value = Integer.parseInt(type);
-            if ((value & (MEDIA_TYPE_IMAGE
-                    | MEDIA_TYPE_VIDEO)) != 0) return value;
-        } catch (NumberFormatException e) {
-            Log.w(TAG, "invalid type: " + type, e);
-        }
-        return defaultType;
-    }
-
-    // The media type bit passed by the intent
-    private static final int MEDIA_TYPE_IMAGE = 1;
-    private static final int MEDIA_TYPE_VIDEO = 4;
-
     private Path getAlbumPath(Uri uri, int defaultType) {
-        int mediaType = getMediaType(
-                uri.getQueryParameter(Gallery.KEY_MEDIA_TYPES),
-                defaultType);
+        int mediaType = getMediaType(uri.getQueryParameter(Gallery.KEY_MEDIA_TYPES), defaultType);
         String bucketId = uri.getQueryParameter(KEY_BUCKET_ID);
         int id = 0;
         try {
@@ -176,8 +162,7 @@ class LocalSource extends MediaSource {
     public Path getDefaultSetOf(Path item) {
         MediaObject object = mApplication.getDataManager().getMediaObject(item);
         if (object instanceof LocalMediaItem) {
-            return Path.fromString("/local/all").getChild(
-                    String.valueOf(((LocalMediaItem) object).getBucketId()));
+            return Path.fromString("/local/all").getChild(String.valueOf(((LocalMediaItem) object).getBucketId()));
         }
         return null;
     }
@@ -203,8 +188,7 @@ class LocalSource extends MediaSource {
         processMapMediaItems(videoList, consumer, false);
     }
 
-    private void processMapMediaItems(ArrayList<PathId> list,
-            ItemConsumer consumer, boolean isImage) {
+    private void processMapMediaItems(ArrayList<PathId> list, ItemConsumer consumer, boolean isImage) {
         // Sort path by path id
         Collections.sort(list, sIdComparator);
         int n = list.size();
@@ -226,15 +210,25 @@ class LocalSource extends MediaSource {
                 ids.add(curId);
             }
 
-            MediaItem[] items = LocalAlbum.getMediaItemById(
-                    mApplication, isImage, ids);
-            for(int k = i ; k < j; k++) {
+            MediaItem[] items = LocalAlbum.getMediaItemById(mApplication, isImage, ids);
+            for (int k = i; k < j; k++) {
                 PathId pid2 = list.get(k);
                 consumer.consume(pid2.id, items[k - i]);
             }
 
             i = j;
         }
+    }
+
+    @Override
+    public void resume() {
+        mClient = mApplication.getContentResolver().acquireContentProviderClient(MediaStore.AUTHORITY);
+    }
+
+    @Override
+    public void pause() {
+        mClient.release();
+        mClient = null;
     }
 
     // This is a comparator which compares the suffix number in two Paths.
@@ -252,17 +246,5 @@ class LocalSource extends MediaSource {
                 return s1.compareTo(s2);
             }
         }
-    }
-
-    @Override
-    public void resume() {
-        mClient = mApplication.getContentResolver()
-                .acquireContentProviderClient(MediaStore.AUTHORITY);
-    }
-
-    @Override
-    public void pause() {
-        mClient.release();
-        mClient = null;
     }
 }

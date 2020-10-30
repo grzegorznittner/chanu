@@ -16,9 +16,6 @@
 
 package com.chanapps.four.mColorPicker;
 
-import com.chanapps.four.activity.R;
-import com.chanapps.four.mColorPicker.views.ColorPanelView;
-import com.chanapps.four.mColorPicker.views.ColorPickerView;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -27,92 +24,92 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-public class ColorPickerActivity extends Activity implements
-		View.OnClickListener {
+import com.chanapps.four.activity.R;
+import com.chanapps.four.mColorPicker.views.ColorPanelView;
+import com.chanapps.four.mColorPicker.views.ColorPickerView;
 
-	public final static String INTENT_DATA_INITIAL_COLOR = "color";
-	public final static String RESULT_COLOR = "color";
+public class ColorPickerActivity extends Activity implements View.OnClickListener {
 
-	private ColorPickerView mColorPickerView;
-	private ColorPanelView mOldColorPanel;
-	private ColorPanelView mNewColorPanel;
+    public final static String INTENT_DATA_INITIAL_COLOR = "color";
+    public final static String RESULT_COLOR = "color";
 
-	private Button mCancelButton;
-	private Button mOkButton;
+    private ColorPickerView mColorPickerView;
+    private ColorPanelView mOldColorPanel;
+    private ColorPanelView mNewColorPanel;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// To fight color branding.
-		getWindow().setFormat(PixelFormat.RGBA_8888);
+    private Button mCancelButton;
+    private Button mOkButton;
 
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_color_picker);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // To fight color branding.
+        getWindow().setFormat(PixelFormat.RGBA_8888);
 
-		Bundle b = getIntent().getExtras();
-		int initialColor = 0xff000000;
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_color_picker);
 
-		if (b != null) {
-			initialColor = b.getInt(INTENT_DATA_INITIAL_COLOR);
-		}
+        Bundle b = getIntent().getExtras();
+        int initialColor = 0xff000000;
 
-		setUp(initialColor);
+        if (b != null) {
+            initialColor = b.getInt(INTENT_DATA_INITIAL_COLOR);
+        }
 
-	}
+        setUp(initialColor);
 
-	private void setUp(int color) {
-		mColorPickerView = (ColorPickerView) findViewById(R.id.color_picker_view);
-		mOldColorPanel = (ColorPanelView) findViewById(R.id.old_color_panel);
-		mNewColorPanel = (ColorPanelView) findViewById(R.id.new_color_panel);
-		mOkButton = (Button) findViewById(R.id.ok_button);
-		mCancelButton = (Button) findViewById(R.id.cancel_button);
+    }
 
-		((LinearLayout) mOldColorPanel.getParent()).setPadding(Math
-				.round(mColorPickerView.getDrawingOffset()), 0, Math
-				.round(mColorPickerView.getDrawingOffset()), 0);
+    private void setUp(int color) {
+        mColorPickerView = findViewById(R.id.color_picker_view);
+        mOldColorPanel = findViewById(R.id.old_color_panel);
+        mNewColorPanel = findViewById(R.id.new_color_panel);
+        mOkButton = findViewById(R.id.ok_button);
+        mCancelButton = findViewById(R.id.cancel_button);
 
-		mColorPickerView
-				.setOnColorChangedListener(new ColorPickerView.OnColorChangedListener() {
+        ((LinearLayout) mOldColorPanel.getParent()).setPadding(Math.round(mColorPickerView.getDrawingOffset()), 0, Math.round(mColorPickerView.getDrawingOffset()), 0);
 
-					@Override
-					public void onColorChanged(int color) {
-						mNewColorPanel.setColor(color);
-					}
-				});
+        mColorPickerView.setOnColorChangedListener(new ColorPickerView.OnColorChangedListener() {
 
-		mOldColorPanel.setColor(color);
-		mColorPickerView.setColor(color, true);
-		mColorPickerView.setAlphaSliderVisible(true);
-		mColorPickerView.setSliderTrackerColor(0xffCECECE);
-		mColorPickerView.setBorderColor(0xff7E7E7E);
-		mOldColorPanel.setBorderColor(mColorPickerView.getBorderColor());
-		mNewColorPanel.setBorderColor(mColorPickerView.getBorderColor());
+            @Override
+            public void onColorChanged(int color) {
+                mNewColorPanel.setColor(color);
+            }
+        });
 
-		mOkButton.setOnClickListener(this);
-		mCancelButton.setOnClickListener(this);
-	}
+        mOldColorPanel.setColor(color);
+        mColorPickerView.setColor(color, true);
+        mColorPickerView.setAlphaSliderVisible(true);
+        mColorPickerView.setSliderTrackerColor(0xffCECECE);
+        mColorPickerView.setBorderColor(0xff7E7E7E);
+        mOldColorPanel.setBorderColor(mColorPickerView.getBorderColor());
+        mNewColorPanel.setBorderColor(mColorPickerView.getBorderColor());
 
-	@Override
-	public void onClick(View v) {
+        mOkButton.setOnClickListener(this);
+        mCancelButton.setOnClickListener(this);
+    }
 
-		switch (v.getId()) {
-		case R.id.ok_button:
+    @Override
+    public void onClick(View v) {
 
-			Intent i = new Intent();
-			i.putExtra(RESULT_COLOR, mColorPickerView.getColor());
+        switch (v.getId()) {
+            case R.id.ok_button:
 
-			setResult(Activity.RESULT_OK, i);
-			finish();
+                Intent i = new Intent();
+                i.putExtra(RESULT_COLOR, mColorPickerView.getColor());
 
-			break;
+                setResult(Activity.RESULT_OK, i);
+                finish();
 
-		case R.id.cancel_button:
+                break;
 
-			setResult(Activity.RESULT_CANCELED);
-			finish();
+            case R.id.cancel_button:
 
-			break;
-		}
+                setResult(Activity.RESULT_CANCELED);
+                finish();
 
-	}
+                break;
+        }
+
+    }
 
 }

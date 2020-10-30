@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2011 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2011 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -16,39 +15,49 @@
 
 <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/widget_type"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-    <RadioButton android:id="@+id/widget_type_album"
+        android:orientation="vertical"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp">
+
+    <RadioButton
+            android:id="@+id/widget_type_album"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="@string/widget_type_album"/>
-    <RadioButton android:id="@+id/widget_type_shuffle"
+            android:text="@string/widget_type_album" />
+
+    <RadioButton
+            android:id="@+id/widget_type_shuffle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="@string/widget_type_shuffle"/>
-    <RadioButton android:id="@+id/widget_type_photo"
+            android:text="@string/widget_type_shuffle" />
+
+    <RadioButton
+            android:id="@+id/widget_type_photo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="@string/widget_type_photo"/>
-    <View android:layout_width="match_parent"
+            android:text="@string/widget_type_photo" />
+
+    <View
+            android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_weight="0"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:background="?android:attr/dividerHorizontal" />
-    <Button style="?android:attr/buttonBarButtonStyle"
-            android:id="@+id/cancel"
             android:layout_weight="0"
+            android:background="?android:attr/dividerHorizontal" />
+
+    <Button
+            android:id="@+id/cancel"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0"
             android:text="@android:string/cancel" />
 </RadioGroup>

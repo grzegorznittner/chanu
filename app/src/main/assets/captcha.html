@@ -1,6 +1,6 @@
 <html>
 <head>
-<script type="text/javascript">
+  <script type="text/javascript">
 	var dataCallback = function(res) {
 		CaptchaCallback.captchaEntered(res);
 	};
@@ -11,14 +11,15 @@
 			'callback' : dataCallback
 		});
 	};
-</script>
-<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
+
+  </script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
 </head>
 <body>
-	<form name="myform" action="" method="post">
-		<div style="width: 304px; margin: auto;">
-			<div id="html_element"></div>
-		</div>
-	</form>
+<form action="" method="post" name="myform">
+  <div style="width: 304px; margin: auto;">
+    <div id="html_element"></div>
+  </div>
+</form>
 </body>
 </html>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
 import com.chanapps.four.component.ChanGridSizer;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -20,7 +21,7 @@ public class ChanImageLoader {
 
     static private final String TAG = ChanImageLoader.class.getSimpleName();
     static private final boolean DEBUG = false;
-    
+
     static private final int FULL_SCREEN_IMAGE_PADDING_DP = 8;
     static private final int MAX_MEMORY_WIDTH = 125;
     static private final int MAX_MEMORY_HEIGHT = 125;
@@ -30,27 +31,23 @@ public class ChanImageLoader {
     static public synchronized ImageLoader getInstance(Context context) {
         if (imageLoader == null) {
             DisplayMetrics displayMetrics = new DisplayMetrics();
-            WindowManager manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+            WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             manager.getDefaultDisplay().getMetrics(displayMetrics);
             int padding = ChanGridSizer.dpToPx(displayMetrics, FULL_SCREEN_IMAGE_PADDING_DP);
             final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.widthPixels) - 2 * padding;
             final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.heightPixels) - 2 * padding;
             imageLoader = ImageLoader.getInstance();
-            imageLoader.init(
-                    new ImageLoaderConfiguration
-                            .Builder(context)
-                            //.memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
-                            .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
-                                    //.imageDownloader(new ExtendedImageDownloader(context))
-                                    //.threadPriority(Thread.MIN_PRIORITY+1)
-                            .threadPoolSize(5)
-                            .discCacheFileNameGenerator(new FileNameGenerator() {
-                                @Override
-                                public String generate(String imageUri) {
-                                    return String.valueOf(Math.abs(imageUri.hashCode())) + ".jpg";
-                                }
-                            })
-                            .build());
+            imageLoader.init(new ImageLoaderConfiguration.Builder(context)
+                    //.memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
+                    .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
+                    //.imageDownloader(new ExtendedImageDownloader(context))
+                    //.threadPriority(Thread.MIN_PRIORITY+1)
+                    .threadPoolSize(5).discCacheFileNameGenerator(new FileNameGenerator() {
+                        @Override
+                        public String generate(String imageUri) {
+                            return Math.abs(imageUri.hashCode()) + ".jpg";
+                        }
+                    }).build());
         }
         return imageLoader;
     }

@@ -29,8 +29,7 @@ import java.util.Map;
 public class LruCache<K, V> {
 
     private final HashMap<K, V> mLruMap;
-    private final HashMap<K, Entry<K, V>> mWeakMap =
-            new HashMap<K, Entry<K, V>>();
+    private final HashMap<K, Entry<K, V>> mWeakMap = new HashMap<K, Entry<K, V>>();
     private ReferenceQueue<V> mQueue = new ReferenceQueue<V>();
 
     @SuppressWarnings("serial")
@@ -41,15 +40,6 @@ public class LruCache<K, V> {
                 return size() > capacity;
             }
         };
-    }
-
-    private static class Entry<K, V> extends WeakReference<V> {
-        K mKey;
-
-        public Entry(K key, V value, ReferenceQueue<V> queue) {
-            super(value, queue);
-            mKey = key;
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -69,8 +59,7 @@ public class LruCache<K, V> {
     public synchronized V put(K key, V value) {
         cleanUpWeakMap();
         mLruMap.put(key, value);
-        Entry<K, V> entry = mWeakMap.put(
-                key, new Entry<K, V>(key, value, mQueue));
+        Entry<K, V> entry = mWeakMap.put(key, new Entry<K, V>(key, value, mQueue));
         return entry == null ? null : entry.get();
     }
 
@@ -86,5 +75,14 @@ public class LruCache<K, V> {
         mLruMap.clear();
         mWeakMap.clear();
         mQueue = new ReferenceQueue<V>();
+    }
+
+    private static class Entry<K, V> extends WeakReference<V> {
+        K mKey;
+
+        public Entry(K key, V value, ReferenceQueue<V> queue) {
+            super(value, queue);
+            mKey = key;
+        }
     }
 }

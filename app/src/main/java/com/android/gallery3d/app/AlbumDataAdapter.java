@@ -16,6 +16,9 @@
 
 package com.android.gallery3d.app;
 
+import android.os.Handler;
+import android.os.Message;
+
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.ContentListener;
 import com.android.gallery3d.data.DataManager;
@@ -24,9 +27,6 @@ import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.ui.AlbumView;
 import com.android.gallery3d.ui.SynchronizedHandler;
-
-import android.os.Handler;
-import android.os.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,17 +49,13 @@ public class AlbumDataAdapter implements AlbumView.Model {
     private final MediaItem[] mData;
     private final long[] mItemVersion;
     private final long[] mSetVersion;
-
+    private final MediaSet mSource;
+    private final Handler mMainHandler;
     private int mActiveStart = 0;
     private int mActiveEnd = 0;
-
     private int mContentStart = 0;
     private int mContentEnd = 0;
-
-    private final MediaSet mSource;
     private long mSourceVersion = MediaObject.INVALID_DATA_VERSION;
-
-    private final Handler mMainHandler;
     private int mSize = 0;
 
     private AlbumView.ModelListener mModelListener;
@@ -98,21 +94,18 @@ public class AlbumDataAdapter implements AlbumView.Model {
     public void resume() {
         mSource.addContentListener(mSourceListener);
         mReloadTask = new ReloadTask();
-        if (mReloadTask != null)
-            mReloadTask.start();
+        if (mReloadTask != null) mReloadTask.start();
     }
 
     public void pause() {
-        if (mReloadTask != null)
-            mReloadTask.terminate();
+        if (mReloadTask != null) mReloadTask.terminate();
         mReloadTask = null;
         mSource.removeContentListener(mSourceListener);
     }
 
     public MediaItem get(int index) {
         if (!isActive(index)) {
-            throw new IllegalArgumentException(String.format(
-                    "%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
+            throw new IllegalArgumentException(String.format("%s not in (%s, %s)", index, mActiveStart, mActiveEnd));
         }
         return mData[index % mData.length];
     }
@@ -169,8 +162,7 @@ public class AlbumDataAdapter implements AlbumView.Model {
     public void setActiveWindow(int start, int end) {
         if (start == mActiveStart && end == mActiveEnd) return;
 
-        Utils.assertTrue(start <= end
-                && end - start <= mData.length && end <= mSize);
+        Utils.assertTrue(start <= end && end - start <= mData.length && end <= mSize);
 
         int length = mData.length;
         mActiveStart = start;
@@ -179,18 +171,10 @@ public class AlbumDataAdapter implements AlbumView.Model {
         // If no data is visible, keep the cache content
         if (start == end) return;
 
-        int contentStart = Utils.clamp((start + end) / 2 - length / 2,
-                0, Math.max(0, mSize - length));
+        int contentStart = Utils.clamp((start + end) / 2 - length / 2, 0, Math.max(0, mSize - length));
         int contentEnd = Math.min(contentStart + length, mSize);
-        if (mContentStart > start || mContentEnd < end
-                || Math.abs(contentStart - mContentStart) > MIN_LOAD_COUNT) {
+        if (mContentStart > start || mContentEnd < end || Math.abs(contentStart - mContentStart) > MIN_LOAD_COUNT) {
             setContentWindow(contentStart, contentEnd);
-        }
-    }
-
-    private class MySourceListener implements ContentListener {
-        public void onContentDirty() {
-            if (mReloadTask != null) mReloadTask.notifyDirty();
         }
     }
 
@@ -204,8 +188,7 @@ public class AlbumDataAdapter implements AlbumView.Model {
 
     private <T> T executeAndWait(Callable<T> callable) {
         FutureTask<T> task = new FutureTask<T>(callable);
-        mMainHandler.sendMessage(
-                mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
+        mMainHandler.sendMessage(mMainHandler.obtainMessage(MSG_RUN_OBJECT, task));
         try {
             return task.get();
         } catch (InterruptedException e) {
@@ -224,6 +207,12 @@ public class AlbumDataAdapter implements AlbumView.Model {
         public ArrayList<MediaItem> items;
     }
 
+    private class MySourceListener implements ContentListener {
+        public void onContentDirty() {
+            if (mReloadTask != null) mReloadTask.notifyDirty();
+        }
+    }
+
     private class GetUpdateInfo implements Callable<UpdateInfo> {
         private final long mVersion;
 
@@ -236,7 +225,7 @@ public class AlbumDataAdapter implements AlbumView.Model {
             long version = mVersion;
             info.version = mSourceVersion;
             info.size = mSize;
-            long setVersion[] = mSetVersion;
+            long[] setVersion = mSetVersion;
             for (int i = mContentStart, n = mContentEnd; i < n; ++i) {
                 int index = i % DATA_CACHE_SIZE;
                 if (setVersion[index] != version) {

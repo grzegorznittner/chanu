@@ -22,8 +22,7 @@ import java.util.ArrayList;
 
 public class AnimationSet extends CanvasAnimation {
 
-    private final ArrayList<CanvasAnimation> mAnimations =
-            new ArrayList<CanvasAnimation>();
+    private final ArrayList<CanvasAnimation> mAnimations = new ArrayList<CanvasAnimation>();
     private int mSaveFlags = 0;
 
 
